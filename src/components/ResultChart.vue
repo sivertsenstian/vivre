@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const props = defineProps({ result: { wins: Number, loss: Number, total: Number } })
+const props = defineProps({ result: { wins: Number, loss: Number, total: Number } } as any)
 const height = 14
 </script>
 
