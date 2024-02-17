@@ -9,7 +9,7 @@ const props = defineProps({ played: Number, goal: Number })
 const options = {
   responsive: true,
   maintainAspectRatio: false,
-  cutout: '65%'
+  cutout: '80%'
 }
 </script>
 
@@ -29,9 +29,16 @@ const options = {
         :options="options"
       />
     </v-col>
-    <h2 class="text-h4 font-weight-black mx-auto" style="position: relative; bottom: 180px">
-      <span class="text-orange"> {{ props.played }}</span>
-      <span class="text-grey"> / {{ props.goal }}</span>
+    <h2 class="text-h5 font-weight-black mx-auto" style="position: relative; bottom: 180px">
+      <v-row class="text-center">
+        <v-col cols="12" class="pa-0">
+          <span>Weekly Goal</span>
+        </v-col>
+        <v-col cols="12" class="pa-0">
+          <span class="text-orange"> {{ props.played }}</span>
+          <span class="text-grey"> / {{ props.goal }}</span>
+        </v-col>
+      </v-row>
     </h2>
   </v-row>
 </template>
