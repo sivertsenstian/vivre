@@ -21,7 +21,46 @@ const stats = useStatsStore()
         <v-col cols="8">
           <v-sheet class="pa-8" elevation="5">
             <v-row>
-              <v-col cols="12">
+              <v-col cols="6">
+                <v-col cols="12" class="text-center">
+                  <div class="text-h5">Daily fill</div>
+                  <hr />
+                </v-col>
+                <v-col cols="12">
+                  <v-progress-linear
+                    class="disable-animation"
+                    :striped="stats.player.day.total < Math.ceil(settings.data.goal / 7)"
+                    style="border: 1px solid black"
+                    :color="
+                      stats.player.day.total >= Math.ceil(settings.data.goal / 7)
+                        ? 'success'
+                        : 'warning'
+                    "
+                    :model-value="stats.player.day.total"
+                    :max="Math.ceil(settings.data.goal / 7)"
+                    :height="50"
+                  >
+                    <template v-slot:default="{ value }">
+                      <span
+                        >{{
+                          (stats.player.day.total / Math.ceil(settings.data.goal / 7)) * 100
+                        }}%</span
+                      >
+                    </template>
+                  </v-progress-linear>
+                </v-col>
+                <v-col
+                  cols="12"
+                  class="text-center mt-5"
+                  v-if="stats.player.day.total < Math.ceil(settings.data.goal / 7)"
+                >
+                  <div class="text-h6">
+                    Only {{ Math.ceil(settings.data.goal / 7) - stats.player.day.total }} game(s)
+                    left - Go ladder!
+                  </div>
+                </v-col>
+              </v-col>
+              <v-col cols="6">
                 <WeeklyGoalChart
                   class="mx-auto"
                   :played="Number(stats.player.week.total)"
@@ -32,20 +71,6 @@ const stats = useStatsStore()
             <v-row>
               <v-col cols="12">
                 <ResultChart :result="stats.player.week" />
-              </v-col>
-            </v-row>
-            <v-row>
-              <v-col cols="12" class="text-right">
-                <v-rating
-                  class="mx-auto"
-                  v-model="stats.player.day.total"
-                  :length="Math.ceil(settings.data.goal / 7)"
-                  empty-icon="mdi-shield-sword-outline"
-                  full-icon="mdi-shield-sword"
-                  color="grey-lighten-1"
-                  active-color="green"
-                  size="x-large"
-                />
               </v-col>
             </v-row>
           </v-sheet>
@@ -113,11 +138,15 @@ const stats = useStatsStore()
       </v-row>
 
       <v-row>
-        <v-col cols="12">
+        <v-col cols="8">
           <v-row>
             <v-col cols="12">
               <v-sheet class="pa-4" :elevation="5">
                 <v-row>
+                  <v-col cols="12">
+                    <div class="text-h6">Performance</div>
+                    <hr />
+                  </v-col>
                   <v-col cols="12">
                     <div v-if="stats.player.week.total">
                       <template v-for="result in stats.player.performance">
@@ -153,5 +182,8 @@ const stats = useStatsStore()
 .win .v-stepper-item__avatar {
   background-color: rgb(var(--v-theme-success)) !important;
   border-color: rgb(var(--v-theme-success)) !important;
+}
+.disable-animation * {
+  animation: none !important;
 }
 </style>

@@ -2,16 +2,10 @@
 import { RouterView } from 'vue-router'
 import bgUrl from '@/assets/bg_light.jpg'
 import logo from '@/assets/logo.png'
-import banner from '@/assets/banner.jpg'
 </script>
 
 <template>
   <v-app>
-    <v-app-bar color="white" :image="banner" :elevation="0">
-      <template v-slot:image>
-        <v-img gradient="to top, rgba(255,255,255,1), rgba(255,255,255,.25)"></v-img>
-      </template>
-    </v-app-bar>
     <v-navigation-drawer expand-on-hover rail>
       <v-list>
         <v-list-item :prepend-avatar="logo" title="Vivre" subtitle="W3C Stats"></v-list-item>
