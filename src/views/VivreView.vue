@@ -9,9 +9,18 @@ import orc from '@/assets/race/orc.png'
 import nightelf from '@/assets/race/nightelf.png'
 import undead from '@/assets/race/undead.png'
 import random from '@/assets/race/random.png'
+import _take from 'lodash/take'
 
 const settings = useSettingsStore()
 const stats = useStatsStore()
+
+const raceIcon: any = {
+  [Race.Human]: human,
+  [Race.Orc]: orc,
+  [Race.Undead]: undead,
+  [Race.NightElf]: nightelf,
+  [Race.Random]: random
+}
 </script>
 
 <template>
@@ -158,6 +167,68 @@ const stats = useStatsStore()
                         </v-chip>
                       </template>
                     </div>
+                  </v-col>
+                </v-row>
+              </v-sheet>
+            </v-col>
+          </v-row>
+
+          <v-row v-if="stats.ongoing.active">
+            <v-col cols="12">
+              <v-sheet class="pa-4" :elevation="5">
+                <v-row>
+                  <v-col cols="8" class="text-center">
+                    <v-col cols="12"
+                      ><span class="text-h6 font-weight-bold"
+                        >Playing on '{{ stats.ongoing?.map }}'</span
+                      ></v-col
+                    >
+                    <v-col cols="12">
+                      <span class="text-h4" style="vertical-align: text-top">Vs. </span>
+                      <img
+                        class="mx-6"
+                        style="vertical-align: middle"
+                        :src="raceIcon[stats.ongoing.opponent.race]"
+                      />
+                      <span class="text-h4" style="vertical-align: text-top">
+                        {{ stats.ongoing.opponent?.name }} ({{
+                          stats.ongoing.opponent?.oldMmr
+                        }})</span
+                      >
+                    </v-col>
+                    <v-col cols="10" class="mx-auto">
+                      <ResultChart :result="stats.ongoing.history" />
+                    </v-col>
+                  </v-col>
+
+                  <v-col cols="4">
+                    <v-col cols="12" class="text-right">
+                      <div v-if="stats.player.week.total">
+                        <span class="text-caption font-weight-bold">Last 5: </span>
+                        <template v-for="result in _take(stats.ongoing?.history.performance, 5)">
+                          <v-chip
+                            v-if="result"
+                            size="x-small"
+                            variant="tonal"
+                            color="green"
+                            label
+                            class="rounded-0"
+                          >
+                            <v-icon icon="mdi-shield-sword-outline" />
+                          </v-chip>
+                          <v-chip
+                            v-else
+                            size="x-small"
+                            variant="tonal"
+                            color="red"
+                            label
+                            class="rounded-0"
+                          >
+                            <v-icon icon="mdi-shield-sword-outline" />
+                          </v-chip>
+                        </template>
+                      </div>
+                    </v-col>
                   </v-col>
                 </v-row>
               </v-sheet>

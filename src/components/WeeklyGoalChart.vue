@@ -22,7 +22,7 @@ const options = {
           datasets: [
             {
               backgroundColor: ['orange', 'lightgray'],
-              data: [Number(props.played), Number(props.goal - props.played)]
+              data: [Number(props.played), Number((props.goal ?? 0) - (props.played ?? 0))]
             }
           ]
         }"
