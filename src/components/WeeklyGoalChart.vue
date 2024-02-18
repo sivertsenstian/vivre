@@ -29,7 +29,10 @@ const options = {
         :options="options"
       />
     </v-col>
-    <h2 class="text-h5 font-weight-black mx-auto" style="position: relative; bottom: 180px">
+    <h2
+      class="text-h5 font-weight-black mx-auto"
+      style="position: relative; bottom: 180px; height: 0"
+    >
       <v-row class="text-center">
         <v-col cols="12" class="pa-0">
           <span>Weekly Goal</span>
