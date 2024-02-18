@@ -6,6 +6,9 @@ import _last from 'lodash/last'
 import _first from 'lodash/first'
 import _round from 'lodash/round'
 import _range from 'lodash/range'
+import _capitalize from 'lodash/capitalize'
+import _isEmpty from 'lodash/isEmpty'
+import _isNil from 'lodash/isNil'
 import moment from 'moment'
 import { useSettingsStore } from './settings'
 
@@ -25,6 +28,14 @@ export const useStatsStore = defineStore('stats', () => {
     tag
   )}&gateway=20&offset=0&pageSize=100&gameMode=1&season=17`
 
+  const currentUrl = (tag: string) =>
+    `https://website-backend.w3champions.com/api/matches/ongoing/${encodeURIComponent(tag)}`
+
+  const opponentHistoryUrl = (opponent: string) =>
+    `https://website-backend.w3champions.com/api/matches/search?playerId=${encodeURIComponent(
+      tag
+    )}&opponentId=${encodeURIComponent(opponent)}&pageSize=100&season=17`
+
   const daily = ref({ count: 0, matches: [] })
   const weekly = ref({ count: 0, matches: [] })
 
@@ -32,6 +43,7 @@ export const useStatsStore = defineStore('stats', () => {
   const rule = moment().startOf('isoWeek')
 
   const player = ref({
+    battleTag: '',
     mmr: 0,
     performance: [] as boolean[],
     day: {
@@ -118,22 +130,22 @@ export const useStatsStore = defineStore('stats', () => {
     }
   })
 
+  const getwins = (m: any) =>
+    m.teams.some(
+      (t: any) =>
+        t.won && t.players.some((p: any) => p.battleTag.toLowerCase() === tag.toLowerCase())
+    )
+  const getloss = (m: any) =>
+    m.teams.some(
+      (t: any) =>
+        !t.won && t.players.some((p: any) => p.battleTag.toLowerCase() === tag.toLowerCase())
+    )
+
   const getMatches = async () => {
     try {
       const { data: response } = await axios.get(url)
       const weekActual = response.matches.filter((m: any) => moment(m.endTime).isAfter(rule))
       const dayActual = response.matches.filter((m: any) => moment(m.endTime).isAfter(today))
-
-      const getwins = (m: any) =>
-        m.teams.some(
-          (t: any) =>
-            t.won && t.players.some((p: any) => p.battleTag.toLowerCase() === tag.toLowerCase())
-        )
-      const getloss = (m: any) =>
-        m.teams.some(
-          (t: any) =>
-            !t.won && t.players.some((p: any) => p.battleTag.toLowerCase() === tag.toLowerCase())
-        )
 
       const week = {
         wins: weekActual.filter(getwins),
@@ -192,11 +204,8 @@ export const useStatsStore = defineStore('stats', () => {
       info.startOfDayMmr = infoStartOfDay?.oldMmr ?? info.currentMmr
       info.startOfDayDiffMmr = info.currentMmr - info.startOfDayMmr
 
-      const flip = () => {
-        return Math.floor(Math.random() * 2) === 1
-      }
-
       player.value = {
+        battleTag: info.battleTag,
         mmr: info.currentMmr,
         performance: weekActual.map(
           (match: any) =>
@@ -299,5 +308,78 @@ export const useStatsStore = defineStore('stats', () => {
     getMatches()
   }, 60000)
 
-  return { weekly, daily, getMatches, player }
+  const ongoing = ref({
+    id: null,
+    active: false,
+    opponent: { name: '', race: 0, battleTag: '', oldMmr: 0 },
+    map: '',
+    server: {},
+    history: { wins: 0, loss: 0, total: 0, performance: [] }
+  })
+
+  const getOpponentHistory = async (opponent: string) => {
+    try {
+      const { data: historyResponse } = await axios.get(opponentHistoryUrl(opponent))
+
+      const matches = historyResponse?.matches ?? []
+
+      let history = {
+        performance: matches.map(
+          (match: any) =>
+            match?.teams?.[0]?.players?.[0]?.battleTag.toLowerCase() ===
+            settings.data.battleTag.toLowerCase()
+        ),
+        wins: matches.filter(getwins).length,
+        loss: matches.filter(getloss).length,
+        total: historyResponse.count
+      }
+
+      ongoing.value.history = history
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  const getOngoing = async () => {
+    try {
+      const { data: onGoingResponse } = await axios.get(currentUrl(player.value.battleTag))
+
+      if (_isEmpty(onGoingResponse) || _isNil(onGoingResponse.id)) {
+        ongoing.value = {
+          id: null,
+          active: false,
+          opponent: { name: '', race: 0, battleTag: '', oldMmr: 0 },
+          map: '',
+          server: {},
+          history: { wins: 0, loss: 0, total: 0, performance: [] }
+        }
+      } else if (ongoing.value.id == null || onGoingResponse.id != ongoing.value.id) {
+        const opponent = onGoingResponse.teams?.find((t: any) =>
+          t.players.some((p: any) => p.battleTag.toLowerCase() != tag.toLowerCase())
+        )?.players?.[0]
+
+        ongoing.value = {
+          id: onGoingResponse.id,
+          active: true,
+          opponent,
+          map: onGoingResponse.mapName,
+          server: onGoingResponse.serverInfo,
+          history: { wins: 0, loss: 0, total: 0, performance: [] }
+        }
+
+        if (!_isEmpty(opponent)) {
+          getOpponentHistory(ongoing.value.opponent.battleTag)
+        }
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  getOngoing()
+  setInterval(() => {
+    getOngoing()
+  }, 15000)
+
+  return { weekly, daily, getMatches, player, ongoing }
 })
