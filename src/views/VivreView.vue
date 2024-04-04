@@ -199,7 +199,6 @@ const creeproutes: any = {
                 </v-col>
                 <v-col cols="6">
                   <WeeklyGoalChart
-                    class="mx-auto"
                     :played="Number(stats.player.week.total)"
                     :goal="Number(settings.data.goal)"
                   />

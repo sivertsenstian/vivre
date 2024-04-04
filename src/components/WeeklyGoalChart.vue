@@ -7,6 +7,7 @@ ChartJS.register(ArcElement)
 const props = defineProps({ played: Number, goal: Number })
 
 const options = {
+  radius: '80%',
   responsive: true,
   maintainAspectRatio: false,
   cutout: '80%'

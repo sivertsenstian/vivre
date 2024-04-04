@@ -203,8 +203,6 @@ export const useStatsStore = defineStore('stats', () => {
         {}
       )
 
-      console.log({ response, weekActual, dayActual })
-
       info.startOfWeekMmr = infoStartOfWeek.oldMmr
       info.startOfWeekDiffMmr = info.currentMmr - info.startOfWeekMmr
 
