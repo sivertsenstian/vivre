@@ -23,7 +23,7 @@ const stats = useStatsStore()
             label="Battle Tag"
             v-model="settings.data.battleTag"
             clearable
-            @change="stats.getMatches"
+            @change="stats.refresh"
           />
         </v-col>
       </v-row>

@@ -1,15 +1,17 @@
 <script setup lang="ts">
+import _has from 'lodash/has'
+import _take from 'lodash/take'
 import ResultChart from '@/components/ResultChart.vue'
 import WeeklyGoalChart from '@/components/WeeklyGoalChart.vue'
 import { useSettingsStore } from '@/stores/settings'
 import { useStatsStore, Race } from '@/stores/stats'
+import _values from 'lodash/values'
 
 import human from '@/assets/race/human.png'
 import orc from '@/assets/race/orc.png'
 import nightelf from '@/assets/race/nightelf.png'
 import undead from '@/assets/race/undead.png'
 import random from '@/assets/race/random.png'
-import _take from 'lodash/take'
 
 const settings = useSettingsStore()
 const stats = useStatsStore()
@@ -21,6 +23,40 @@ const raceIcon: any = {
   [Race.NightElf]: nightelf,
   [Race.Random]: random
 }
+
+const cr_hu_vs_ne = import.meta.glob('@assets/creeproutes/human/nightelf/*.jpg', {
+  eager: true,
+  as: 'url'
+})
+
+const getCreepRoutes = (glob: any) => {
+  return _values(glob)?.reduce((r: {}, c: any) => {
+    const n = c.match(/(.+?)(\.[^.]*$|$)/)?.[1].replace(/^.*[\\/]/, '')
+    return n ? { ...r, [n]: c } : r
+  }, {})
+}
+
+const creeproutes: any = {
+  [Race.Human]: {
+    [Race.Random]: getCreepRoutes(
+      import.meta.glob('@assets/creeproutes/1/0/*.jpg', { eager: true, as: 'url' })
+    ),
+    [Race.Human]: getCreepRoutes(
+      import.meta.glob('@assets/creeproutes/1/1/*.jpg', { eager: true, as: 'url' })
+    ),
+    [Race.Orc]: getCreepRoutes(
+      import.meta.glob('@assets/creeproutes/1/2/*.jpg', { eager: true, as: 'url' })
+    ),
+    [Race.NightElf]: getCreepRoutes(
+      import.meta.glob('@assets/creeproutes/1/4/*.jpg', { eager: true, as: 'url' })
+    ),
+    [Race.Undead]: getCreepRoutes(
+      import.meta.glob('@assets/creeproutes/1/8/*.jpg', { eager: true, as: 'url' })
+    )
+  }
+}
+
+console.log({ creeproutes })
 </script>
 
 <template>
@@ -92,11 +128,11 @@ const raceIcon: any = {
             <v-sheet class="pa-4" :elevation="5">
               <v-row>
                 <v-col cols="8" class="text-center">
-                  <v-col cols="12"
-                    ><span class="text-h6 font-weight-bold"
-                      >Playing on '{{ stats.ongoing?.map }}'</span
-                    ></v-col
-                  >
+                  <v-col cols="12">
+                    <span class="text-h6 font-weight-bold"
+                      >Playing on '{{ stats.ongoing?.map }}' : {{ stats.ongoing.duration }}</span
+                    >
+                  </v-col>
                   <v-col cols="12">
                     <span class="text-h4" style="vertical-align: text-top">Vs. </span>
                     <img
@@ -118,7 +154,9 @@ const raceIcon: any = {
                 <v-col cols="4">
                   <v-col cols="12" class="text-right">
                     <div v-if="stats.player.week.total">
-                      <span class="text-caption font-weight-bold">Last 5: </span>
+                      <span class="text-caption font-weight-bold"
+                        >Recent results vs opponent:
+                      </span>
                       <template v-for="result in _take(stats.ongoing?.history.performance, 5)">
                         <v-chip
                           v-if="result"
@@ -143,6 +181,27 @@ const raceIcon: any = {
                       </template>
                     </div>
                   </v-col>
+                  <v-col
+                    cols="12"
+                    class="text-center"
+                    v-if="
+                      _has(creeproutes, [
+                        stats.ongoing.player?.race,
+                        stats.ongoing.opponent?.race,
+                        stats.ongoing.map
+                      ])
+                    "
+                  >
+                    <span class="caption text-black">Suggested Creep Route</span>
+                    <img
+                      :src="
+                        creeproutes[stats.ongoing?.player?.race][stats.ongoing?.opponent?.race][
+                          stats.ongoing?.map
+                        ]
+                      "
+                      width="100%"
+                    />
+                  </v-col>
                 </v-col>
               </v-row>
             </v-sheet>
@@ -155,7 +214,7 @@ const raceIcon: any = {
                 label="Battle Tag"
                 v-model="settings.data.battleTag"
                 clearable
-                @change="stats.getMatches"
+                @change="stats.refresh"
               />
               <div class="text-h6 text-black text-center">
                 MMR: {{ stats.player.mmr }}
