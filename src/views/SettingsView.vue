@@ -1,7 +1,9 @@
 <script setup lang="ts">
-import { useSettingsStore } from '@/stores/settings';
+import { useSettingsStore } from '@/stores/settings'
+import { useStatsStore } from '@/stores/stats'
 
-const settings = useSettingsStore();
+const settings = useSettingsStore()
+const stats = useStatsStore()
 </script>
 
 <template>
@@ -17,7 +19,12 @@ const settings = useSettingsStore();
       </v-row>
       <v-row>
         <v-col cols="12">
-          <v-text-field label="Battle Tag" v-model="settings.data.battleTag" clearable />
+          <v-text-field
+            label="Battle Tag"
+            v-model="settings.data.battleTag"
+            clearable
+            @change="stats.getMatches"
+          />
         </v-col>
       </v-row>
       <v-row>

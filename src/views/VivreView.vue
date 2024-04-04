@@ -33,7 +33,9 @@ const raceIcon: any = {
               <v-row>
                 <v-col cols="6">
                   <v-col cols="12" class="text-center">
-                    <div class="text-h5">Daily fill</div>
+                    <div class="text-h5">
+                      Daily fill ({{ Math.ceil(settings.data.goal / 7) }} per day)
+                    </div>
                     <hr />
                   </v-col>
                   <v-col cols="12">
@@ -149,7 +151,12 @@ const raceIcon: any = {
         <v-col cols="4">
           <v-col cols="12">
             <v-sheet class="pa-5" :elevation="5">
-              <v-text-field label="Battle Tag" v-model="settings.data.battleTag" clearable />
+              <v-text-field
+                label="Battle Tag"
+                v-model="settings.data.battleTag"
+                clearable
+                @change="stats.getMatches"
+              />
               <div class="text-h6 text-black text-center">
                 MMR: {{ stats.player.mmr }}
                 <span class="ml-2 text-black">
