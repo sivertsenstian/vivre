@@ -143,13 +143,9 @@ export const useStatsStore = defineStore('stats', () => {
     )
 
   const getMatches = async () => {
-    console.log('GET MATCHES!')
-
     if (tag.value.length === 0) {
       return
     }
-
-    console.log(tag)
 
     try {
       const { data: response } = await axios.get(url(tag.value))
@@ -316,12 +312,6 @@ export const useStatsStore = defineStore('stats', () => {
   setInterval(() => {
     getMatches()
   }, 60000)
-
-  setInterval(() => {
-    console.log('Herro?')
-    console.log(settings.data)
-    console.log(tag)
-  }, 5000)
 
   const ongoing = ref({
     id: null,
