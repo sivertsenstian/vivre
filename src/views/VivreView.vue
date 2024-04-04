@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import _round from 'lodash/round'
 import _has from 'lodash/has'
 import _take from 'lodash/take'
 import ResultChart from '@/components/ResultChart.vue'
@@ -24,39 +25,127 @@ const raceIcon: any = {
   [Race.Random]: random
 }
 
-const cr_hu_vs_ne = import.meta.glob('@assets/creeproutes/human/nightelf/*.jpg', {
-  eager: true,
-  as: 'url'
-})
+import cr_hu_vs_hu_1 from '@/assets/creeproutes/human/human/AL.jpg'
+import cr_hu_vs_hu_2 from '@/assets/creeproutes/human/human/CH.jpg'
+import cr_hu_vs_hu_3 from '@/assets/creeproutes/human/human/HF.jpg'
+import cr_hu_vs_hu_4 from '@/assets/creeproutes/human/human/LR.jpg'
+import cr_hu_vs_hu_5 from '@/assets/creeproutes/human/human/NiS.jpg'
+import cr_hu_vs_hu_6 from '@/assets/creeproutes/human/human/SG.jpg'
 
-const getCreepRoutes = (glob: any) => {
-  return _values(glob)?.reduce((r: {}, c: any) => {
-    const n = c.match(/(.+?)(\.[^.]*$|$)/)?.[1].replace(/^.*[\\/]/, '')
-    return n ? { ...r, [n]: c } : r
-  }, {})
-}
+import cr_hu_vs_ne_1 from '@/assets/creeproutes/human/nightelf/AL.jpg'
+import cr_hu_vs_ne_2 from '@/assets/creeproutes/human/nightelf/CH.jpg'
+import cr_hu_vs_ne_3 from '@/assets/creeproutes/human/nightelf/HF.jpg'
+import cr_hu_vs_ne_4 from '@/assets/creeproutes/human/nightelf/LR.jpg'
+import cr_hu_vs_ne_5 from '@/assets/creeproutes/human/nightelf/NiS.jpg'
+import cr_hu_vs_ne_6 from '@/assets/creeproutes/human/nightelf/SG.jpg'
+
+import cr_hu_vs_oc_1 from '@/assets/creeproutes/human/orc/AL.jpg'
+import cr_hu_vs_oc_2 from '@/assets/creeproutes/human/orc/CH.jpg'
+import cr_hu_vs_oc_3 from '@/assets/creeproutes/human/orc/HF.jpg'
+import cr_hu_vs_oc_4 from '@/assets/creeproutes/human/orc/LR.jpg'
+import cr_hu_vs_oc_5 from '@/assets/creeproutes/human/orc/NiS.jpg'
+import cr_hu_vs_oc_6 from '@/assets/creeproutes/human/orc/SG.jpg'
+
+import cr_hu_vs_ud_1 from '@/assets/creeproutes/human/undead/AL.jpg'
+import cr_hu_vs_ud_2 from '@/assets/creeproutes/human/undead/CH.jpg'
+import cr_hu_vs_ud_3 from '@/assets/creeproutes/human/undead/HF.jpg'
+import cr_hu_vs_ud_4 from '@/assets/creeproutes/human/undead/LR.jpg'
+import cr_hu_vs_ud_5 from '@/assets/creeproutes/human/undead/NiS.jpg'
+import cr_hu_vs_ud_6 from '@/assets/creeproutes/human/undead/SG.jpg'
+
+import cr_hu_vs_r_1 from '@/assets/creeproutes/human/random/AL.jpg'
+import cr_hu_vs_r_2 from '@/assets/creeproutes/human/random/CH.jpg'
+import cr_hu_vs_r_3 from '@/assets/creeproutes/human/random/HF.jpg'
+import cr_hu_vs_r_4 from '@/assets/creeproutes/human/random/LR.jpg'
+import cr_hu_vs_r_5 from '@/assets/creeproutes/human/random/NiS.jpg'
+import cr_hu_vs_r_6 from '@/assets/creeproutes/human/random/SG.jpg'
+
+import cr_missing from '@/assets/creeproutes/missing.png'
 
 const creeproutes: any = {
   [Race.Human]: {
-    [Race.Random]: getCreepRoutes(
-      import.meta.glob('@assets/creeproutes/1/0/*.jpg', { eager: true, as: 'url' })
-    ),
-    [Race.Human]: getCreepRoutes(
-      import.meta.glob('@assets/creeproutes/1/1/*.jpg', { eager: true, as: 'url' })
-    ),
-    [Race.Orc]: getCreepRoutes(
-      import.meta.glob('@assets/creeproutes/1/2/*.jpg', { eager: true, as: 'url' })
-    ),
-    [Race.NightElf]: getCreepRoutes(
-      import.meta.glob('@assets/creeproutes/1/4/*.jpg', { eager: true, as: 'url' })
-    ),
-    [Race.Undead]: getCreepRoutes(
-      import.meta.glob('@assets/creeproutes/1/8/*.jpg', { eager: true, as: 'url' })
-    )
+    [Race.Random]: {
+      'Autumn Leaves v2': cr_hu_vs_r_1,
+      'Echo Isles v2': cr_missing,
+      'Gloom Stalker': cr_missing,
+      'Concealed Hill': cr_hu_vs_r_2,
+      Hammerfall: cr_hu_vs_r_3,
+      'Last Refuge': cr_hu_vs_r_4,
+      'Northern Isles': cr_hu_vs_r_5,
+      'Shallow Grave': cr_hu_vs_r_6,
+      Springtime: cr_missing,
+      'Rune Maul': cr_missing,
+      'Shattered Exile v2': cr_missing,
+      'Terenas Stand LV': cr_missing,
+      Tidehunters: cr_missing,
+      'Twisted Meadows': cr_missing
+    },
+    [Race.Human]: {
+      'Autumn Leaves v2': cr_hu_vs_hu_1,
+      'Echo Isles v2': cr_missing,
+      'Gloom Stalker': cr_missing,
+      'Concealed Hill': cr_hu_vs_hu_2,
+      Hammerfall: cr_hu_vs_hu_3,
+      'Last Refuge': cr_hu_vs_hu_4,
+      'Northern Isles': cr_hu_vs_hu_5,
+      'Shallow Grave': cr_hu_vs_hu_6,
+      Springtime: cr_missing,
+      'Rune Maul': cr_missing,
+      'Shattered Exile v2': cr_missing,
+      'Terenas Stand LV': cr_missing,
+      Tidehunters: cr_missing,
+      'Twisted Meadows': cr_missing
+    },
+    [Race.Orc]: {
+      'Autumn Leaves v2': cr_hu_vs_oc_1,
+      'Echo Isles v2': cr_missing,
+      'Gloom Stalker': cr_missing,
+      'Concealed Hill': cr_hu_vs_oc_2,
+      Hammerfall: cr_hu_vs_oc_3,
+      'Last Refuge': cr_hu_vs_oc_4,
+      'Northern Isles': cr_hu_vs_oc_5,
+      'Shallow Grave': cr_hu_vs_oc_6,
+      Springtime: cr_missing,
+      'Rune Maul': cr_missing,
+      'Shattered Exile v2': cr_missing,
+      'Terenas Stand LV': cr_missing,
+      Tidehunters: cr_missing,
+      'Twisted Meadows': cr_missing
+    },
+    [Race.NightElf]: {
+      'Autumn Leaves v2': cr_hu_vs_ne_1,
+      'Echo Isles v2': cr_missing,
+      'Gloom Stalker': cr_missing,
+      'Concealed Hill': cr_hu_vs_ne_2,
+      Hammerfall: cr_hu_vs_ne_3,
+      'Last Refuge': cr_hu_vs_ne_4,
+      'Northern Isles': cr_hu_vs_ne_5,
+      'Shallow Grave': cr_hu_vs_ne_6,
+      Springtime: cr_missing,
+      'Rune Maul': cr_missing,
+      'Shattered Exile v2': cr_missing,
+      'Terenas Stand LV': cr_missing,
+      Tidehunters: cr_missing,
+      'Twisted Meadows': cr_missing
+    },
+    [Race.Undead]: {
+      'Autumn Leaves v2': cr_hu_vs_ud_1,
+      'Echo Isles v2': cr_missing,
+      'Gloom Stalker': cr_missing,
+      'Concealed Hill': cr_hu_vs_ud_2,
+      Hammerfall: cr_hu_vs_ud_3,
+      'Last Refuge': cr_hu_vs_ud_4,
+      'Northern Isles': cr_hu_vs_ud_5,
+      'Shallow Grave': cr_hu_vs_ud_6,
+      Springtime: cr_missing,
+      'Rune Maul': cr_missing,
+      'Shattered Exile v2': cr_missing,
+      'Terenas Stand LV': cr_missing,
+      Tidehunters: cr_missing,
+      'Twisted Meadows': cr_missing
+    }
   }
 }
-
-console.log({ creeproutes })
 </script>
 
 <template>
@@ -70,7 +159,7 @@ console.log({ creeproutes })
                 <v-col cols="6">
                   <v-col cols="12" class="text-center">
                     <div class="text-h5">
-                      Daily fill ({{ Math.ceil(settings.data.goal / 7) }} per day)
+                      Daily fill ({{ _round(Math.ceil(settings.data.goal / 7)) }} per day)
                     </div>
                     <hr />
                   </v-col>
@@ -134,13 +223,14 @@ console.log({ creeproutes })
                     >
                   </v-col>
                   <v-col cols="12">
-                    <span class="text-h4" style="vertical-align: text-top">Vs. </span>
+                    <span class="text-h5" style="vertical-align: text-top">Vs. </span>
                     <img
                       class="mx-6"
                       style="vertical-align: middle"
+                      width="100px"
                       :src="raceIcon[stats.ongoing.opponent.race]"
                     />
-                    <span class="text-h4" style="vertical-align: text-top">
+                    <span class="text-h5" style="vertical-align: text-top">
                       {{ stats.ongoing.opponent?.name }} ({{
                         stats.ongoing.opponent?.oldMmr
                       }})</span
@@ -154,9 +244,7 @@ console.log({ creeproutes })
                 <v-col cols="4">
                   <v-col cols="12" class="text-right">
                     <div v-if="stats.player.week.total">
-                      <span class="text-caption font-weight-bold"
-                        >Recent results vs opponent:
-                      </span>
+                      <span class="text-caption font-weight-bold">Previously: </span>
                       <template v-for="result in _take(stats.ongoing?.history.performance, 5)">
                         <v-chip
                           v-if="result"
