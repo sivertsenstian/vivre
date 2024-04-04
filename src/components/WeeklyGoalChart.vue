@@ -18,11 +18,15 @@ const options = {
     <v-col cols="12">
       <Doughnut
         :data="{
-          labels: ['Played', 'Goal'],
+          labels: (props.played ?? 0) >= (props.goal ?? 0) ? ['Played'] : ['Played', 'Goal'],
           datasets: [
             {
-              backgroundColor: ['orange', 'lightgray'],
-              data: [Number(props.played), Number((props.goal ?? 0) - (props.played ?? 0))]
+              backgroundColor:
+                (props.played ?? 0) >= (props.goal ?? 0) ? ['green'] : ['orange', 'lightgray'],
+              data:
+                (props.played ?? 0) >= (props.goal ?? 0)
+                  ? [Number(props.played)]
+                  : [Number(props.played), Number((props.goal ?? 0) - (props.played ?? 0))]
             }
           ]
         }"
@@ -38,7 +42,14 @@ const options = {
           <span>Weekly Goal</span>
         </v-col>
         <v-col cols="12" class="pa-0">
-          <span class="text-orange"> {{ props.played }}</span>
+          <span
+            :class="{
+              'text-orange': Number(props.played ?? 0) < Number(props.goal ?? 0),
+              'text-green': Number(props.played ?? 0) >= Number(props.goal ?? 0)
+            }"
+          >
+            {{ props.played }}</span
+          >
           <span class="text-grey"> / {{ props.goal }}</span>
         </v-col>
       </v-row>

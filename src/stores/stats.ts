@@ -22,19 +22,20 @@ export enum Race {
 
 export const useStatsStore = defineStore('stats', () => {
   const settings = useSettingsStore()
-  const tag = settings.data.battleTag
+  const tag = computed(() => settings.data.battleTag)
 
-  const url = `https://website-backend.w3champions.com/api/matches/search?playerId=${encodeURIComponent(
-    tag
-  )}&gateway=20&offset=0&pageSize=100&gameMode=1&season=17`
+  const url = (tag: string) =>
+    `https://website-backend.w3champions.com/api/matches/search?playerId=${encodeURIComponent(
+      tag
+    )}&gateway=20&offset=0&pageSize=200&gameMode=1&season=18`
 
   const currentUrl = (tag: string) =>
     `https://website-backend.w3champions.com/api/matches/ongoing/${encodeURIComponent(tag)}`
 
-  const opponentHistoryUrl = (opponent: string) =>
+  const opponentHistoryUrl = (tag: string, opponent: string) =>
     `https://website-backend.w3champions.com/api/matches/search?playerId=${encodeURIComponent(
       tag
-    )}&opponentId=${encodeURIComponent(opponent)}&pageSize=100&season=17`
+    )}&opponentId=${encodeURIComponent(opponent)}&pageSize=200&season=18`
 
   const daily = ref({ count: 0, matches: [] })
   const weekly = ref({ count: 0, matches: [] })
@@ -133,17 +134,25 @@ export const useStatsStore = defineStore('stats', () => {
   const getwins = (m: any) =>
     m.teams.some(
       (t: any) =>
-        t.won && t.players.some((p: any) => p.battleTag.toLowerCase() === tag.toLowerCase())
+        t.won && t.players.some((p: any) => p.battleTag.toLowerCase() === tag.value.toLowerCase())
     )
   const getloss = (m: any) =>
     m.teams.some(
       (t: any) =>
-        !t.won && t.players.some((p: any) => p.battleTag.toLowerCase() === tag.toLowerCase())
+        !t.won && t.players.some((p: any) => p.battleTag.toLowerCase() === tag.value.toLowerCase())
     )
 
   const getMatches = async () => {
+    console.log('GET MATCHES!')
+
+    if (tag.value.length === 0) {
+      return
+    }
+
+    console.log(tag)
+
     try {
-      const { data: response } = await axios.get(url)
+      const { data: response } = await axios.get(url(tag.value))
       const weekActual = response.matches.filter((m: any) => moment(m.endTime).isAfter(rule))
       const dayActual = response.matches.filter((m: any) => moment(m.endTime).isAfter(today))
 
@@ -178,21 +187,21 @@ export const useStatsStore = defineStore('stats', () => {
 
       const info = _first<any>(weekActual)?.teams?.reduce(
         (r: any, t: any) =>
-          t.players.some((p: any) => p.battleTag.toLowerCase() === tag.toLowerCase())
+          t.players.some((p: any) => p.battleTag.toLowerCase() === tag.value.toLowerCase())
             ? t.players[0]
             : r,
         {}
       )
       const infoStartOfDay = _last<any>(dayActual)?.teams?.reduce(
         (r: any, t: any) =>
-          t.players.some((p: any) => p.battleTag.toLowerCase() === tag.toLowerCase())
+          t.players.some((p: any) => p.battleTag.toLowerCase() === tag.value.toLowerCase())
             ? t.players[0]
             : r,
         {}
       )
       const infoStartOfWeek = _last<any>(weekActual)?.teams?.reduce(
         (r: any, t: any) =>
-          t.players.some((p: any) => p.battleTag.toLowerCase() === tag.toLowerCase())
+          t.players.some((p: any) => p.battleTag.toLowerCase() === tag.value.toLowerCase())
             ? t.players[0]
             : r,
         {}
@@ -308,6 +317,12 @@ export const useStatsStore = defineStore('stats', () => {
     getMatches()
   }, 60000)
 
+  setInterval(() => {
+    console.log('Herro?')
+    console.log(settings.data)
+    console.log(tag)
+  }, 5000)
+
   const ongoing = ref({
     id: null,
     active: false,
@@ -319,7 +334,7 @@ export const useStatsStore = defineStore('stats', () => {
 
   const getOpponentHistory = async (opponent: string) => {
     try {
-      const { data: historyResponse } = await axios.get(opponentHistoryUrl(opponent))
+      const { data: historyResponse } = await axios.get(opponentHistoryUrl(tag.value, opponent))
 
       const matches = historyResponse?.matches ?? []
 
@@ -355,7 +370,7 @@ export const useStatsStore = defineStore('stats', () => {
         }
       } else if (ongoing.value.id == null || onGoingResponse.id != ongoing.value.id) {
         const opponent = onGoingResponse.teams?.find((t: any) =>
-          t.players.some((p: any) => p.battleTag.toLowerCase() != tag.toLowerCase())
+          t.players.some((p: any) => p.battleTag.toLowerCase() != tag.value.toLowerCase())
         )?.players?.[0]
 
         ongoing.value = {
