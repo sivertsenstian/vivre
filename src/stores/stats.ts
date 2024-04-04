@@ -203,6 +203,8 @@ export const useStatsStore = defineStore('stats', () => {
         {}
       )
 
+      console.log({ response, weekActual, dayActual })
+
       info.startOfWeekMmr = infoStartOfWeek.oldMmr
       info.startOfWeekDiffMmr = info.currentMmr - info.startOfWeekMmr
 
@@ -308,14 +310,15 @@ export const useStatsStore = defineStore('stats', () => {
     }
   }
 
-  getMatches()
   setInterval(() => {
     getMatches()
   }, 60000)
 
   const ongoing = ref({
     id: null,
+    duration: '',
     active: false,
+    player: { name: '', race: 0, battleTag: '', oldMmr: 0 },
     opponent: { name: '', race: 0, battleTag: '', oldMmr: 0 },
     map: '',
     server: {},
@@ -346,26 +349,37 @@ export const useStatsStore = defineStore('stats', () => {
   }
 
   const getOngoing = async () => {
+    if (tag.value.length === 0) {
+      return
+    }
+
     try {
-      const { data: onGoingResponse } = await axios.get(currentUrl(player.value.battleTag))
+      const { data: onGoingResponse } = await axios.get(currentUrl(tag.value))
 
       if (_isEmpty(onGoingResponse) || _isNil(onGoingResponse.id)) {
         ongoing.value = {
           id: null,
+          duration: '',
           active: false,
+          player: { name: '', race: 0, battleTag: '', oldMmr: 0 },
           opponent: { name: '', race: 0, battleTag: '', oldMmr: 0 },
           map: '',
           server: {},
           history: { wins: 0, loss: 0, total: 0, performance: [] }
         }
-      } else if (ongoing.value.id == null || onGoingResponse.id != ongoing.value.id) {
+      } else {
+        const player = onGoingResponse.teams?.find((t: any) =>
+          t.players.some((p: any) => p.battleTag.toLowerCase() === tag.value.toLowerCase())
+        )?.players?.[0]
         const opponent = onGoingResponse.teams?.find((t: any) =>
           t.players.some((p: any) => p.battleTag.toLowerCase() != tag.value.toLowerCase())
         )?.players?.[0]
 
         ongoing.value = {
           id: onGoingResponse.id,
+          duration: moment.utc(moment().diff(moment(onGoingResponse.startTime))).format('mm:ss'),
           active: true,
+          player,
           opponent,
           map: onGoingResponse.mapName,
           server: onGoingResponse.serverInfo,
@@ -381,10 +395,17 @@ export const useStatsStore = defineStore('stats', () => {
     }
   }
 
-  getOngoing()
   setInterval(() => {
     getOngoing()
-  }, 15000)
+  }, 10000)
 
-  return { weekly, daily, getMatches, player, ongoing }
+  const refresh = () => {
+    getMatches()
+    getOngoing()
+  }
+
+  // initialize
+  refresh()
+
+  return { weekly, daily, getMatches, player, ongoing, refresh }
 })
