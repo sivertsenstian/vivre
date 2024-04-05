@@ -8,7 +8,11 @@ import logo from '@/assets/logo.png'
   <v-app>
     <v-navigation-drawer expand-on-hover rail>
       <v-list>
-        <v-list-item :prepend-avatar="logo" title="Vivre" subtitle="W3C Stats"></v-list-item>
+        <v-list-item
+          :prepend-avatar="logo"
+          title="Vivre"
+          subtitle="Dashboard Apelication"
+        ></v-list-item>
       </v-list>
       <v-divider></v-divider>
       <v-list density="compact" nav>

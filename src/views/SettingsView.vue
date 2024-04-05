@@ -21,7 +21,7 @@ const stats = useStatsStore()
         <v-col cols="12">
           <v-text-field
             label="Battle Tag"
-            v-model="settings.data.battleTag"
+            v-model.trim="settings.data.battleTag"
             clearable
             @change="stats.refresh"
           />
@@ -29,7 +29,7 @@ const stats = useStatsStore()
       </v-row>
       <v-row>
         <v-col cols="12">
-          <v-text-field label="Goal" v-model="settings.data.goal" clearable />
+          <v-text-field label="Goal" v-model.trim="settings.data.goal" clearable />
         </v-col>
       </v-row>
     </v-container>

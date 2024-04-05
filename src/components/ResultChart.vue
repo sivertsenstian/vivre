@@ -1,10 +1,10 @@
 <script setup lang="ts">
 const props = defineProps({ result: { wins: Number, loss: Number, total: Number } as any })
-const height = 16
+const height = 20
 </script>
 
 <template>
-  <div>
+  <div v-if="props.result.total">
     <v-progress-linear
       color="green-lighten-1"
       :model-value="(props.result.wins / props.result.total) * 100"
@@ -15,7 +15,7 @@ const height = 16
         <span
           v-if="props.result.wins"
           class="text-white text-caption font-weight-bold"
-          style="margin-right: 60%"
+          :style="{ marginRight: (props.result.loss / props.result.total) * 100 + '%' }"
           >{{ props.result.wins }}W</span
         >
       </template>
@@ -24,13 +24,13 @@ const height = 16
       color="red-lighten-1"
       :model-value="(props.result.loss / props.result.total) * 100"
       :height="height"
-      :style="{ top: -height / 2 + 'px', border: '1px solid black' }"
+      :style="{ top: -height / 2 + 'px', border: '1px solid white' }"
       reverse
     >
       <span
         v-if="props.result.loss"
         class="text-white text-caption font-weight-bold"
-        style="margin-left: 60%"
+        :style="{ marginLeft: (props.result.wins / props.result.total) * 100 + '%', color: 'lime' }"
       >
         {{ props.result.loss }}L</span
       >
