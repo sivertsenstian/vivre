@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { ref } from 'vue'
 import moment from 'moment'
 import _round from 'lodash/round'
 import _has from 'lodash/has'
 import _take from 'lodash/take'
 import ResultChart from '@/components/ResultChart.vue'
 import WeeklyGoalChart from '@/components/WeeklyGoalChart.vue'
+import WeeklyResultChart from '@/components/WeeklyResultChart.vue'
 import { useSettingsStore } from '@/stores/settings'
 import { useStatsStore, Race } from '@/stores/stats'
 import _values from 'lodash/values'
@@ -187,9 +188,13 @@ setInterval(() => {
                   </v-col>
                   <v-col cols="12">
                     <v-progress-linear
-                      class="disable-animation"
-                      :striped="stats.player.day.total < Math.ceil(settings.data.goal / 7)"
-                      style="border: 1px solid black"
+                      :class="{
+                        'disable-animation': true,
+                        'text-white': stats.player.day.total >= Math.ceil(settings.data.goal / 7),
+                        'text-black': stats.player.day.total < Math.ceil(settings.data.goal / 7)
+                      }"
+                      striped
+                      style="border: 1px solid gray"
                       :color="
                         stats.player.day.total >= Math.ceil(settings.data.goal / 7)
                           ? 'success'
@@ -202,7 +207,9 @@ setInterval(() => {
                       <template v-slot:default="{ value }">
                         <span class="text-gray text-h6"
                           >{{
-                            _round(stats.player.day.total / Math.ceil(settings.data.goal / 7)) * 100
+                            _round(
+                              (stats.player.day.total / Math.ceil(settings.data.goal / 7)) * 100
+                            )
                           }}
                           %</span
                         >
@@ -219,6 +226,9 @@ setInterval(() => {
                       left - Go ladder!
                     </div>
                   </v-col>
+                  <v-col cols="12">
+                    <WeeklyResultChart :weekly="stats.weekly" />
+                  </v-col>
                 </v-col>
                 <v-col cols="6">
                   <WeeklyGoalChart
@@ -233,7 +243,9 @@ setInterval(() => {
                   <ResultChart :result="stats.player.week" />
                 </v-col>
                 <v-col cols="12" class="text-center" v-else>
-                  <span class="text-h6">No games played yet this week - There is no time like the present!</span>
+                  <span class="text-h6"
+                    >No games played yet this week - There is no time like the present!</span
+                  >
                 </v-col>
               </v-row>
             </v-sheet>
@@ -268,7 +280,13 @@ setInterval(() => {
                 </v-col>
 
                 <v-col cols="4">
-                  <v-col cols="12" :class="{'text-right': stats.ongoing.history.last.length, 'text-center': !stats.ongoing.history.last.length}">
+                  <v-col
+                    cols="12"
+                    :class="{
+                      'text-right': stats.ongoing.history.last.length,
+                      'text-center': !stats.ongoing.history.last.length
+                    }"
+                  >
                     <div v-if="stats.player.week.total">
                       <span
                         class="text-caption font-weight-bold"
@@ -334,10 +352,11 @@ setInterval(() => {
               <div class="text-h6 text-black text-center">
                 <v-card elevation="0">
                   <v-autocomplete
-                    clearable
                     :items="stats.searchResults"
                     :loading="stats.searching"
-                    v-model="settings.data.battleTag"
+                    @input="(e: any) => stats.getBattleTag(e.target.value)"
+                    clearable
+                    v-model="settings.data.battleTag as any"
                     class="mx-auto"
                     density="comfortable"
                     placeholder="Search W3C for player..."
@@ -345,10 +364,8 @@ setInterval(() => {
                     variant="solo"
                     item-title="battleTag"
                     item-value="battleTag"
-                    @input="(e) => stats.getBattleTag(e.target.value)"
-                    @update"() => console.log('WAS UPDATED??')"
                     auto-select-first
-                  ></v-autocomplete>
+                  />
                   <v-card-item>
                     <v-card-title>
                       <span style="display: flex; align-items: center; justify-content: center">
@@ -374,6 +391,7 @@ setInterval(() => {
                           />
                         </span>
                         <span
+                          v-if="stats.player.mmr > 100"
                           class="text-h5 text-white"
                           style="
                             opacity: 0.87;
