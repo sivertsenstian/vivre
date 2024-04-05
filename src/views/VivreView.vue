@@ -4,6 +4,7 @@ import moment from 'moment'
 import _round from 'lodash/round'
 import _has from 'lodash/has'
 import _take from 'lodash/take'
+import ConfettiExplosion from 'vue-confetti-explosion'
 import ResultChart from '@/components/ResultChart.vue'
 import WeeklyGoalChart from '@/components/WeeklyGoalChart.vue'
 import WeeklyResultChart from '@/components/WeeklyResultChart.vue'
@@ -184,6 +185,12 @@ setInterval(() => {
                     <div class="text-h5">
                       Daily fill ({{ Math.ceil(settings.data.goal / 7) }} per day)
                     </div>
+                    <ConfettiExplosion
+                      :particelCount="300"
+                      :stageWidth="2000"
+                      :stageHeight="2000"
+                      v-if="stats.player.day.total === Math.ceil(settings.data.goal / 7)"
+                    />
                     <hr />
                   </v-col>
                   <v-col cols="12">
