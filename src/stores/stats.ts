@@ -29,7 +29,9 @@ export const useStatsStore = defineStore('stats', () => {
   const searching = ref(false)
 
   const search = (name: string) =>
-    `https://website-backend.w3champions.com/api/players/global-search?search=${name}&pageSize=3`
+    `https://website-backend.w3champions.com/api/players/global-search?search=${encodeURIComponent(
+      name
+    )}&pageSize=20`
 
   const url = (tag: string) =>
     `https://website-backend.w3champions.com/api/matches/search?playerId=${encodeURIComponent(
@@ -401,8 +403,8 @@ export const useStatsStore = defineStore('stats', () => {
       console.log(error)
     } finally {
       player.value = result
-      daily.value = dayActual
-      weekly.value = weekActual
+      daily.value = { matches: dayActual, count: dayActual.length }
+      weekly.value = { matches: weekActual, count: weekActual.length }
     }
   }
 

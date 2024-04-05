@@ -24,8 +24,8 @@ const options = {
             {
               backgroundColor:
                 (props.played ?? 0) >= (props.goal ?? 0)
-                  ? ['rgb(0, 145, 0)']
-                  : ['orange', 'lightgray'],
+                  ? ['#66BB6A']
+                  : ['rgb(251,140, 0)', 'lightgray'],
               data:
                 (props.played ?? 0) >= (props.goal ?? 0)
                   ? [Number(props.played)]

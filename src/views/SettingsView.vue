@@ -19,17 +19,7 @@ const stats = useStatsStore()
       </v-row>
       <v-row>
         <v-col cols="12">
-          <v-text-field
-            label="Battle Tag"
-            v-model.trim="settings.data.battleTag"
-            clearable
-            @change="stats.refresh"
-          />
-        </v-col>
-      </v-row>
-      <v-row>
-        <v-col cols="12">
-          <v-text-field label="Goal" v-model.trim="settings.data.goal" clearable />
+          <v-text-field label="Weekly Ladder Goal" v-model.trim="settings.data.goal" clearable />
         </v-col>
       </v-row>
     </v-container>
