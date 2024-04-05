@@ -23,7 +23,9 @@ const options = {
           datasets: [
             {
               backgroundColor:
-                (props.played ?? 0) >= (props.goal ?? 0) ? ['green'] : ['orange', 'lightgray'],
+                (props.played ?? 0) >= (props.goal ?? 0)
+                  ? ['#66BB6A']
+                  : ['rgb(251,140, 0)', 'lightgray'],
               data:
                 (props.played ?? 0) >= (props.goal ?? 0)
                   ? [Number(props.played)]

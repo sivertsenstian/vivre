@@ -1,21 +1,39 @@
 <script setup lang="ts">
+import { ref } from 'vue'
+import moment from 'moment'
 import _round from 'lodash/round'
 import _has from 'lodash/has'
 import _take from 'lodash/take'
 import ResultChart from '@/components/ResultChart.vue'
 import WeeklyGoalChart from '@/components/WeeklyGoalChart.vue'
+import WeeklyResultChart from '@/components/WeeklyResultChart.vue'
 import { useSettingsStore } from '@/stores/settings'
 import { useStatsStore, Race } from '@/stores/stats'
 import _values from 'lodash/values'
+
+const settings = useSettingsStore()
+const stats = useStatsStore()
+
+// TODO: Move icons/creeproutes to separate file
+import hu_banner from '@/assets/take_a_look_at_banner_michael.png'
+import r_banner from '@/assets/take_a_look_at_banner_random.png'
+import ud_banner from '@/assets/take_a_look_at_banner_undead.png'
+import ne_banner from '@/assets/take_a_look_at_banner_nightelf.png'
+import oc_banner from '@/assets/take_a_look_at_banner_orc.png'
+
+const raceBanner: any = {
+  [Race.Human]: hu_banner,
+  [Race.Orc]: oc_banner,
+  [Race.Undead]: ud_banner,
+  [Race.NightElf]: ne_banner,
+  [Race.Random]: r_banner
+}
 
 import human from '@/assets/race/human.png'
 import orc from '@/assets/race/orc.png'
 import nightelf from '@/assets/race/nightelf.png'
 import undead from '@/assets/race/undead.png'
 import random from '@/assets/race/random.png'
-
-const settings = useSettingsStore()
-const stats = useStatsStore()
 
 const raceIcon: any = {
   [Race.Human]: human,
@@ -146,6 +164,11 @@ const creeproutes: any = {
     }
   }
 }
+
+let duration = ref(moment.utc(moment().diff(stats.ongoing.start)).format('mm:ss'))
+setInterval(() => {
+  duration.value = moment.utc(moment().diff(stats.ongoing.start)).format('mm:ss')
+}, 1000)
 </script>
 
 <template>
@@ -159,15 +182,15 @@ const creeproutes: any = {
                 <v-col cols="6">
                   <v-col cols="12" class="text-center">
                     <div class="text-h5">
-                      Daily fill ({{ _round(Math.ceil(settings.data.goal / 7)) }} per day)
+                      Daily fill ({{ Math.ceil(settings.data.goal / 7) }} per day)
                     </div>
                     <hr />
                   </v-col>
                   <v-col cols="12">
                     <v-progress-linear
-                      class="disable-animation"
-                      :striped="stats.player.day.total < Math.ceil(settings.data.goal / 7)"
-                      style="border: 1px solid black"
+                      :class="{'disable-animation': true, 'text-white': stats.player.day.total >= Math.ceil(settings.data.goal / 7), 'text-black': stats.player.day.total < Math.ceil(settings.data.goal / 7)}"
+                      striped
+                      style="border: 1px solid gray"
                       :color="
                         stats.player.day.total >= Math.ceil(settings.data.goal / 7)
                           ? 'success'
@@ -178,10 +201,11 @@ const creeproutes: any = {
                       :height="50"
                     >
                       <template v-slot:default="{ value }">
-                        <span
+                        <span class="text-gray text-h6"
                           >{{
-                            (stats.player.day.total / Math.ceil(settings.data.goal / 7)) * 100
-                          }}%</span
+                            _round(stats.player.day.total / Math.ceil(settings.data.goal / 7) * 100)
+                          }}
+                          %</span
                         >
                       </template>
                     </v-progress-linear>
@@ -196,6 +220,9 @@ const creeproutes: any = {
                       left - Go ladder!
                     </div>
                   </v-col>
+                  <v-col cols="12">
+                    <WeeklyResultChart :weekly="stats.weekly" />
+                  </v-col>
                 </v-col>
                 <v-col cols="6">
                   <WeeklyGoalChart
@@ -205,8 +232,12 @@ const creeproutes: any = {
                 </v-col>
               </v-row>
               <v-row>
-                <v-col cols="12">
+                <v-col cols="12" v-if="stats.player.week.total">
+                  <span class="title">Weekly Total</span>
                   <ResultChart :result="stats.player.week" />
+                </v-col>
+                <v-col cols="12" class="text-center" v-else>
+                  <span class="text-h6">No games played yet this week - There is no time like the present!</span>
                 </v-col>
               </v-row>
             </v-sheet>
@@ -218,7 +249,7 @@ const creeproutes: any = {
                 <v-col cols="8" class="text-center">
                   <v-col cols="12">
                     <span class="text-h6 font-weight-bold"
-                      >Playing on '{{ stats.ongoing?.map }}' : {{ stats.ongoing.duration }}</span
+                      >Playing on '{{ stats.ongoing?.map }}' : {{ duration }}</span
                     >
                   </v-col>
                   <v-col cols="12">
@@ -241,10 +272,17 @@ const creeproutes: any = {
                 </v-col>
 
                 <v-col cols="4">
-                  <v-col cols="12" class="text-right">
+                  <v-col cols="12" :class="{'text-right': stats.ongoing.history.last.length, 'text-center': !stats.ongoing.history.last.length}">
                     <div v-if="stats.player.week.total">
-                      <span class="text-caption font-weight-bold">Previously: </span>
-                      <template v-for="result in _take(stats.ongoing?.history.performance, 5)">
+                      <span
+                        class="text-caption font-weight-bold"
+                        v-if="stats.ongoing.history.last.length"
+                        >Last {{ stats.ongoing.history.last.length }}:
+                      </span>
+                      <span class="text-caption font-weight-bold" v-else>
+                        First Game This Season vs Opponent!
+                      </span>
+                      <template v-for="result in stats.ongoing.history.last">
                         <v-chip
                           v-if="result"
                           size="x-small"
@@ -297,38 +335,110 @@ const creeproutes: any = {
         <v-col cols="4">
           <v-col cols="12">
             <v-sheet class="pa-5" :elevation="5">
-              <v-text-field
-                label="Battle Tag"
-                v-model="settings.data.battleTag"
-                clearable
-                @change="stats.refresh"
-              />
               <div class="text-h6 text-black text-center">
-                MMR: {{ stats.player.mmr }}
-                <span class="ml-2 text-black">
-                  <span
-                    :class="{
-                      'text-green': stats.player?.day?.mmr.diff > 0,
-                      'text-red': stats.player?.day?.mmr.diff < 0
-                    }"
-                  >
-                    <span v-if="stats.player?.day?.mmr.diff > 0">+</span>
-                    {{ stats.player?.day?.mmr.diff }}
-                  </span>
-                  today
-                </span>
-                <span class="ml-2 text-black">
-                  <span
-                    :class="{
-                      'text-green': stats.player?.week?.mmr.diff > 0,
-                      'text-red': stats.player?.week?.mmr.diff < 0
-                    }"
-                  >
-                    <span v-if="stats.player?.week?.mmr.diff > 0">+</span
-                    >{{ stats.player?.week?.mmr.diff }}
-                  </span>
-                  this week</span
-                >
+                <v-card elevation="0">
+                  <v-autocomplete
+                    clearable
+                    :items="stats.searchResults"
+                    :loading="stats.searching"
+                    v-model="settings.data.battleTag"
+                    class="mx-auto"
+                    density="comfortable"
+                    placeholder="Search W3C for player..."
+                    prepend-inner-icon="mdi-magnify"
+                    variant="solo"
+                    item-title="battleTag"
+                    item-value="battleTag"
+                    @input="(e: any) => stats.getBattleTag(e.target.value)"
+                    @update"() => console.log('WAS UPDATED??')"
+                    auto-select-first
+                  ></v-autocomplete>
+                  <v-card-item>
+                    <v-card-title>
+                      <span style="display: flex; align-items: center; justify-content: center">
+                        <img
+                          style="vertical-align: middle"
+                          width="135px"
+                          :src="raceBanner[stats.player.race]"
+                        />
+                        <span
+                          style="
+                            opacity: 0.87;
+                            vertical-align: middle;
+                            position: relative;
+                            right: 103px;
+                            bottom: 55px;
+                            width: 0;
+                          "
+                        >
+                          <img
+                            style="vertical-align: middle"
+                            width="75px"
+                            :src="raceIcon[stats.player.race]"
+                          />
+                        </span>
+                        <span
+                          v-if="stats.player.mmr > 100"
+                          class="text-h5 text-white"
+                          style="
+                            opacity: 0.87;
+                            vertical-align: middle;
+                            position: relative;
+                            right: 92px;
+                            bottom: 0px;
+                            width: 0;
+                          "
+                          >{{ stats.player.mmr }}</span
+                        >
+                        <span
+                          class="text-white"
+                          style="
+                            opacity: 0.87;
+                            font-size: 16px !important;
+                            vertical-align: middle;
+                            position: relative;
+                            right: 85px;
+                            bottom: -25px;
+                            width: 0;
+                          "
+                          >MMR</span
+                        >
+                      </span>
+                    </v-card-title>
+                    <v-card-text>
+                      <v-row>
+                        <v-col cols="6" class="pa-0">
+                          <span class="ml-2 text-black text-h6">
+                            <span
+                              :class="{
+                                'text-green': stats.player?.day?.mmr.diff > 0,
+                                'text-red': stats.player?.day?.mmr.diff < 0
+                              }"
+                            >
+                              <span v-if="stats.player?.day?.mmr.diff > 0">+</span>
+                              {{ stats.player?.day?.mmr.diff }}
+                            </span>
+                            Today
+                          </span>
+                        </v-col>
+                        <v-col cols="6" class="pa-0">
+                          <span class="ml-2 text-black text-h6">
+                            <span
+                              :class="{
+                                'text-green': stats.player?.week?.mmr.diff > 0,
+                                'text-red': stats.player?.week?.mmr.diff < 0
+                              }"
+                            >
+                              <span v-if="stats.player?.week?.mmr.diff > 0">+</span
+                              >{{ stats.player?.week?.mmr.diff }}
+                            </span>
+                            This week</span
+                          >
+                        </v-col>
+                      </v-row>
+                    </v-card-text>
+                  </v-card-item>
+                </v-card>
               </div>
             </v-sheet>
           </v-col>
@@ -368,7 +478,18 @@ const creeproutes: any = {
                 </v-col>
                 <v-col cols="12">
                   <div v-if="stats.player.week.total">
-                    <template v-for="result in stats.player.performance">
+                    <template v-for="(result, i) in stats.player.performance">
+                      <v-chip
+                        v-if="i === stats.player.day.total"
+                        size="small"
+                        variant="tonal"
+                        color="gray"
+                        label
+                        class="rounded-0"
+                        title="Start of Today"
+                      >
+                        <v-icon icon="mdi-calendar" />
+                      </v-chip>
                       <v-chip
                         v-if="result"
                         size="small"
@@ -376,6 +497,7 @@ const creeproutes: any = {
                         color="green"
                         label
                         class="rounded-0"
+                        title="Win"
                       >
                         <v-icon icon="mdi-shield-sword-outline" />
                       </v-chip>
@@ -386,6 +508,7 @@ const creeproutes: any = {
                         color="red"
                         label
                         class="rounded-0"
+                        title="Loss"
                       >
                         <v-icon icon="mdi-shield-sword-outline" />
                       </v-chip>

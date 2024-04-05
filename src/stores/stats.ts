@@ -1,6 +1,7 @@
 import axios from 'axios'
 import { defineStore } from 'pinia'
-import { ref, computed } from 'vue'
+import { ref, computed, watchEffect } from 'vue'
+import _take from 'lodash/take'
 import _groupBy from 'lodash/groupBy'
 import _last from 'lodash/last'
 import _first from 'lodash/first'
@@ -24,6 +25,14 @@ export const useStatsStore = defineStore('stats', () => {
   const settings = useSettingsStore()
   const tag = computed(() => settings.data.battleTag)
 
+  const searchResults = ref([])
+  const searching = ref(false)
+
+  const search = (name: string) =>
+    `https://website-backend.w3champions.com/api/players/global-search?search=${encodeURIComponent(
+      name
+    )}&pageSize=20`
+
   const url = (tag: string) =>
     `https://website-backend.w3champions.com/api/matches/search?playerId=${encodeURIComponent(
       tag
@@ -45,6 +54,7 @@ export const useStatsStore = defineStore('stats', () => {
 
   const player = ref({
     battleTag: '',
+    race: Race.Random,
     mmr: 0,
     performance: [] as boolean[],
     day: {
@@ -143,14 +153,102 @@ export const useStatsStore = defineStore('stats', () => {
     )
 
   const getMatches = async () => {
-    if (tag.value.length === 0) {
-      return
+    let result = {
+      battleTag: '',
+      race: Race.Random,
+      mmr: 0,
+      performance: [] as boolean[],
+      day: {
+        total: 0,
+        wins: 0,
+        loss: 0,
+        percentage: 0,
+        mmr: {
+          diff: 0
+        },
+        race: {
+          [Race.Random]: {
+            total: 0,
+            wins: 0,
+            loss: 0,
+            percentage: 0
+          },
+          [Race.Human]: {
+            total: 0,
+            wins: 0,
+            loss: 0,
+            percentage: 0
+          },
+          [Race.Orc]: {
+            total: 0,
+            wins: 0,
+            loss: 0,
+            percentage: 0
+          },
+          [Race.NightElf]: {
+            total: 0,
+            wins: 0,
+            loss: 0,
+            percentage: 0
+          },
+          [Race.Undead]: {
+            total: 0,
+            wins: 0,
+            loss: 0,
+            percentage: 0
+          }
+        }
+      },
+      week: {
+        total: 0,
+        wins: 0,
+        loss: 0,
+        percentage: 0,
+        mmr: {
+          diff: 0
+        },
+        race: {
+          [Race.Random]: {
+            total: 0,
+            wins: 0,
+            loss: 0,
+            percentage: 0
+          },
+          [Race.Human]: {
+            total: 0,
+            wins: 0,
+            loss: 0,
+            percentage: 0
+          },
+          [Race.Orc]: {
+            total: 0,
+            wins: 0,
+            loss: 0,
+            percentage: 0
+          },
+          [Race.NightElf]: {
+            total: 0,
+            wins: 0,
+            loss: 0,
+            percentage: 0
+          },
+          [Race.Undead]: {
+            total: 0,
+            wins: 0,
+            loss: 0,
+            percentage: 0
+          }
+        }
+      }
     }
+
+    let weekActual = []
+    let dayActual = []
 
     try {
       const { data: response } = await axios.get(url(tag.value))
-      const weekActual = response.matches.filter((m: any) => moment(m.endTime).isAfter(rule))
-      const dayActual = response.matches.filter((m: any) => moment(m.endTime).isAfter(today))
+      weekActual = response.matches.filter((m: any) => moment(m.endTime).isAfter(rule))
+      dayActual = response.matches.filter((m: any) => moment(m.endTime).isAfter(today))
 
       const week = {
         wins: weekActual.filter(getwins),
@@ -181,7 +279,7 @@ export const useStatsStore = defineStore('stats', () => {
         return (data?.wins?.[race]?.length ?? 0) + (data?.loss?.[race]?.length ?? 0)
       }
 
-      const info = _first<any>(weekActual)?.teams?.reduce(
+      const info = _first<any>(response.matches)?.teams?.reduce(
         (r: any, t: any) =>
           t.players.some((p: any) => p.battleTag.toLowerCase() === tag.value.toLowerCase())
             ? t.players[0]
@@ -203,14 +301,15 @@ export const useStatsStore = defineStore('stats', () => {
         {}
       )
 
-      info.startOfWeekMmr = infoStartOfWeek.oldMmr
+      info.startOfWeekMmr = infoStartOfWeek?.oldMmr ?? info.currentMmr
       info.startOfWeekDiffMmr = info.currentMmr - info.startOfWeekMmr
 
       info.startOfDayMmr = infoStartOfDay?.oldMmr ?? info.currentMmr
       info.startOfDayDiffMmr = info.currentMmr - info.startOfDayMmr
 
-      player.value = {
+      result = {
         battleTag: info.battleTag,
+        race: info.race,
         mmr: info.currentMmr,
         performance: weekActual.map(
           (match: any) =>
@@ -300,11 +399,12 @@ export const useStatsStore = defineStore('stats', () => {
           }
         }
       }
-
-      daily.value = dayActual
-      weekly.value = weekActual
     } catch (error) {
       console.log(error)
+    } finally {
+      player.value = result
+      daily.value = { matches: dayActual, count: dayActual.length }
+      weekly.value = { matches: weekActual, count: weekActual.length }
     }
   }
 
@@ -314,58 +414,61 @@ export const useStatsStore = defineStore('stats', () => {
 
   const ongoing = ref({
     id: null,
-    duration: '',
+    start: null,
     active: false,
     player: { name: '', race: 0, battleTag: '', oldMmr: 0 },
     opponent: { name: '', race: 0, battleTag: '', oldMmr: 0 },
     map: '',
     server: {},
-    history: { wins: 0, loss: 0, total: 0, performance: [] }
+    history: { wins: 0, loss: 0, total: 0, performance: [], last: [] }
   })
 
   const getOpponentHistory = async (opponent: string) => {
+    let history = { wins: 0, loss: 0, total: 0, performance: [], last: [] }
+
+    if (_isEmpty(opponent)) {
+      return history
+    }
+
     try {
       const { data: historyResponse } = await axios.get(opponentHistoryUrl(tag.value, opponent))
 
       const matches = historyResponse?.matches ?? []
+      const performance = matches.map(
+        (match: any) =>
+          match?.teams?.[0]?.players?.[0]?.battleTag.toLowerCase() ===
+          settings.data.battleTag.toLowerCase()
+      )
 
-      let history = {
-        performance: matches.map(
-          (match: any) =>
-            match?.teams?.[0]?.players?.[0]?.battleTag.toLowerCase() ===
-            settings.data.battleTag.toLowerCase()
-        ),
+      history = {
+        performance,
+        last: _take(performance, 5),
         wins: matches.filter(getwins).length,
         loss: matches.filter(getloss).length,
         total: historyResponse.count
       }
-
-      ongoing.value.history = history
     } catch (error) {
       console.log(error)
+    } finally {
+      return history
     }
   }
 
   const getOngoing = async () => {
-    if (tag.value.length === 0) {
-      return
+    let result = {
+      id: null,
+      start: null,
+      active: false,
+      player: { name: '', race: 0, battleTag: '', oldMmr: 0 },
+      opponent: { name: '', race: 0, battleTag: '', oldMmr: 0 },
+      map: '',
+      server: {},
+      history: { wins: 0, loss: 0, total: 0, performance: [], last: [] }
     }
 
     try {
       const { data: onGoingResponse } = await axios.get(currentUrl(tag.value))
-
-      if (_isEmpty(onGoingResponse) || _isNil(onGoingResponse.id)) {
-        ongoing.value = {
-          id: null,
-          duration: '',
-          active: false,
-          player: { name: '', race: 0, battleTag: '', oldMmr: 0 },
-          opponent: { name: '', race: 0, battleTag: '', oldMmr: 0 },
-          map: '',
-          server: {},
-          history: { wins: 0, loss: 0, total: 0, performance: [] }
-        }
-      } else {
+      if (!_isNil(onGoingResponse?.id)) {
         const player = onGoingResponse.teams?.find((t: any) =>
           t.players.some((p: any) => p.battleTag.toLowerCase() === tag.value.toLowerCase())
         )?.players?.[0]
@@ -373,23 +476,21 @@ export const useStatsStore = defineStore('stats', () => {
           t.players.some((p: any) => p.battleTag.toLowerCase() != tag.value.toLowerCase())
         )?.players?.[0]
 
-        ongoing.value = {
+        result = {
           id: onGoingResponse.id,
-          duration: moment.utc(moment().diff(moment(onGoingResponse.startTime))).format('mm:ss'),
+          start: moment(onGoingResponse.startTime),
           active: true,
           player,
           opponent,
           map: onGoingResponse.mapName,
           server: onGoingResponse.serverInfo,
-          history: { wins: 0, loss: 0, total: 0, performance: [] }
-        }
-
-        if (!_isEmpty(opponent)) {
-          getOpponentHistory(ongoing.value.opponent.battleTag)
+          history: await getOpponentHistory(opponent.battleTag)
         }
       }
     } catch (error) {
       console.log(error)
+    } finally {
+      ongoing.value = result
     }
   }
 
@@ -397,13 +498,35 @@ export const useStatsStore = defineStore('stats', () => {
     getOngoing()
   }, 10000)
 
-  const refresh = () => {
-    getMatches()
-    getOngoing()
+  const getBattleTag = async (input: string) => {
+    if (input.length < 3) {
+      return
+    }
+
+    try {
+      searching.value = true
+      const { data: results } = await axios.get(search(input))
+      searchResults.value = results
+    } catch (error) {
+      console.log(error)
+    } finally {
+      searching.value = false
+    }
   }
 
-  // initialize
-  refresh()
+  watchEffect(() => {
+    getMatches()
+    getOngoing()
+  })
 
-  return { weekly, daily, getMatches, player, ongoing, refresh }
+  return {
+    weekly,
+    daily,
+    getMatches,
+    player,
+    ongoing,
+    getBattleTag,
+    searchResults,
+    searching
+  }
 })
