@@ -478,7 +478,7 @@ export const useStatsStore = defineStore('stats', () => {
 
         result = {
           id: onGoingResponse.id,
-          start: moment(onGoingResponse.startTime),
+          start: moment(onGoingResponse.startTime) as any,
           active: true,
           player,
           opponent,

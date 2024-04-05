@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import moment from 'moment'
 import { Bar } from 'vue-chartjs'
-import { Chart as ChartJS, Title, Tooltip, BarElement, CategoryScale, LinearScale } from 'chart.js'
+import { Chart as ChartJS, BarElement, CategoryScale, LinearScale } from 'chart.js'
 
 ChartJS.register(CategoryScale, LinearScale, BarElement)
 
@@ -15,7 +15,7 @@ const options = {
     x: { stacked: true, grid: { display: false } },
     y: { stacked: true, beginAtZero: true, grid: { display: false } }
   }
-}
+} as any
 </script>
 
 <template>
@@ -30,28 +30,28 @@ const options = {
               data:
                 props.weekly.matches
                   ?.reduce(
-                    (r, m) => {
+                    (r: number[], m: any) => {
                       const d = moment(m.endTime).day() - 1
                       r[d]++
                       return r
                     },
                     [0, 0, 0, 0, 0, 0, 0]
                   )
-                  .map((v) => (v >= 15 ? v : 0)) ?? []
+                  .map((v: number) => (v >= 15 ? v : 0)) ?? []
             },
             {
               backgroundColor: 'rgb(251, 140, 0)',
               data:
                 props.weekly.matches
                   ?.reduce(
-                    (r, m) => {
+                    (r: number[], m: any) => {
                       const d = moment(m.endTime).day() - 1
                       r[d]++
                       return r
                     },
                     [0, 0, 0, 0, 0, 0, 0]
                   )
-                  .map((v) => (v < 15 ? v : 0)) ?? []
+                  .map((v: number) => (v < 15 ? v : 0)) ?? []
             }
           ]
         }"

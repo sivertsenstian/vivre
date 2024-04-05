@@ -188,7 +188,11 @@ setInterval(() => {
                   </v-col>
                   <v-col cols="12">
                     <v-progress-linear
-                      :class="{'disable-animation': true, 'text-white': stats.player.day.total >= Math.ceil(settings.data.goal / 7), 'text-black': stats.player.day.total < Math.ceil(settings.data.goal / 7)}"
+                      :class="{
+                        'disable-animation': true,
+                        'text-white': stats.player.day.total >= Math.ceil(settings.data.goal / 7),
+                        'text-black': stats.player.day.total < Math.ceil(settings.data.goal / 7)
+                      }"
                       striped
                       style="border: 1px solid gray"
                       :color="
@@ -203,7 +207,9 @@ setInterval(() => {
                       <template v-slot:default="{ value }">
                         <span class="text-gray text-h6"
                           >{{
-                            _round(stats.player.day.total / Math.ceil(settings.data.goal / 7) * 100)
+                            _round(
+                              (stats.player.day.total / Math.ceil(settings.data.goal / 7)) * 100
+                            )
                           }}
                           %</span
                         >
@@ -237,7 +243,9 @@ setInterval(() => {
                   <ResultChart :result="stats.player.week" />
                 </v-col>
                 <v-col cols="12" class="text-center" v-else>
-                  <span class="text-h6">No games played yet this week - There is no time like the present!</span>
+                  <span class="text-h6"
+                    >No games played yet this week - There is no time like the present!</span
+                  >
                 </v-col>
               </v-row>
             </v-sheet>
@@ -272,7 +280,13 @@ setInterval(() => {
                 </v-col>
 
                 <v-col cols="4">
-                  <v-col cols="12" :class="{'text-right': stats.ongoing.history.last.length, 'text-center': !stats.ongoing.history.last.length}">
+                  <v-col
+                    cols="12"
+                    :class="{
+                      'text-right': stats.ongoing.history.last.length,
+                      'text-center': !stats.ongoing.history.last.length
+                    }"
+                  >
                     <div v-if="stats.player.week.total">
                       <span
                         class="text-caption font-weight-bold"
@@ -338,10 +352,11 @@ setInterval(() => {
               <div class="text-h6 text-black text-center">
                 <v-card elevation="0">
                   <v-autocomplete
-                    clearable
                     :items="stats.searchResults"
                     :loading="stats.searching"
-                    v-model="settings.data.battleTag"
+                    @input="(e: any) => stats.getBattleTag(e.target.value)"
+                    clearable
+                    v-model="settings.data.battleTag as any"
                     class="mx-auto"
                     density="comfortable"
                     placeholder="Search W3C for player..."
@@ -349,10 +364,8 @@ setInterval(() => {
                     variant="solo"
                     item-title="battleTag"
                     item-value="battleTag"
-                    @input="(e: any) => stats.getBattleTag(e.target.value)"
-                    @update"() => console.log('WAS UPDATED??')"
                     auto-select-first
-                  ></v-autocomplete>
+                  />
                   <v-card-item>
                     <v-card-title>
                       <span style="display: flex; align-items: center; justify-content: center">
