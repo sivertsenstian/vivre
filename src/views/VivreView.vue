@@ -239,7 +239,10 @@ setInterval(() => {
                     </div>
                   </v-col>
                   <v-col cols="12">
-                    <WeeklyResultChart :weekly="stats.weekly" />
+                    <WeeklyResultChart
+                      :weekly="stats.weekly"
+                      :goal="Math.ceil(settings.data.goal / 7)"
+                    />
                   </v-col>
                 </v-col>
                 <v-col cols="6">
