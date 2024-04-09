@@ -5,7 +5,7 @@ import { Chart as ChartJS, BarElement, CategoryScale, LinearScale } from 'chart.
 
 ChartJS.register(CategoryScale, LinearScale, BarElement)
 
-const props = defineProps({ weekly: { matches: Array, count: Number } as any })
+const props = defineProps({ weekly: { matches: Array, count: Number } as any, goal: Number })
 
 const options = {
   animation: false,
@@ -37,7 +37,7 @@ const options = {
                     },
                     [0, 0, 0, 0, 0, 0, 0]
                   )
-                  .map((v: number) => (v >= 15 ? v : 0)) ?? []
+                  .map((v: number) => (v >= (props.goal ?? 0) ? v : 0)) ?? []
             },
             {
               backgroundColor: 'rgb(251, 140, 0)',
@@ -51,7 +51,7 @@ const options = {
                     },
                     [0, 0, 0, 0, 0, 0, 0]
                   )
-                  .map((v: number) => (v < 15 ? v : 0)) ?? []
+                  .map((v: number) => (v < (props.goal ?? 0) ? v : 0)) ?? []
             }
           ]
         }"
