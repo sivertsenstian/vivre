@@ -6,20 +6,11 @@ import _groupBy from 'lodash/groupBy'
 import _last from 'lodash/last'
 import _first from 'lodash/first'
 import _round from 'lodash/round'
-import _range from 'lodash/range'
-import _capitalize from 'lodash/capitalize'
 import _isEmpty from 'lodash/isEmpty'
 import _isNil from 'lodash/isNil'
 import moment from 'moment'
 import { useSettingsStore } from './settings'
-
-export enum Race {
-  Random = 0,
-  Human = 1,
-  Orc = 2,
-  NightElf = 4,
-  Undead = 8
-}
+import { Race } from '@/stores/races'
 
 export const useStatsStore = defineStore('stats', () => {
   const settings = useSettingsStore()
