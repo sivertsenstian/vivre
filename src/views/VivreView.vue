@@ -1,180 +1,41 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import moment from 'moment'
-import _round from 'lodash/round'
-import _has from 'lodash/has'
-import _take from 'lodash/take'
-import ConfettiExplosion from 'vue-confetti-explosion'
-import ResultChart from '@/components/ResultChart.vue'
-import WeeklyGoalChart from '@/components/WeeklyGoalChart.vue'
-import WeeklyResultChart from '@/components/WeeklyResultChart.vue'
-import { useSettingsStore } from '@/stores/settings'
-import { useStatsStore, Race } from '@/stores/stats'
-import _values from 'lodash/values'
+import { ref } from "vue";
+import moment from "moment";
+import _round from "lodash/round";
+import _has from "lodash/has";
+import ConfettiExplosion from "vue-confetti-explosion";
+import ResultChart from "@/components/ResultChart.vue";
+import WeeklyGoalChart from "@/components/WeeklyGoalChart.vue";
+import WeeklyResultChart from "@/components/WeeklyResultChart.vue";
+import { useSettingsStore } from "@/stores/settings";
+import { useStatsStore } from "@/stores/stats";
+import { Race, creeproutes, raceIcon } from "@/stores/races";
 
-const settings = useSettingsStore()
-const stats = useStatsStore()
+const settings = useSettingsStore();
+const stats = useStatsStore();
 
-// TODO: Move icons/creeproutes to separate file
-import hu_banner from '@/assets/take_a_look_at_banner_michael.png'
-import r_banner from '@/assets/take_a_look_at_banner_random.png'
-import ud_banner from '@/assets/take_a_look_at_banner_undead.png'
-import ne_banner from '@/assets/take_a_look_at_banner_nightelf.png'
-import oc_banner from '@/assets/take_a_look_at_banner_orc.png'
+import hu_banner from "@/assets/take_a_look_at_banner_michael.png";
+import r_banner from "@/assets/take_a_look_at_banner_random.png";
+import ud_banner from "@/assets/take_a_look_at_banner_undead.png";
+import ne_banner from "@/assets/take_a_look_at_banner_nightelf.png";
+import oc_banner from "@/assets/take_a_look_at_banner_orc.png";
 
 const raceBanner: any = {
   [Race.Human]: hu_banner,
   [Race.Orc]: oc_banner,
   [Race.Undead]: ud_banner,
   [Race.NightElf]: ne_banner,
-  [Race.Random]: r_banner
-}
+  [Race.Random]: r_banner,
+};
 
-import human from '@/assets/race/human.png'
-import orc from '@/assets/race/orc.png'
-import nightelf from '@/assets/race/nightelf.png'
-import undead from '@/assets/race/undead.png'
-import random from '@/assets/race/random.png'
-
-const raceIcon: any = {
-  [Race.Human]: human,
-  [Race.Orc]: orc,
-  [Race.Undead]: undead,
-  [Race.NightElf]: nightelf,
-  [Race.Random]: random
-}
-
-import cr_hu_vs_hu_1 from '@/assets/creeproutes/human/human/AL.jpg'
-import cr_hu_vs_hu_2 from '@/assets/creeproutes/human/human/CH.jpg'
-import cr_hu_vs_hu_3 from '@/assets/creeproutes/human/human/HF.jpg'
-import cr_hu_vs_hu_4 from '@/assets/creeproutes/human/human/LR.jpg'
-import cr_hu_vs_hu_5 from '@/assets/creeproutes/human/human/NiS.jpg'
-import cr_hu_vs_hu_6 from '@/assets/creeproutes/human/human/SG.jpg'
-import cr_hu_vs_hu_7 from '@/assets/creeproutes/human/human/TH.jpg'
-
-import cr_hu_vs_ne_1 from '@/assets/creeproutes/human/nightelf/AL.jpg'
-import cr_hu_vs_ne_2 from '@/assets/creeproutes/human/nightelf/CH.jpg'
-import cr_hu_vs_ne_3 from '@/assets/creeproutes/human/nightelf/HF.jpg'
-import cr_hu_vs_ne_4 from '@/assets/creeproutes/human/nightelf/LR.jpg'
-import cr_hu_vs_ne_5 from '@/assets/creeproutes/human/nightelf/NiS.jpg'
-import cr_hu_vs_ne_6 from '@/assets/creeproutes/human/nightelf/SG.jpg'
-import cr_hu_vs_ne_7 from '@/assets/creeproutes/human/nightelf/TH.jpg'
-
-import cr_hu_vs_oc_1 from '@/assets/creeproutes/human/orc/AL.jpg'
-import cr_hu_vs_oc_2 from '@/assets/creeproutes/human/orc/CH.jpg'
-import cr_hu_vs_oc_3 from '@/assets/creeproutes/human/orc/HF.jpg'
-import cr_hu_vs_oc_4 from '@/assets/creeproutes/human/orc/LR.jpg'
-import cr_hu_vs_oc_5 from '@/assets/creeproutes/human/orc/NiS.jpg'
-import cr_hu_vs_oc_6 from '@/assets/creeproutes/human/orc/SG.jpg'
-import cr_hu_vs_oc_7 from '@/assets/creeproutes/human/orc/TH.jpg'
-
-import cr_hu_vs_ud_1 from '@/assets/creeproutes/human/undead/AL.jpg'
-import cr_hu_vs_ud_2 from '@/assets/creeproutes/human/undead/CH.jpg'
-import cr_hu_vs_ud_3 from '@/assets/creeproutes/human/undead/HF.jpg'
-import cr_hu_vs_ud_4 from '@/assets/creeproutes/human/undead/LR.jpg'
-import cr_hu_vs_ud_5 from '@/assets/creeproutes/human/undead/NiS.jpg'
-import cr_hu_vs_ud_6 from '@/assets/creeproutes/human/undead/SG.jpg'
-import cr_hu_vs_ud_7 from '@/assets/creeproutes/human/undead/TH.jpg'
-
-import cr_hu_vs_r_1 from '@/assets/creeproutes/human/random/AL.jpg'
-import cr_hu_vs_r_2 from '@/assets/creeproutes/human/random/CH.jpg'
-import cr_hu_vs_r_3 from '@/assets/creeproutes/human/random/HF.jpg'
-import cr_hu_vs_r_4 from '@/assets/creeproutes/human/random/LR.jpg'
-import cr_hu_vs_r_5 from '@/assets/creeproutes/human/random/NiS.jpg'
-import cr_hu_vs_r_6 from '@/assets/creeproutes/human/random/SG.jpg'
-import cr_hu_vs_r_7 from '@/assets/creeproutes/human/random/TH.jpg'
-
-import cr_missing from '@/assets/creeproutes/missing.png'
-
-const creeproutes: any = {
-  [Race.Human]: {
-    [Race.Random]: {
-      'Autumn Leaves v2': cr_hu_vs_r_1,
-      'Echo Isles v2': cr_missing,
-      'Gloom Stalker': cr_missing,
-      'Concealed Hill': cr_hu_vs_r_2,
-      Hammerfall: cr_hu_vs_r_3,
-      'Last Refuge': cr_hu_vs_r_4,
-      'Northern Isles': cr_hu_vs_r_5,
-      'Shallow Grave': cr_hu_vs_r_6,
-      Springtime: cr_missing,
-      'Rune Maul': cr_missing,
-      'Shattered Exile v2': cr_missing,
-      'Terenas Stand LV': cr_missing,
-      Tidehunters: cr_hu_vs_r_7,
-      'Twisted Meadows': cr_missing
-    },
-    [Race.Human]: {
-      'Autumn Leaves v2': cr_hu_vs_hu_1,
-      'Echo Isles v2': cr_missing,
-      'Gloom Stalker': cr_missing,
-      'Concealed Hill': cr_hu_vs_hu_2,
-      Hammerfall: cr_hu_vs_hu_3,
-      'Last Refuge': cr_hu_vs_hu_4,
-      'Northern Isles': cr_hu_vs_hu_5,
-      'Shallow Grave': cr_hu_vs_hu_6,
-      Springtime: cr_missing,
-      'Rune Maul': cr_missing,
-      'Shattered Exile v2': cr_missing,
-      'Terenas Stand LV': cr_missing,
-      Tidehunters: cr_hu_vs_hu_7,
-      'Twisted Meadows': cr_missing
-    },
-    [Race.Orc]: {
-      'Autumn Leaves v2': cr_hu_vs_oc_1,
-      'Echo Isles v2': cr_missing,
-      'Gloom Stalker': cr_missing,
-      'Concealed Hill': cr_hu_vs_oc_2,
-      Hammerfall: cr_hu_vs_oc_3,
-      'Last Refuge': cr_hu_vs_oc_4,
-      'Northern Isles': cr_hu_vs_oc_5,
-      'Shallow Grave': cr_hu_vs_oc_6,
-      Springtime: cr_missing,
-      'Rune Maul': cr_missing,
-      'Shattered Exile v2': cr_missing,
-      'Terenas Stand LV': cr_missing,
-      Tidehunters: cr_hu_vs_oc_7,
-      'Twisted Meadows': cr_missing
-    },
-    [Race.NightElf]: {
-      'Autumn Leaves v2': cr_hu_vs_ne_1,
-      'Echo Isles v2': cr_missing,
-      'Gloom Stalker': cr_missing,
-      'Concealed Hill': cr_hu_vs_ne_2,
-      Hammerfall: cr_hu_vs_ne_3,
-      'Last Refuge': cr_hu_vs_ne_4,
-      'Northern Isles': cr_hu_vs_ne_5,
-      'Shallow Grave': cr_hu_vs_ne_6,
-      Springtime: cr_missing,
-      'Rune Maul': cr_missing,
-      'Shattered Exile v2': cr_missing,
-      'Terenas Stand LV': cr_missing,
-      Tidehunters: cr_hu_vs_ne_7,
-      'Twisted Meadows': cr_missing
-    },
-    [Race.Undead]: {
-      'Autumn Leaves v2': cr_hu_vs_ud_1,
-      'Echo Isles v2': cr_missing,
-      'Gloom Stalker': cr_missing,
-      'Concealed Hill': cr_hu_vs_ud_2,
-      Hammerfall: cr_hu_vs_ud_3,
-      'Last Refuge': cr_hu_vs_ud_4,
-      'Northern Isles': cr_hu_vs_ud_5,
-      'Shallow Grave': cr_hu_vs_ud_6,
-      Springtime: cr_missing,
-      'Rune Maul': cr_missing,
-      'Shattered Exile v2': cr_missing,
-      'Terenas Stand LV': cr_missing,
-      Tidehunters: cr_hu_vs_ud_7,
-      'Twisted Meadows': cr_missing
-    }
-  }
-}
-
-let duration = ref(moment.utc(moment().diff(stats.ongoing.start)).format('mm:ss'))
+let duration = ref(
+  moment.utc(moment().diff(stats.ongoing.start)).format("mm:ss"),
+);
 setInterval(() => {
-  duration.value = moment.utc(moment().diff(stats.ongoing.start)).format('mm:ss')
-}, 1000)
+  duration.value = moment
+    .utc(moment().diff(stats.ongoing.start))
+    .format("mm:ss");
+}, 1000);
 </script>
 
 <template>
@@ -182,19 +43,25 @@ setInterval(() => {
     <v-container fluid style="opacity: 0.9">
       <v-row>
         <v-col cols="8">
-          <v-col cols="12">
+          <v-col cols="12" v-if="!stats.ongoing.active">
             <v-sheet class="pa-8" elevation="5">
               <v-row>
                 <v-col cols="6">
                   <v-col cols="12" class="text-center">
                     <div class="text-h5">
-                      Daily fill ({{ Math.ceil(settings.data.goal / 7) }} per day)
+                      Daily fill ({{ Math.ceil(settings.data.goal / 7) }} per
+                      day)
                     </div>
                     <ConfettiExplosion
                       :particelCount="300"
                       :stageWidth="2000"
                       :stageHeight="2000"
-                      v-if="stats.player.day.total === Math.ceil(settings.data.goal / 7)"
+                      v-if="
+                        settings.data.goal > 0 &&
+                        stats.player.day.total > 0 &&
+                        stats.player.day.total ===
+                          Math.ceil(settings.data.goal / 7)
+                      "
                     />
                     <hr />
                   </v-col>
@@ -202,13 +69,18 @@ setInterval(() => {
                     <v-progress-linear
                       :class="{
                         'disable-animation': true,
-                        'text-white': stats.player.day.total >= Math.ceil(settings.data.goal / 7),
-                        'text-black': stats.player.day.total < Math.ceil(settings.data.goal / 7)
+                        'text-white':
+                          stats.player.day.total >=
+                          Math.ceil(settings.data.goal / 7),
+                        'text-black':
+                          stats.player.day.total <
+                          Math.ceil(settings.data.goal / 7),
                       }"
                       striped
                       style="border: 1px solid gray"
                       :color="
-                        stats.player.day.total >= Math.ceil(settings.data.goal / 7)
+                        stats.player.day.total >=
+                        Math.ceil(settings.data.goal / 7)
                           ? 'success'
                           : 'warning'
                       "
@@ -220,7 +92,9 @@ setInterval(() => {
                         <span class="text-gray text-h6"
                           >{{
                             _round(
-                              (stats.player.day.total / Math.ceil(settings.data.goal / 7)) * 100
+                              (stats.player.day.total /
+                                Math.ceil(settings.data.goal / 7)) *
+                                100,
                             )
                           }}
                           %</span
@@ -231,11 +105,17 @@ setInterval(() => {
                   <v-col
                     cols="12"
                     class="text-center mt-5"
-                    v-if="stats.player.day.total < Math.ceil(settings.data.goal / 7)"
+                    v-if="
+                      stats.player.day.total < Math.ceil(settings.data.goal / 7)
+                    "
                   >
                     <div class="text-h6">
-                      Only {{ Math.ceil(settings.data.goal / 7) - stats.player.day.total }} game(s)
-                      left - Go ladder!
+                      Only
+                      {{
+                        Math.ceil(settings.data.goal / 7) -
+                        stats.player.day.total
+                      }}
+                      game(s) left - Go ladder!
                     </div>
                   </v-col>
                   <v-col cols="12">
@@ -259,7 +139,8 @@ setInterval(() => {
                 </v-col>
                 <v-col cols="12" class="text-center" v-else>
                   <span class="text-h6"
-                    >No games played yet this week - There is no time like the present!</span
+                    >No games played yet this week - There is no time like the
+                    present!</span
                   >
                 </v-col>
               </v-row>
@@ -272,11 +153,14 @@ setInterval(() => {
                 <v-col cols="8" class="text-center">
                   <v-col cols="12">
                     <span class="text-h6 font-weight-bold"
-                      >Playing on '{{ stats.ongoing?.map }}' : {{ duration }}</span
+                      >Playing on '{{ stats.ongoing?.map }}' :
+                      {{ duration }}</span
                     >
                   </v-col>
                   <v-col cols="12">
-                    <span class="text-h5" style="vertical-align: text-top">Vs. </span>
+                    <span class="text-h5" style="vertical-align: text-top"
+                      >Vs.
+                    </span>
                     <img
                       class="mx-6"
                       style="vertical-align: middle"
@@ -299,7 +183,7 @@ setInterval(() => {
                     cols="12"
                     :class="{
                       'text-right': stats.ongoing.history.last.length,
-                      'text-center': !stats.ongoing.history.last.length
+                      'text-center': !stats.ongoing.history.last.length,
                     }"
                   >
                     <div v-if="stats.player.week.total">
@@ -342,16 +226,18 @@ setInterval(() => {
                       _has(creeproutes, [
                         stats.ongoing.player?.race,
                         stats.ongoing.opponent?.race,
-                        stats.ongoing.map
+                        stats.ongoing.map,
                       ])
                     "
                   >
-                    <span class="caption text-black">Suggested Creep Route</span>
+                    <span class="caption text-black"
+                      >Suggested Creep Route</span
+                    >
                     <img
                       :src="
-                        creeproutes[stats.ongoing?.player?.race][stats.ongoing?.opponent?.race][
-                          stats.ongoing?.map
-                        ]
+                        creeproutes[stats.ongoing?.player?.race][
+                          stats.ongoing?.opponent?.race
+                        ][stats.ongoing?.map]
                       "
                       width="100%"
                     />
@@ -383,7 +269,13 @@ setInterval(() => {
                   />
                   <v-card-item>
                     <v-card-title>
-                      <span style="display: flex; align-items: center; justify-content: center">
+                      <span
+                        style="
+                          display: flex;
+                          align-items: center;
+                          justify-content: center;
+                        "
+                      >
                         <img
                           style="vertical-align: middle"
                           width="135px"
@@ -440,10 +332,12 @@ setInterval(() => {
                             <span
                               :class="{
                                 'text-green': stats.player?.day?.mmr.diff > 0,
-                                'text-red': stats.player?.day?.mmr.diff < 0
+                                'text-red': stats.player?.day?.mmr.diff < 0,
                               }"
                             >
-                              <span v-if="stats.player?.day?.mmr.diff > 0">+</span>
+                              <span v-if="stats.player?.day?.mmr.diff > 0"
+                                >+</span
+                              >
                               {{ stats.player?.day?.mmr.diff }}
                             </span>
                             Today
@@ -454,10 +348,11 @@ setInterval(() => {
                             <span
                               :class="{
                                 'text-green': stats.player?.week?.mmr.diff > 0,
-                                'text-red': stats.player?.week?.mmr.diff < 0
+                                'text-red': stats.player?.week?.mmr.diff < 0,
                               }"
                             >
-                              <span v-if="stats.player?.week?.mmr.diff > 0">+</span
+                              <span v-if="stats.player?.week?.mmr.diff > 0"
+                                >+</span
                               >{{ stats.player?.week?.mmr.diff }}
                             </span>
                             This week</span
@@ -476,20 +371,28 @@ setInterval(() => {
               <v-row>
                 <v-col cols="12">
                   <v-list lines="one" style="overflow: hidden">
-                    <v-list-item :prepend-avatar="human">
-                      <ResultChart :result="stats.player.week.race[Race.Human]" />
+                    <v-list-item :prepend-avatar="raceIcon[Race.Human]">
+                      <ResultChart
+                        :result="stats.player.week.race[Race.Human]"
+                      />
                     </v-list-item>
-                    <v-list-item :prepend-avatar="orc">
+                    <v-list-item :prepend-avatar="raceIcon[Race.Orc]">
                       <ResultChart :result="stats.player.week.race[Race.Orc]" />
                     </v-list-item>
-                    <v-list-item :prepend-avatar="nightelf">
-                      <ResultChart :result="stats.player.week.race[Race.NightElf]" />
+                    <v-list-item :prepend-avatar="raceIcon[Race.NightElf]">
+                      <ResultChart
+                        :result="stats.player.week.race[Race.NightElf]"
+                      />
                     </v-list-item>
-                    <v-list-item :prepend-avatar="undead">
-                      <ResultChart :result="stats.player.week.race[Race.Undead]" />
+                    <v-list-item :prepend-avatar="raceIcon[Race.Undead]">
+                      <ResultChart
+                        :result="stats.player.week.race[Race.Undead]"
+                      />
                     </v-list-item>
-                    <v-list-item :prepend-avatar="random">
-                      <ResultChart :result="stats.player.week.race[Race.Random]" />
+                    <v-list-item :prepend-avatar="raceIcon[Race.Random]">
+                      <ResultChart
+                        :result="stats.player.week.race[Race.Random]"
+                      />
                     </v-list-item>
                   </v-list>
                 </v-col>

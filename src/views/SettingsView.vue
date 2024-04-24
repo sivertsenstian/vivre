@@ -1,9 +1,6 @@
 <script setup lang="ts">
 import { useSettingsStore } from '@/stores/settings'
-import { useStatsStore } from '@/stores/stats'
-
 const settings = useSettingsStore()
-const stats = useStatsStore()
 </script>
 
 <template>
@@ -13,7 +10,6 @@ const stats = useStatsStore()
         <v-col cols="12">
           <v-sheet class="pa-4" :elevation="5">
             <div class="text-h5">Settings</div>
-            <LiveChart />
           </v-sheet>
         </v-col>
       </v-row>
