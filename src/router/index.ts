@@ -1,11 +1,11 @@
-import { createRouter, createWebHistory } from "vue-router";
+import { createRouter, createWebHashHistory } from "vue-router";
 import VivreView from "@/views/VivreView.vue";
 import SettingsView from "@/views/SettingsView.vue";
 import CreepRoutesView from "@/views/CreepRoutesView.vue";
 import BuildOrderView from "@/views/BuildOrderView.vue";
 
 const router = createRouter({
-  history: createWebHistory(),
+  history: createWebHashHistory(import.meta.env.BASE_URL),
   routes: [
     {
       path: "/",
