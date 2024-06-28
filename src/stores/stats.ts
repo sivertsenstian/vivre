@@ -18,6 +18,7 @@ export const useStatsStore = defineStore('stats', () => {
 
   const searchResults = ref([])
   const searching = ref(false)
+  const season = 19;
 
   const search = (name: string) =>
     `https://website-backend.w3champions.com/api/players/global-search?search=${encodeURIComponent(
@@ -27,7 +28,7 @@ export const useStatsStore = defineStore('stats', () => {
   const url = (tag: string) =>
     `https://website-backend.w3champions.com/api/matches/search?playerId=${encodeURIComponent(
       tag
-    )}&gateway=20&offset=0&pageSize=200&gameMode=1&season=18`
+    )}&gateway=20&offset=0&pageSize=200&gameMode=1&season=${season}`
 
   const currentUrl = (tag: string) =>
     `https://website-backend.w3champions.com/api/matches/ongoing/${encodeURIComponent(tag)}`
@@ -35,7 +36,7 @@ export const useStatsStore = defineStore('stats', () => {
   const opponentHistoryUrl = (tag: string, opponent: string) =>
     `https://website-backend.w3champions.com/api/matches/search?playerId=${encodeURIComponent(
       tag
-    )}&opponentId=${encodeURIComponent(opponent)}&pageSize=200&season=18`
+    )}&opponentId=${encodeURIComponent(opponent)}&pageSize=200&season=${season}`
 
   const daily = ref({ count: 0, matches: [] })
   const weekly = ref({ count: 0, matches: [] })
