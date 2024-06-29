@@ -1,17 +1,17 @@
 <script setup lang="ts">
-import { Doughnut } from 'vue-chartjs'
-import { Chart as ChartJS, ArcElement } from 'chart.js'
+import { Doughnut } from "vue-chartjs";
+import { Chart as ChartJS, ArcElement } from "chart.js";
 
-ChartJS.register(ArcElement)
+ChartJS.register(ArcElement);
 
-const props = defineProps({ played: Number, goal: Number })
+const props = defineProps({ played: Number, goal: Number });
 
 const options = {
-  radius: '80%',
+  radius: "80%",
   responsive: true,
   maintainAspectRatio: false,
-  cutout: '80%'
-}
+  cutout: "80%",
+};
 </script>
 
 <template>
@@ -19,25 +19,33 @@ const options = {
     <v-col cols="12">
       <Doughnut
         :data="{
-          labels: (props.played ?? 0) >= (props.goal ?? 0) ? ['Played'] : ['Played', 'Goal'],
+          labels:
+            (props.played ?? 0) >= (props.goal ?? 0)
+              ? ['Played']
+              : ['Played', 'Goal'],
           datasets: [
             {
               backgroundColor:
                 (props.played ?? 0) >= (props.goal ?? 0)
                   ? ['#66BB6A']
-                  : ['rgb(251,140, 0)', 'lightgray'],
+                  : ['rgb(251,140, 0)', 'gray'],
+              borderColor:
+                (props.played ?? 0) >= (props.goal ?? 0) ? '#66BB6A' : 'gray',
               data:
                 (props.played ?? 0) >= (props.goal ?? 0)
                   ? [Number(props.played)]
-                  : [Number(props.played), Number((props.goal ?? 0) - (props.played ?? 0))]
-            }
-          ]
+                  : [
+                      Number(props.played),
+                      Number((props.goal ?? 0) - (props.played ?? 0)),
+                    ],
+            },
+          ],
         }"
         :options="options"
       />
     </v-col>
     <h2
-      class="text-h5 font-weight-black mx-auto"
+      class="text-h5 weight-black mx-auto"
       style="position: relative; bottom: 180px; height: 0"
     >
       <v-row class="text-center">
@@ -47,8 +55,10 @@ const options = {
         <v-col cols="12" class="pa-0">
           <span
             :class="{
-              'text-orange': Number(props.played ?? 0) < Number(props.goal ?? 0),
-              'text-green': Number(props.played ?? 0) >= Number(props.goal ?? 0)
+              'text-orange':
+                Number(props.played ?? 0) < Number(props.goal ?? 0),
+              'text-green':
+                Number(props.played ?? 0) >= Number(props.goal ?? 0),
             }"
           >
             {{ props.played }}</span

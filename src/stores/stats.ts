@@ -1,51 +1,56 @@
-import axios from 'axios'
-import { defineStore } from 'pinia'
-import { ref, computed, watchEffect } from 'vue'
-import _take from 'lodash/take'
-import _groupBy from 'lodash/groupBy'
-import _last from 'lodash/last'
-import _first from 'lodash/first'
-import _round from 'lodash/round'
-import _isEmpty from 'lodash/isEmpty'
-import _isNil from 'lodash/isNil'
-import moment from 'moment'
-import { useSettingsStore } from './settings'
-import { Race } from '@/stores/races'
+import axios from "axios";
+import { defineStore } from "pinia";
+import { ref, computed, watchEffect } from "vue";
+import _take from "lodash/take";
+import _groupBy from "lodash/groupBy";
+import _last from "lodash/last";
+import _first from "lodash/first";
+import _round from "lodash/round";
+import _isEmpty from "lodash/isEmpty";
+import _isNil from "lodash/isNil";
+import moment from "moment";
+import { useSettingsStore } from "./settings";
+import { Race } from "@/stores/races";
 
-export const useStatsStore = defineStore('stats', () => {
-  const settings = useSettingsStore()
-  const tag = computed(() => settings.data.battleTag)
+export const useStatsStore = defineStore("stats", () => {
+  const settings = useSettingsStore();
+  const tag = computed(() => settings.data.battleTag);
 
-  const searchResults = ref([])
-  const searching = ref(false)
-  const season = 19;
+  const searchResults = ref([]);
+  const searching = ref(false);
+  const latest = 19;
 
   const search = (name: string) =>
     `https://website-backend.w3champions.com/api/players/global-search?search=${encodeURIComponent(
-      name
-    )}&pageSize=20`
+      name,
+    )}&pageSize=20`;
 
-  const url = (tag: string) =>
+  const url = (tag: string, offset: number = 0) =>
     `https://website-backend.w3champions.com/api/matches/search?playerId=${encodeURIComponent(
-      tag
-    )}&gateway=20&offset=0&pageSize=200&gameMode=1&season=${season}`
+      tag,
+    )}&gateway=20&offset=0&pageSize=200&gameMode=1&season=${latest}`;
 
   const currentUrl = (tag: string) =>
-    `https://website-backend.w3champions.com/api/matches/ongoing/${encodeURIComponent(tag)}`
+    `https://website-backend.w3champions.com/api/matches/ongoing/${encodeURIComponent(
+      tag,
+    )}`;
 
   const opponentHistoryUrl = (tag: string, opponent: string) =>
     `https://website-backend.w3champions.com/api/matches/search?playerId=${encodeURIComponent(
-      tag
-    )}&opponentId=${encodeURIComponent(opponent)}&pageSize=200&season=${season}`
+      tag,
+    )}&opponentId=${encodeURIComponent(
+      opponent,
+    )}&pageSize=200&season=${latest}`;
 
-  const daily = ref({ count: 0, matches: [] })
-  const weekly = ref({ count: 0, matches: [] })
+  const daily = ref({ count: 0, matches: [] });
+  const weekly = ref({ count: 0, matches: [] });
+  const season = ref({ count: 0, matches: [] });
 
-  const today = moment().startOf('day')
-  const rule = moment().startOf('isoWeek')
+  const today = moment().startOf("day");
+  const rule = moment().startOf("isoWeek");
 
   const player = ref({
-    battleTag: '',
+    battleTag: "",
     race: Race.Random,
     mmr: 0,
     performance: [] as boolean[],
@@ -55,40 +60,40 @@ export const useStatsStore = defineStore('stats', () => {
       loss: 0,
       percentage: 0,
       mmr: {
-        diff: 0
+        diff: 0,
       },
       race: {
         [Race.Random]: {
           total: 0,
           wins: 0,
           loss: 0,
-          percentage: 0
+          percentage: 0,
         },
         [Race.Human]: {
           total: 0,
           wins: 0,
           loss: 0,
-          percentage: 0
+          percentage: 0,
         },
         [Race.Orc]: {
           total: 0,
           wins: 0,
           loss: 0,
-          percentage: 0
+          percentage: 0,
         },
         [Race.NightElf]: {
           total: 0,
           wins: 0,
           loss: 0,
-          percentage: 0
+          percentage: 0,
         },
         [Race.Undead]: {
           total: 0,
           wins: 0,
           loss: 0,
-          percentage: 0
-        }
-      }
+          percentage: 0,
+        },
+      },
     },
     week: {
       total: 0,
@@ -96,57 +101,104 @@ export const useStatsStore = defineStore('stats', () => {
       loss: 0,
       percentage: 0,
       mmr: {
-        diff: 0
+        diff: 0,
       },
       race: {
         [Race.Random]: {
           total: 0,
           wins: 0,
           loss: 0,
-          percentage: 0
+          percentage: 0,
         },
         [Race.Human]: {
           total: 0,
           wins: 0,
           loss: 0,
-          percentage: 0
+          percentage: 0,
         },
         [Race.Orc]: {
           total: 0,
           wins: 0,
           loss: 0,
-          percentage: 0
+          percentage: 0,
         },
         [Race.NightElf]: {
           total: 0,
           wins: 0,
           loss: 0,
-          percentage: 0
+          percentage: 0,
         },
         [Race.Undead]: {
           total: 0,
           wins: 0,
           loss: 0,
-          percentage: 0
-        }
-      }
-    }
-  })
+          percentage: 0,
+        },
+      },
+    },
+    season: {
+      total: 0,
+      wins: 0,
+      loss: 0,
+      percentage: 0,
+      mmr: {
+        diff: 0,
+      },
+      race: {
+        [Race.Random]: {
+          total: 0,
+          wins: 0,
+          loss: 0,
+          percentage: 0,
+        },
+        [Race.Human]: {
+          total: 0,
+          wins: 0,
+          loss: 0,
+          percentage: 0,
+        },
+        [Race.Orc]: {
+          total: 0,
+          wins: 0,
+          loss: 0,
+          percentage: 0,
+        },
+        [Race.NightElf]: {
+          total: 0,
+          wins: 0,
+          loss: 0,
+          percentage: 0,
+        },
+        [Race.Undead]: {
+          total: 0,
+          wins: 0,
+          loss: 0,
+          percentage: 0,
+        },
+      },
+    },
+  });
 
   const getwins = (m: any) =>
     m.teams.some(
       (t: any) =>
-        t.won && t.players.some((p: any) => p.battleTag.toLowerCase() === tag.value.toLowerCase())
-    )
+        t.won &&
+        t.players.some(
+          (p: any) => p.battleTag.toLowerCase() === tag.value.toLowerCase(),
+        ),
+    );
   const getloss = (m: any) =>
     m.teams.some(
       (t: any) =>
-        !t.won && t.players.some((p: any) => p.battleTag.toLowerCase() === tag.value.toLowerCase())
-    )
+        !t.won &&
+        t.players.some(
+          (p: any) => p.battleTag.toLowerCase() === tag.value.toLowerCase(),
+        ),
+    );
 
   const getMatches = async () => {
     let result = {
-      battleTag: '',
+      battleTag: "",
       race: Race.Random,
       mmr: 0,
       performance: [] as boolean[],
@@ -156,40 +208,40 @@ export const useStatsStore = defineStore('stats', () => {
         loss: 0,
         percentage: 0,
         mmr: {
-          diff: 0
+          diff: 0,
         },
         race: {
           [Race.Random]: {
             total: 0,
             wins: 0,
             loss: 0,
-            percentage: 0
+            percentage: 0,
           },
           [Race.Human]: {
             total: 0,
             wins: 0,
             loss: 0,
-            percentage: 0
+            percentage: 0,
           },
           [Race.Orc]: {
             total: 0,
             wins: 0,
             loss: 0,
-            percentage: 0
+            percentage: 0,
           },
           [Race.NightElf]: {
             total: 0,
             wins: 0,
             loss: 0,
-            percentage: 0
+            percentage: 0,
           },
           [Race.Undead]: {
             total: 0,
             wins: 0,
             loss: 0,
-            percentage: 0
-          }
-        }
+            percentage: 0,
+          },
+        },
       },
       week: {
         total: 0,
@@ -197,107 +249,234 @@ export const useStatsStore = defineStore('stats', () => {
         loss: 0,
         percentage: 0,
         mmr: {
-          diff: 0
+          diff: 0,
         },
         race: {
           [Race.Random]: {
             total: 0,
             wins: 0,
             loss: 0,
-            percentage: 0
+            percentage: 0,
           },
           [Race.Human]: {
             total: 0,
             wins: 0,
             loss: 0,
-            percentage: 0
+            percentage: 0,
           },
           [Race.Orc]: {
             total: 0,
             wins: 0,
             loss: 0,
-            percentage: 0
+            percentage: 0,
           },
           [Race.NightElf]: {
             total: 0,
             wins: 0,
             loss: 0,
-            percentage: 0
+            percentage: 0,
           },
           [Race.Undead]: {
             total: 0,
             wins: 0,
             loss: 0,
-            percentage: 0
-          }
-        }
-      }
-    }
+            percentage: 0,
+          },
+        },
+      },
+      season: {
+        total: 0,
+        wins: 0,
+        loss: 0,
+        percentage: 0,
+        mmr: {
+          diff: 0,
+        },
+        race: {
+          [Race.Random]: {
+            total: 0,
+            wins: 0,
+            loss: 0,
+            percentage: 0,
+          },
+          [Race.Human]: {
+            total: 0,
+            wins: 0,
+            loss: 0,
+            percentage: 0,
+          },
+          [Race.Orc]: {
+            total: 0,
+            wins: 0,
+            loss: 0,
+            percentage: 0,
+          },
+          [Race.NightElf]: {
+            total: 0,
+            wins: 0,
+            loss: 0,
+            percentage: 0,
+          },
+          [Race.Undead]: {
+            total: 0,
+            wins: 0,
+            loss: 0,
+            percentage: 0,
+          },
+        },
+      },
+    };
 
-    let weekActual = []
-    let dayActual = []
+    let seasonActual = [];
+    let weekActual = [];
+    let dayActual = [];
 
     try {
-      const { data: response } = await axios.get(url(tag.value))
-      weekActual = response.matches.filter((m: any) => moment(m.endTime).isAfter(rule))
-      dayActual = response.matches.filter((m: any) => moment(m.endTime).isAfter(today))
+      let all: any[] = [];
+      let finished = false;
+
+      while (!finished) {
+        const { data: response } = await axios.get(url(tag.value, all.length));
+
+        all = [...all, ...response.matches];
+        finished = all.length === response.count;
+      }
+
+      const race = all?.[0]?.teams.find((t: any) =>
+        t.players.some(
+          (p: any) => p.battleTag.toLowerCase() === tag.value.toLowerCase(),
+        ),
+      )?.players?.[0]?.race;
+
+      const isRace = (m: any, r: Race) =>
+        m.teams.some((t: any) =>
+          t.players.some(
+            (p: any) =>
+              p.battleTag.toLowerCase() === tag.value.toLowerCase() &&
+              p.race === r,
+          ),
+        );
+      seasonActual = all;
+      weekActual = all
+        .filter((m: any) => moment(m.endTime).isAfter(rule))
+        .filter((m: any) => isRace(m, race));
+      dayActual = all
+        .filter((m: any) => moment(m.endTime).isAfter(today))
+        .filter((m: any) => isRace(m, race));
+
+      const season = {
+        wins: seasonActual.filter(getwins),
+        loss: seasonActual.filter(getloss),
+        race: {
+          [Race.NightElf]: {
+            wins: seasonActual
+              .filter(getwins)
+              .filter((m: any) => isRace(m, Race.NightElf)),
+            loss: seasonActual
+              .filter(getloss)
+              .filter((m: any) => isRace(m, Race.NightElf)),
+          },
+          wins: _groupBy(
+            seasonActual.filter(getwins),
+            (w) => w.teams[1].players[0].race,
+          ),
+          loss: _groupBy(
+            seasonActual.filter(getloss),
+            (l) => l.teams[0].players[0].race,
+          ),
+        },
+      };
 
       const week = {
         wins: weekActual.filter(getwins),
         loss: weekActual.filter(getloss),
         race: {
-          wins: _groupBy(weekActual.filter(getwins), (w) => w.teams[1].players[0].race),
-          loss: _groupBy(weekActual.filter(getloss), (l) => l.teams[0].players[0].race)
-        }
-      }
+          wins: _groupBy(
+            weekActual.filter(getwins),
+            (w) => w.teams[1].players[0].race,
+          ),
+          loss: _groupBy(
+            weekActual.filter(getloss),
+            (l) => l.teams[0].players[0].race,
+          ),
+        },
+      };
 
       const day = {
         wins: dayActual.filter(getwins),
         loss: dayActual.filter(getloss),
         race: {
-          wins: _groupBy(dayActual.filter(getwins), (w) => w.teams[1].players[0].race),
-          loss: _groupBy(dayActual.filter(getloss), (l) => l.teams[0].players[0].race)
-        }
-      }
+          wins: _groupBy(
+            dayActual.filter(getwins),
+            (w) => w.teams[1].players[0].race,
+          ),
+          loss: _groupBy(
+            dayActual.filter(getloss),
+            (l) => l.teams[0].players[0].race,
+          ),
+        },
+      };
 
       const getPercentage = (data: any, race: Race) => {
         return _round(
-          ((data?.wins?.[race]?.length ?? 0) / Math.max(1, getTotal(data, race))) * 100,
-          1
-        )
-      }
+          ((data?.wins?.[race]?.length ?? 0) /
+            Math.max(1, getTotal(data, race))) *
+            100,
+          1,
+        );
+      };
 
       const getTotal = (data: any, race: Race) => {
-        return (data?.wins?.[race]?.length ?? 0) + (data?.loss?.[race]?.length ?? 0)
-      }
+        return (
+          (data?.wins?.[race]?.length ?? 0) + (data?.loss?.[race]?.length ?? 0)
+        );
+      };
 
-      const info = _first<any>(response.matches)?.teams?.reduce(
+      const info = _first<any>(all)?.teams?.reduce(
         (r: any, t: any) =>
-          t.players.some((p: any) => p.battleTag.toLowerCase() === tag.value.toLowerCase())
+          t.players.some(
+            (p: any) => p.battleTag.toLowerCase() === tag.value.toLowerCase(),
+          )
             ? t.players[0]
             : r,
-        {}
-      )
+        {},
+      );
       const infoStartOfDay = _last<any>(dayActual)?.teams?.reduce(
         (r: any, t: any) =>
-          t.players.some((p: any) => p.battleTag.toLowerCase() === tag.value.toLowerCase())
+          t.players.some(
+            (p: any) => p.battleTag.toLowerCase() === tag.value.toLowerCase(),
+          )
             ? t.players[0]
             : r,
-        {}
-      )
+        {},
+      );
       const infoStartOfWeek = _last<any>(weekActual)?.teams?.reduce(
         (r: any, t: any) =>
-          t.players.some((p: any) => p.battleTag.toLowerCase() === tag.value.toLowerCase())
+          t.players.some(
+            (p: any) => p.battleTag.toLowerCase() === tag.value.toLowerCase(),
+          )
             ? t.players[0]
             : r,
-        {}
-      )
+        {},
+      );
+      const infoStartOfSeason = _last<any>(seasonActual)?.teams?.reduce(
+        (r: any, t: any) =>
+          t.players.some(
+            (p: any) => p.battleTag.toLowerCase() === tag.value.toLowerCase(),
+          )
+            ? t.players[0]
+            : r,
+        {},
+      );
 
-      info.startOfWeekMmr = infoStartOfWeek?.oldMmr ?? info.currentMmr
-      info.startOfWeekDiffMmr = info.currentMmr - info.startOfWeekMmr
+      info.startOfSeasonMmr = infoStartOfSeason?.oldMmr ?? info.currentMmr;
+      info.startOfSeasonDiffMmr = info.currentMmr - info.startOfSeasonMmr;
 
-      info.startOfDayMmr = infoStartOfDay?.oldMmr ?? info.currentMmr
-      info.startOfDayDiffMmr = info.currentMmr - info.startOfDayMmr
+      info.startOfWeekMmr = infoStartOfWeek?.oldMmr ?? info.currentMmr;
+      info.startOfWeekDiffMmr = info.currentMmr - info.startOfWeekMmr;
+
+      info.startOfDayMmr = infoStartOfDay?.oldMmr ?? info.currentMmr;
+      info.startOfDayDiffMmr = info.currentMmr - info.startOfDayMmr;
 
       result = {
         battleTag: info.battleTag,
@@ -306,7 +485,7 @@ export const useStatsStore = defineStore('stats', () => {
         performance: weekActual.map(
           (match: any) =>
             match?.teams?.[0]?.players?.[0]?.battleTag.toLowerCase() ===
-            settings.data.battleTag.toLowerCase()
+            settings.data.battleTag.toLowerCase(),
         ),
         day: {
           total: dayActual.length,
@@ -314,40 +493,40 @@ export const useStatsStore = defineStore('stats', () => {
           loss: day.loss.length,
           percentage: 0,
           mmr: {
-            diff: info.startOfDayDiffMmr
+            diff: info.startOfDayDiffMmr,
           },
           race: {
             [Race.Random]: {
               total: getTotal(day.race, Race.Random),
               percentage: getPercentage(day.race, Race.Random),
               wins: day.race?.wins?.[Race.Random]?.length ?? 0,
-              loss: day?.race?.loss?.[Race.Random]?.length ?? 0
+              loss: day?.race?.loss?.[Race.Random]?.length ?? 0,
             },
             [Race.Human]: {
               total: getTotal(day.race, Race.Human),
               percentage: getPercentage(day.race, Race.Human),
               wins: day.race?.wins?.[Race.Human]?.length ?? 0,
-              loss: day?.race?.loss?.[Race.Human]?.length ?? 0
+              loss: day?.race?.loss?.[Race.Human]?.length ?? 0,
             },
             [Race.Orc]: {
               total: getTotal(day.race, Race.Orc),
               percentage: getPercentage(day.race, Race.Orc),
               wins: day.race?.wins?.[Race.Orc]?.length ?? 0,
-              loss: day?.race?.loss?.[Race.Orc]?.length ?? 0
+              loss: day?.race?.loss?.[Race.Orc]?.length ?? 0,
             },
             [Race.NightElf]: {
               total: getTotal(day.race, Race.NightElf),
               percentage: getPercentage(day.race, Race.NightElf),
               wins: day.race?.wins?.[Race.NightElf]?.length ?? 0,
-              loss: day?.race?.loss?.[Race.NightElf]?.length ?? 0
+              loss: day?.race?.loss?.[Race.NightElf]?.length ?? 0,
             },
             [Race.Undead]: {
               total: getTotal(day.race, Race.Undead),
               percentage: getPercentage(day.race, Race.Undead),
               wins: day.race?.wins?.[Race.Undead]?.length ?? 0,
-              loss: day?.race?.loss?.[Race.Undead]?.length ?? 0
-            }
-          }
+              loss: day?.race?.loss?.[Race.Undead]?.length ?? 0,
+            },
+          },
         },
         week: {
           total: weekActual.length,
@@ -355,118 +534,166 @@ export const useStatsStore = defineStore('stats', () => {
           loss: week.loss.length,
           percentage: 0,
           mmr: {
-            diff: info.startOfWeekDiffMmr
+            diff: info.startOfWeekDiffMmr,
           },
           race: {
             [Race.Random]: {
               total: getTotal(week.race, Race.Random),
               percentage: getPercentage(week.race, Race.Random),
               wins: week.race?.wins?.[Race.Random]?.length ?? 0,
-              loss: week?.race?.loss?.[Race.Random]?.length ?? 0
+              loss: week?.race?.loss?.[Race.Random]?.length ?? 0,
             },
             [Race.Human]: {
               total: getTotal(week.race, Race.Human),
               percentage: getPercentage(week.race, Race.Human),
               wins: week.race?.wins?.[Race.Human]?.length ?? 0,
-              loss: week?.race?.loss?.[Race.Human]?.length ?? 0
+              loss: week?.race?.loss?.[Race.Human]?.length ?? 0,
             },
             [Race.Orc]: {
               total: getTotal(week.race, Race.Orc),
               percentage: getPercentage(week.race, Race.Orc),
               wins: week.race?.wins?.[Race.Orc]?.length ?? 0,
-              loss: week?.race?.loss?.[Race.Orc]?.length ?? 0
+              loss: week?.race?.loss?.[Race.Orc]?.length ?? 0,
             },
             [Race.NightElf]: {
               total: getTotal(week.race, Race.NightElf),
               percentage: getPercentage(week.race, Race.NightElf),
               wins: week.race?.wins?.[Race.NightElf]?.length ?? 0,
-              loss: week?.race?.loss?.[Race.NightElf]?.length ?? 0
+              loss: week?.race?.loss?.[Race.NightElf]?.length ?? 0,
             },
             [Race.Undead]: {
               total: getTotal(week.race, Race.Undead),
               percentage: getPercentage(week.race, Race.Undead),
               wins: week.race?.wins?.[Race.Undead]?.length ?? 0,
-              loss: week?.race?.loss?.[Race.Undead]?.length ?? 0
-            }
-          }
-        }
-      }
+              loss: week?.race?.loss?.[Race.Undead]?.length ?? 0,
+            },
+          },
+        },
+        season: {
+          total: seasonActual.length,
+          wins: season.wins.length,
+          loss: season.loss.length,
+          percentage: 0,
+          mmr: {
+            diff: info.startOfSeasonDiffMmr,
+          },
+          race: {
+            [Race.Random]: {
+              total: getTotal(season.race, Race.Random),
+              percentage: getPercentage(season.race, Race.Random),
+              wins: season.race?.wins?.[Race.Random]?.length ?? 0,
+              loss: season?.race?.loss?.[Race.Random]?.length ?? 0,
+            },
+            [Race.Human]: {
+              total: getTotal(season.race, Race.Human),
+              percentage: getPercentage(season.race, Race.Human),
+              wins: season.race?.wins?.[Race.Human]?.length ?? 0,
+              loss: season?.race?.loss?.[Race.Human]?.length ?? 0,
+            },
+            [Race.Orc]: {
+              total: getTotal(season.race, Race.Orc),
+              percentage: getPercentage(season.race, Race.Orc),
+              wins: season.race?.wins?.[Race.Orc]?.length ?? 0,
+              loss: season?.race?.loss?.[Race.Orc]?.length ?? 0,
+            },
+            [Race.NightElf]: {
+              total: getTotal(season.race, Race.NightElf),
+              percentage: getPercentage(season.race, Race.NightElf),
+              wins: season.race?.wins?.[Race.NightElf]?.length ?? 0,
+              loss: season?.race?.loss?.[Race.NightElf]?.length ?? 0,
+            },
+            [Race.Undead]: {
+              total: getTotal(season.race, Race.Undead),
+              percentage: getPercentage(season.race, Race.Undead),
+              wins: season.race?.wins?.[Race.Undead]?.length ?? 0,
+              loss: season?.race?.loss?.[Race.Undead]?.length ?? 0,
+            },
+          },
+        },
+      };
     } catch (error) {
-      console.log(error)
+      console.log(error);
     } finally {
-      player.value = result
-      daily.value = { matches: dayActual, count: dayActual.length }
-      weekly.value = { matches: weekActual, count: weekActual.length }
+      player.value = result;
+      daily.value = { matches: dayActual, count: dayActual.length };
+      weekly.value = { matches: weekActual, count: weekActual.length };
+      season.value = { matches: seasonActual, count: seasonActual.length };
     }
-  }
+  };
 
   setInterval(() => {
-    getMatches()
-  }, 60000)
+    getMatches();
+  }, 60000);
 
   const ongoing = ref({
     id: null,
     start: null,
     active: false,
-    player: { name: '', race: 0, battleTag: '', oldMmr: 0 },
-    opponent: { name: '', race: 0, battleTag: '', oldMmr: 0 },
-    map: '',
+    player: { name: "", race: 0, battleTag: "", oldMmr: 0 },
+    opponent: { name: "", race: 0, battleTag: "", oldMmr: 0 },
+    map: "",
     server: {},
-    history: { wins: 0, loss: 0, total: 0, performance: [], last: [] }
-  })
+    history: { wins: 0, loss: 0, total: 0, performance: [], last: [] },
+  });
 
   const getOpponentHistory = async (opponent: string) => {
-    let history = { wins: 0, loss: 0, total: 0, performance: [], last: [] }
+    let history = { wins: 0, loss: 0, total: 0, performance: [], last: [] };
 
     if (_isEmpty(opponent)) {
-      return history
+      return history;
     }
 
     try {
-      const { data: historyResponse } = await axios.get(opponentHistoryUrl(tag.value, opponent))
+      const { data: historyResponse } = await axios.get(
+        opponentHistoryUrl(tag.value, opponent),
+      );
 
-      const matches = historyResponse?.matches ?? []
+      const matches = historyResponse?.matches ?? [];
       const performance = matches.map(
         (match: any) =>
           match?.teams?.[0]?.players?.[0]?.battleTag.toLowerCase() ===
-          settings.data.battleTag.toLowerCase()
-      )
+          settings.data.battleTag.toLowerCase(),
+      );
 
       history = {
         performance,
         last: _take(performance, 5),
         wins: matches.filter(getwins).length,
         loss: matches.filter(getloss).length,
-        total: historyResponse.count
-      }
+        total: historyResponse.count,
+      };
     } catch (error) {
-      console.log(error)
+      console.log(error);
     } finally {
-      return history
+      return history;
     }
-  }
+  };
 
   const getOngoing = async () => {
     let result = {
       id: null,
       start: null,
       active: false,
-      player: { name: '', race: 0, battleTag: '', oldMmr: 0 },
-      opponent: { name: '', race: 0, battleTag: '', oldMmr: 0 },
-      map: '',
+      player: { name: "", race: 0, battleTag: "", oldMmr: 0 },
+      opponent: { name: "", race: 0, battleTag: "", oldMmr: 0 },
+      map: "",
       server: {},
-      history: { wins: 0, loss: 0, total: 0, performance: [], last: [] }
-    }
+      history: { wins: 0, loss: 0, total: 0, performance: [], last: [] },
+    };
 
     try {
-      const { data: onGoingResponse } = await axios.get(currentUrl(tag.value))
+      const { data: onGoingResponse } = await axios.get(currentUrl(tag.value));
       if (!_isNil(onGoingResponse?.id)) {
         const player = onGoingResponse.teams?.find((t: any) =>
-          t.players.some((p: any) => p.battleTag.toLowerCase() === tag.value.toLowerCase())
-        )?.players?.[0]
+          t.players.some(
+            (p: any) => p.battleTag.toLowerCase() === tag.value.toLowerCase(),
+          ),
+        )?.players?.[0];
         const opponent = onGoingResponse.teams?.find((t: any) =>
-          t.players.some((p: any) => p.battleTag.toLowerCase() != tag.value.toLowerCase())
-        )?.players?.[0]
+          t.players.some(
+            (p: any) => p.battleTag.toLowerCase() != tag.value.toLowerCase(),
+          ),
+        )?.players?.[0];
 
         result = {
           id: onGoingResponse.id,
@@ -476,42 +703,43 @@ export const useStatsStore = defineStore('stats', () => {
           opponent,
           map: onGoingResponse.mapName,
           server: onGoingResponse.serverInfo,
-          history: await getOpponentHistory(opponent.battleTag)
-        }
+          history: await getOpponentHistory(opponent.battleTag),
+        };
       }
     } catch (error) {
-      console.log(error)
+      console.log(error);
     } finally {
-      ongoing.value = result
+      ongoing.value = result;
     }
-  }
+  };
 
   setInterval(() => {
-    getOngoing()
-  }, 10000)
+    getOngoing();
+  }, 10000);
 
   const getBattleTag = async (input: string) => {
     if (input.length < 3) {
-      return
+      return;
     }
 
     try {
-      searching.value = true
-      const { data: results } = await axios.get(search(input))
-      searchResults.value = results
+      searching.value = true;
+      const { data: results } = await axios.get(search(input));
+      searchResults.value = results;
     } catch (error) {
-      console.log(error)
+      console.log(error);
     } finally {
-      searching.value = false
+      searching.value = false;
     }
-  }
+  };
 
   watchEffect(() => {
-    getMatches()
-    getOngoing()
-  })
+    getMatches();
+    getOngoing();
+  });
 
   return {
+    season,
     weekly,
     daily,
     getMatches,
@@ -519,6 +747,6 @@ export const useStatsStore = defineStore('stats', () => {
     ongoing,
     getBattleTag,
     searchResults,
-    searching
-  }
-})
+    searching,
+  };
+});

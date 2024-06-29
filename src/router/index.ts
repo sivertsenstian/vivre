@@ -3,6 +3,7 @@ import VivreView from "@/views/VivreView.vue";
 import SettingsView from "@/views/SettingsView.vue";
 import CreepRoutesView from "@/views/CreepRoutesView.vue";
 import BuildOrderView from "@/views/BuildOrderView.vue";
+import SeasonView from "@/views/SeasonView.vue";
 
 const router = createRouter({
   history: createWebHashHistory(import.meta.env.BASE_URL),
@@ -11,6 +12,11 @@ const router = createRouter({
       path: "/",
       name: "home",
       component: VivreView,
+    },
+    {
+      path: "/season",
+      name: "season",
+      component: SeasonView,
     },
     {
       path: "/creeproutes",
