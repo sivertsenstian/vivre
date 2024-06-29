@@ -1,9 +1,19 @@
 <script setup lang="ts">
+import { useTheme } from "vuetify";
 import { RouterView } from "vue-router";
-import bgUrl from "@/assets/bg_light.jpg";
+import bgLightUrl from "@/assets/bg_light.jpg";
+import bgDarkUrl from "@/assets/bg_dark.jpg";
 import logo from "@/assets/logo.png";
+import { computed } from "vue";
 
 const inProduction = import.meta.env.PROD;
+
+const theme = useTheme();
+const isDark = computed(() => theme.global.current.value.dark);
+
+function toggleTheme() {
+  theme.global.name.value = theme.global.current.value.dark ? "light" : "dark";
+}
 </script>
 
 <template>
@@ -20,9 +30,16 @@ const inProduction = import.meta.env.PROD;
       <v-list density="compact" nav>
         <v-list-item
           prepend-icon="mdi-crown"
-          title="Home"
+          title="Live"
           router
           to="/"
+        ></v-list-item>
+        <v-list-item
+          :disabled="inProduction"
+          prepend-icon="mdi-flag"
+          title="This Season"
+          router
+          to="/season"
         ></v-list-item>
         <v-list-item
           prepend-icon="mdi-vector-polyline"
@@ -43,10 +60,21 @@ const inProduction = import.meta.env.PROD;
           router
           to="settings"
         ></v-list-item>
+        <v-list-item
+          prepend-icon="mdi-lightbulb"
+          :title="isDark ? 'Light' : 'Dark'"
+          @click="toggleTheme"
+        >
+        </v-list-item>
       </v-list>
     </v-navigation-drawer>
     <v-main>
-      <div class="container" :style="{ background: 'url(' + bgUrl + ')' }">
+      <div
+        class="container"
+        :style="{
+          background: 'url(' + (isDark ? bgDarkUrl : bgLightUrl) + ')',
+        }"
+      >
         <RouterView />
       </div>
     </v-main>

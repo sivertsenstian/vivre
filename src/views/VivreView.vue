@@ -72,7 +72,7 @@ setInterval(() => {
                         'text-white':
                           stats.player.day.total >=
                           Math.ceil(settings.data.goal / 7),
-                        'text-black':
+                        'text-gray':
                           stats.player.day.total <
                           Math.ceil(settings.data.goal / 7),
                       }"
@@ -230,9 +230,7 @@ setInterval(() => {
                       ])
                     "
                   >
-                    <span class="caption text-black"
-                      >Suggested Creep Route</span
-                    >
+                    <span class="caption">Suggested Creep Route</span>
                     <img
                       :src="
                         creeproutes[stats.ongoing?.player?.race][
@@ -250,7 +248,7 @@ setInterval(() => {
         <v-col cols="4">
           <v-col cols="12">
             <v-sheet class="pa-5" :elevation="5">
-              <div class="text-h6 text-black text-center">
+              <div class="text-h6 text-center">
                 <v-card elevation="0">
                   <v-autocomplete
                     :items="stats.searchResults"
@@ -328,7 +326,7 @@ setInterval(() => {
                     <v-card-text>
                       <v-row>
                         <v-col cols="6" class="pa-0">
-                          <span class="ml-2 text-black text-h6">
+                          <span class="ml-2 text-h6">
                             <span
                               :class="{
                                 'text-green': stats.player?.day?.mmr.diff > 0,
@@ -344,7 +342,7 @@ setInterval(() => {
                           </span>
                         </v-col>
                         <v-col cols="6" class="pa-0">
-                          <span class="ml-2 text-black text-h6">
+                          <span class="ml-2 text-h6">
                             <span
                               :class="{
                                 'text-green': stats.player?.week?.mmr.diff > 0,

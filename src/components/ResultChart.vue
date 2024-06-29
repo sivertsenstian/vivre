@@ -1,6 +1,14 @@
 <script setup lang="ts">
-const props = defineProps({ result: { wins: Number, loss: Number, total: Number } as any })
-const height = 20
+import { useTheme } from "vuetify";
+import { computed } from "vue";
+
+const props = defineProps({
+  result: { wins: Number, loss: Number, total: Number } as any,
+});
+const height = 20;
+
+const theme = useTheme();
+const isDark = computed(() => theme.global.current.value.dark);
 </script>
 
 <template>
@@ -15,7 +23,9 @@ const height = 20
         <span
           v-if="props.result.wins"
           class="text-white text-caption font-weight-bold"
-          :style="{ marginRight: (props.result.loss / props.result.total) * 100 + '%' }"
+          :style="{
+            marginRight: (props.result.loss / props.result.total) * 100 + '%',
+          }"
           >{{ props.result.wins }}W</span
         >
       </template>
@@ -24,13 +34,19 @@ const height = 20
       color="red-lighten-1"
       :model-value="(props.result.loss / props.result.total) * 100"
       :height="height"
-      :style="{ top: -height / 2 + 'px', border: '1px solid white' }"
+      :style="{
+        top: -height / 2 + 'px',
+        border: `1px solid ${isDark ? 'black' : 'white'}`,
+      }"
       reverse
     >
       <span
         v-if="props.result.loss"
         class="text-white text-caption font-weight-bold"
-        :style="{ marginLeft: (props.result.wins / props.result.total) * 100 + '%', color: 'lime' }"
+        :style="{
+          marginLeft: (props.result.wins / props.result.total) * 100 + '%',
+          color: 'lime',
+        }"
       >
         {{ props.result.loss }}L</span
       >
