@@ -42,9 +42,18 @@ export const useStatsStore = defineStore("stats", () => {
       opponent,
     )}&pageSize=200&season=${latest}`;
 
-  const daily = ref({ count: 0, matches: [] });
-  const weekly = ref({ count: 0, matches: [] });
-  const season = ref({ count: 0, matches: [] });
+  const daily = ref<{ count: number; matches: any[] }>({
+    count: 0,
+    matches: [],
+  });
+  const weekly = ref<{ count: number; matches: any[] }>({
+    count: 0,
+    matches: [],
+  });
+  const season = ref<{ count: number; matches: any[] }>({
+    count: 0,
+    matches: [],
+  });
 
   const today = moment().startOf("day");
   const rule = moment().startOf("isoWeek");
