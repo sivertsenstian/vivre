@@ -28,7 +28,7 @@ export const useStatsStore = defineStore("stats", () => {
   const url = (tag: string, offset: number = 0) =>
     `https://website-backend.w3champions.com/api/matches/search?playerId=${encodeURIComponent(
       tag,
-    )}&gateway=20&offset=0&pageSize=200&gameMode=1&season=${latest}`;
+    )}&gateway=20&offset=${offset}&pageSize=100&gameMode=1&season=${latest}`;
 
   const currentUrl = (tag: string) =>
     `https://website-backend.w3champions.com/api/matches/ongoing/${encodeURIComponent(
@@ -42,9 +42,18 @@ export const useStatsStore = defineStore("stats", () => {
       opponent,
     )}&pageSize=200&season=${latest}`;
 
-  const daily = ref({ count: 0, matches: [] });
-  const weekly = ref({ count: 0, matches: [] });
-  const season = ref({ count: 0, matches: [] });
+  const daily = ref<{ count: number; matches: any[] }>({
+    count: 0,
+    matches: [],
+  });
+  const weekly = ref<{ count: number; matches: any[] }>({
+    count: 0,
+    matches: [],
+  });
+  const season = ref<{ count: number; matches: any[] }>({
+    count: 0,
+    matches: [],
+  });
 
   const today = moment().startOf("day");
   const rule = moment().startOf("isoWeek");
@@ -334,12 +343,18 @@ export const useStatsStore = defineStore("stats", () => {
     try {
       let all: any[] = [];
       let finished = false;
+      let prev = all.length;
+      let failsafe = 0;
 
-      while (!finished) {
+      while (!finished && failsafe < 10) {
         const { data: response } = await axios.get(url(tag.value, all.length));
 
         all = [...all, ...response.matches];
-        finished = all.length === response.count;
+        console.log([all.length, response.count, prev]);
+
+        finished = all.length === response.count || all.length === prev;
+        prev = all.length;
+        failsafe++;
       }
 
       const race = all?.[0]?.teams.find((t: any) =>
