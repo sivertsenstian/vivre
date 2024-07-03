@@ -35,9 +35,8 @@ function toggleTheme() {
           to="/"
         ></v-list-item>
         <v-list-item
-          :disabled="inProduction"
           prepend-icon="mdi-flag"
-          title="This Season"
+          title="Season"
           router
           to="/season"
         ></v-list-item>

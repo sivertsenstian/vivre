@@ -39,7 +39,7 @@ setInterval(() => {
 </script>
 
 <template>
-  <main>
+  <main v-if="stats.player">
     <v-container fluid style="opacity: 0.9">
       <v-row>
         <v-col cols="8">
@@ -296,7 +296,7 @@ setInterval(() => {
                           />
                         </span>
                         <span
-                          v-if="stats.player.mmr > 100"
+                          v-if="stats.player.week.mmr.current > 100"
                           class="text-h5 text-white"
                           style="
                             opacity: 0.87;
@@ -306,7 +306,7 @@ setInterval(() => {
                             bottom: 0px;
                             width: 0;
                           "
-                          >{{ stats.player.mmr }}</span
+                          >{{ stats.player.week.mmr.current }}</span
                         >
                         <span
                           class="text-white"
@@ -407,7 +407,9 @@ setInterval(() => {
                 </v-col>
                 <v-col cols="12">
                   <div v-if="stats.player.week.total">
-                    <template v-for="(result, i) in stats.player.performance">
+                    <template
+                      v-for="(result, i) in stats.player.week.performance"
+                    >
                       <v-chip
                         v-if="i === stats.player.day.total"
                         size="small"
