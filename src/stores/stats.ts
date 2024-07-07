@@ -8,7 +8,12 @@ import moment from "moment";
 import { useSettingsStore } from "./settings";
 import { Race } from "@/stores/races";
 import type { IRaceStatisticsSummary, IStatistics } from "@/utilities/types";
-import { getInfo, getRaceStatistics } from "@/utilities/matchcalculator";
+import {
+  getInfo,
+  getloss,
+  getRaceStatistics,
+  getwins,
+} from "@/utilities/matchcalculator";
 
 export const useStatsStore = defineStore("stats", () => {
   const settings = useSettingsStore();
@@ -57,23 +62,6 @@ export const useStatsStore = defineStore("stats", () => {
   const rule = moment().startOf("isoWeek");
 
   const player = ref<IStatistics>();
-
-  const getwins = (m: any) =>
-    m.teams.some(
-      (t: any) =>
-        t.won &&
-        t.players.some(
-          (p: any) => p.battleTag.toLowerCase() === tag.value.toLowerCase(),
-        ),
-    );
-  const getloss = (m: any) =>
-    m.teams.some(
-      (t: any) =>
-        !t.won &&
-        t.players.some(
-          (p: any) => p.battleTag.toLowerCase() === tag.value.toLowerCase(),
-        ),
-    );
 
   const getMatches = async () => {
     let result: IStatistics = {} as any;
@@ -129,7 +117,7 @@ export const useStatsStore = defineStore("stats", () => {
         [Race.Random]: seasonActual.filter((m) => isRace(m, Race.Random)),
       };
 
-      console.log([seasonActual, seasonActual.map((m) => m.durationInSeconds)]);
+      console.log([seasonActual]);
 
       result = {
         battleTag: info.battleTag,
@@ -139,9 +127,19 @@ export const useStatsStore = defineStore("stats", () => {
         season: {
           summary: {
             ...getRaceStatistics(tag.value, seasonActual),
-            suspiciousGames:
-              seasonActual.filter((m) => m?.durationInSeconds <= 240)?.length ??
-              0,
+            suspiciousGames: {
+              total:
+                seasonActual.filter((m) => m?.durationInSeconds <= 240)
+                  ?.length ?? 0,
+              wins:
+                seasonActual
+                  .filter((m) => getwins(tag.value, m))
+                  .filter((m) => m?.durationInSeconds <= 240)?.length ?? 0,
+              loss:
+                seasonActual
+                  .filter((m) => getloss(tag.value, m))
+                  .filter((m) => m?.durationInSeconds <= 240)?.length ?? 0,
+            },
           },
           [Race.Random]: getRaceStatistics(tag.value, season[Race.Random]),
           [Race.Human]: getRaceStatistics(tag.value, season[Race.Human]),
@@ -197,8 +195,8 @@ export const useStatsStore = defineStore("stats", () => {
       history = {
         performance,
         last: _take(performance, 5),
-        wins: matches.filter(getwins).length,
-        loss: matches.filter(getloss).length,
+        wins: matches.filter((m: any) => getwins(tag.value, m)).length,
+        loss: matches.filter((m: any) => getloss(tag.value, m)).length,
         total: historyResponse.count,
       };
     } catch (error) {

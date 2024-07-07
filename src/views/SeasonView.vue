@@ -67,17 +67,20 @@ console.log({ season: stats.player });
                   v-if="stats.player.season.summary.suspiciousGames"
                 >
                   <div class="text-h5">
-                    Number of games under 4 minutes:
-                    <span
-                      :class="{
-                        'text-green':
-                          stats.player.season.summary.suspiciousGames < 10,
-                        'text-red':
-                          stats.player.season.summary.suspiciousGames >= 10,
-                      }"
-                    >
-                      {{ stats.player.season.summary.suspiciousGames }}
+                    {{
+                      stats.player.season.summary.suspiciousGames.total
+                    }}
+                    games decided in under 4 minutes:
+                    <span class="text-green">
+                      {{ stats.player.season.summary.suspiciousGames.wins }}
+                      win(s)
                     </span>
+                    <span> / </span>
+                    <span class="text-red">
+                      {{ stats.player.season.summary.suspiciousGames.loss }}
+                      loss(es)
+                    </span>
+                    <span> </span>
                   </div>
                 </v-col>
               </v-row>
