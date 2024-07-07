@@ -49,7 +49,7 @@ export const getInfo = (tag: string, matches: any[]) => {
   return first;
 };
 
-const getwins = (tag: string, m: any) =>
+export const getwins = (tag: string, m: any) =>
   m?.teams?.some(
     (t: any) =>
       t.won &&
@@ -57,7 +57,7 @@ const getwins = (tag: string, m: any) =>
         (p: any) => p.battleTag.toLowerCase() === tag.toLowerCase(),
       ),
   );
-const getloss = (tag: string, m: any) =>
+export const getloss = (tag: string, m: any) =>
   m?.teams?.some(
     (t: any) =>
       !t.won &&

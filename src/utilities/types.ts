@@ -8,7 +8,11 @@ export interface IVSRaceStatistics {
 }
 
 export interface IRaceStatisticsSummary extends IRaceStatistics {
-  suspiciousGames: number;
+  suspiciousGames: {
+    total: number;
+    wins: number;
+    loss: number;
+  };
 }
 
 export interface IRaceStatistics {
