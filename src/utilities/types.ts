@@ -7,6 +7,10 @@ export interface IVSRaceStatistics {
   percentage: number;
 }
 
+export interface IRaceStatisticsSummary extends IRaceStatistics {
+  suspiciousGames: number;
+}
+
 export interface IRaceStatistics {
   total: number;
   wins: number;
@@ -33,7 +37,7 @@ export interface IStatistics {
   day: IRaceStatistics;
   week: IRaceStatistics;
   season: {
-    summary: IRaceStatistics;
+    summary: IRaceStatisticsSummary;
     [Race.Random]: IRaceStatistics;
     [Race.Human]: IRaceStatistics;
     [Race.Orc]: IRaceStatistics;

@@ -7,7 +7,7 @@ import _isNil from "lodash/isNil";
 import moment from "moment";
 import { useSettingsStore } from "./settings";
 import { Race } from "@/stores/races";
-import type { IStatistics } from "@/utilities/types";
+import type { IRaceStatisticsSummary, IStatistics } from "@/utilities/types";
 import { getInfo, getRaceStatistics } from "@/utilities/matchcalculator";
 
 export const useStatsStore = defineStore("stats", () => {
@@ -129,13 +129,20 @@ export const useStatsStore = defineStore("stats", () => {
         [Race.Random]: seasonActual.filter((m) => isRace(m, Race.Random)),
       };
 
+      console.log([seasonActual, seasonActual.map((m) => m.durationInSeconds)]);
+
       result = {
         battleTag: info.battleTag,
         race: info.race,
         day: getRaceStatistics(tag.value, dayActual),
         week: getRaceStatistics(tag.value, weekActual),
         season: {
-          summary: getRaceStatistics(tag.value, seasonActual),
+          summary: {
+            ...getRaceStatistics(tag.value, seasonActual),
+            suspiciousGames:
+              seasonActual.filter((m) => m?.durationInSeconds <= 240)?.length ??
+              0,
+          },
           [Race.Random]: getRaceStatistics(tag.value, season[Race.Random]),
           [Race.Human]: getRaceStatistics(tag.value, season[Race.Human]),
           [Race.Orc]: getRaceStatistics(tag.value, season[Race.Orc]),
