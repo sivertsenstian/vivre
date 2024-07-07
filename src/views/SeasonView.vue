@@ -61,6 +61,25 @@ console.log({ season: stats.player });
                     game(s) per day on average
                   </div>
                 </v-col>
+                <v-col
+                  cols="12"
+                  class="text-center"
+                  v-if="stats.player.season.summary.suspiciousGames"
+                >
+                  <div class="text-h5">
+                    Number of games under 4 minutes:
+                    <span
+                      :class="{
+                        'text-green':
+                          stats.player.season.summary.suspiciousGames < 10,
+                        'text-red':
+                          stats.player.season.summary.suspiciousGames >= 10,
+                      }"
+                    >
+                      {{ stats.player.season.summary.suspiciousGames }}
+                    </span>
+                  </div>
+                </v-col>
               </v-row>
               <v-row>
                 <v-col cols="12" v-if="stats.player.season.summary.total">
