@@ -29,21 +29,19 @@ const raceBanner: any = {
 };
 
 const races = [Race.Human, Race.Orc, Race.NightElf, Race.Undead, Race.Random];
-
-console.log({ season: stats.player });
 </script>
 
 <template>
   <main v-if="stats.player">
     <v-container fluid style="opacity: 0.9; height: 100vh; overflow: auto">
       <v-row>
-        <v-col cols="8">
-          <v-sheet class="pa-5" elevation="5">
+        <v-col cols="6">
+          <v-sheet class="pa-5" elevation="5" style="min-height: 401px">
             <v-col cols="12">
               <v-row>
                 <v-col>
                   <div class="text-h4 text-center">
-                    Season: 19 - Duration: {{ start.format("DD.MM.YY") }} to
+                    Season: 19 // {{ start.format("DD.MM.YY") }} to
                     {{ end.format("DD.MM.YY") }}
                   </div>
                   <hr /> </v-col
@@ -61,15 +59,31 @@ console.log({ season: stats.player });
                     game(s) per day on average
                   </div>
                 </v-col>
+              </v-row>
+              <v-row>
+                <v-col
+                  cols="12"
+                  v-if="stats.player.season.summary.total"
+                  class="text-center"
+                >
+                  <span class="text-h5">Season Total</span>
+                  <ResultChart :result="stats.player.season.summary" />
+                </v-col>
+                <v-col cols="12" class="text-center" v-else>
+                  <span class="text-h6"
+                    >No games played yet this season - There is no time like the
+                    present!</span
+                  >
+                </v-col>
+              </v-row>
+              <v-row class="mt-10">
                 <v-col
                   cols="12"
                   class="text-center"
                   v-if="stats.player.season.summary.suspiciousGames"
                 >
                   <div class="text-h5">
-                    {{
-                      stats.player.season.summary.suspiciousGames.total
-                    }}
+                    {{ stats.player.season.summary.suspiciousGames.total }}
                     games decided in under 4 minutes:
                     <span class="text-green">
                       {{ stats.player.season.summary.suspiciousGames.wins }}
@@ -84,47 +98,122 @@ console.log({ season: stats.player });
                   </div>
                 </v-col>
               </v-row>
-              <v-row>
-                <v-col cols="12" v-if="stats.player.season.summary.total">
-                  <span class="title">Season Total</span>
-                  <ResultChart :result="stats.player.season.summary" />
-                </v-col>
-                <v-col cols="12" class="text-center" v-else>
-                  <span class="text-h6"
-                    >No games played yet this season - There is no time like the
-                    present!</span
-                  >
-                </v-col>
-              </v-row>
             </v-col>
           </v-sheet>
         </v-col>
-        <v-col cols="4">
+
+        <v-col cols="6">
           <v-sheet class="pa-5" elevation="5">
-            <v-col cols="12">
-              <div class="text-h6 text-black text-center">
-                <v-card elevation="0">
-                  <v-autocomplete
-                    :items="stats.searchResults"
-                    :loading="stats.searching"
-                    @input="(e: any) => stats.getBattleTag(e.target.value)"
-                    clearable
-                    v-model="settings.data.battleTag as any"
-                    class="mx-auto"
-                    density="comfortable"
-                    placeholder="Search W3C for player..."
-                    prepend-inner-icon="mdi-magnify"
-                    variant="solo"
-                    item-title="battleTag"
-                    item-value="battleTag"
-                    auto-select-first
-                  />
-                </v-card>
-              </div>
-            </v-col>
+            <v-row>
+              <v-col cols="12">
+                <div class="text-h6 text-black text-center">
+                  <v-card elevation="0">
+                    <v-autocomplete
+                      :items="stats.searchResults"
+                      :loading="stats.searching"
+                      @input="(e: any) => stats.getBattleTag(e.target.value)"
+                      clearable
+                      v-model="settings.data.battleTag as any"
+                      class="mx-auto"
+                      density="comfortable"
+                      placeholder="Search W3C for player..."
+                      prepend-inner-icon="mdi-magnify"
+                      variant="solo"
+                      item-title="battleTag"
+                      item-value="battleTag"
+                      auto-select-first
+                    />
+                  </v-card>
+                </div>
+              </v-col>
+            </v-row>
+            <v-fade-transition>
+              <v-row v-if="stats.highscore.loading">
+                <v-progress-linear indeterminate />
+              </v-row>
+            </v-fade-transition>
+            <v-fade-transition>
+              <v-row
+                v-if="stats.highscore && !stats.highscore.loading"
+                transition="fade-transition"
+              >
+                <v-col v-for="score in stats.highscore">
+                  <v-card elevation="0">
+                    <v-card-item>
+                      <v-card-title>
+                        <span
+                          style="
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                          "
+                        >
+                          <img
+                            style="vertical-align: middle"
+                            width="135px"
+                            :src="raceBanner[score.race]"
+                          />
+                          <span
+                            style="
+                              opacity: 0.87;
+                              vertical-align: middle;
+                              position: relative;
+                              right: 103px;
+                              bottom: 55px;
+                              width: 0;
+                            "
+                          >
+                            <img
+                              style="vertical-align: middle"
+                              width="75px"
+                              :src="raceIcon[score.race]"
+                            />
+                          </span>
+                          <span
+                            class="text-h5 text-white"
+                            style="
+                              opacity: 0.87;
+                              vertical-align: middle;
+                              position: relative;
+                              right: 92px;
+                              bottom: 0px;
+                              width: 0;
+                            "
+                            >{{ score.mmr }}</span
+                          >
+                          <span
+                            class="text-white"
+                            style="
+                              opacity: 0.87;
+                              font-size: 16px !important;
+                              vertical-align: middle;
+                              position: relative;
+                              right: 85px;
+                              bottom: -25px;
+                              width: 0;
+                            "
+                            >MMR</span
+                          >
+                        </span>
+                      </v-card-title>
+                      <v-card-text>
+                        <v-row>
+                          <v-col cols="12" class="pa-0 pt-2 text-center">
+                            <span class="ml-2 text-h6">
+                              <span> Season {{ score.season }} </span>
+                            </span>
+                          </v-col>
+                        </v-row>
+                      </v-card-text>
+                    </v-card-item>
+                  </v-card>
+                </v-col>
+              </v-row>
+            </v-fade-transition>
           </v-sheet>
         </v-col>
       </v-row>
+
       <v-row v-for="race in races">
         <v-col cols="2" v-if="stats.player.season[race].total">
           <v-sheet class="pa-5" :elevation="5">

@@ -7,7 +7,7 @@ import _isNil from "lodash/isNil";
 import moment from "moment";
 import { useSettingsStore } from "./settings";
 import { Race } from "@/stores/races";
-import type { IRaceStatisticsSummary, IStatistics } from "@/utilities/types";
+import type { IStatistics } from "@/utilities/types";
 import {
   getInfo,
   getloss,
@@ -28,10 +28,15 @@ export const useStatsStore = defineStore("stats", () => {
       name,
     )}&pageSize=20`;
 
-  const url = (tag: string, offset: number = 0) =>
+  const url = (
+    tag: string,
+    offset: number = 0,
+    size: number = 100,
+    season: number = latest,
+  ) =>
     `https://website-backend.w3champions.com/api/matches/search?playerId=${encodeURIComponent(
       tag,
-    )}&gateway=20&offset=${offset}&pageSize=100&gameMode=1&season=${latest}`;
+    )}&gateway=20&offset=${offset}&pageSize=${size}&gameMode=1&season=${season}`;
 
   const currentUrl = (tag: string) =>
     `https://website-backend.w3champions.com/api/matches/ongoing/${encodeURIComponent(
@@ -43,7 +48,12 @@ export const useStatsStore = defineStore("stats", () => {
       tag,
     )}&opponentId=${encodeURIComponent(
       opponent,
-    )}&pageSize=200&season=${latest}`;
+    )}&pageSize=100&season=${latest}`;
+
+  const gameModeStatsUrl = (tag: string, season: number) =>
+    `https://website-backend.w3champions.com/api/players/${encodeURIComponent(
+      tag,
+    )}/game-mode-stats?gateway=20&season=${season}`;
 
   const daily = ref<{ count: number; matches: any[] }>({
     count: 0,
@@ -58,10 +68,37 @@ export const useStatsStore = defineStore("stats", () => {
     matches: [],
   });
 
+  const highscore = ref<any>({});
+
   const today = moment().startOf("day");
   const rule = moment().startOf("isoWeek");
 
   const player = ref<IStatistics>();
+
+  const getHighScores = async () => {
+    let result: any = {};
+    highscore.value = { loading: true };
+    try {
+      for (let i = 1; i <= latest; i++) {
+        const { data: response } = await axios.get(
+          gameModeStatsUrl(tag.value, i),
+        );
+
+        const solo = response.filter(
+          (s: any) => s.gameMode === 1 && !_isNil(s.race),
+        );
+        if (solo.length) {
+          solo.forEach((s: any) => {
+            if (_isNil(result[s.race]) || s.mmr >= result[s.race]?.mmr) {
+              result[s.race] = s;
+            }
+          });
+        }
+      }
+    } finally {
+      highscore.value = result;
+    }
+  };
 
   const getMatches = async () => {
     let result: IStatistics = {} as any;
@@ -116,8 +153,6 @@ export const useStatsStore = defineStore("stats", () => {
         [Race.NightElf]: seasonActual.filter((m) => isRace(m, Race.NightElf)),
         [Race.Random]: seasonActual.filter((m) => isRace(m, Race.Random)),
       };
-
-      console.log([seasonActual]);
 
       result = {
         battleTag: info.battleTag,
@@ -273,9 +308,8 @@ export const useStatsStore = defineStore("stats", () => {
   watchEffect(() => {
     getMatches();
     getOngoing();
+    getHighScores();
   });
-
-  console.log({ player: player.value });
 
   return {
     season,
@@ -287,5 +321,6 @@ export const useStatsStore = defineStore("stats", () => {
     getBattleTag,
     searchResults,
     searching,
+    highscore,
   };
 });
