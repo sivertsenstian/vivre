@@ -2,10 +2,13 @@ import axios from "axios";
 import { defineStore } from "pinia";
 import { ref, computed, watchEffect } from "vue";
 import _take from "lodash/take";
+import _last from "lodash/last";
 import _isEmpty from "lodash/isEmpty";
 import _isNil from "lodash/isNil";
 import _maxBy from "lodash/maxBy";
 import _forEach from "lodash/forEach";
+import _sortBy from "lodash/sortBy";
+import _toPairs from "lodash/toPairs";
 import moment from "moment";
 import { useSettingsStore } from "./settings";
 import { Race } from "@/stores/races";
@@ -17,6 +20,8 @@ import {
   getplayer,
   getRaceStatistics,
   getwins,
+  isRace,
+  opponentIsRace,
 } from "@/utilities/matchcalculator";
 import _groupBy from "lodash/groupBy";
 
@@ -55,15 +60,8 @@ export const useStatsStore = defineStore("stats", () => {
       opponent,
     )}&pageSize=100&season=${latest}`;
 
-  const opponentHeroOnMapVersusRace = (opponent: string) =>
-    `https://website-backend.w3champions.com/api/player-stats/${encodeURIComponent(
-      opponent,
-    )}`;
-
-  const gameModeStatsUrl = (tag: string, season: number) =>
-    `https://website-backend.w3champions.com/api/players/${encodeURIComponent(
-      tag,
-    )}/game-mode-stats?gateway=20&season=${season}`;
+  const getMatchUrl = (id: string) =>
+    `https://website-backend.w3champions.com/api/matches/${id}`;
 
   const daily = ref<{ count: number; matches: any[] }>({
     count: 0,
@@ -132,30 +130,30 @@ export const useStatsStore = defineStore("stats", () => {
         ),
       )?.players?.[0]?.race;
 
-      const isRace = (m: any, r: Race) =>
-        m.teams.some((t: any) =>
-          t.players.some(
-            (p: any) =>
-              p.battleTag.toLowerCase() === tag.value.toLowerCase() &&
-              p.race === r,
-          ),
-        );
       seasonActual = all;
       weekActual = all
         .filter((m: any) => moment(m.endTime).isAfter(rule))
-        .filter((m: any) => isRace(m, race));
+        .filter((m: any) => isRace(tag.value, m, race));
       dayActual = all
         .filter((m: any) => moment(m.endTime).isAfter(today))
-        .filter((m: any) => isRace(m, race));
+        .filter((m: any) => isRace(tag.value, m, race));
 
       const info = getInfo(tag.value, seasonActual);
 
       const season = {
-        [Race.Human]: seasonActual.filter((m) => isRace(m, Race.Human)),
-        [Race.Orc]: seasonActual.filter((m) => isRace(m, Race.Orc)),
-        [Race.Undead]: seasonActual.filter((m) => isRace(m, Race.Undead)),
-        [Race.NightElf]: seasonActual.filter((m) => isRace(m, Race.NightElf)),
-        [Race.Random]: seasonActual.filter((m) => isRace(m, Race.Random)),
+        [Race.Human]: seasonActual.filter((m) =>
+          isRace(tag.value, m, Race.Human),
+        ),
+        [Race.Orc]: seasonActual.filter((m) => isRace(tag.value, m, Race.Orc)),
+        [Race.Undead]: seasonActual.filter((m) =>
+          isRace(tag.value, m, Race.Undead),
+        ),
+        [Race.NightElf]: seasonActual.filter((m) =>
+          isRace(tag.value, m, Race.NightElf),
+        ),
+        [Race.Random]: seasonActual.filter((m) =>
+          isRace(tag.value, m, Race.Random),
+        ),
       };
 
       result = {
@@ -212,9 +210,9 @@ export const useStatsStore = defineStore("stats", () => {
     history: { wins: 0, loss: 0, total: 0, performance: [], last: [] },
   });
 
-  const getOpponentHistory = async (opponent: string) => {
+  const getOpponentHistory = async (player: any, opponent: any) => {
     let history = {
-      hero: {},
+      heroes: {},
       wins: 0,
       loss: 0,
       total: 0,
@@ -228,7 +226,7 @@ export const useStatsStore = defineStore("stats", () => {
 
     try {
       const { data: historyResponse } = await axios.get(
-        opponentHistoryUrl(tag.value, opponent),
+        opponentHistoryUrl(tag.value, opponent.battleTag),
       );
 
       const matches = historyResponse?.matches ?? [];
@@ -238,13 +236,42 @@ export const useStatsStore = defineStore("stats", () => {
           settings.data.battleTag.toLowerCase(),
       );
 
-      // const { data: heroStats } = await axios.get(
-      //   opponentHeroOnMapVersusRace(opponent),
-      // );
+      // Find hero usage from last 100 games in the season
+      const season = await getAllSeasonGames(opponent.battleTag, 19, 100);
+      const last = _take(
+        season
+          .filter((m) => m.durationInSeconds > 4 * 60)
+          .filter((m) => isRace(opponent.battleTag, m, opponent.race))
+          .filter((m) => opponentIsRace(opponent.battleTag, m, player.race)),
+        10,
+      );
+
+      let m: any[] = [];
+      for (let i = 0; i < last.length; i++) {
+        const { data: ma } = await axios.get(getMatchUrl(last[i].id));
+        m.push(ma);
+      }
+
+      let heroes: any = {};
+      for (let i = 0; i < m.length; i++) {
+        const score = m[i].playerScores.find(
+          (s: any) =>
+            s.battleTag.toLowerCase() === opponent.battleTag.toLowerCase(),
+        );
+        const key = score.heroes
+          .map((h: any) => h.icon)
+          // .sort()
+          .join(",");
+
+        if (heroes[key]) {
+          heroes[key] += 1;
+        } else {
+          heroes[key] = 1;
+        }
+      }
 
       history = {
-        // hero: heroStats,
-        hero: {},
+        heroes: _take(_sortBy(_toPairs(heroes), (v) => _last(v)).reverse(), 3),
         performance,
         last: _take(performance, 5),
         wins: matches.filter((m: any) => getwins(tag.value, m)).length,
@@ -258,7 +285,7 @@ export const useStatsStore = defineStore("stats", () => {
     }
   };
 
-  const getOngoing = async () => {
+  const getOngoing = async (reset: boolean = false) => {
     let result = {
       id: null,
       start: null,
@@ -292,7 +319,10 @@ export const useStatsStore = defineStore("stats", () => {
           opponent,
           map: onGoingResponse.mapName,
           server: onGoingResponse.serverInfo,
-          history: await getOpponentHistory(opponent.battleTag),
+          history:
+            !reset && ongoing.value.id
+              ? ongoing.value.history
+              : await getOpponentHistory(player, opponent),
         };
       }
     } catch (error) {
@@ -324,7 +354,7 @@ export const useStatsStore = defineStore("stats", () => {
 
   watchEffect(() => {
     getMatches();
-    getOngoing();
+    getOngoing(true);
     getHighScores();
   });
 
