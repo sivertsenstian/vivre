@@ -36,7 +36,7 @@ const races = [Race.Human, Race.Orc, Race.NightElf, Race.Undead, Race.Random];
     <v-container fluid style="opacity: 0.9; height: 100vh; overflow: auto">
       <v-row>
         <v-col cols="6">
-          <v-sheet class="pa-5" elevation="5" style="min-height: 401px">
+          <v-sheet class="pa-5" elevation="5" style="min-height: 356px">
             <v-col cols="12">
               <v-row>
                 <v-col>
@@ -199,7 +199,7 @@ const races = [Race.Human, Race.Orc, Race.NightElf, Race.Undead, Race.Random];
                       <v-card-text>
                         <v-row>
                           <v-col cols="12" class="pa-0 pt-2 text-center">
-                            <span class="ml-2 text-h6">
+                            <span class="ml-2 title">
                               <span> Season {{ score.season }} </span>
                             </span>
                           </v-col>
@@ -280,7 +280,7 @@ const races = [Race.Human, Race.Orc, Race.NightElf, Race.Undead, Race.Random];
                   <v-card-text>
                     <v-row>
                       <v-col cols="12" class="pa-0 pt-2">
-                        <span class="ml-2 text-h6">
+                        <span class="ml-2 title">
                           <span
                             :class="{
                               'text-green':
