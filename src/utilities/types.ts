@@ -49,3 +49,23 @@ export interface IStatistics {
     [Race.Undead]: IRaceStatistics;
   };
 }
+
+export interface IOngoingHistory {
+  wins: number;
+  loss: number;
+  total: number;
+  performance: boolean[];
+  last: boolean[];
+  heroes: any[][];
+}
+
+export interface IOngoing {
+  id: string | null;
+  start: string | null;
+  active: boolean;
+  player: { name: string; race: Race; battleTag: string; oldMmr: number };
+  opponent: { name: string; race: Race; battleTag: string; oldMmr: number };
+  map: string;
+  server: any;
+  history: IOngoingHistory;
+}

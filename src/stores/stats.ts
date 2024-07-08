@@ -12,7 +12,7 @@ import _toPairs from "lodash/toPairs";
 import moment from "moment";
 import { useSettingsStore } from "./settings";
 import { Race } from "@/stores/races";
-import type { IStatistics } from "@/utilities/types";
+import type { IOngoing, IStatistics } from "@/utilities/types";
 import {
   getAllSeasonGames,
   getInfo,
@@ -199,29 +199,18 @@ export const useStatsStore = defineStore("stats", () => {
     getMatches();
   }, 60000);
 
-  const ongoing = ref({
-    id: null,
-    start: null,
-    active: false,
-    player: { name: "", race: 0, battleTag: "", oldMmr: 0 },
-    opponent: { name: "", race: 0, battleTag: "", oldMmr: 0 },
-    map: "",
-    server: {},
-    history: { wins: 0, loss: 0, total: 0, performance: [], last: [] },
-  });
+  const ongoing = ref<IOngoing>();
 
   const getOpponentHistory = async (player: any, opponent: any) => {
-    let history = {
-      heroes: {},
-      wins: 0,
-      loss: 0,
-      total: 0,
-      performance: [],
-      last: [],
-    };
-
     if (_isEmpty(opponent)) {
-      return history;
+      return {
+        wins: 0,
+        loss: 0,
+        total: 0,
+        performance: [],
+        last: [],
+        heroes: [],
+      };
     }
 
     try {
@@ -270,18 +259,16 @@ export const useStatsStore = defineStore("stats", () => {
         }
       }
 
-      history = {
-        heroes: _take(_sortBy(_toPairs(heroes), (v) => _last(v)).reverse(), 3),
+      return {
         performance,
         last: _take(performance, 5),
         wins: matches.filter((m: any) => getwins(tag.value, m)).length,
         loss: matches.filter((m: any) => getloss(tag.value, m)).length,
         total: historyResponse.count,
+        heroes: _take(_sortBy(_toPairs(heroes), (v) => _last(v)).reverse(), 3),
       };
     } catch (error) {
       console.log(error);
-    } finally {
-      return history;
     }
   };
 
@@ -294,7 +281,14 @@ export const useStatsStore = defineStore("stats", () => {
       opponent: { name: "", race: 0, battleTag: "", oldMmr: 0 },
       map: "",
       server: {},
-      history: { wins: 0, loss: 0, total: 0, performance: [], last: [] },
+      history: {
+        wins: 0,
+        loss: 0,
+        total: 0,
+        performance: [],
+        last: [],
+        heroes: [],
+      },
     };
 
     try {
@@ -320,8 +314,8 @@ export const useStatsStore = defineStore("stats", () => {
           map: onGoingResponse.mapName,
           server: onGoingResponse.serverInfo,
           history:
-            !reset && ongoing.value.id
-              ? ongoing.value.history
+            !reset && ongoing.value?.id
+              ? (ongoing.value.history as any)
               : await getOpponentHistory(player, opponent),
         };
       }
