@@ -29,11 +29,11 @@ const raceBanner: any = {
 };
 
 let duration = ref(
-  moment.utc(moment().diff(stats.ongoing.start)).format("mm:ss"),
+  moment.utc(moment().diff(stats?.ongoing?.start)).format("mm:ss"),
 );
 setInterval(() => {
   duration.value = moment
-    .utc(moment().diff(stats.ongoing.start))
+    .utc(moment().diff(stats?.ongoing?.start))
     .format("mm:ss");
 }, 1000);
 </script>
@@ -43,7 +43,7 @@ setInterval(() => {
     <v-container fluid style="opacity: 0.9">
       <v-row>
         <v-col cols="8">
-          <v-col cols="12" v-if="!stats.ongoing.active">
+          <v-col cols="12" v-if="!stats?.ongoing?.active">
             <v-sheet class="pa-8" elevation="5">
               <v-row>
                 <v-col cols="6">
@@ -147,7 +147,7 @@ setInterval(() => {
             </v-sheet>
           </v-col>
 
-          <v-col cols="12" v-if="stats.ongoing.active">
+          <v-col cols="12" v-if="stats?.ongoing?.active">
             <v-sheet class="pa-4" :elevation="5">
               <v-row>
                 <v-col cols="8" class="text-center">
