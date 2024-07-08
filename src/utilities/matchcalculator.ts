@@ -5,6 +5,7 @@ import _last from "lodash/last";
 import _round from "lodash/round";
 import _first from "lodash/first";
 import _groupBy from "lodash/groupBy";
+import axios from "axios";
 
 const getPercentage = (data: any, race: Race) => {
   return _round(
@@ -64,6 +65,11 @@ export const getloss = (tag: string, m: any) =>
       t.players.some(
         (p: any) => p.battleTag.toLowerCase() === tag.toLowerCase(),
       ),
+  );
+
+export const getplayer = (tag: string) => (m: any) =>
+  m?.teams?.find((t: any) =>
+    t.players.find((p: any) => p.battleTag.toLowerCase() === tag.toLowerCase()),
   );
 
 const isRace = (tag: string, m: any, r: Race) =>
@@ -147,4 +153,35 @@ export const getRaceStatistics = (
   };
 
   return result;
+};
+
+const url = (
+  tag: string,
+  offset: number = 0,
+  size: number = 100,
+  season: number = 19,
+) =>
+  `https://website-backend.w3champions.com/api/matches/search?playerId=${encodeURIComponent(
+    tag,
+  )}&gateway=20&offset=${offset}&pageSize=${size}&gameMode=1&season=${season}`;
+
+export const getAllSeasonGames = async (tag: string, season: number) => {
+  let all: any[] = [];
+  let finished = false;
+  let prev = all.length;
+  let failsafe = 0;
+
+  while (!finished && failsafe < 10) {
+    const { data: response } = await axios.get(
+      url(tag, all.length, 100, season),
+    );
+
+    all = [...all, ...response.matches];
+
+    finished = all.length === response.count || all.length === prev;
+    prev = all.length;
+    failsafe++;
+  }
+
+  return all;
 };
