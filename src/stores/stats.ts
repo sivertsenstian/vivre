@@ -4,16 +4,21 @@ import { ref, computed, watchEffect } from "vue";
 import _take from "lodash/take";
 import _isEmpty from "lodash/isEmpty";
 import _isNil from "lodash/isNil";
+import _maxBy from "lodash/maxBy";
+import _forEach from "lodash/forEach";
 import moment from "moment";
 import { useSettingsStore } from "./settings";
 import { Race } from "@/stores/races";
 import type { IStatistics } from "@/utilities/types";
 import {
+  getAllSeasonGames,
   getInfo,
   getloss,
+  getplayer,
   getRaceStatistics,
   getwins,
 } from "@/utilities/matchcalculator";
+import _groupBy from "lodash/groupBy";
 
 export const useStatsStore = defineStore("stats", () => {
   const settings = useSettingsStore();
@@ -50,6 +55,11 @@ export const useStatsStore = defineStore("stats", () => {
       opponent,
     )}&pageSize=100&season=${latest}`;
 
+  const opponentHeroOnMapVersusRace = (opponent: string) =>
+    `https://website-backend.w3champions.com/api/player-stats/${encodeURIComponent(
+      opponent,
+    )}`;
+
   const gameModeStatsUrl = (tag: string, season: number) =>
     `https://website-backend.w3champions.com/api/players/${encodeURIComponent(
       tag,
@@ -80,20 +90,27 @@ export const useStatsStore = defineStore("stats", () => {
     highscore.value = { loading: true };
     try {
       for (let i = 1; i <= latest; i++) {
-        const { data: response } = await axios.get(
-          gameModeStatsUrl(tag.value, i),
+        const all = await getAllSeasonGames(tag.value, i);
+        const g = _groupBy(
+          all.map(getplayer(tag.value)),
+          (p) => p.players[0].race,
         );
 
-        const solo = response.filter(
-          (s: any) => s.gameMode === 1 && !_isNil(s.race),
-        );
-        if (solo.length) {
-          solo.forEach((s: any) => {
-            if (_isNil(result[s.race]) || s.mmr >= result[s.race]?.mmr) {
-              result[s.race] = s;
-            }
-          });
-        }
+        _forEach(g, (matches, race) => {
+          const s = _maxBy(matches, (p) => p.players[0].currentMmr)
+            ?.players?.[0];
+
+          if (
+            !_isNil(s) &&
+            (_isNil(result[s.race]) || s.currentMmr >= result[s.race].mmr)
+          ) {
+            result[s.race] = {
+              race: s.race,
+              mmr: s.currentMmr,
+              season: i,
+            };
+          }
+        });
       }
     } finally {
       highscore.value = result;
@@ -107,20 +124,7 @@ export const useStatsStore = defineStore("stats", () => {
     let dayActual = [];
 
     try {
-      let all: any[] = [];
-      let finished = false;
-      let prev = all.length;
-      let failsafe = 0;
-
-      while (!finished && failsafe < 10) {
-        const { data: response } = await axios.get(url(tag.value, all.length));
-
-        all = [...all, ...response.matches];
-
-        finished = all.length === response.count || all.length === prev;
-        prev = all.length;
-        failsafe++;
-      }
+      let all = await getAllSeasonGames(tag.value, latest);
 
       const race = all?.[0]?.teams.find((t: any) =>
         t.players.some(
@@ -209,7 +213,14 @@ export const useStatsStore = defineStore("stats", () => {
   });
 
   const getOpponentHistory = async (opponent: string) => {
-    let history = { wins: 0, loss: 0, total: 0, performance: [], last: [] };
+    let history = {
+      hero: {},
+      wins: 0,
+      loss: 0,
+      total: 0,
+      performance: [],
+      last: [],
+    };
 
     if (_isEmpty(opponent)) {
       return history;
@@ -227,7 +238,13 @@ export const useStatsStore = defineStore("stats", () => {
           settings.data.battleTag.toLowerCase(),
       );
 
+      // const { data: heroStats } = await axios.get(
+      //   opponentHeroOnMapVersusRace(opponent),
+      // );
+
       history = {
+        // hero: heroStats,
+        hero: {},
         performance,
         last: _take(performance, 5),
         wins: matches.filter((m: any) => getwins(tag.value, m)).length,
