@@ -9,7 +9,7 @@ import WeeklyGoalChart from "@/components/WeeklyGoalChart.vue";
 import WeeklyResultChart from "@/components/WeeklyResultChart.vue";
 import { useSettingsStore } from "@/stores/settings";
 import { useStatsStore } from "@/stores/stats";
-import { Race, creeproutes, raceIcon } from "@/stores/races";
+import { Race, creeproutes, raceIcon, heroIcon } from "@/stores/races";
 
 const settings = useSettingsStore();
 const stats = useStatsStore();
@@ -186,7 +186,7 @@ setInterval(() => {
                       'text-center': !stats.ongoing.history.last.length,
                     }"
                   >
-                    <div v-if="stats.player.week.total">
+                    <div>
                       <span
                         class="text-caption font-weight-bold"
                         v-if="stats.ongoing.history.last.length"
@@ -241,6 +241,30 @@ setInterval(() => {
                     />
                   </v-col>
                 </v-col>
+              </v-row>
+              <v-row v-if="stats.ongoing.history.heroes.length">
+                <v-col cols="12">
+                  <div class="text-h5">
+                    Heroes used in recent games vs
+                    <img
+                      style="vertical-align: middle"
+                      width="50"
+                      :src="raceIcon[stats.ongoing.player.race]"
+                    />
+                    <hr />
+                  </div>
+                </v-col>
+              </v-row>
+              <v-row v-for="([heroes, n], i) in stats.ongoing.history.heroes">
+                <div class="text-h5 ml-5" style="align-self: center">
+                  #{{ i + 1 }}
+                </div>
+                <v-col cols="1" v-for="hero in heroes?.split(',')">
+                  <img width="70" :src="heroIcon[hero]" :alt="hero" />
+                </v-col>
+                <div class="text-h5 ml-5" style="align-self: center">
+                  // {{ n }} time(s)
+                </div>
               </v-row>
             </v-sheet>
           </v-col>

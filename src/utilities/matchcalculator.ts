@@ -72,11 +72,19 @@ export const getplayer = (tag: string) => (m: any) =>
     t.players.find((p: any) => p.battleTag.toLowerCase() === tag.toLowerCase()),
   );
 
-const isRace = (tag: string, m: any, r: Race) =>
+export const isRace = (tag: string, m: any, r: Race) =>
   m?.teams?.some((t: any) =>
     t.players.some(
       (p: any) =>
         p.battleTag.toLowerCase() === tag.toLowerCase() && p.race === r,
+    ),
+  );
+
+export const opponentIsRace = (tag: string, m: any, r: Race) =>
+  m?.teams?.some((t: any) =>
+    t.players.some(
+      (p: any) =>
+        p.battleTag.toLowerCase() !== tag.toLowerCase() && p.race === r,
     ),
   );
 
@@ -165,7 +173,11 @@ const url = (
     tag,
   )}&gateway=20&offset=${offset}&pageSize=${size}&gameMode=1&season=${season}`;
 
-export const getAllSeasonGames = async (tag: string, season: number) => {
+export const getAllSeasonGames = async (
+  tag: string,
+  season: number,
+  max: number = 0,
+) => {
   let all: any[] = [];
   let finished = false;
   let prev = all.length;
@@ -178,7 +190,10 @@ export const getAllSeasonGames = async (tag: string, season: number) => {
 
     all = [...all, ...response.matches];
 
-    finished = all.length === response.count || all.length === prev;
+    finished =
+      all.length === response.count ||
+      all.length === prev ||
+      (max !== 0 && all.length > max);
     prev = all.length;
     failsafe++;
   }
