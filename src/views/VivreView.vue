@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
+import NumberAnimation from "vue-number-animation";
 import moment from "moment";
 import _round from "lodash/round";
 import _has from "lodash/has";
@@ -39,7 +40,7 @@ setInterval(() => {
 </script>
 
 <template>
-  <main v-if="stats.player">
+  <main v-if="stats.player" style="height: 100vh; overflow-y: auto">
     <v-container fluid style="opacity: 0.9">
       <v-row>
         <v-col cols="8">
@@ -134,7 +135,9 @@ setInterval(() => {
               </v-row>
               <v-row>
                 <v-col cols="12" v-if="stats.player.week.total">
-                  <span class="title">Weekly Total</span>
+                  <span class="title"
+                    >This Week ({{ stats.player.week.total }}):</span
+                  >
                   <ResultChart :result="stats.player.week" />
                 </v-col>
                 <v-col cols="12" class="text-center" v-else>
@@ -142,6 +145,14 @@ setInterval(() => {
                     >No games played yet this week - There is no time like the
                     present!</span
                   >
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col cols="12" v-if="stats.player.day.total">
+                  <span class="title"
+                    >Today ({{ stats.player.day.total }}):</span
+                  >
+                  <ResultChart :result="stats.player.day" />
                 </v-col>
               </v-row>
             </v-sheet>
@@ -330,8 +341,19 @@ setInterval(() => {
                             bottom: 0px;
                             width: 0;
                           "
-                          >{{ stats.player.week.mmr.current }}</span
                         >
+                          <NumberAnimation
+                            :from="
+                              stats.player.week.mmr.current +
+                              stats.player.day.mmr.diff
+                            "
+                            :to="stats.player.week.mmr.current"
+                            :format="_round"
+                            :duration="1"
+                            autoplay
+                            easing="linear" />
+                          {{
+                        }}</span>
                         <span
                           class="text-white"
                           style="

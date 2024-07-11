@@ -32,8 +32,8 @@ const races = [Race.Human, Race.Orc, Race.NightElf, Race.Undead, Race.Random];
 </script>
 
 <template>
-  <main v-if="stats.player">
-    <v-container fluid style="opacity: 0.9; height: 100vh; overflow: auto">
+  <main v-if="stats.player" style="height: 100vh; overflow-y: auto">
+    <v-container fluid style="opacity: 0.9">
       <v-row>
         <v-col cols="6">
           <v-sheet class="pa-5" elevation="5" style="min-height: 356px">

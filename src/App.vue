@@ -71,6 +71,7 @@ function toggleTheme() {
       <div
         class="container"
         :style="{
+          overflow: 'hidden',
           background: 'url(' + (isDark ? bgDarkUrl : bgLightUrl) + ')',
         }"
       >
