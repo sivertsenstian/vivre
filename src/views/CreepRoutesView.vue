@@ -3,7 +3,7 @@ import { Race, creeproutes, raceIcon, raceName } from "@/stores/races";
 </script>
 
 <template>
-  <main>
+  <main style="height: 100vh; overflow-y: auto">
     <v-container fluid>
       <v-sheet class="pa-8" elevation="5">
         <v-row>
@@ -12,10 +12,7 @@ import { Race, creeproutes, raceIcon, raceName } from "@/stores/races";
             <hr />
           </v-col>
         </v-row>
-        <v-row
-          v-for="(v, player) in creeproutes"
-          style="max-height: 88vh; overflow: auto"
-        >
+        <v-row v-for="(v, player) in creeproutes">
           <v-col cols="12">
             <img
               style="vertical-align: middle"

@@ -5,7 +5,7 @@ const settings = useSettingsStore();
 </script>
 
 <template>
-  <main>
+  <main style="height: 100vh; overflow-y: auto">
     <v-container fluid>
       <v-row>
         <v-col cols="12">
