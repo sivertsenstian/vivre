@@ -17,8 +17,17 @@ const settings = useSettingsStore();
       <v-row>
         <v-col cols="12">
           <v-text-field
-            label="Weekly Ladder Goal"
+            label="Weekly Ladder Goal (total number of games)"
             v-model.trim="settings.data.goal"
+            clearable
+          />
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col cols="12">
+          <v-text-field
+            label="MMR Ladder Goal"
+            v-model.trim="settings.data.mmr"
             clearable
           />
         </v-col>
