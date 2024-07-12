@@ -3,6 +3,7 @@ import { Race } from "@/stores/races";
 import _isNil from "lodash/isNil";
 import _last from "lodash/last";
 import _round from "lodash/round";
+import _take from "lodash/take";
 import _first from "lodash/first";
 import _groupBy from "lodash/groupBy";
 import axios from "axios";
@@ -115,6 +116,26 @@ export const getRaceStatistics = (
     ),
   };
 
+  // Calculate mmr averages based on last 10 games played
+  const averageWin = Math.abs(
+    _take(matches, 10).reduce((s, m) => {
+      const gain = getplayer(tag)(m).players[0].mmrGain;
+      return gain > 0 ? s + gain : s;
+    }, 0),
+  );
+  const averageLoss = Math.abs(
+    _take(matches, 10).reduce((s, m) => {
+      const gain = getplayer(tag)(m).players[0].mmrGain;
+      return gain < 0 ? s + gain : s;
+    }, 0),
+  );
+  const averageGain = Math.abs(
+    _take(matches, 10).reduce(
+      (s, m) => s + getplayer(tag)(m).players[0].mmrGain * 0.1,
+      0,
+    ),
+  );
+
   let result: IRaceStatistics = {
     total: matches?.length ?? 0,
     wins: wins?.length ?? 0,
@@ -125,6 +146,11 @@ export const getRaceStatistics = (
       initial: info?.initialMmr ?? 0,
       current: info?.currentMmr ?? 0,
       diff: info?.diffMmr ?? 0,
+      averages: {
+        win: _round(averageWin, 2),
+        loss: _round(averageLoss, 2),
+        gain: _round(averageGain, 2),
+      },
     },
     race: {
       [Race.Random]: {

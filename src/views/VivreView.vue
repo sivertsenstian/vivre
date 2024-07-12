@@ -8,6 +8,7 @@ import ConfettiExplosion from "vue-confetti-explosion";
 import ResultChart from "@/components/ResultChart.vue";
 import WeeklyGoalChart from "@/components/WeeklyGoalChart.vue";
 import WeeklyResultChart from "@/components/WeeklyResultChart.vue";
+import Performance from "@/components/Performance.vue";
 import { useSettingsStore } from "@/stores/settings";
 import { useStatsStore } from "@/stores/stats";
 import { Race, creeproutes, raceIcon, heroIcon } from "@/stores/races";
@@ -28,6 +29,9 @@ const raceBanner: any = {
   [Race.NightElf]: ne_banner,
   [Race.Random]: r_banner,
 };
+
+const numberOfGames = (target: number, avg: number) =>
+  Math.abs(Math.ceil(target / avg));
 
 let duration = ref(
   moment.utc(moment().diff(stats?.ongoing?.start)).format("mm:ss"),
@@ -153,6 +157,76 @@ setInterval(() => {
                     >Today ({{ stats.player.day.total }}):</span
                   >
                   <ResultChart :result="stats.player.day" />
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col cols="12" v-if="settings.data.mmr">
+                  <div class="text-h6">MMR Breakdown</div>
+                  <hr />
+                  <v-row class="mt-2">
+                    <v-col cols="12">
+                      <section>
+                        Calculated by taking average mmr gained over the last 10
+                        games played ({{
+                          stats.player.week.mmr.averages.win
+                        }}
+                        gained, {{ stats.player.week.mmr.averages.loss }} lost).
+                      </section>
+                      <section>
+                        This means that you are currently getting
+                        <strong>{{
+                          stats.player.week.mmr.averages.gain
+                        }}</strong>
+                        MMR per game (on average)
+                      </section>
+                      <v-sheet
+                        v-if="stats.player.week.mmr.averages.gain > 0"
+                        class="mt-1 text-green"
+                      >
+                        <section class="font-weight-bold">
+                          On your current path it will take you
+                          {{
+                            numberOfGames(
+                              100,
+                              stats.player.week.mmr.averages.gain,
+                            )
+                          }}
+                          games to increase your MMR by 100 points
+                        </section>
+                        <section
+                          class="mt-1 font-weight-bold"
+                          v-if="
+                            settings.data.mmr > stats.player.week.mmr.current
+                          "
+                        >
+                          And it will take you
+                          {{
+                            numberOfGames(
+                              settings.data.mmr - stats.player.week.mmr.current,
+                              stats.player.week.mmr.averages.gain,
+                            )
+                          }}
+                          games to reach your current MMR goal of
+                          {{ settings.data.mmr }} MMR.
+                        </section>
+                      </v-sheet>
+                      <div
+                        v-if="stats.player.week.mmr.averages.gain < 0"
+                        class="mt-1 text-red text-subtitle"
+                      >
+                        <section>
+                          On your current path - it will take you
+                          {{
+                            numberOfGames(
+                              100,
+                              stats.player.week.mmr.averages.gain,
+                            )
+                          }}
+                          games to decrease your MMR by 100 points
+                        </section>
+                      </div>
+                    </v-col>
+                  </v-row>
                 </v-col>
               </v-row>
             </v-sheet>
@@ -452,45 +526,11 @@ setInterval(() => {
                   <hr />
                 </v-col>
                 <v-col cols="12">
-                  <div v-if="stats.player.week.total">
-                    <template
-                      v-for="(result, i) in stats.player.week.performance"
-                    >
-                      <v-chip
-                        v-if="i === stats.player.day.total"
-                        size="small"
-                        variant="tonal"
-                        color="gray"
-                        label
-                        class="rounded-0"
-                        title="Start of Today"
-                      >
-                        <v-icon icon="mdi-calendar" />
-                      </v-chip>
-                      <v-chip
-                        v-if="result"
-                        size="small"
-                        variant="tonal"
-                        color="green"
-                        label
-                        class="rounded-0"
-                        title="Win"
-                      >
-                        <v-icon icon="mdi-shield-sword-outline" />
-                      </v-chip>
-                      <v-chip
-                        v-else
-                        variant="tonal"
-                        size="small"
-                        color="red"
-                        label
-                        class="rounded-0"
-                        title="Loss"
-                      >
-                        <v-icon icon="mdi-shield-sword-outline" />
-                      </v-chip>
-                    </template>
-                  </div>
+                  <Performance
+                    :visible="stats.player.week.total > 0"
+                    :performance="stats.player.week.performance"
+                    :today="stats.player.day.total"
+                  />
                 </v-col>
               </v-row>
             </v-sheet>

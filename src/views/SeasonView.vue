@@ -19,6 +19,8 @@ import ud_banner from "@/assets/take_a_look_at_banner_undead.png";
 import ne_banner from "@/assets/take_a_look_at_banner_nightelf.png";
 import oc_banner from "@/assets/take_a_look_at_banner_orc.png";
 import moment from "moment/moment";
+import Performance from "@/components/Performance.vue";
+import Banner from "@/components/Banner.vue";
 
 const raceBanner: any = {
   [Race.Human]: hu_banner,
@@ -134,79 +136,17 @@ const races = [Race.Human, Race.Orc, Race.NightElf, Race.Undead, Race.Random];
             </v-fade-transition>
             <v-fade-transition>
               <v-row
+                style="overflow: visible"
                 v-if="stats.highscore && !stats.highscore.loading"
                 transition="fade-transition"
               >
                 <v-col v-for="score in stats.highscore">
-                  <v-card elevation="0">
-                    <v-card-item>
-                      <v-card-title>
-                        <span
-                          style="
-                            display: flex;
-                            align-items: center;
-                            justify-content: center;
-                          "
-                        >
-                          <img
-                            style="vertical-align: middle"
-                            width="135px"
-                            :src="raceBanner[score.race]"
-                          />
-                          <span
-                            style="
-                              opacity: 0.87;
-                              vertical-align: middle;
-                              position: relative;
-                              right: 103px;
-                              bottom: 55px;
-                              width: 0;
-                            "
-                          >
-                            <img
-                              style="vertical-align: middle"
-                              width="75px"
-                              :src="raceIcon[score.race]"
-                            />
-                          </span>
-                          <span
-                            class="text-h5 text-white"
-                            style="
-                              opacity: 0.87;
-                              vertical-align: middle;
-                              position: relative;
-                              right: 92px;
-                              bottom: 0px;
-                              width: 0;
-                            "
-                            >{{ score.mmr }}</span
-                          >
-                          <span
-                            class="text-white"
-                            style="
-                              opacity: 0.87;
-                              font-size: 16px !important;
-                              vertical-align: middle;
-                              position: relative;
-                              right: 85px;
-                              bottom: -25px;
-                              width: 0;
-                            "
-                            >MMR</span
-                          >
-                        </span>
-                      </v-card-title>
-                      <v-card-text>
-                        <v-row>
-                          <v-col cols="12" class="pa-0 pt-2 text-center">
-                            <span class="ml-2 title">
-                              <span> Season {{ score.season }} </span>
-                            </span>
-                          </v-col>
-                        </v-row>
-                      </v-card-text>
-                    </v-card-item>
-                  </v-card>
+                  <Banner
+                    :race="score.race"
+                    :current="score.mmr"
+                    :diff="score.diff"
+                    :label="`Season ${score.season}`"
+                  />
                 </v-col>
               </v-row>
             </v-fade-transition>
@@ -217,92 +157,12 @@ const races = [Race.Human, Race.Orc, Race.NightElf, Race.Undead, Race.Random];
       <v-row v-for="race in races">
         <v-col cols="2" v-if="stats.player.season[race].total">
           <v-sheet class="pa-5" :elevation="5">
-            <div class="text-h6 text-black text-center">
-              <v-card elevation="0">
-                <v-card-item>
-                  <v-card-title>
-                    <span
-                      style="
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-                      "
-                    >
-                      <img
-                        style="vertical-align: middle"
-                        width="135px"
-                        :src="raceBanner[race]"
-                      />
-                      <span
-                        style="
-                          opacity: 0.87;
-                          vertical-align: middle;
-                          position: relative;
-                          right: 103px;
-                          bottom: 55px;
-                          width: 0;
-                        "
-                      >
-                        <img
-                          style="vertical-align: middle"
-                          width="75px"
-                          :src="raceIcon[race]"
-                        />
-                      </span>
-                      <span
-                        v-if="stats.player.season?.[race]?.mmr.current > 100"
-                        class="text-h5 text-white"
-                        style="
-                          opacity: 0.87;
-                          vertical-align: middle;
-                          position: relative;
-                          right: 92px;
-                          bottom: 0px;
-                          width: 0;
-                        "
-                        >{{ stats.player.season?.[race]?.mmr.current }}</span
-                      >
-                      <span
-                        class="text-white"
-                        style="
-                          opacity: 0.87;
-                          font-size: 16px !important;
-                          vertical-align: middle;
-                          position: relative;
-                          right: 85px;
-                          bottom: -25px;
-                          width: 0;
-                        "
-                        >MMR</span
-                      >
-                    </span>
-                  </v-card-title>
-                  <v-card-text>
-                    <v-row>
-                      <v-col cols="12" class="pa-0 pt-2">
-                        <span class="ml-2 title">
-                          <span
-                            :class="{
-                              'text-green':
-                                stats.player?.season?.[race].mmr.diff > 0,
-                              'text-red':
-                                stats.player?.season?.[race].mmr.diff < 0,
-                            }"
-                          >
-                            <span
-                              v-if="stats.player?.season?.[race].mmr.diff > 0"
-                              >+</span
-                            >
-                            {{ stats.player?.season?.[race].mmr.diff }}
-                          </span>
-                          This Season
-                        </span>
-                      </v-col>
-                    </v-row>
-                  </v-card-text>
-                </v-card-item>
-              </v-card>
-            </div>
+            <Banner
+              :race="race"
+              :current="stats.player.season?.[race]?.mmr.current"
+              :diff="stats.player.season?.[race]?.mmr.diff"
+              :label="'This Season'"
+            />
           </v-sheet>
         </v-col>
         <v-col cols="5" v-if="stats.player.season[race].total">
@@ -350,37 +210,11 @@ const races = [Race.Human, Race.Orc, Race.NightElf, Race.Undead, Race.Random];
                 <hr />
               </v-col>
               <v-col cols="12">
-                <div
-                  v-if="stats.player.season[race].total"
-                  style="max-height: 151px; overflow: hidden"
-                >
-                  <template
-                    v-for="(result, i) in stats.player.season[race].performance"
-                  >
-                    <v-chip
-                      v-if="result"
-                      size="small"
-                      variant="tonal"
-                      color="green"
-                      label
-                      class="rounded-0"
-                      title="Win"
-                    >
-                      <v-icon icon="mdi-shield-sword-outline" />
-                    </v-chip>
-                    <v-chip
-                      v-else
-                      variant="tonal"
-                      size="small"
-                      color="red"
-                      label
-                      class="rounded-0"
-                      title="Loss"
-                    >
-                      <v-icon icon="mdi-shield-sword-outline" />
-                    </v-chip>
-                  </template>
-                </div>
+                <Performance
+                  :visible="stats.player.season[race].total > 0"
+                  :performance="stats.player.season[race].performance"
+                  :today="-1"
+                />
               </v-col>
             </v-row>
           </v-sheet>

@@ -25,6 +25,11 @@ export interface IRaceStatistics {
     initial: number;
     current: number;
     diff: number;
+    averages: {
+      win: number;
+      loss: number;
+      gain: number;
+    };
   };
   race: {
     [Race.Random]: IVSRaceStatistics;
