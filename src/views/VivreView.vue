@@ -196,6 +196,7 @@ setInterval(() => {
                         <section
                           class="mt-1 font-weight-bold"
                           v-if="
+                            settings.data?.mmr &&
                             settings.data.mmr > stats.player.week.mmr.current
                           "
                         >
