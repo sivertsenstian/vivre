@@ -160,7 +160,7 @@ setInterval(() => {
                 </v-col>
               </v-row>
               <v-row>
-                <v-col cols="12" v-if="settings.data.mmr">
+                <v-col cols="12" v-if="stats.player.week.total">
                   <div class="text-h6">MMR Breakdown</div>
                   <hr />
                   <v-row class="mt-2">
