@@ -26,6 +26,7 @@ export interface IRaceStatistics {
     current: number;
     diff: number;
     averages: {
+      count: number;
       win: number;
       loss: number;
       gain: number;

@@ -161,16 +161,15 @@ setInterval(() => {
               </v-row>
               <v-row>
                 <v-col cols="12" v-if="stats.player.week.total">
-                  <div class="text-h6">MMR Breakdown</div>
+                  <div class="text-h6">Weekly MMR Breakdown</div>
                   <hr />
                   <v-row class="mt-2">
                     <v-col cols="12">
                       <section>
-                        Calculated by taking average mmr gained over the last 10
-                        games played ({{
-                          stats.player.week.mmr.averages.win
-                        }}
-                        gained, {{ stats.player.week.mmr.averages.loss }} lost).
+                        Calculated by taking average mmr gained over this weeks
+                        {{ stats.player.week.mmr.averages.count }} games played
+                        ({{ stats.player.week.mmr.averages.win }} gained,
+                        {{ stats.player.week.mmr.averages.loss }} lost).
                       </section>
                       <section>
                         This means that you are currently

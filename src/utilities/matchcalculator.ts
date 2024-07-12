@@ -117,22 +117,22 @@ export const getRaceStatistics = (
   };
 
   // Calculate mmr averages based on last 10 games played
+  const c = matches.length;
+
   const averageWin = Math.abs(
-    _take(matches, 10).reduce((s, m) => {
+    matches.reduce((s, m) => {
       const gain = getplayer(tag)(m).players[0].mmrGain;
       return gain > 0 ? s + gain : s;
     }, 0),
   );
   const averageLoss = Math.abs(
-    _take(matches, 10).reduce((s, m) => {
+    matches.reduce((s, m) => {
       const gain = getplayer(tag)(m).players[0].mmrGain;
       return gain < 0 ? s + gain : s;
     }, 0),
   );
-  const averageGain = _take(matches, 10).reduce(
-    (s, m) => s + getplayer(tag)(m).players[0].mmrGain * 0.1,
-    0,
-  );
+  const averageGain =
+    matches.reduce((s, m) => s + getplayer(tag)(m).players[0].mmrGain, 0) / c;
 
   let result: IRaceStatistics = {
     total: matches?.length ?? 0,
@@ -145,9 +145,10 @@ export const getRaceStatistics = (
       current: info?.currentMmr ?? 0,
       diff: info?.diffMmr ?? 0,
       averages: {
-        win: _round(averageWin, 5),
-        loss: _round(averageLoss, 5),
-        gain: _round(averageGain, 5),
+        count: c,
+        win: _round(averageWin, 2),
+        loss: _round(averageLoss, 2),
+        gain: _round(averageGain, 2),
       },
     },
     race: {
