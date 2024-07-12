@@ -173,11 +173,18 @@ setInterval(() => {
                         gained, {{ stats.player.week.mmr.averages.loss }} lost).
                       </section>
                       <section>
-                        This means that you are currently getting
-                        <strong>{{
-                          stats.player.week.mmr.averages.gain
-                        }}</strong>
-                        MMR per game (on average)
+                        This means that you are currently
+                        {{
+                          Math.sign(stats.player.week.mmr.averages.gain) > 0
+                            ? "gaining"
+                            : "losing"
+                        }}
+                        <strong
+                          >{{
+                            Math.abs(stats.player.week.mmr.averages.gain)
+                          }}MMR</strong
+                        >
+                        per game (on average)
                       </section>
                       <v-sheet
                         v-if="stats.player.week.mmr.averages.gain > 0"
@@ -216,14 +223,15 @@ setInterval(() => {
                         class="mt-1 text-red text-subtitle"
                       >
                         <section>
-                          On your current path - it will take you
+                          On your current path - you will have decreased your
+                          MMR by 100 points after
                           {{
                             numberOfGames(
                               100,
                               stats.player.week.mmr.averages.gain,
                             )
                           }}
-                          games to decrease your MMR by 100 points
+                          games.
                         </section>
                       </div>
                     </v-col>
