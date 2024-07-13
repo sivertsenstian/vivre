@@ -181,6 +181,39 @@ const open = (path: string) => window.open(path, "_blank");
 
 const theme = useTheme();
 const isDark = computed(() => theme.global.current.value.dark);
+
+const daysToGoal = computed(() => {
+  if (events.loaded >= 3) {
+    const d = Math.ceil(
+      numberOfGames(
+        3000 - events.data[events.highest].week.mmr.current,
+        events.data[events.highest].week.mmr.averages.gain,
+      ) /
+        (events.data[events.highest].week.mmr.averages.count / days),
+    );
+
+    return { days: d, date: moment().add(d, "days").startOf("day") };
+  }
+
+  return { days: 0, date: null };
+});
+
+// Counter
+const dayz = ref(0);
+const hours = ref(0);
+const minutes = ref(0);
+const seconds = ref(0);
+
+setInterval(() => {
+  if (daysToGoal.value.date) {
+    const currentDate = moment();
+    const p = daysToGoal.value.date - currentDate;
+    seconds.value = parseInt(p / 1000);
+    minutes.value = parseInt(seconds.value / 60);
+    hours.value = parseInt(minutes.value / 60);
+    dayz.value = parseInt(hours.value / 24);
+  }
+}, 1000);
 </script>
 
 <template>
@@ -224,14 +257,84 @@ const isDark = computed(() => theme.global.current.value.dark);
               </v-col>
 
               <v-col cols="12">
-                <section>
-                  <span class="text-h4" style="vertical-align: middle">{{
-                    events.matches.length
-                  }}</span>
-                  Games played since ban was lifted on
-                  {{ start.format("dddd, MMMM Do, HH:mm:ss") }} - across all
-                  accounts
-                </section>
+                <v-row>
+                  <v-col cols="6" class="d-flex align-center">
+                    <section>
+                      <span
+                        class="text-h4 mr-2"
+                        style="vertical-align: middle"
+                        >{{ events.matches.length }}</span
+                      >
+                      <span
+                        class="text-subtitle-1"
+                        style="vertical-align: middle"
+                      >
+                        Games played since ban was lifted on
+                        {{ start.format("dddd, MMMM Do") }}
+                      </span>
+                    </section>
+                  </v-col>
+                  <v-col cols="6">
+                    <v-col cols="12" class="d-flex">
+                      <v-card class="ml-auto mr-2" width="150px" weight="120px">
+                        <v-card-text>
+                          <p
+                            class="text-h2 text--primary text-center font-weight-regular"
+                          >
+                            {{ dayz % 365 }}
+                          </p>
+                        </v-card-text>
+                        <v-card-actions>
+                          <v-btn block variant="text" color="green-accent-4">
+                            DAYS
+                          </v-btn>
+                        </v-card-actions>
+                      </v-card>
+                      <v-card class="mx-2" width="150px" weight="120px">
+                        <v-card-text>
+                          <p
+                            class="text-h2 text--primary text-center font-weight-regular"
+                          >
+                            {{ hours % 24 }}
+                          </p>
+                        </v-card-text>
+                        <v-card-actions>
+                          <v-btn block variant="text" color="green-accent-4">
+                            HOURS
+                          </v-btn>
+                        </v-card-actions>
+                      </v-card>
+                      <v-card class="mx-2" width="150px" weight="120px">
+                        <v-card-text>
+                          <p
+                            class="text-h2 text--primary text-center font-weight-regular"
+                          >
+                            {{ minutes % 60 }}
+                          </p>
+                        </v-card-text>
+                        <v-card-actions>
+                          <v-btn block variant="text" color="green-accent-4">
+                            MINUTES
+                          </v-btn>
+                        </v-card-actions>
+                      </v-card>
+                      <v-card class="mr-auto ml-2" width="150px" weight="120px">
+                        <v-card-text>
+                          <p
+                            class="text-h2 text--primary text-center font-weight-regular"
+                          >
+                            {{ seconds % 60 }}
+                          </p>
+                        </v-card-text>
+                        <v-card-actions>
+                          <v-btn block variant="text" color="green-accent-4">
+                            SECONDS
+                          </v-btn>
+                        </v-card-actions>
+                      </v-card>
+                    </v-col>
+                  </v-col>
+                </v-row>
                 <section>
                   <div class="text-h5 mt-5">Prediction</div>
                   <hr />
@@ -245,9 +348,9 @@ const isDark = computed(() => theme.global.current.value.dark);
                         games played ({{
                           events.data[events.highest].week.mmr.averages.win
                         }}
-                        gained,
+                        mmr gained,
                         {{ events.data[events.highest].week.mmr.averages.loss }}
-                        lost), for the currently highest account
+                        mmr lost), for the currently highest account:
                         <strong style="color: goldenrod">{{
                           events.highest
                         }}</strong>
@@ -291,26 +394,16 @@ const isDark = computed(() => theme.global.current.value.dark);
                         </section>
                         <section>
                           He is currently playing
-                          {{
-                            Math.ceil(
-                              events.data[events.highest].week.mmr.averages
-                                .count / days,
-                            )
-                          }}
-                          games per day (on average) So he only needs another
-                          {{
-                            Math.ceil(
-                              numberOfGames(
-                                3000 -
-                                  events.data[events.highest].week.mmr.current,
+                          <strong>
+                            {{
+                              Math.ceil(
                                 events.data[events.highest].week.mmr.averages
-                                  .gain,
-                              ) /
-                                (events.data[events.highest].week.mmr.averages
-                                  .count /
-                                  days),
-                            )
-                          }}
+                                  .count / days,
+                              )
+                            }}
+                          </strong>
+                          games per day (on average) So he only needs another
+                          <strong>{{ daysToGoal.days }}</strong>
                           days if he keeps this up!
                         </section>
                       </v-sheet>
@@ -431,8 +524,8 @@ const isDark = computed(() => theme.global.current.value.dark);
                 </v-sheet>
               </v-col>
 
-              <v-col cols="12">
-                <span class="float-right text-h6"
+              <v-col cols="12" class="text-center">
+                <span class="text-h6"
                   >Remaining points to reach 3000 MMR Goal</span
                 >
                 <v-progress-linear

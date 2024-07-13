@@ -266,8 +266,6 @@ export const useEventsStore = defineStore("events", () => {
       loss: _groupBy(loss, (l) => l.teams[0].players[0].race),
     };
 
-    console.log({ wins, loss, grouped });
-
     return {
       [Race.Random]: {
         total: getTotal(grouped, Race.Random),
@@ -301,8 +299,6 @@ export const useEventsStore = defineStore("events", () => {
       },
     };
   });
-
-  console.log({ race });
 
   return { data, accounts, matches, ongoing, highest, loaded, race };
 });
