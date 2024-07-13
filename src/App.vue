@@ -47,6 +47,13 @@ function toggleTheme() {
           to="creeproutes"
         ></v-list-item>
         <v-list-item
+          baseColor="red"
+          prepend-icon="mdi-podcast"
+          title="Events (live!)"
+          router
+          to="/events"
+        ></v-list-item>
+        <v-list-item
           :disabled="inProduction"
           prepend-icon="mdi-castle"
           title="Build Orders"

@@ -22,14 +22,6 @@ import moment from "moment/moment";
 import Performance from "@/components/Performance.vue";
 import Banner from "@/components/Banner.vue";
 
-const raceBanner: any = {
-  [Race.Human]: hu_banner,
-  [Race.Orc]: oc_banner,
-  [Race.Undead]: ud_banner,
-  [Race.NightElf]: ne_banner,
-  [Race.Random]: r_banner,
-};
-
 const races = [Race.Human, Race.Orc, Race.NightElf, Race.Undead, Race.Random];
 </script>
 

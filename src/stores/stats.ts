@@ -38,16 +38,6 @@ export const useStatsStore = defineStore("stats", () => {
       name,
     )}&pageSize=20`;
 
-  const url = (
-    tag: string,
-    offset: number = 0,
-    size: number = 100,
-    season: number = latest,
-  ) =>
-    `https://website-backend.w3champions.com/api/matches/search?playerId=${encodeURIComponent(
-      tag,
-    )}&gateway=20&offset=${offset}&pageSize=${size}&gameMode=1&season=${season}`;
-
   const currentUrl = (tag: string) =>
     `https://website-backend.w3champions.com/api/matches/ongoing/${encodeURIComponent(
       tag,

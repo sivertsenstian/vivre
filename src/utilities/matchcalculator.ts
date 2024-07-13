@@ -135,10 +135,11 @@ export const getRaceStatistics = (
     matches.reduce((s, m) => s + getplayer(tag)(m).players[0].mmrGain, 0) / c;
 
   let result: IRaceStatistics = {
+    matches,
     total: matches?.length ?? 0,
     wins: wins?.length ?? 0,
     loss: loss?.length ?? 0,
-    percentage: (wins?.length ?? 0) / (wins?.length + loss?.length) ?? 1,
+    percentage: (wins?.length ?? 0) / (wins?.length + loss?.length),
     performance: getPerformance(tag, matches),
     mmr: {
       initial: info?.initialMmr ?? 0,
