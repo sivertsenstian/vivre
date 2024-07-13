@@ -96,7 +96,7 @@ defineProps<Props>();
                     'text-red': diff < 0,
                   }"
                 >
-                  <span> 0">+</span>
+                  <span v-if="diff > 0">+</span>
                   {{ diff }}
                 </span>
                 <a
