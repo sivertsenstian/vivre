@@ -3,7 +3,6 @@ import { Race } from "@/stores/races";
 import _isNil from "lodash/isNil";
 import _last from "lodash/last";
 import _round from "lodash/round";
-import _take from "lodash/take";
 import _first from "lodash/first";
 import _groupBy from "lodash/groupBy";
 import axios from "axios";
