@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import makrura from "@/assets/makrura.png";
+import happyjail from "@/assets/events/apejail.jpg";
 import w3cicon from "@/assets/w3c.png";
 import w3ciconDark from "@/assets/w3c_dark.png";
 import Banner from "@/components/Banner.vue";
@@ -261,7 +262,7 @@ setInterval(() => {
                   <v-col cols="6" class="d-flex align-center">
                     <section>
                       <span
-                        class="text-h4 mr-2"
+                        class="text-h4 mr-1"
                         style="vertical-align: middle"
                         >{{ events.matches.length }}</span
                       >
@@ -269,10 +270,16 @@ setInterval(() => {
                         class="text-subtitle-1"
                         style="vertical-align: middle"
                       >
-                        Games played since ban was lifted on
-                        {{ start.format("dddd, MMMM Do") }}
+                        Games played since FREED from PRISON on
+                        {{ start.format("MMMM Do") }}
                       </span>
                     </section>
+                    <img
+                      class="ml-3"
+                      :src="happyjail"
+                      height="110px"
+                      style="border: 2px solid goldenrod"
+                    />
                   </v-col>
                   <v-col cols="6">
                     <v-col cols="12" class="d-flex">
