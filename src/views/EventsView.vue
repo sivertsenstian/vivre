@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import makrura from "@/assets/makrura.png";
+import w3cicon from "@/assets/w3c.png";
+import w3ciconDark from "@/assets/w3c_dark.png";
 import Banner from "@/components/Banner.vue";
 import { useEventsStore } from "@/stores/events";
 import moment from "moment";
@@ -35,6 +37,7 @@ import { Race, raceIcon } from "@/stores/races";
 import _groupBy from "lodash/groupBy";
 import _take from "lodash/take";
 import ResultChart from "@/components/ResultChart.vue";
+import { useTheme } from "vuetify";
 
 ChartJS.register(
   LineController,
@@ -175,6 +178,9 @@ setInterval(() => {
 }, 1000);
 
 const open = (path: string) => window.open(path, "_blank");
+
+const theme = useTheme();
+const isDark = computed(() => theme.global.current.value.dark);
 </script>
 
 <template>
@@ -758,12 +764,44 @@ const open = (path: string) => window.open(path, "_blank");
       </v-row>
 
       <v-row>
-        <v-col cols="12" class="text-right">
+        <v-col cols="12">
           <v-sheet class="pa-8" elevation="5">
-            <span style="vertical-align: middle"
-              >Proudly sponsored by MAKRURA
-            </span>
-            <img class="ml-3" style="vertical-align: middle" :src="makrura" />
+            <v-row>
+              <v-col cols="6" class="text-left">
+                <v-row>
+                  <v-col cols="12">
+                    <span style="vertical-align: bottom">
+                      Made possible by the amazing work done by
+                    </span>
+                    <span style="vertical-align: text-bottom">
+                      <img
+                        @click="open('https://www.w3champions.com')"
+                        class="ml-1"
+                        height="25px"
+                        style="vertical-align: middle; cursor: pointer"
+                        :src="isDark ? w3ciconDark : w3cicon"
+                      />
+                    </span>
+                  </v-col>
+                  <v-col cols="12">
+                    <a href="https://www.twitch.tv/saulapeman" target="_blank">
+                      CLICK HERE - And follow this EXCITING journey
+                      <strong>LIVE</strong> with mr saul apeman</a
+                    >
+                  </v-col>
+                </v-row>
+              </v-col>
+              <v-col cols="6" class="text-right">
+                <span style="vertical-align: middle"
+                  >Proudly sponsored by MAKRURA
+                </span>
+                <img
+                  class="ml-3"
+                  style="vertical-align: middle"
+                  :src="makrura"
+                />
+              </v-col>
+            </v-row>
           </v-sheet>
         </v-col>
       </v-row>
