@@ -208,11 +208,11 @@ const seconds = ref(0);
 setInterval(() => {
   if (daysToGoal.value.date) {
     const currentDate = moment();
-    const p = daysToGoal.value.date - currentDate;
-    seconds.value = parseInt(p / 1000);
-    minutes.value = parseInt(seconds.value / 60);
-    hours.value = parseInt(minutes.value / 60);
-    dayz.value = parseInt(hours.value / 24);
+    const p = (daysToGoal.value.date as any) - (currentDate as any);
+    seconds.value = parseInt((p / 1000) as any);
+    minutes.value = parseInt((seconds.value / 60) as any);
+    hours.value = parseInt((minutes.value / 60) as any);
+    dayz.value = parseInt((hours.value / 24) as any);
   }
 }, 1000);
 </script>
