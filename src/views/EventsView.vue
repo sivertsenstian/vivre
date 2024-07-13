@@ -223,7 +223,7 @@ const open = (path: string) => window.open(path, "_blank");
                     events.matches.length
                   }}</span>
                   Games played since ban was lifted on
-                  {{ start.format("dddd, MMMM Do, hh:mm:ss") }} - across all
+                  {{ start.format("dddd, MMMM Do, HH:mm:ss") }} - across all
                   accounts
                 </section>
                 <section>
@@ -341,6 +341,19 @@ const open = (path: string) => window.open(path, "_blank");
                           >Current game on '{{ events.ongoing?.map }}' :
                           {{ duration }}</span
                         >
+                        <v-btn
+                          @click="
+                            () =>
+                              open(
+                                `https://www.w3champions.com/match/${events.ongoing.id}`,
+                              )
+                          "
+                          title="go to match"
+                          size="x-small"
+                          color="orange"
+                          icon="mdi-link"
+                          variant="text"
+                        />
                       </v-col>
                       <v-col cols="12">
                         <span class="text-h5" style="vertical-align: text-top"
@@ -543,7 +556,7 @@ const open = (path: string) => window.open(path, "_blank");
                   />
                 </div>
                 <div class="title mb-2">
-                  {{ moment(win.endTime).format("dddd, MMMM Do, hh:mm:ss") }}
+                  {{ moment(win.endTime).format("dddd, MMMM Do, HH:mm:ss") }}
                 </div>
                 <img
                   style="vertical-align: middle"
@@ -552,7 +565,6 @@ const open = (path: string) => window.open(path, "_blank");
                 />
                 <div class="title">
                   <a
-                    style="color: white"
                     :href="`https://www.w3champions.com/player/${encodeURIComponent(
                       win.teams[1].players[0].battleTag,
                     )}`"
@@ -584,7 +596,7 @@ const open = (path: string) => window.open(path, "_blank");
                   />
                 </div>
                 <div class="title mb-2">
-                  {{ moment(loss.endTime).format("dddd, MMMM Do, hh:mm:ss") }}
+                  {{ moment(loss.endTime).format("dddd, MMMM Do, HH:mm:ss") }}
                 </div>
                 <img
                   style="vertical-align: middle"
@@ -593,7 +605,6 @@ const open = (path: string) => window.open(path, "_blank");
                 />
                 <div class="title">
                   <a
-                    style="color: white"
                     :href="`https://www.w3champions.com/player/${encodeURIComponent(
                       loss.teams[0].players[0].battleTag,
                     )}`"
@@ -622,7 +633,6 @@ const open = (path: string) => window.open(path, "_blank");
                 />
                 <div class="title">
                   <a
-                    style="color: white"
                     :href="`https://www.w3champions.com/player/${encodeURIComponent(
                       donater.opponent,
                     )}`"
@@ -649,7 +659,6 @@ const open = (path: string) => window.open(path, "_blank");
                 />
                 <div class="title">
                   <a
-                    style="color: white"
                     :href="`https://www.w3champions.com/player/${encodeURIComponent(
                       stealer.opponent,
                     )}`"
@@ -665,7 +674,7 @@ const open = (path: string) => window.open(path, "_blank");
             </v-row>
 
             <v-row>
-              <v-col cols="6">
+              <v-col cols="7">
                 <v-card elevation="0">
                   <v-list>
                     <v-list-subheader>Recent HITMEN</v-list-subheader>
@@ -681,7 +690,6 @@ const open = (path: string) => window.open(path, "_blank");
 
                     <v-list-item-title class="ml-2">
                       <a
-                        style="color: white"
                         :href="`https://www.w3champions.com/player/${encodeURIComponent(
                           game.teams[0].players[0].battleTag,
                         )}`"
@@ -694,7 +702,7 @@ const open = (path: string) => window.open(path, "_blank");
                       <span>
                         //
                         {{
-                          moment(game.endTime).format("dddd, MMMM Do, hh:mm:ss")
+                          moment(game.endTime).format("dddd, MMMM Do, HH:mm:ss")
                         }}</span
                       >
                       <span class="text-red ml-2"
@@ -705,11 +713,22 @@ const open = (path: string) => window.open(path, "_blank");
                       <span class="text-grey ml-2"
                         >on {{ game.teams[1].players[0].name }}</span
                       >
+                      <v-btn
+                        @click="
+                          () =>
+                            open(`https://www.w3champions.com/match/${game.id}`)
+                        "
+                        title="go to match"
+                        size="x-small"
+                        color="orange"
+                        icon="mdi-link"
+                        variant="text"
+                      />
                     </v-list-item-title>
                   </v-list-item>
                 </v-card>
               </v-col>
-              <v-col cols="6">
+              <v-col cols="5">
                 <v-list lines="one" style="overflow: hidden">
                   <v-list>
                     <v-list-subheader
