@@ -17,15 +17,20 @@ const raceBanner: any = {
 interface Props {
   race: Race;
   current: number;
-  diff: number;
+  diff?: number;
   label: string;
+  highlight?: boolean;
 }
 defineProps<Props>();
 </script>
 
 <template>
   <div class="text-h6 text-black text-center">
-    <v-card elevation="0">
+    <v-card
+      elevation="0"
+      :class="highlight ? 'gold' : 'plain'"
+      style="border-radius: 20px"
+    >
       <v-card-item>
         <v-card-title>
           <span
@@ -83,14 +88,14 @@ defineProps<Props>();
         <v-card-text>
           <v-row>
             <v-col cols="12" class="pa-0 pt-2">
-              <span class="ml-2 title">
+              <span class="ml-2 title" v-if="diff">
                 <span
                   :class="{
                     'text-green': diff > 0,
                     'text-red': diff < 0,
                   }"
                 >
-                  <span v-if="diff > 0">+</span>
+                  <span> 0">+</span>
                   {{ diff }}
                 </span>
                 {{ label }}
@@ -103,4 +108,23 @@ defineProps<Props>();
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.gold {
+  background: radial-gradient(
+      ellipse farthest-corner at right bottom,
+      #fedb37 0%,
+      #fdb931 8%,
+      #9f7928 30%,
+      #8a6e2f 40%,
+      transparent 80%
+    ),
+    radial-gradient(
+      ellipse farthest-corner at left top,
+      #ffffff 0%,
+      #ffffac 8%,
+      #d1b464 25%,
+      #5d4a1f 62.5%,
+      #5d4a1f 100%
+    );
+}
+</style>

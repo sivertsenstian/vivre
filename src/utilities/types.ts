@@ -16,6 +16,7 @@ export interface IRaceStatisticsSummary extends IRaceStatistics {
 }
 
 export interface IRaceStatistics {
+  matches: any[];
   total: number;
   wins: number;
   loss: number;
