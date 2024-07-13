@@ -99,7 +99,14 @@ defineProps<Props>();
                   <span> 0">+</span>
                   {{ diff }}
                 </span>
-                {{ label }}
+                <a
+                  style="color: white"
+                  :href="`https://www.w3champions.com/player/${encodeURIComponent(
+                    label,
+                  )}`"
+                  target="_blank"
+                  >{{ label }}
+                </a>
               </span>
             </v-col>
           </v-row>

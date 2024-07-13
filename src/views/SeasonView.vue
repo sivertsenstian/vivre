@@ -13,11 +13,6 @@ const end = moment(start).add(15, "weeks");
 const today = moment();
 const days = today.diff(start, "days");
 
-import hu_banner from "@/assets/take_a_look_at_banner_michael.png";
-import r_banner from "@/assets/take_a_look_at_banner_random.png";
-import ud_banner from "@/assets/take_a_look_at_banner_undead.png";
-import ne_banner from "@/assets/take_a_look_at_banner_nightelf.png";
-import oc_banner from "@/assets/take_a_look_at_banner_orc.png";
 import moment from "moment/moment";
 import Performance from "@/components/Performance.vue";
 import Banner from "@/components/Banner.vue";
