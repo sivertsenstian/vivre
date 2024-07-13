@@ -88,8 +88,9 @@ defineProps<Props>();
         <v-card-text>
           <v-row>
             <v-col cols="12" class="pa-0 pt-2">
-              <span class="ml-2 title" v-if="diff">
+              <span class="ml-2 title">
                 <span
+                  v-if="diff"
                   :class="{
                     'text-green': diff > 0,
                     'text-red': diff < 0,
