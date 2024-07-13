@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, type Ref, ref } from "vue";
+import { computed, ref } from "vue";
 import makrura from "@/assets/makrura.png";
 import Banner from "@/components/Banner.vue";
 import { useEventsStore } from "@/stores/events";
@@ -12,8 +12,8 @@ import _minBy from "lodash/minBy";
 import ConfettiExplosion from "vue-confetti-explosion";
 
 const events = useEventsStore();
-const start = moment([2024, 6, 9]);
-const today = moment();
+const start = moment("10.07.2024", "DD.MM.YYYY").startOf("day");
+const today = moment().add(1, "day").startOf("day");
 const days = today.diff(start, "days");
 
 // Chart stuff
@@ -33,6 +33,8 @@ import "chartjs-adapter-moment";
 import { getloss, getplayer, getwins } from "@/utilities/matchcalculator";
 import { Race, raceIcon } from "@/stores/races";
 import _groupBy from "lodash/groupBy";
+import _take from "lodash/take";
+import ResultChart from "@/components/ResultChart.vue";
 
 ChartJS.register(
   LineController,
@@ -56,11 +58,18 @@ const options = {
       time: { unit: "day" },
     },
     mmrAxis: {
+      suggestedMin: 2700,
+      suggestedMax: 2900,
       stacked: false,
       beginAtZero: false,
       grid: { display: false },
     },
-    gamesAxis: { stacked: false, beginAtZero: true, grid: { display: false } },
+    gamesAxis: {
+      suggestedMax: 20,
+      stacked: false,
+      beginAtZero: true,
+      grid: { display: false },
+    },
   },
   plugins: {
     tooltip: {
@@ -145,6 +154,17 @@ const donater = computed(() => {
   return _maxBy(result, (r) => r.gained);
 });
 
+const hitmen = computed(() => {
+  const loss: any[] = events.accounts.reduce(
+    (s: any[], a: string) => [
+      ...s,
+      ...events.matches.filter((m) => getloss(a, m)),
+    ],
+    [],
+  );
+  return _take(loss, 5);
+});
+
 let duration = ref(
   moment.utc(moment().diff(events?.ongoing?.start)).format("mm:ss"),
 );
@@ -153,15 +173,14 @@ setInterval(() => {
     .utc(moment().diff(events?.ongoing?.start))
     .format("mm:ss");
 }, 1000);
+
+const open = (path: string) => window.open(path, "_blank");
 </script>
 
 <template>
   <main style="height: 100vh; overflow-y: auto">
-    <v-container
-      fluid
-      style="opacity: 0.9"
-      v-if="events.accounts?.every((account) => events.data?.[account])"
-    >
+    <v-progress-linear indeterminate v-if="events.loaded < 3" />
+    <v-container fluid style="opacity: 0.9" v-if="events.loaded >= 3">
       <v-row>
         <v-col cols="12">
           <v-sheet class="pa-5" elevation="5">
@@ -203,8 +222,9 @@ setInterval(() => {
                   <span class="text-h4" style="vertical-align: middle">{{
                     events.matches.length
                   }}</span>
-                  Games played since ban on {{ start.format("DD. MMMM") }} -
-                  across all accounts
+                  Games played since ban was lifted on
+                  {{ start.format("dddd, MMMM Do, hh:mm:ss") }} - across all
+                  accounts
                 </section>
                 <section>
                   <div class="text-h5 mt-5">Prediction</div>
@@ -262,6 +282,30 @@ setInterval(() => {
                             )
                           }}
                           games to reach 3000 MMR.
+                        </section>
+                        <section>
+                          He is currently playing
+                          {{
+                            Math.ceil(
+                              events.data[events.highest].week.mmr.averages
+                                .count / days,
+                            )
+                          }}
+                          games per day (on average) So he only needs another
+                          {{
+                            Math.ceil(
+                              numberOfGames(
+                                3000 -
+                                  events.data[events.highest].week.mmr.current,
+                                events.data[events.highest].week.mmr.averages
+                                  .gain,
+                              ) /
+                                (events.data[events.highest].week.mmr.averages
+                                  .count /
+                                  days),
+                            )
+                          }}
+                          days if he keeps this up!
                         </section>
                       </v-sheet>
                       <div
@@ -434,7 +478,7 @@ setInterval(() => {
                           ?.reduce(
                             (r: number[], m: any) => {
                               const d = moment(m.endTime).dayOfYear();
-                              const day = days - (today.dayOfYear() - d) - 1;
+                              const day = days - (today.dayOfYear() - d);
                               const p = getplayer(account)(m);
                               const mmr = p.players[0].currentMmr;
 
@@ -461,7 +505,7 @@ setInterval(() => {
                           ?.reduce(
                             (r: number[], m: any) => {
                               const d = moment(m.endTime).dayOfYear();
-                              const day = days - (today.dayOfYear() - d) - 1;
+                              const day = days - (today.dayOfYear() - d);
 
                               r[day]++;
                               return r;
@@ -485,9 +529,21 @@ setInterval(() => {
 
             <v-row>
               <v-col cols="3" v-if="win" class="text-center">
-                <div class="font-weight-bold text-green">BIGGEST WIN</div>
+                <div class="font-weight-bold text-green">
+                  BIGGEST WIN
+                  <v-btn
+                    @click="
+                      () => open(`https://www.w3champions.com/match/${win.id}`)
+                    "
+                    title="go to match"
+                    size="x-small"
+                    color="orange"
+                    icon="mdi-link"
+                    variant="text"
+                  />
+                </div>
                 <div class="title mb-2">
-                  {{ moment(win.endTime).format("dddd d. MMMM - HH:mm:ss") }}
+                  {{ moment(win.endTime).format("dddd, MMMM Do, hh:mm:ss") }}
                 </div>
                 <img
                   style="vertical-align: middle"
@@ -495,7 +551,15 @@ setInterval(() => {
                   :src="raceIcon[win.teams[1].players[0].race]"
                 />
                 <div class="title">
-                  <strong>{{ win.teams[1].players[0].battleTag }}</strong>
+                  <a
+                    style="color: white"
+                    :href="`https://www.w3champions.com/player/${encodeURIComponent(
+                      win.teams[1].players[0].battleTag,
+                    )}`"
+                    target="_blank"
+                  >
+                    <strong> {{ win.teams[1].players[0].battleTag }}</strong>
+                  </a>
                 </div>
                 <div class="title text-green">
                   GAINED {{ win.teams[0].players[0].mmrGain }} MMR
@@ -506,9 +570,21 @@ setInterval(() => {
               </v-col>
 
               <v-col cols="3" v-if="loss" class="text-center">
-                <div class="font-weight-bold text-red">BIGGEST LOSS</div>
+                <div class="font-weight-bold text-red">
+                  BIGGEST LOSS
+                  <v-btn
+                    @click="
+                      () => open(`https://www.w3champions.com/match/${loss.id}`)
+                    "
+                    title="go to match"
+                    size="x-small"
+                    color="orange"
+                    icon="mdi-link"
+                    variant="text"
+                  />
+                </div>
                 <div class="title mb-2">
-                  {{ moment(loss.endTime).format("dddd d. MMMM - HH:mm:ss") }}
+                  {{ moment(loss.endTime).format("dddd, MMMM Do, hh:mm:ss") }}
                 </div>
                 <img
                   style="vertical-align: middle"
@@ -516,7 +592,15 @@ setInterval(() => {
                   :src="raceIcon[loss.teams[0].players[0].race]"
                 />
                 <div class="title">
-                  <strong>{{ loss.teams[0].players[0].battleTag }}</strong>
+                  <a
+                    style="color: white"
+                    :href="`https://www.w3champions.com/player/${encodeURIComponent(
+                      loss.teams[0].players[0].battleTag,
+                    )}`"
+                    target="_blank"
+                  >
+                    <strong> {{ loss.teams[0].players[0].battleTag }}</strong>
+                  </a>
                 </div>
                 <div class="title text-red">
                   LOST {{ Math.abs(loss.teams[1].players[0].mmrGain) }} MMR
@@ -537,8 +621,17 @@ setInterval(() => {
                   :src="raceIcon[donater.games[0].teams[1].players[0].race]"
                 />
                 <div class="title">
-                  <strong>{{ donater.opponent }}</strong>
+                  <a
+                    style="color: white"
+                    :href="`https://www.w3champions.com/player/${encodeURIComponent(
+                      donater.opponent,
+                    )}`"
+                    target="_blank"
+                  >
+                    <strong> {{ donater.opponent }}</strong>
+                  </a>
                 </div>
+
                 <div class="title text-green">
                   GAINED {{ donater.gained }} MMR
                 </div>
@@ -555,11 +648,90 @@ setInterval(() => {
                   :src="raceIcon[stealer.games[0].teams[0].players[0].race]"
                 />
                 <div class="title">
-                  <strong>{{ stealer.opponent }}</strong>
+                  <a
+                    style="color: white"
+                    :href="`https://www.w3champions.com/player/${encodeURIComponent(
+                      stealer.opponent,
+                    )}`"
+                    target="_blank"
+                  >
+                    <strong> {{ stealer.opponent }}</strong>
+                  </a>
                 </div>
                 <div class="title text-red">
                   LOST {{ Math.abs(stealer.lost) }} MMR
                 </div>
+              </v-col>
+            </v-row>
+
+            <v-row>
+              <v-col cols="6">
+                <v-card elevation="0">
+                  <v-list>
+                    <v-list-subheader>Recent HITMEN</v-list-subheader>
+                  </v-list>
+                  <v-list-item v-for="game in hitmen">
+                    <template v-slot:prepend>
+                      <img
+                        style="vertical-align: middle"
+                        width="40px"
+                        :src="raceIcon[game.teams[0].players[0].race]"
+                      />
+                    </template>
+
+                    <v-list-item-title class="ml-2">
+                      <a
+                        style="color: white"
+                        :href="`https://www.w3champions.com/player/${encodeURIComponent(
+                          game.teams[0].players[0].battleTag,
+                        )}`"
+                        target="_blank"
+                      >
+                        <strong>
+                          {{ game.teams[0].players[0].battleTag }}
+                        </strong>
+                      </a>
+                      <span>
+                        //
+                        {{
+                          moment(game.endTime).format("dddd, MMMM Do, hh:mm:ss")
+                        }}</span
+                      >
+                      <span class="text-red ml-2"
+                        >Lost
+                        {{ Math.ceil(game.teams[1].players[0].mmrGain) }}
+                        MMR</span
+                      >
+                      <span class="text-grey ml-2"
+                        >on {{ game.teams[1].players[0].name }}</span
+                      >
+                    </v-list-item-title>
+                  </v-list-item>
+                </v-card>
+              </v-col>
+              <v-col cols="6">
+                <v-list lines="one" style="overflow: hidden">
+                  <v-list>
+                    <v-list-subheader
+                      >Race stats for all accounts</v-list-subheader
+                    >
+                  </v-list>
+                  <v-list-item :prepend-avatar="raceIcon[Race.Human]">
+                    <ResultChart :result="events.race[Race.Human]" />
+                  </v-list-item>
+                  <v-list-item :prepend-avatar="raceIcon[Race.Orc]">
+                    <ResultChart :result="events.race[Race.Orc]" />
+                  </v-list-item>
+                  <v-list-item :prepend-avatar="raceIcon[Race.NightElf]">
+                    <ResultChart :result="events.race[Race.NightElf]" />
+                  </v-list-item>
+                  <v-list-item :prepend-avatar="raceIcon[Race.Undead]">
+                    <ResultChart :result="events.race[Race.Undead]" />
+                  </v-list-item>
+                  <v-list-item :prepend-avatar="raceIcon[Race.Random]">
+                    <ResultChart :result="events.race[Race.Random]" />
+                  </v-list-item>
+                </v-list>
               </v-col>
             </v-row>
           </v-sheet>

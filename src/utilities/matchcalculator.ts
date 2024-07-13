@@ -7,7 +7,7 @@ import _first from "lodash/first";
 import _groupBy from "lodash/groupBy";
 import axios from "axios";
 
-const getPercentage = (data: any, race: Race) => {
+export const getPercentage = (data: any, race: Race) => {
   return _round(
     ((data?.wins?.[race]?.length ?? 0) / Math.max(1, getTotal(data, race))) *
       100,
@@ -15,7 +15,7 @@ const getPercentage = (data: any, race: Race) => {
   );
 };
 
-const getTotal = (data: any, race: Race) => {
+export const getTotal = (data: any, race: Race) => {
   return (data?.wins?.[race]?.length ?? 0) + (data?.loss?.[race]?.length ?? 0);
 };
 

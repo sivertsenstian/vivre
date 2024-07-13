@@ -1,14 +1,15 @@
 ﻿import { defineStore } from "pinia";
-import { computed, ref } from "vue";
+import { computed, ref, watchEffect } from "vue";
 import type { IStatistics } from "@/utilities/types";
 import {
   getAllSeasonGames,
   getInfo,
   getloss,
+  getPercentage,
   getRaceStatistics,
+  getTotal,
   getwins,
   isRace,
-  opponentIsRace,
 } from "@/utilities/matchcalculator";
 import moment from "moment/moment";
 import { Race } from "@/stores/races";
@@ -16,16 +17,20 @@ import axios from "axios";
 import _isNil from "lodash/isNil";
 import { currentUrl, opponentHistoryUrl } from "@/utilities/api";
 import _isEmpty from "lodash/isEmpty";
+import _has from "lodash/has";
 import _take from "lodash/take";
+import _groupBy from "lodash/groupBy";
 
-export const useEventsStore = defineStore("settings", () => {
+export const useEventsStore = defineStore("events", () => {
   // Happy Live Event Data
   const accounts = ["AuroraHappy#2668", "Happy#2384", "Cacxa26#2948"];
   const data = ref<any>({} as any);
 
+  const loaded = ref(0);
+
   const ongoing = ref<any>({});
 
-  const start = moment([2024, 6, 9]);
+  const start = moment("10.07.2024", "DD.MM.YYYY").startOf("day");
   const today = moment().startOf("day");
   const rule = moment().startOf("isoWeek");
 
@@ -200,21 +205,10 @@ export const useEventsStore = defineStore("settings", () => {
   };
 
   // Do it live!
-  accounts.forEach(async (account: string) => {
-    const result = await getData(account);
-    data.value[account] = result;
-
-    const o = await getOngoing(account, true);
-    if (o.active) {
-      ongoing.value = o;
-    }
-  });
-
   setInterval(() => {
     accounts.forEach(async (account: string) => {
       const result = await getData(account);
       data.value[account] = result;
-
       const o = await getOngoing(account, true);
     });
   }, 10000);
@@ -238,5 +232,77 @@ export const useEventsStore = defineStore("settings", () => {
     return accounts[i];
   });
 
-  return { data, accounts, matches, ongoing, highest };
+  accounts.forEach(async (account: string) => {
+    const result = await getData(account);
+    data.value[account] = result;
+    loaded.value += 1;
+
+    const o = await getOngoing(account, true);
+    if (o.active) {
+      ongoing.value = o;
+    }
+  });
+
+  // Race stats across accounts
+  const race = computed(() => {
+    const wins: any[] = accounts.reduce(
+      (s: any[], a: string) => [
+        ...s,
+        ...matches.value.filter((m) => getwins(a, m)),
+      ],
+      [],
+    );
+
+    const loss: any[] = accounts.reduce(
+      (s: any[], a: string) => [
+        ...s,
+        ...matches.value.filter((m) => getloss(a, m)),
+      ],
+      [],
+    );
+
+    const grouped = {
+      wins: _groupBy(wins, (w) => w.teams[1].players[0].race),
+      loss: _groupBy(loss, (l) => l.teams[0].players[0].race),
+    };
+
+    console.log({ wins, loss, grouped });
+
+    return {
+      [Race.Random]: {
+        total: getTotal(grouped, Race.Random),
+        percentage: getPercentage(grouped, Race.Random),
+        wins: grouped?.wins?.[Race.Random]?.length ?? 0,
+        loss: grouped?.loss?.[Race.Random]?.length ?? 0,
+      },
+      [Race.Human]: {
+        total: getTotal(grouped, Race.Human),
+        percentage: getPercentage(grouped, Race.Human),
+        wins: grouped?.wins?.[Race.Human]?.length ?? 0,
+        loss: grouped?.loss?.[Race.Human]?.length ?? 0,
+      },
+      [Race.Orc]: {
+        total: getTotal(grouped, Race.Orc),
+        percentage: getPercentage(grouped, Race.Orc),
+        wins: grouped?.wins?.[Race.Orc]?.length ?? 0,
+        loss: grouped?.loss?.[Race.Orc]?.length ?? 0,
+      },
+      [Race.NightElf]: {
+        total: getTotal(grouped, Race.NightElf),
+        percentage: getPercentage(grouped, Race.NightElf),
+        wins: grouped?.wins?.[Race.NightElf]?.length ?? 0,
+        loss: grouped?.loss?.[Race.NightElf]?.length ?? 0,
+      },
+      [Race.Undead]: {
+        total: getTotal(grouped, Race.Undead),
+        percentage: getPercentage(grouped, Race.Undead),
+        wins: grouped?.wins?.[Race.Undead]?.length ?? 0,
+        loss: grouped?.loss?.[Race.Undead]?.length ?? 0,
+      },
+    };
+  });
+
+  console.log({ race });
+
+  return { data, accounts, matches, ongoing, highest, loaded, race };
 });
