@@ -17,7 +17,7 @@ const today = moment();
 const days = today.diff(start, "days");
 
 // Chart stuff
-import { Bar } from "vue-chartjs";
+import { Bar, Line } from "vue-chartjs";
 import {
   Chart as ChartJS,
   LineElement,
@@ -27,6 +27,7 @@ import {
   TimeScale,
   PointElement,
   Tooltip,
+  LineController,
 } from "chart.js";
 import "chartjs-adapter-moment";
 import { getloss, getplayer, getwins } from "@/utilities/matchcalculator";
@@ -34,6 +35,7 @@ import { Race, raceIcon } from "@/stores/races";
 import _groupBy from "lodash/groupBy";
 
 ChartJS.register(
+  LineController,
   CategoryScale,
   LinearScale,
   TimeScale,
@@ -158,7 +160,7 @@ setInterval(() => {
     <v-container
       fluid
       style="opacity: 0.9"
-      v-if="events.accounts.every((account) => events.data[account])"
+      v-if="events.accounts?.every((account) => events.data?.[account])"
     >
       <v-row>
         <v-col cols="12">
