@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import makrura from "@/assets/makrura.png";
-import happyjail from "@/assets/events/apejail.jpg";
 import w3cicon from "@/assets/w3c.png";
 import w3ciconDark from "@/assets/w3c_dark.png";
 import Banner from "@/components/Banner.vue";
@@ -59,7 +58,9 @@ const options = {
       stacked: true,
       grid: { display: false },
       type: "time",
-      time: { unit: "day" },
+      time: {
+        unit: "day",
+      },
     },
     mmrAxis: {
       suggestedMin: 2700,
@@ -270,16 +271,10 @@ setInterval(() => {
                         class="text-subtitle-1"
                         style="vertical-align: middle"
                       >
-                        Games played since FREED from PRISON on
-                        {{ start.format("MMMM Do") }}
+                        Games played since ban was liften on
+                        {{ start.format("dddd, MMMM Do") }}
                       </span>
                     </section>
-                    <img
-                      class="ml-3"
-                      :src="happyjail"
-                      height="110px"
-                      style="border: 2px solid goldenrod"
-                    />
                   </v-col>
                   <v-col cols="6">
                     <v-col cols="12" class="d-flex">
@@ -643,6 +638,7 @@ setInterval(() => {
                   }"
                   :options="options"
                 />
+                <span class="unbanned">UNBANNED</span>
               </v-col>
             </v-row>
 
@@ -932,5 +928,14 @@ setInterval(() => {
   vertical-align: middle;
   font-size: 30px;
   color: goldenrod;
+}
+
+.unbanned {
+  font-weight: bolder;
+  color: red;
+  position: relative;
+  height: 0;
+  left: 70px;
+  bottom: 7px;
 }
 </style>
