@@ -187,11 +187,8 @@ const isDark = computed(() => theme.global.current.value.dark);
 const daysToGoal = computed(() => {
   if (events.loaded >= 3) {
     const d = Math.ceil(
-      numberOfGames(
-        3000 - events.data[events.highest].week.mmr.current,
-        events.data[events.highest].week.mmr.averages.gain,
-      ) /
-        (events.data[events.highest].week.mmr.averages.count / days),
+      numberOfGames(3000 - events.prediction.current, events.prediction.gain) /
+        (events.prediction.count / days),
     );
 
     return { days: d, date: moment().add(d, "days").startOf("day") };
@@ -276,7 +273,7 @@ setInterval(() => {
                       </span>
                     </section>
                   </v-col>
-                  <v-col cols="6">
+                  <v-col cols="6" v-if="seconds >= 0">
                     <v-col cols="12" class="d-flex">
                       <v-card class="ml-auto mr-2" width="150px" weight="120px">
                         <v-card-text>
@@ -341,17 +338,15 @@ setInterval(() => {
                   <div class="text-h5 mt-5">Prediction</div>
                   <hr />
                   <v-row>
-                    <v-col cols="12">
+                    <v-col cols="12" v-if="events.prediction.count">
                       <section>
-                        Calculated by taking average mmr gained over this weeks
-                        {{
-                          events.data[events.highest].week.mmr.averages.count
+                        Calculated by taking average mmr gained over all
+                        {{ events.prediction.count }} games played since ban ({{
+                          events.prediction.winCount
                         }}
-                        games played ({{
-                          events.data[events.highest].week.mmr.averages.win
-                        }}
-                        mmr gained,
-                        {{ events.data[events.highest].week.mmr.averages.loss }}
+                        wins, {{ events.prediction.lossCount }} losses,
+                        {{ events.prediction.win }}mmr gained,
+                        {{ events.prediction.loss }}
                         mmr lost), for the currently highest account:
                         <strong style="color: goldenrod">{{
                           events.highest
@@ -360,36 +355,25 @@ setInterval(() => {
                       <section>
                         This means that he is currently
                         {{
-                          Math.sign(
-                            events.data[events.highest].week.mmr.averages.gain,
-                          ) > 0
+                          Math.sign(events.prediction.gain) > 0
                             ? "gaining"
                             : "losing"
                         }}
                         <strong
-                          >{{
-                            Math.abs(
-                              events.data[events.highest].week.mmr.averages
-                                .gain,
-                            )
-                          }}MMR</strong
+                          >{{ Math.abs(events.prediction.gain) }}MMR</strong
                         >
                         per game (on average)
                       </section>
                       <v-sheet
-                        v-if="
-                          events.data[events.highest].week.mmr.averages.gain > 0
-                        "
+                        v-if="events.prediction.gain > 0"
                         class="mt-1 text-green"
                       >
                         <section class="mt-1 font-weight-bold">
                           And it will take him
                           {{
                             numberOfGames(
-                              3000 -
-                                events.data[events.highest].week.mmr.current,
-                              events.data[events.highest].week.mmr.averages
-                                .gain,
+                              3000 - events.prediction.current,
+                              events.prediction.gain,
                             )
                           }}
                           games to reach 3000 MMR.
@@ -397,12 +381,7 @@ setInterval(() => {
                         <section>
                           He is currently playing
                           <strong>
-                            {{
-                              Math.ceil(
-                                events.data[events.highest].week.mmr.averages
-                                  .count / days,
-                              )
-                            }}
+                            {{ Math.ceil(events.prediction.count / days) }}
                           </strong>
                           games per day (on average) So he only needs another
                           <strong>{{ daysToGoal.days }}</strong>
@@ -410,21 +389,13 @@ setInterval(() => {
                         </section>
                       </v-sheet>
                       <div
-                        v-if="
-                          events.data[events.highest].week.mmr.averages.gain < 0
-                        "
+                        v-if="events.prediction.gain < 0"
                         class="mt-1 text-red text-subtitle"
                       >
                         <section>
                           Will not make it with the current trend! MMR will
                           decrease by 100 points after
-                          {{
-                            numberOfGames(
-                              100,
-                              events.data[events.highest].week.mmr.averages
-                                .gain,
-                            )
-                          }}
+                          {{ numberOfGames(100, events.prediction.gain) }}
                           games if this continues!
                         </section>
                       </div>
