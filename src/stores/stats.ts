@@ -5,7 +5,6 @@ import _take from "lodash/take";
 import _last from "lodash/last";
 import _isEmpty from "lodash/isEmpty";
 import _isNil from "lodash/isNil";
-import _maxBy from "lodash/maxBy";
 import _forEach from "lodash/forEach";
 import _sortBy from "lodash/sortBy";
 import _toPairs from "lodash/toPairs";
@@ -17,13 +16,13 @@ import {
   getAllSeasonGames,
   getInfo,
   getloss,
-  getplayer,
   getRaceStatistics,
   getwins,
   isRace,
   opponentIsRace,
 } from "@/utilities/matchcalculator";
 import _groupBy from "lodash/groupBy";
+import _round from "lodash/round";
 
 export const useStatsStore = defineStore("stats", () => {
   const settings = useSettingsStore();
@@ -53,6 +52,11 @@ export const useStatsStore = defineStore("stats", () => {
   const getMatchUrl = (id: string) =>
     `https://website-backend.w3champions.com/api/matches/${id}`;
 
+  const gameModeStatsUrl = (tag: string, season: number) =>
+    `https://website-backend.w3champions.com/api/players/${encodeURIComponent(
+      tag,
+    )}/game-mode-stats?gateway=20&season=${season}`;
+
   const daily = ref<{ count: number; matches: any[] }>({
     count: 0,
     matches: [],
@@ -78,23 +82,20 @@ export const useStatsStore = defineStore("stats", () => {
     highscore.value = { loading: true };
     try {
       for (let i = 1; i <= latest; i++) {
-        const all = await getAllSeasonGames(tag.value, i);
+        const { data: stats } = await axios.get(gameModeStatsUrl(tag.value, i));
         const g = _groupBy(
-          all.map(getplayer(tag.value)),
-          (p) => p.players[0].race,
+          stats.filter((s: any) => s.gameMode === 1 && s.race !== null),
+          (v) => v.race,
         );
 
-        _forEach(g, (matches, race) => {
-          const s = _maxBy(matches, (p) => p.players[0].currentMmr)
-            ?.players?.[0];
-
+        _forEach(g, ([s]) => {
           if (
             !_isNil(s) &&
-            (_isNil(result[s.race]) || s.currentMmr >= result[s.race].mmr)
+            (_isNil(result[s.race]) || s.mmr >= result[s.race].mmr)
           ) {
             result[s.race] = {
               race: s.race,
-              mmr: s.currentMmr,
+              mmr: s.mmr,
               season: i,
             };
           }
@@ -200,6 +201,11 @@ export const useStatsStore = defineStore("stats", () => {
         performance: [],
         last: [],
         heroes: [],
+        games: {
+          winDuration: 0,
+          lossDuration: 0,
+          isLamer: false,
+        },
       };
     }
 
@@ -212,7 +218,7 @@ export const useStatsStore = defineStore("stats", () => {
       const performance = matches.map(
         (match: any) =>
           match?.teams?.[0]?.players?.[0]?.battleTag.toLowerCase() ===
-          settings.data.battleTag.toLowerCase(),
+          player.battleTag.toLowerCase(),
       );
 
       // Find hero usage from last 100 games in the season
@@ -249,14 +255,34 @@ export const useStatsStore = defineStore("stats", () => {
         }
       }
 
-      return {
+      const wins = m
+        .map((m: any) => m.match)
+        .filter((x: any) => getwins(opponent.battleTag, x));
+      const loss = m
+        .map((m: any) => m.match)
+        .filter((x: any) => getloss(opponent.battleTag, x));
+
+      const winDuration = _round(
+        wins.reduce((s, m) => s + m.durationInSeconds, 0) / wins.length / 60,
+      );
+      const lossDuration = _round(
+        loss.reduce((s, m) => s + m.durationInSeconds, 0) / loss.length / 60,
+      );
+
+      const result = {
         performance,
         last: _take(performance, 5),
-        wins: matches.filter((m: any) => getwins(tag.value, m)).length,
-        loss: matches.filter((m: any) => getloss(tag.value, m)).length,
+        wins: matches.filter((m: any) => getwins(player.battleTag, m)).length,
+        loss: matches.filter((m: any) => getloss(player.battleTag, m)).length,
         total: historyResponse.count,
         heroes: _take(_sortBy(_toPairs(heroes), (v) => _last(v)).reverse(), 3),
+        games: {
+          winDuration,
+          lossDuration,
+          isLamer: winDuration > 25 || lossDuration > 25,
+        },
       };
+      return result;
     } catch (error) {
       console.log(error);
     }
@@ -278,6 +304,11 @@ export const useStatsStore = defineStore("stats", () => {
         performance: [],
         last: [],
         heroes: [],
+        games: {
+          winDuration: 0,
+          lossDuration: 0,
+          isLamer: false,
+        },
       },
     };
 
@@ -303,10 +334,7 @@ export const useStatsStore = defineStore("stats", () => {
           opponent,
           map: onGoingResponse.mapName,
           server: onGoingResponse.serverInfo,
-          history:
-            !reset && ongoing.value?.id
-              ? (ongoing.value.history as any)
-              : await getOpponentHistory(player, opponent),
+          history: (await getOpponentHistory(player, opponent)) as any,
         };
       }
     } catch (error) {

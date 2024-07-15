@@ -64,6 +64,11 @@ export interface IOngoingHistory {
   performance: boolean[];
   last: boolean[];
   heroes: any[][];
+  games: {
+    winDuration: number;
+    lossDuration: number;
+    isLamer: boolean;
+  };
 }
 
 export interface IOngoing {

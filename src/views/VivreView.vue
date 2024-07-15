@@ -335,29 +335,73 @@ setInterval(() => {
                   </v-col>
                 </v-col>
               </v-row>
-              <v-row v-if="stats.ongoing.history.heroes.length">
-                <v-col cols="12">
-                  <div class="text-h5">
-                    Heroes used in recent games vs
-                    <img
-                      style="vertical-align: middle"
-                      width="50"
-                      :src="raceIcon[stats.ongoing.player.race]"
-                    />
-                    <hr />
-                  </div>
+              <v-row>
+                <v-col cols="8">
+                  <v-row v-if="stats.ongoing.history.heroes.length">
+                    <v-col cols="12">
+                      <div class="text-h5">
+                        Heroes used in recent games vs
+                        <img
+                          style="vertical-align: middle"
+                          width="50"
+                          :src="raceIcon[stats.ongoing.player.race]"
+                        />
+                        <hr />
+                      </div>
+                    </v-col>
+                  </v-row>
+                  <v-row
+                    v-for="([heroes, n], i) in stats.ongoing.history.heroes"
+                  >
+                    <div class="text-h5 ml-5" style="align-self: center">
+                      #{{ i + 1 }}
+                    </div>
+                    <v-col cols="2" v-for="hero in heroes?.split(',')">
+                      <img width="70" :src="heroIcon[hero]" :alt="hero" />
+                    </v-col>
+                    <div class="text-h5 ml-5" style="align-self: center">
+                      // {{ n }} time(s)
+                    </div>
+                  </v-row>
                 </v-col>
-              </v-row>
-              <v-row v-for="([heroes, n], i) in stats.ongoing.history.heroes">
-                <div class="text-h5 ml-5" style="align-self: center">
-                  #{{ i + 1 }}
-                </div>
-                <v-col cols="1" v-for="hero in heroes?.split(',')">
-                  <img width="70" :src="heroIcon[hero]" :alt="hero" />
+                <v-col
+                  cols="4"
+                  class="d-flex align-center text-center"
+                  v-if="
+                    stats.ongoing.history.games.winDuration > 0 &&
+                    stats.ongoing.history.games.lossDuration > 0
+                  "
+                >
+                  <v-row>
+                    <v-col cols="12">
+                      <section>
+                        Avg. duration per win:
+                        <span class="font-weight-bold"
+                          >{{ stats.ongoing.history.games.winDuration }}
+                        </span>
+                        minute(s)
+                      </section>
+                      <section>
+                        Avg. duration per loss:
+                        <span class="font-weight-bold">{{
+                          stats.ongoing.history.games.lossDuration
+                        }}</span>
+                        minute(s)
+                      </section>
+                      <section class="mt-4">
+                        <div
+                          v-if="stats.ongoing.history.games.isLamer"
+                          class="text-red font-weight-bold text-h5"
+                        >
+                          MIGHT BE A LAMER
+                        </div>
+                        <div v-else class="text-green font-weight-bold">
+                          MOST LIKELY NOT A LAMER
+                        </div>
+                      </section>
+                    </v-col>
+                  </v-row>
                 </v-col>
-                <div class="text-h5 ml-5" style="align-self: center">
-                  // {{ n }} time(s)
-                </div>
               </v-row>
             </v-sheet>
           </v-col>
