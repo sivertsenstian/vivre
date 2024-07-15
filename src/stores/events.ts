@@ -1,11 +1,12 @@
 ﻿import { defineStore } from "pinia";
-import { computed, ref, watchEffect } from "vue";
+import { computed, ref } from "vue";
 import type { IStatistics } from "@/utilities/types";
 import {
   getAllSeasonGames,
   getInfo,
   getloss,
   getPercentage,
+  getplayer,
   getRaceStatistics,
   getTotal,
   getwins,
@@ -17,9 +18,9 @@ import axios from "axios";
 import _isNil from "lodash/isNil";
 import { currentUrl, opponentHistoryUrl } from "@/utilities/api";
 import _isEmpty from "lodash/isEmpty";
-import _has from "lodash/has";
 import _take from "lodash/take";
 import _groupBy from "lodash/groupBy";
+import _round from "lodash/round";
 
 export const useEventsStore = defineStore("events", () => {
   // Happy Live Event Data
@@ -300,5 +301,49 @@ export const useEventsStore = defineStore("events", () => {
     };
   });
 
-  return { data, accounts, matches, ongoing, highest, loaded, race };
+  const prediction = computed(() => {
+    const hmw = matches.value.filter((m) => getwins(highest.value, m));
+    const hml = matches.value.filter((m) => getloss(highest.value, m));
+
+    const c = hmw.length + hml.length;
+
+    const averageWin = Math.abs(
+      hmw.reduce((s, m) => {
+        const gain = getplayer(highest.value)(m).players[0].mmrGain;
+        return gain > 0 ? s + gain : s;
+      }, 0),
+    );
+    const averageLoss = Math.abs(
+      hml.reduce((s, m) => {
+        const gain = getplayer(highest.value)(m).players[0].mmrGain;
+        return gain < 0 ? s + gain : s;
+      }, 0),
+    );
+    const averageGain =
+      [...hmw, ...hml].reduce(
+        (s, m) => s + getplayer(highest.value)(m).players[0].mmrGain,
+        0,
+      ) / c;
+
+    return {
+      current: data.value[highest.value].season.summary.mmr.current,
+      count: c,
+      winCount: hmw.length,
+      lossCount: hml.length,
+      win: _round(averageWin, 2),
+      loss: _round(averageLoss, 2),
+      gain: _round(averageGain, 2),
+    };
+  });
+
+  return {
+    data,
+    accounts,
+    matches,
+    ongoing,
+    highest,
+    loaded,
+    race,
+    prediction,
+  };
 });
