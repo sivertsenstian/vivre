@@ -32,7 +32,12 @@ import {
   LineController,
 } from "chart.js";
 import "chartjs-adapter-moment";
-import { getloss, getplayer, getwins } from "@/utilities/matchcalculator";
+import {
+  getloss,
+  getplayer,
+  getwins,
+  iswin,
+} from "@/utilities/matchcalculator";
 import { Race, raceIcon } from "@/stores/races";
 import _groupBy from "lodash/groupBy";
 import _take from "lodash/take";
@@ -160,13 +165,16 @@ const donater = computed(() => {
 });
 
 const hitmen = computed(() => {
-  const loss: any[] = events.accounts.reduce(
-    (s: any[], a: string) => [
-      ...s,
-      ...events.matches.filter((m) => getloss(a, m)),
-    ],
-    [],
-  );
+  const loss: any[] = events.accounts
+    .reduce(
+      (s: any[], a: string) => [
+        ...s,
+        ...events.matches.filter((m) => getloss(a, m)),
+      ],
+      [],
+    )
+    .sort((a: any, b: any) => moment(b.endTime).diff(moment(a.endTime)));
+
   return _take(loss, 5);
 });
 
@@ -334,6 +342,142 @@ setInterval(() => {
                     </v-col>
                   </v-col>
                 </v-row>
+
+                <v-row>
+                  <v-col cols="12" class="text-center">
+                    <v-card elevation="0">
+                      <v-list>
+                        <v-list-subheader class="justify-space-around"
+                          >Latest games</v-list-subheader
+                        >
+                      </v-list>
+                      <v-list-item v-for="game in _take(events.matches, 3)">
+                        <v-list-item-title
+                          class="ml-2"
+                          v-if="iswin(game, ...events.accounts)"
+                        >
+                          <span class="mr-5">
+                            {{ moment(game.endTime).fromNow() }}:</span
+                          >
+                          <img
+                            style="vertical-align: middle"
+                            width="30px"
+                            :src="raceIcon[game.teams[0].players[0].race]"
+                          />
+                          <a
+                            class="text-green-lighten-1"
+                            :href="`https://www.w3champions.com/player/${encodeURIComponent(
+                              game.teams[0].players[0].battleTag,
+                            )}`"
+                            target="_blank"
+                          >
+                            <strong>
+                              {{ game.teams[0].players[0].name }}
+                            </strong>
+                          </a>
+
+                          vs.
+
+                          <img
+                            style="vertical-align: middle"
+                            width="30px"
+                            :src="raceIcon[game.teams[1].players[0].race]"
+                          />
+                          <a
+                            class="text-red-lighten-1"
+                            :href="`https://www.w3champions.com/player/${encodeURIComponent(
+                              game.teams[1].players[0].battleTag,
+                            )}`"
+                            target="_blank"
+                          >
+                            <strong>
+                              {{ game.teams[1].players[0].name }}
+                            </strong>
+                          </a>
+
+                          <span class="text-green">
+                            +{{
+                              Math.ceil(game.teams[0].players[0].mmrGain)
+                            }}
+                            MMR {{
+                          }}</span>
+                          <v-btn
+                            @click="
+                              () =>
+                                open(
+                                  `https://www.w3champions.com/match/${game.id}`,
+                                )
+                            "
+                            title="go to match"
+                            size="x-small"
+                            color="orange"
+                            icon="mdi-link"
+                            variant="text"
+                          />
+                        </v-list-item-title>
+                        <v-list-item-title class="ml-2" v-else>
+                          <span class="mr-5">
+                            {{ moment(game.endTime).fromNow() }}:</span
+                          >
+                          <img
+                            style="vertical-align: middle"
+                            width="30px"
+                            :src="raceIcon[game.teams[1].players[0].race]"
+                          />
+                          <a
+                            class="text-red-lighten-1"
+                            :href="`https://www.w3champions.com/player/${encodeURIComponent(
+                              game.teams[1].players[0].battleTag,
+                            )}`"
+                            target="_blank"
+                          >
+                            <strong>
+                              {{ game.teams[1].players[0].name }}
+                            </strong>
+                          </a>
+
+                          vs.
+
+                          <img
+                            style="vertical-align: middle"
+                            width="30px"
+                            :src="raceIcon[game.teams[0].players[0].race]"
+                          />
+                          <a
+                            class="text-green-lighten-1"
+                            :href="`https://www.w3champions.com/player/${encodeURIComponent(
+                              game.teams[0].players[0].battleTag,
+                            )}`"
+                            target="_blank"
+                          >
+                            <strong>
+                              {{ game.teams[0].players[0].name }}
+                            </strong>
+                          </a>
+
+                          <span class="text-red ml-2">
+                            {{ Math.ceil(game.teams[1].players[0].mmrGain) }}
+                            MMR {{
+                          }}</span>
+                          <v-btn
+                            @click="
+                              () =>
+                                open(
+                                  `https://www.w3champions.com/match/${game.id}`,
+                                )
+                            "
+                            title="go to match"
+                            size="x-small"
+                            color="orange"
+                            icon="mdi-link"
+                            variant="text"
+                          />
+                        </v-list-item-title>
+                      </v-list-item>
+                    </v-card>
+                  </v-col>
+                </v-row>
+
                 <section>
                   <div class="text-h5 mt-5">Prediction</div>
                   <hr />

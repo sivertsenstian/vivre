@@ -50,6 +50,19 @@ export const getInfo = (tag: string, matches: any[]) => {
   return first;
 };
 
+export const iswin = (m: any, ...tags: string[]) => {
+  return tags.some(
+    (tag: string) =>
+      m?.teams?.some(
+        (t: any) =>
+          t.won &&
+          t.players.some(
+            (p: any) => p.battleTag.toLowerCase() === tag.toLowerCase(),
+          ),
+      ),
+  );
+};
+
 export const getwins = (tag: string, m: any) =>
   m?.teams?.some(
     (t: any) =>
