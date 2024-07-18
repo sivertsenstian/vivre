@@ -214,17 +214,19 @@ export const useEventsStore = defineStore("events", () => {
     });
   }, 10000);
 
-  const matches = computed(() =>
-    accounts.reduce(
-      (s: any[], a: any) => [
-        ...s,
-        ...(data.value[a]?.season[Race.Undead].matches.filter((m: any) =>
-          moment(m.endTime).isAfter(start),
-        ) ?? []),
-      ],
-      [],
-    ),
-  );
+  const matches = computed(() => {
+    return accounts
+      .reduce(
+        (s: any[], a: any) => [
+          ...s,
+          ...(data.value[a]?.season[Race.Undead].matches.filter((m: any) =>
+            moment(m.endTime).isAfter(start),
+          ) ?? []),
+        ],
+        [],
+      )
+      .sort((a: any, b: any) => moment(b.endTime).diff(moment(a.endTime)));
+  });
 
   const highest = computed(() => {
     const i = accounts
