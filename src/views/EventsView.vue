@@ -76,7 +76,7 @@ const options = {
     },
     gamesAxis: {
       suggestedMax: 20,
-      stacked: false,
+      stacked: true,
       beginAtZero: true,
       grid: { display: false },
     },
@@ -90,7 +90,7 @@ const options = {
           }
 
           if (context.dataset.yAxisID === "gamesAxis") {
-            return `${context.formattedValue} Games Played On This Day`;
+            return `${context.formattedValue} - games ${context.dataset.label} on this day`;
           }
 
           return context.formttedValue;
@@ -276,7 +276,7 @@ setInterval(() => {
                         class="text-subtitle-1"
                         style="vertical-align: middle"
                       >
-                        Games played since ban was liften on
+                        Games played since ban was lifted on
                         {{ start.format("dddd, MMMM Do") }}
                       </span>
                     </section>
@@ -727,10 +727,37 @@ setInterval(() => {
                           ),
                       },
                       {
+                        label: 'won',
                         yAxisID: 'gamesAxis',
-                        backgroundColor: 'orange',
+                        backgroundColor: '#66BB6A',
                         data: events.data[account].season[Race.Undead].matches
                           .filter((m: any) => moment(m.endTime).isAfter(start))
+                          .filter((m: any) => getwins(account, m))
+                          ?.reduce(
+                            (r: number[], m: any) => {
+                              const d = moment(m.endTime).dayOfYear();
+                              const day = days - (today.dayOfYear() - d);
+
+                              r[day]++;
+                              return r;
+                            },
+                            _fill(
+                              _range(
+                                today.dayOfYear() - days,
+                                today.dayOfYear(),
+                              ),
+                              0,
+                            ),
+                          )
+                          .map((v: number) => v),
+                      },
+                      {
+                        label: 'lost',
+                        yAxisID: 'gamesAxis',
+                        backgroundColor: '#EF5350',
+                        data: events.data[account].season[Race.Undead].matches
+                          .filter((m: any) => moment(m.endTime).isAfter(start))
+                          .filter((m: any) => getloss(account, m))
                           ?.reduce(
                             (r: number[], m: any) => {
                               const d = moment(m.endTime).dayOfYear();
