@@ -147,10 +147,7 @@ export const useEventsStore = defineStore("events", () => {
           opponent,
           map: onGoingResponse.mapName,
           server: onGoingResponse.serverInfo,
-          history:
-            !reset && ongoing.value?.id
-              ? (ongoing.value.history as any)
-              : await getOpponentHistory(player, opponent),
+          history: await getOpponentHistory(player, opponent),
         };
       }
     } catch (error) {
@@ -186,16 +183,16 @@ export const useEventsStore = defineStore("events", () => {
 
       return {
         performance,
-        last: _take(performance, 10),
+        last: _take(performance, 18),
         wins: matches.filter((m: any) => getwins(player.battleTag, m)).length,
         loss: matches.filter((m: any) => getloss(player.battleTag, m)).length,
         total: historyResponse.count,
         heroes: {},
         mmr: {
-          gain: _take(matches, 10)
+          gain: _take(matches, 18)
             .filter((m: any) => getwins(player.battleTag, m))
             .reduce((s, m: any) => s + m.teams[0].players[0].mmrGain, 0),
-          loss: _take(matches, 10)
+          loss: _take(matches, 18)
             .filter((m: any) => getloss(player.battleTag, m))
             .reduce((s, m: any) => s + m.teams[0].players[0].mmrGain, 0),
         },
