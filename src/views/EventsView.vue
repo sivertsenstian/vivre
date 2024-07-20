@@ -11,6 +11,7 @@ import _fill from "lodash/fill";
 import _map from "lodash/map";
 import _maxBy from "lodash/maxBy";
 import _minBy from "lodash/minBy";
+import _round from "lodash/round";
 import ConfettiExplosion from "vue-confetti-explosion";
 
 const events = useEventsStore();
@@ -32,6 +33,7 @@ import {
   LineController,
 } from "chart.js";
 import "chartjs-adapter-moment";
+import ChartDataLabels from "chartjs-plugin-datalabels";
 import {
   getloss,
   getplayer,
@@ -53,6 +55,7 @@ ChartJS.register(
   LineElement,
   PointElement,
   Tooltip,
+  ChartDataLabels,
 );
 const options = {
   animation: false,
@@ -69,7 +72,7 @@ const options = {
     },
     mmrAxis: {
       suggestedMin: 2700,
-      suggestedMax: 2900,
+      suggestedMax: 3000,
       stacked: false,
       beginAtZero: false,
       grid: { display: false },
@@ -344,14 +347,14 @@ setInterval(() => {
                 </v-row>
 
                 <v-row>
-                  <v-col cols="12" class="text-center">
+                  <v-col cols="6" class="text-center">
                     <v-card elevation="0">
                       <v-list>
                         <v-list-subheader class="justify-space-around"
                           >Latest games</v-list-subheader
                         >
                       </v-list>
-                      <v-list-item v-for="game in _take(events.matches, 3)">
+                      <v-list-item v-for="game in _take(events.matches, 5)">
                         <v-list-item-title
                           class="ml-2"
                           v-if="iswin(game, ...events.accounts)"
@@ -476,6 +479,107 @@ setInterval(() => {
                       </v-list-item>
                     </v-card>
                   </v-col>
+
+                  <v-col cols="6" v-if="events.ongoing.active">
+                    <v-sheet :elevation="0">
+                      <v-row>
+                        <v-col cols="8" class="text-center">
+                          <v-col cols="12">
+                            <span class="text-h6 font-weight-bold"
+                              >Current game on '{{ events.ongoing?.map }}' :
+                              {{ duration }}</span
+                            >
+                            <v-btn
+                              @click="
+                                () =>
+                                  open(
+                                    `https://www.w3champions.com/match/${events.ongoing.id}`,
+                                  )
+                              "
+                              title="go to match"
+                              size="x-small"
+                              color="orange"
+                              icon="mdi-link"
+                              variant="text"
+                            />
+                          </v-col>
+                          <v-col cols="12">
+                            <span
+                              class="text-h5"
+                              style="vertical-align: text-top"
+                              >Vs.
+                            </span>
+                            <img
+                              class="mx-2"
+                              style="vertical-align: middle"
+                              width="70px"
+                              :src="raceIcon[events.ongoing.opponent.race]"
+                            />
+                            <span
+                              class="text-h5"
+                              style="vertical-align: text-top"
+                            >
+                              {{ events.ongoing.opponent?.name }} ({{
+                                events.ongoing.opponent?.oldMmr
+                              }})</span
+                            >
+                          </v-col>
+                        </v-col>
+
+                        <v-col cols="4">
+                          <v-col cols="12" class="text-right">
+                            <div>
+                              <span
+                                class="text-caption font-weight-bold"
+                                v-if="events.ongoing.history.last.length"
+                                >Last
+                                {{ events.ongoing.history.last.length }} game(s)
+                                vs opponent:
+                              </span>
+                              <span
+                                class="text-caption font-weight-bold"
+                                v-else
+                              >
+                                First Game This Season vs Opponent!
+                              </span>
+                              <template
+                                v-for="result in events.ongoing.history.last"
+                              >
+                                <v-chip
+                                  v-if="result"
+                                  size="x-small"
+                                  variant="tonal"
+                                  color="green"
+                                  label
+                                  class="rounded-0"
+                                >
+                                  <v-icon icon="mdi-shield-sword-outline" />
+                                </v-chip>
+                                <v-chip
+                                  v-else
+                                  size="x-small"
+                                  variant="tonal"
+                                  color="red"
+                                  label
+                                  class="rounded-0"
+                                >
+                                  <v-icon icon="mdi-shield-sword-outline" />
+                                </v-chip>
+                              </template>
+                            </div>
+                            <div
+                              class="text-caption text-green font-weight-bold mt-3"
+                            >
+                              Gained {{ events.ongoing.history.mmr.gain }} MMR
+                            </div>
+                            <div class="text-caption text-red font-weight-bold">
+                              Lost {{ events.ongoing.history.mmr.loss }} MMR
+                            </div>
+                          </v-col>
+                        </v-col>
+                      </v-row>
+                    </v-sheet>
+                  </v-col>
                 </v-row>
 
                 <section>
@@ -546,99 +650,6 @@ setInterval(() => {
                     </v-col>
                   </v-row>
                 </section>
-              </v-col>
-
-              <v-col cols="12" v-if="events.ongoing.active">
-                <v-sheet :elevation="0">
-                  <v-row>
-                    <v-col cols="8" class="text-center">
-                      <v-col cols="12">
-                        <span class="text-h6 font-weight-bold"
-                          >Current game on '{{ events.ongoing?.map }}' :
-                          {{ duration }}</span
-                        >
-                        <v-btn
-                          @click="
-                            () =>
-                              open(
-                                `https://www.w3champions.com/match/${events.ongoing.id}`,
-                              )
-                          "
-                          title="go to match"
-                          size="x-small"
-                          color="orange"
-                          icon="mdi-link"
-                          variant="text"
-                        />
-                      </v-col>
-                      <v-col cols="12">
-                        <span class="text-h5" style="vertical-align: text-top"
-                          >Vs.
-                        </span>
-                        <img
-                          class="mx-2"
-                          style="vertical-align: middle"
-                          width="70px"
-                          :src="raceIcon[events.ongoing.opponent.race]"
-                        />
-                        <span class="text-h5" style="vertical-align: text-top">
-                          {{ events.ongoing.opponent?.name }} ({{
-                            events.ongoing.opponent?.oldMmr
-                          }})</span
-                        >
-                      </v-col>
-                    </v-col>
-
-                    <v-col cols="4">
-                      <v-col cols="12" class="text-right">
-                        <div>
-                          <span
-                            class="text-caption font-weight-bold"
-                            v-if="events.ongoing.history.last.length"
-                            >Last
-                            {{ events.ongoing.history.last.length }} game(s) vs
-                            opponent:
-                          </span>
-                          <span class="text-caption font-weight-bold" v-else>
-                            First Game This Season vs Opponent!
-                          </span>
-                          <template
-                            v-for="result in events.ongoing.history.last"
-                          >
-                            <v-chip
-                              v-if="result"
-                              size="x-small"
-                              variant="tonal"
-                              color="green"
-                              label
-                              class="rounded-0"
-                            >
-                              <v-icon icon="mdi-shield-sword-outline" />
-                            </v-chip>
-                            <v-chip
-                              v-else
-                              size="x-small"
-                              variant="tonal"
-                              color="red"
-                              label
-                              class="rounded-0"
-                            >
-                              <v-icon icon="mdi-shield-sword-outline" />
-                            </v-chip>
-                          </template>
-                        </div>
-                        <div
-                          class="text-caption text-green font-weight-bold mt-3"
-                        >
-                          Gained {{ events.ongoing.history.mmr.gain }} MMR
-                        </div>
-                        <div class="text-caption text-red font-weight-bold">
-                          Lost {{ events.ongoing.history.mmr.loss }} MMR
-                        </div>
-                      </v-col>
-                    </v-col>
-                  </v-row>
-                </v-sheet>
               </v-col>
 
               <v-col cols="12" class="text-center">
@@ -725,6 +736,9 @@ setInterval(() => {
                               0,
                             ),
                           ),
+                        datalabels: {
+                          display: false,
+                        },
                       },
                       {
                         label: 'won',
@@ -750,6 +764,9 @@ setInterval(() => {
                             ),
                           )
                           .map((v: number) => v),
+                        datalabels: {
+                          display: false,
+                        },
                       },
                       {
                         label: 'lost',
@@ -775,6 +792,42 @@ setInterval(() => {
                             ),
                           )
                           .map((v: number) => v),
+                        datalabels: {
+                          clip: false,
+                          clamp: false,
+                          anchor: 'end',
+                          align: 'end',
+                          offset: -7,
+                          color: 'goldenrod',
+                          formatter: function (value, context) {
+                            const all = context.chart.data.datasets
+                              .filter((d: any) => d.yAxisID === 'gamesAxis')
+                              .map((d: any) => d.data)
+                              .reduce(
+                                (s: number[], d: number[]) =>
+                                  s.map((v, i) => v + d[i]),
+                                _range(
+                                  context.chart.data.datasets[0].data.length,
+                                ),
+                              );
+
+                            const r = _round(
+                              ((all[context.dataIndex] -
+                                Number(
+                                  context.dataset.data[context.dataIndex],
+                                )) /
+                                all[context.dataIndex]) *
+                                100,
+                              1,
+                            );
+
+                            const s = r > 0 && r < 100 ? String(r) + '%' : '';
+
+                            console.log({ s, r });
+
+                            return s;
+                          },
+                        },
                       },
                     ],
                   }"
