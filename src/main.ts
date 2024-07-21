@@ -1,4 +1,5 @@
 import "./assets/main.css";
+import "vue3-calendar-heatmap/dist/style.css";
 
 import { createApp } from "vue";
 import { createPinia } from "pinia";
