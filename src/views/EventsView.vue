@@ -558,10 +558,6 @@ setInterval(() => {
                                   color="green"
                                   label
                                   class="rounded-0"
-                                  :title="
-                                    events.ongoing.history.last[i].teams[0]
-                                      .players[0].mmrGain
-                                  "
                                 >
                                   <v-icon icon="mdi-shield-sword-outline" />
                                 </v-chip>

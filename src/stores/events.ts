@@ -106,12 +106,12 @@ export const useEventsStore = defineStore("events", () => {
     return result;
   };
 
-  const getOngoing = async (tag: string, reset = false) => {
+  const getOngoing = async (tag: string) => {
     let result = {
       id: null,
       start: null,
       active: false,
-      player: { name: "", race: 0, battleTag: "", oldMmr: 0 },
+      player: { name: "", race: 0, battleTag: tag, oldMmr: 0 },
       opponent: { name: "", race: 0, battleTag: "", oldMmr: 0 },
       map: "",
       server: {},
@@ -208,8 +208,12 @@ export const useEventsStore = defineStore("events", () => {
     accounts.forEach(async (account: string) => {
       const result = await getData(account);
       data.value[account] = result;
-      const o = await getOngoing(account, true);
-      if (o.active) {
+      const o = await getOngoing(account);
+      if (
+        (account === ongoing.value.player.battleTag &&
+          o.id !== ongoing.value.id) ||
+        (account !== ongoing.value.player.battleTag && o.active)
+      ) {
         ongoing.value = o;
       }
     });
