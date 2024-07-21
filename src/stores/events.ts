@@ -204,11 +204,16 @@ export const useEventsStore = defineStore("events", () => {
 
   // Do it live!
   setInterval(() => {
+    let c = { active: false };
     accounts.forEach(async (account: string) => {
       const result = await getData(account);
       data.value[account] = result;
       const o = await getOngoing(account, true);
+      if (o.active) {
+        c = o;
+      }
     });
+    ongoing.value = c;
   }, 10000);
 
   const matches = computed(() => {
@@ -232,6 +237,7 @@ export const useEventsStore = defineStore("events", () => {
     return accounts[i];
   });
 
+  let c = { active: false };
   accounts.forEach(async (account: string) => {
     const result = await getData(account);
     data.value[account] = result;
@@ -239,9 +245,10 @@ export const useEventsStore = defineStore("events", () => {
 
     const o = await getOngoing(account, true);
     if (o.active) {
-      ongoing.value = o;
+      c = o;
     }
   });
+  ongoing.value = c;
 
   // Race stats across accounts
   const race = computed(() => {

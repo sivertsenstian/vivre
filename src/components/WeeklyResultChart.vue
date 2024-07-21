@@ -7,8 +7,9 @@ import {
   CategoryScale,
   LinearScale,
 } from "chart.js";
+import ChartDataLabels from "chartjs-plugin-datalabels";
 
-ChartJS.register(CategoryScale, LinearScale, BarElement);
+ChartJS.register(CategoryScale, LinearScale, BarElement, ChartDataLabels);
 
 const props = defineProps({
   weekly: { matches: Array, count: Number } as any,
@@ -47,6 +48,20 @@ const options = {
                     [0, 0, 0, 0, 0, 0, 0],
                   )
                   .map((v: number) => (v >= (props.goal ?? 0) ? v : 0)) ?? [],
+              datalabels: {
+                display: function (context) {
+                  const v = Number(
+                    context.dataset?.data?.[context.dataIndex] ?? 0,
+                  );
+                  return v > 0 && v >= (props.goal ?? 0);
+                },
+                clip: false,
+                clamp: false,
+                anchor: 'end',
+                align: 'end',
+                offset: -5,
+                color: 'goldenrod',
+              },
             },
             {
               backgroundColor: 'rgb(251, 140, 0)',
@@ -62,6 +77,20 @@ const options = {
                     [0, 0, 0, 0, 0, 0, 0],
                   )
                   .map((v: number) => (v < (props.goal ?? 0) ? v : 0)) ?? [],
+              datalabels: {
+                display: function (context) {
+                  const v = Number(
+                    context.dataset?.data?.[context.dataIndex] ?? 0,
+                  );
+                  return v > 0 && v < (props.goal ?? 0);
+                },
+                clip: false,
+                clamp: false,
+                anchor: 'end',
+                align: 'end',
+                offset: -5,
+                color: 'goldenrod',
+              },
             },
           ],
         }"
