@@ -43,6 +43,7 @@ import {
 import { Race, raceIcon } from "@/stores/races";
 import _groupBy from "lodash/groupBy";
 import _take from "lodash/take";
+import _takeWhile from "lodash/takeWhile";
 import ResultChart from "@/components/ResultChart.vue";
 import { useTheme } from "vuetify";
 
@@ -230,6 +231,9 @@ setInterval(() => {
   <main style="height: 100vh; overflow-y: auto">
     <v-progress-linear indeterminate v-if="events.loaded < 3" />
     <v-container fluid style="opacity: 0.9" v-if="events.loaded >= 3">
+      <v-row
+        ><v-col cols="12">{{ events.ongoing.active }}</v-col></v-row
+      >
       <v-row>
         <v-col cols="12">
           <v-sheet class="pa-5" elevation="5">
@@ -351,8 +355,8 @@ setInterval(() => {
                     <v-card elevation="0">
                       <v-list>
                         <v-list-subheader class="justify-space-around"
-                          >Latest games</v-list-subheader
-                        >
+                          >Recent games
+                        </v-list-subheader>
                       </v-list>
                       <v-list-item v-for="game in _take(events.matches, 5)">
                         <v-list-item-title
@@ -480,54 +484,55 @@ setInterval(() => {
                     </v-card>
                   </v-col>
 
-                  <v-col cols="6" v-if="events.ongoing.active">
-                    <v-sheet :elevation="0">
-                      <v-row>
-                        <v-col cols="8" class="text-center">
-                          <v-col cols="12">
-                            <span class="text-h6 font-weight-bold"
-                              >Current game on '{{ events.ongoing?.map }}' :
-                              {{ duration }}</span
-                            >
-                            <v-btn
-                              @click="
-                                () =>
-                                  open(
-                                    `https://www.w3champions.com/match/${events.ongoing.id}`,
-                                  )
-                              "
-                              title="go to match"
-                              size="x-small"
-                              color="orange"
-                              icon="mdi-link"
-                              variant="text"
-                            />
+                  <v-fade-transition>
+                    <v-col cols="6" v-if="events.ongoing.active">
+                      <v-sheet :elevation="0">
+                        <v-row>
+                          <v-col cols="12" class="text-center">
+                            <v-col cols="12">
+                              <span class="text-h6 font-weight-bold"
+                                >Now playing a game on '{{
+                                  events.ongoing?.map
+                                }}' : {{ duration }}</span
+                              >
+                              <v-btn
+                                @click="
+                                  () =>
+                                    open(
+                                      `https://www.w3champions.com/match/${events.ongoing.id}`,
+                                    )
+                                "
+                                title="go to match"
+                                size="x-small"
+                                color="orange"
+                                icon="mdi-link"
+                                variant="text"
+                              />
+                            </v-col>
+                            <v-col cols="12">
+                              <span
+                                class="text-h5"
+                                style="vertical-align: text-top"
+                                >Vs.
+                              </span>
+                              <img
+                                class="mx-2"
+                                style="vertical-align: middle"
+                                width="70px"
+                                :src="raceIcon[events.ongoing.opponent.race]"
+                              />
+                              <span
+                                class="text-h5"
+                                style="vertical-align: text-top"
+                              >
+                                {{ events.ongoing.opponent?.name }} ({{
+                                  events.ongoing.opponent?.oldMmr
+                                }})</span
+                              >
+                            </v-col>
                           </v-col>
-                          <v-col cols="12">
-                            <span
-                              class="text-h5"
-                              style="vertical-align: text-top"
-                              >Vs.
-                            </span>
-                            <img
-                              class="mx-2"
-                              style="vertical-align: middle"
-                              width="70px"
-                              :src="raceIcon[events.ongoing.opponent.race]"
-                            />
-                            <span
-                              class="text-h5"
-                              style="vertical-align: text-top"
-                            >
-                              {{ events.ongoing.opponent?.name }} ({{
-                                events.ongoing.opponent?.oldMmr
-                              }})</span
-                            >
-                          </v-col>
-                        </v-col>
 
-                        <v-col cols="4">
-                          <v-col cols="12" class="text-right">
+                          <v-col cols="12" class="text-center">
                             <div>
                               <span
                                 class="text-caption font-weight-bold"
@@ -543,7 +548,8 @@ setInterval(() => {
                                 First Game This Season vs Opponent!
                               </span>
                               <template
-                                v-for="result in events.ongoing.history.last"
+                                v-for="(result, i) in events.ongoing.history
+                                  .last"
                               >
                                 <v-chip
                                   v-if="result"
@@ -552,6 +558,10 @@ setInterval(() => {
                                   color="green"
                                   label
                                   class="rounded-0"
+                                  :title="
+                                    events.ongoing.history.last[i].teams[0]
+                                      .players[0].mmrGain
+                                  "
                                 >
                                   <v-icon icon="mdi-shield-sword-outline" />
                                 </v-chip>
@@ -568,18 +578,20 @@ setInterval(() => {
                               </template>
                             </div>
                             <div
-                              class="text-caption text-green font-weight-bold mt-3"
+                              class="text-caption text-green font-weight-bold mt-3 text-right"
                             >
                               Gained {{ events.ongoing.history.mmr.gain }} MMR
                             </div>
-                            <div class="text-caption text-red font-weight-bold">
+                            <div
+                              class="text-caption text-red font-weight-bold text-right"
+                            >
                               Lost {{ events.ongoing.history.mmr.loss }} MMR
                             </div>
                           </v-col>
-                        </v-col>
-                      </v-row>
-                    </v-sheet>
-                  </v-col>
+                        </v-row>
+                      </v-sheet>
+                    </v-col>
+                  </v-fade-transition>
                 </v-row>
 
                 <section>
@@ -822,9 +834,6 @@ setInterval(() => {
                             );
 
                             const s = r > 0 && r < 100 ? String(r) + '%' : '';
-
-                            console.log({ s, r });
-
                             return s;
                           },
                         },
