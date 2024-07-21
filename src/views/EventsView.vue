@@ -46,6 +46,7 @@ import _take from "lodash/take";
 import _takeWhile from "lodash/takeWhile";
 import ResultChart from "@/components/ResultChart.vue";
 import { useTheme } from "vuetify";
+import { CalendarHeatmap } from "vue3-calendar-heatmap";
 
 ChartJS.register(
   LineController,
@@ -225,6 +226,15 @@ setInterval(() => {
     dayz.value = parseInt((hours.value / 24) as any);
   }
 }, 1000);
+
+// Activity
+const activity = computed(() => {
+  const g = _groupBy(events.matches, (m: any) => moment(m.endTime).format("L"));
+  return _map(g, (items: any[], date: string) => ({
+    date,
+    count: items.length,
+  }));
+});
 </script>
 
 <template>
@@ -583,6 +593,21 @@ setInterval(() => {
                           </v-col>
                         </v-row>
                       </v-sheet>
+                    </v-col>
+                    <v-col cols="6" v-else>
+                      <div class="text-h6 text-center mb-5">
+                        Happy is not currently playing - Check out his recent
+                        activity below:
+                      </div>
+                      <calendar-heatmap
+                        :dark-mode="isDark"
+                        :values="activity"
+                        :end-date="moment()"
+                        :max="20"
+                        no-data-text="no games played :("
+                        tooltip-unit="game(s)"
+                        :round="5"
+                      />
                     </v-col>
                   </v-fade-transition>
                 </v-row>
