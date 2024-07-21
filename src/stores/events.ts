@@ -210,6 +210,7 @@ export const useEventsStore = defineStore("events", () => {
       data.value[account] = result;
       const o = await getOngoing(account);
       if (
+        ongoing.value === undefined ||
         (account === ongoing.value?.player?.battleTag &&
           o.id !== ongoing.value?.id) ||
         (account !== ongoing.value?.player?.battleTag && o.active)
