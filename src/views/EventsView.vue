@@ -231,9 +231,6 @@ setInterval(() => {
   <main style="height: 100vh; overflow-y: auto">
     <v-progress-linear indeterminate v-if="events.loaded < 3" />
     <v-container fluid style="opacity: 0.9" v-if="events.loaded >= 3">
-      <v-row
-        ><v-col cols="12">{{ events.ongoing.active }}</v-col></v-row
-      >
       <v-row>
         <v-col cols="12">
           <v-sheet class="pa-5" elevation="5">
