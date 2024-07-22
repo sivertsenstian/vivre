@@ -210,10 +210,9 @@ export const useEventsStore = defineStore("events", () => {
       data.value[account] = result;
       const o = await getOngoing(account);
       if (
-        ongoing.value === undefined ||
+        (o.active && !ongoing.value?.active) ||
         (account === ongoing.value?.player?.battleTag &&
-          o.id !== ongoing.value?.id) ||
-        (account !== ongoing.value?.player?.battleTag && o.active)
+          o.id !== ongoing.value?.id)
       ) {
         ongoing.value = o;
       }
@@ -233,6 +232,63 @@ export const useEventsStore = defineStore("events", () => {
         []
       )
       .sort((a: any, b: any) => moment(b.endTime).diff(moment(a.endTime)));
+  });
+
+  const bannedMatches = computed(() => {
+    return accounts
+      .reduce(
+        (s: any[], a: any) => [
+          ...s,
+          ...(data.value[a]?.season[Race.Undead].matches.filter((m: any) =>
+            moment(m.endTime).isBefore(start),
+          ) ?? []),
+        ],
+        [],
+      )
+      .sort((a: any, b: any) => moment(b.endTime).diff(moment(a.endTime)));
+  });
+
+  const games = computed(() => {
+    return {
+      before: {
+        total: bannedMatches.value.length,
+        wins:
+          accounts.reduce(
+            (s: any[], a: string) => [
+              ...s,
+              ...bannedMatches.value.filter((m) => getwins(a, m)),
+            ],
+            [],
+          ).length ?? 0,
+        loss:
+          accounts.reduce(
+            (s: any[], a: string) => [
+              ...s,
+              ...bannedMatches.value.filter((m) => getloss(a, m)),
+            ],
+            [],
+          ).length ?? 0,
+      },
+      after: {
+        total: matches.value.length,
+        wins:
+          accounts.reduce(
+            (s: any[], a: string) => [
+              ...s,
+              ...matches.value.filter((m) => getwins(a, m)),
+            ],
+            [],
+          ).length ?? 0,
+        loss:
+          accounts.reduce(
+            (s: any[], a: string) => [
+              ...s,
+              ...matches.value.filter((m) => getloss(a, m)),
+            ],
+            [],
+          ).length ?? 0,
+      },
+    };
   });
 
   const highest = computed(() => {
@@ -345,6 +401,8 @@ export const useEventsStore = defineStore("events", () => {
   return {
     data,
     accounts,
+    games,
+    bannedMatches,
     matches,
     ongoing,
     highest,

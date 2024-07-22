@@ -80,10 +80,16 @@ export const getloss = (tag: string, m: any) =>
       ),
   );
 
-export const getplayer = (tag: string) => (m: any) =>
-  m?.teams?.find((t: any) =>
-    t.players.find((p: any) => p.battleTag.toLowerCase() === tag.toLowerCase()),
-  );
+export const getplayer = (tag: string) => (m: any) => {
+  return {
+    ...m?.teams?.find((t: any) =>
+      t.players.find(
+        (p: any) => p.battleTag.toLowerCase() === tag.toLowerCase(),
+      ),
+    ),
+    match: m,
+  };
+};
 
 export const isRace = (tag: string, m: any, r: Race) =>
   m?.teams?.some((t: any) =>
