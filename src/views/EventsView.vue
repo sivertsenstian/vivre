@@ -20,7 +20,7 @@ const today = moment().add(1, "day").startOf("day");
 const days = today.diff(start, "days");
 
 // Chart stuff
-import { Bar, Line } from "vue-chartjs";
+import { Bar } from "vue-chartjs";
 import {
   Chart as ChartJS,
   LineElement,
@@ -43,7 +43,6 @@ import {
 import { Race, raceIcon } from "@/stores/races";
 import _groupBy from "lodash/groupBy";
 import _take from "lodash/take";
-import _takeWhile from "lodash/takeWhile";
 import ResultChart from "@/components/ResultChart.vue";
 import { useTheme } from "vuetify";
 import { CalendarHeatmap } from "vue3-calendar-heatmap";
@@ -235,6 +234,38 @@ const activity = computed(() => {
     count: items.length,
   }));
 });
+
+// MMR
+const scores = computed(() => {
+  const r = events.accounts.reduce(
+    (s, a) => {
+      const h =
+        _maxBy(
+          events.matches.map((m: any) => getplayer(a)(m)),
+          (p: any) => p?.players?.[0]?.currentMmr ?? 0,
+        ) ?? {};
+      const l =
+        _minBy(
+          events.matches.map((m: any) => getplayer(a)(m)),
+          (p: any) => p?.players?.[0]?.currentMmr ?? 9999,
+        ) ?? {};
+
+      s.lowest =
+        s.lowest.currentMmr < l.players[0].currentMmr
+          ? s.lowest
+          : { ...l.players[0], match: l.match };
+
+      s.highest =
+        s.highest.currentMmr > h.players[0].currentMmr
+          ? s.highest
+          : { ...h.players[0], match: h.match };
+      return s;
+    },
+    { lowest: {} as any, highest: {} as any },
+  );
+
+  return r as any;
+});
 </script>
 
 <template>
@@ -280,20 +311,32 @@ const activity = computed(() => {
               <v-col cols="12">
                 <v-row>
                   <v-col cols="6" class="d-flex align-center">
-                    <section>
-                      <span
-                        class="text-h4 mr-1"
-                        style="vertical-align: middle"
-                        >{{ events.matches.length }}</span
-                      >
-                      <span
-                        class="text-subtitle-1"
-                        style="vertical-align: middle"
-                      >
-                        Games played since ban was lifted on
-                        {{ start.format("dddd, MMMM Do") }}
-                      </span>
-                    </section>
+                    <v-row class="text-center">
+                      <v-col cols="12">
+                        <section>
+                          <span
+                            class="text-h4 mr-1"
+                            style="vertical-align: middle"
+                            >{{ events.matches.length }}</span
+                          >
+                          <span
+                            class="text-subtitle-1"
+                            style="vertical-align: middle"
+                          >
+                            Games played since ban was lifted on
+                            {{ start.format("dddd, MMMM Do") }}
+                          </span>
+                        </section>
+                      </v-col>
+                      <v-col cols="6">
+                        <div class="text-subtitle-2">Before Ban</div>
+                        <ResultChart percentage :result="events.games.before" />
+                      </v-col>
+                      <v-col cols="6">
+                        <div class="text-subtitle-2">After Ban</div>
+                        <ResultChart percentage :result="events.games.after" />
+                      </v-col>
+                    </v-row>
                   </v-col>
                   <v-col cols="6" v-if="seconds >= 0">
                     <v-col cols="12" class="d-flex">
@@ -491,125 +534,118 @@ const activity = computed(() => {
                     </v-card>
                   </v-col>
 
-                  <v-fade-transition>
-                    <v-col cols="6" v-if="events.ongoing.active">
-                      <v-sheet :elevation="0">
-                        <v-row>
-                          <v-col cols="12" class="text-center">
-                            <v-col cols="12">
-                              <span class="text-h6 font-weight-bold"
-                                >Now playing a game on '{{
-                                  events.ongoing?.map
-                                }}' : {{ duration }}</span
-                              >
-                              <v-btn
-                                @click="
-                                  () =>
-                                    open(
-                                      `https://www.w3champions.com/match/${events.ongoing.id}`,
-                                    )
-                                "
-                                title="go to match"
-                                size="x-small"
-                                color="orange"
-                                icon="mdi-link"
-                                variant="text"
-                              />
-                            </v-col>
-                            <v-col cols="12">
-                              <span
-                                class="text-h5"
-                                style="vertical-align: text-top"
-                                >Vs.
-                              </span>
-                              <img
-                                class="mx-2"
-                                style="vertical-align: middle"
-                                width="70px"
-                                :src="raceIcon[events.ongoing.opponent.race]"
-                              />
-                              <span
-                                class="text-h5"
-                                style="vertical-align: text-top"
-                              >
-                                {{ events.ongoing.opponent?.name }} ({{
-                                  events.ongoing.opponent?.oldMmr
-                                }})</span
-                              >
-                            </v-col>
+                  <v-col cols="6" v-if="events.ongoing?.active">
+                    <v-sheet :elevation="0">
+                      <v-row>
+                        <v-col cols="12" class="text-center">
+                          <v-col cols="12">
+                            <span class="text-h6 font-weight-bold"
+                              >Now playing a game on '{{ events.ongoing?.map }}'
+                              : {{ duration }}</span
+                            >
+                            <v-btn
+                              @click="
+                                () =>
+                                  open(
+                                    `https://www.w3champions.com/match/${events.ongoing.id}`,
+                                  )
+                              "
+                              title="go to match"
+                              size="x-small"
+                              color="orange"
+                              icon="mdi-link"
+                              variant="text"
+                            />
                           </v-col>
+                          <v-col cols="12">
+                            <span
+                              class="text-h5"
+                              style="vertical-align: text-top"
+                              >Vs.
+                            </span>
+                            <img
+                              class="mx-2"
+                              style="vertical-align: middle"
+                              width="70px"
+                              :src="raceIcon[events.ongoing.opponent.race]"
+                            />
+                            <span
+                              class="text-h5"
+                              style="vertical-align: text-top"
+                            >
+                              {{ events.ongoing.opponent?.name }} ({{
+                                events.ongoing.opponent?.oldMmr
+                              }})</span
+                            >
+                          </v-col>
+                        </v-col>
 
-                          <v-col cols="12" class="text-center">
-                            <div>
-                              <span
-                                class="text-caption font-weight-bold"
-                                v-if="events.ongoing.history.last.length"
-                                >Last
-                                {{ events.ongoing.history.last.length }} game(s)
-                                vs opponent:
-                              </span>
-                              <span
-                                class="text-caption font-weight-bold"
+                        <v-col cols="12" class="text-center">
+                          <div>
+                            <span
+                              class="text-caption font-weight-bold"
+                              v-if="events.ongoing.history.last.length"
+                              >Last
+                              {{ events.ongoing.history.last.length }} game(s)
+                              vs opponent:
+                            </span>
+                            <span class="text-caption font-weight-bold" v-else>
+                              First Game This Season vs Opponent!
+                            </span>
+                            <template
+                              v-for="(result, i) in events.ongoing.history.last"
+                            >
+                              <v-chip
+                                v-if="result"
+                                size="x-small"
+                                variant="tonal"
+                                color="green"
+                                label
+                                class="rounded-0"
+                              >
+                                <v-icon icon="mdi-shield-sword-outline" />
+                              </v-chip>
+                              <v-chip
                                 v-else
+                                size="x-small"
+                                variant="tonal"
+                                color="red"
+                                label
+                                class="rounded-0"
                               >
-                                First Game This Season vs Opponent!
-                              </span>
-                              <template
-                                v-for="(result, i) in events.ongoing.history
-                                  .last"
-                              >
-                                <v-chip
-                                  v-if="result"
-                                  size="x-small"
-                                  variant="tonal"
-                                  color="green"
-                                  label
-                                  class="rounded-0"
-                                >
-                                  <v-icon icon="mdi-shield-sword-outline" />
-                                </v-chip>
-                                <v-chip
-                                  v-else
-                                  size="x-small"
-                                  variant="tonal"
-                                  color="red"
-                                  label
-                                  class="rounded-0"
-                                >
-                                  <v-icon icon="mdi-shield-sword-outline" />
-                                </v-chip>
-                              </template>
-                            </div>
-                            <div
-                              class="text-caption text-green font-weight-bold mt-3 text-right"
-                            >
-                              Gained {{ events.ongoing.history.mmr.gain }} MMR
-                            </div>
-                            <div
-                              class="text-caption text-red font-weight-bold text-right"
-                            >
-                              Lost {{ events.ongoing.history.mmr.loss }} MMR
-                            </div>
-                          </v-col>
-                        </v-row>
-                      </v-sheet>
-                    </v-col>
-                    <v-col cols="6" v-else>
-                      <div class="text-h6 text-center mb-5">
-                        Happy is not currently playing - Check out his recent
-                        activity below:
-                      </div>
-                      <calendar-heatmap
-                        :dark-mode="isDark"
-                        :values="activity"
-                        :end-date="moment()"
-                        :max="20"
-                        no-data-text="no games played :("
-                        tooltip-unit="game(s)"
-                        :round="5"
-                      />
-                    </v-col>
-                  </v-fade-transition>
+                                <v-icon icon="mdi-shield-sword-outline" />
+                              </v-chip>
+                            </template>
+                          </div>
+                          <div
+                            class="text-caption text-green font-weight-bold mt-3 text-right"
+                          >
+                            Gained {{ events.ongoing.history.mmr.gain }} MMR
+                          </div>
+                          <div
+                            class="text-caption text-red font-weight-bold text-right"
+                          >
+                            Lost {{ events.ongoing.history.mmr.loss }} MMR
+                          </div>
+                        </v-col>
+                      </v-row>
+                    </v-sheet>
+                  </v-col>
+                  <v-col cols="6" v-else>
+                    <div class="text-h6 text-center mb-5">
+                      Happy is not currently playing - Check out his recent
+                      activity below:
+                    </div>
+                    <calendar-heatmap
+                      :dark-mode="isDark"
+                      :values="activity"
+                      :end-date="moment()"
+                      :max="20"
+                      no-data-text="no games played :("
+                      tooltip-unit="game(s)"
+                      :round="5"
+                    />
+                  </v-col>
                 </v-row>
 
                 <section>
@@ -683,37 +719,124 @@ const activity = computed(() => {
               </v-col>
 
               <v-col cols="12" class="text-center">
-                <span class="text-h6"
-                  >Remaining points to reach 3000 MMR Goal</span
-                >
+                <span class="text-h6">MMR overview</span>
                 <v-progress-linear
                   color="green"
                   :model-value="
-                    (Math.max(
+                    ((Math.max(
                       ...events.accounts.map(
                         (a) => events.data[a].season.summary.mmr.current,
                       ),
-                    ) /
-                      3000) *
+                    ) -
+                      2700) /
+                      300) *
                     100
                   "
                   height="30"
                 >
                   <template v-slot:default="{ value }">
-                    <strong>
-                      {{
-                        Math.max(
-                          ...events.accounts.map(
-                            (a) => events.data[a].season.summary.mmr.current,
-                          ),
-                        )
-                      }}
-                      / 3000 {{ Math.ceil(value) }}%</strong
-                    >
+                    <strong> {{ Math.ceil(value) }}%</strong>
                   </template>
                 </v-progress-linear>
-              </v-col>
+                <span
+                  class="text-caption font-weight-bold"
+                  :style="{
+                    position: 'relative',
+                    bottom: '50px',
+                    right: 'calc(50% - 30px)',
+                  }"
+                  >2700 MMR</span
+                >
+                <span
+                  :style="{
+                    display: 'block',
+                    position: 'relative',
+                    border: '2px solid #daa520',
+                    height: '30px',
+                    width: '0px',
+                    bottom: '54px',
+                    left: `${
+                      ((scores.highest.currentMmr - 2700) / 300) * 100
+                    }%`,
+                  }"
+                >
+                  <span
+                    class="text-caption font-weight-bold text-no-wrap"
+                    style="
+                      font-size: 0.65rem !important;
+                      color: goldenrod;
+                      margin-left: 5px;
+                      top: 0px;
+                      position: relative;
+                    "
+                    >{{ scores.highest.currentMmr }} MMR on
+                    {{
+                      moment(scores.highest.match.endTime).format("D/MM HH:mm")
+                    }}</span
+                  >
+                </span>
+                <span
+                  :style="{
+                    display: 'block',
+                    position: 'relative',
+                    border: '2px solid grey',
+                    height: '30px',
+                    width: '0px',
+                    bottom: '84px',
+                    left: `${((scores.lowest.currentMmr - 2700) / 300) * 100}%`,
+                  }"
+                >
+                  <span
+                    class="text-caption font-weight-bold text-no-wrap"
+                    style="
+                      font-size: 0.65rem !important;
+                      color: grey;
+                      margin-left: 0px;
+                      top: 25px;
+                      position: relative;
+                    "
+                  >
+                    {{ scores.lowest.currentMmr }} MMR on
+                    {{
+                      moment(scores.lowest.match.endTime).format("D/MM HH:mm")
+                    }}
+                  </span>
+                </span>
 
+                <span
+                  v-for="(account, i) in events.accounts"
+                  :style="{
+                    zIndex: 0,
+                    display: 'block',
+                    position: 'relative',
+                    border: `1px dashed ${isDark ? 'white' : 'black'}`,
+                    height: `${45 + i * 15}px`,
+                    width: '0px',
+                    bottom: `${i === 0 ? 114 : i === 1 ? 158 : 218}px`,
+                    left: `${
+                      ((events.data[account].season.summary.mmr.current -
+                        2700) /
+                        300) *
+                      100
+                    }%`,
+                  }"
+                >
+                  <span
+                    class="text-caption font-weight-bold text-no-wrap"
+                    :style="{
+                      fontSize: '0.65rem !important',
+                      color: `1px dashed ${isDark ? 'white' : 'black'}`,
+                      marginLeft: '3px',
+                      top: `${30 + i * 15}px`,
+                      position: 'relative',
+                    }"
+                    >{{ events.data[account].season.summary.mmr.current }} MMR
+                    // {{ account }}
+                  </span>
+                </span>
+              </v-col>
+            </v-row>
+            <v-row style="margin-top: -225px">
               <v-col cols="4" v-for="(account, i) in events.accounts">
                 <Banner
                   :race="events.data[account].race"
@@ -836,8 +959,12 @@ const activity = computed(() => {
                               .reduce(
                                 (s: number[], d: number[]) =>
                                   s.map((v, i) => v + d[i]),
-                                _range(
-                                  context.chart.data.datasets[0].data.length,
+                                _fill(
+                                  _range(
+                                    0,
+                                    context.chart.data.datasets[0].data.length,
+                                  ),
+                                  0,
                                 ),
                               );
 
@@ -851,8 +978,7 @@ const activity = computed(() => {
                               1,
                             );
 
-                            const s = r > 0 && r < 100 ? String(r) + '%' : '';
-                            return s;
+                            return r > 0 && r < 100 ? r + '%' : '';
                           },
                         },
                       },
@@ -1060,19 +1186,28 @@ const activity = computed(() => {
                     >
                   </v-list>
                   <v-list-item :prepend-avatar="raceIcon[Race.Human]">
-                    <ResultChart :result="events.race[Race.Human]" />
+                    <ResultChart percentage :result="events.race[Race.Human]" />
                   </v-list-item>
                   <v-list-item :prepend-avatar="raceIcon[Race.Orc]">
-                    <ResultChart :result="events.race[Race.Orc]" />
+                    <ResultChart percentage :result="events.race[Race.Orc]" />
                   </v-list-item>
                   <v-list-item :prepend-avatar="raceIcon[Race.NightElf]">
-                    <ResultChart :result="events.race[Race.NightElf]" />
+                    <ResultChart
+                      percentage
+                      :result="events.race[Race.NightElf]"
+                    />
                   </v-list-item>
                   <v-list-item :prepend-avatar="raceIcon[Race.Undead]">
-                    <ResultChart :result="events.race[Race.Undead]" />
+                    <ResultChart
+                      percentage
+                      :result="events.race[Race.Undead]"
+                    />
                   </v-list-item>
                   <v-list-item :prepend-avatar="raceIcon[Race.Random]">
-                    <ResultChart :result="events.race[Race.Random]" />
+                    <ResultChart
+                      percentage
+                      :result="events.race[Race.Random]"
+                    />
                   </v-list-item>
                 </v-list>
               </v-col>
