@@ -244,3 +244,6 @@ export const getAllSeasonGames = async (
 
   return all;
 };
+
+export const numberOfGames = (target: number, avg: number) =>
+  Math.abs(Math.ceil(target / avg));
