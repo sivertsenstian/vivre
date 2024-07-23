@@ -11,6 +11,7 @@ import {
   getTotal,
   getwins,
   isRace,
+  numberOfGames,
 } from "@/utilities/matchcalculator";
 import moment from "moment/moment";
 import { Race } from "@/stores/races";
@@ -33,6 +34,7 @@ export const useEventsStore = defineStore("events", () => {
 
   const start = moment("10.07.2024", "DD.MM.YYYY").startOf("day");
   const today = moment().startOf("day");
+  const daysSinceStart = today.diff(start, "days");
   const rule = moment().startOf("isoWeek");
 
   const getData = async (tag: string) => {
@@ -240,10 +242,10 @@ export const useEventsStore = defineStore("events", () => {
         (s: any[], a: any) => [
           ...s,
           ...(data.value[a]?.season[Race.Undead].matches.filter((m: any) =>
-            moment(m.endTime).isBefore(start),
+            moment(m.endTime).isBefore(start)
           ) ?? []),
         ],
-        [],
+        []
       )
       .sort((a: any, b: any) => moment(b.endTime).diff(moment(a.endTime)));
   });
@@ -258,7 +260,7 @@ export const useEventsStore = defineStore("events", () => {
               ...s,
               ...bannedMatches.value.filter((m) => getwins(a, m)),
             ],
-            [],
+            []
           ).length ?? 0,
         loss:
           accounts.reduce(
@@ -266,7 +268,7 @@ export const useEventsStore = defineStore("events", () => {
               ...s,
               ...bannedMatches.value.filter((m) => getloss(a, m)),
             ],
-            [],
+            []
           ).length ?? 0,
       },
       after: {
@@ -277,7 +279,7 @@ export const useEventsStore = defineStore("events", () => {
               ...s,
               ...matches.value.filter((m) => getwins(a, m)),
             ],
-            [],
+            []
           ).length ?? 0,
         loss:
           accounts.reduce(
@@ -285,7 +287,7 @@ export const useEventsStore = defineStore("events", () => {
               ...s,
               ...matches.value.filter((m) => getloss(a, m)),
             ],
-            [],
+            []
           ).length ?? 0,
       },
     };
@@ -364,38 +366,100 @@ export const useEventsStore = defineStore("events", () => {
   });
 
   const prediction = computed(() => {
-    const hmw = matches.value.filter((m) => getwins(highest.value, m));
-    const hml = matches.value.filter((m) => getloss(highest.value, m));
+    const r = accounts.reduce((result, account) => {
+      const hmw = matches.value.filter((m) => getwins(account, m));
+      const hml = matches.value.filter((m) => getloss(account, m));
 
-    const c = hmw.length + hml.length;
+      const c = hmw.length + hml.length;
 
-    const averageWin = Math.abs(
-      hmw.reduce((s, m) => {
-        const gain = getplayer(highest.value)(m).players[0].mmrGain;
-        return gain > 0 ? s + gain : s;
-      }, 0)
+      const averageWin = Math.abs(
+        hmw.reduce((s, m) => {
+          const gain = getplayer(account)(m).players[0].mmrGain;
+          return gain > 0 ? s + gain : s;
+        }, 0)
+      );
+      const averageLoss = Math.abs(
+        hml.reduce((s, m) => {
+          const gain = getplayer(account)(m).players[0].mmrGain;
+          return gain < 0 ? s + gain : s;
+        }, 0)
+      );
+      const averageGain =
+        [...hmw, ...hml].reduce(
+          (s, m) => s + getplayer(account)(m).players[0].mmrGain,
+          0
+        ) / c;
+
+      let calculatedDays = { count: 0, date: null } as any;
+      if (loaded.value >= 3) {
+        const d = Math.ceil(
+          numberOfGames(
+            3000 - data.value[account].season.summary.mmr.current,
+            averageGain
+          ) /
+            (c / daysSinceStart)
+        );
+        calculatedDays = {
+          count: d,
+          date: moment().add(d, "days").startOf("day"),
+        };
+      }
+
+      return {
+        ...result,
+        [account]: {
+          days: calculatedDays,
+          current: data.value[account].season.summary.mmr.current,
+          count: c,
+          winCount: hmw.length,
+          lossCount: hml.length,
+          win: _round(averageWin, 2),
+          loss: _round(averageLoss, 2),
+          gain: _round(averageGain, 2),
+        },
+      };
+    }, {} as any);
+
+    const all = accounts.reduce(
+      (t: any, a: any) => {
+        t.days = r[a].days;
+        t.current = r[a].current > t.current ? r[a].current : t.current;
+        t.count += r[a].count;
+        t.winCount += r[a].winCount;
+        t.lossCount += r[a].lossCount;
+        t.win += r[a].win;
+        t.loss += r[a].loss;
+        t.gain += r[a].gain * (1 / 3);
+        return t;
+      },
+      {
+        days: { count: 0, date: null },
+        current: 0,
+        count: 0,
+        winCount: 0,
+        lossCount: 0,
+        win: 0,
+        loss: 0,
+        gain: 0,
+        total: true,
+      }
     );
-    const averageLoss = Math.abs(
-      hml.reduce((s, m) => {
-        const gain = getplayer(highest.value)(m).players[0].mmrGain;
-        return gain < 0 ? s + gain : s;
-      }, 0)
-    );
-    const averageGain =
-      [...hmw, ...hml].reduce(
-        (s, m) => s + getplayer(highest.value)(m).players[0].mmrGain,
-        0
-      ) / c;
+    all.gain = _round(all.gain, 2);
+    let calculatedDays = { count: 0, date: null } as any;
+    if (loaded.value >= 3) {
+      const d = Math.ceil(
+        numberOfGames(3000 - all.current, all.gain) /
+          (all.count / daysSinceStart)
+      );
+      calculatedDays = {
+        count: d,
+        date: moment().add(d, "days").startOf("day"),
+      };
+    }
+    all.days = calculatedDays;
+    r["All Accounts"] = all;
 
-    return {
-      current: data.value[highest.value].season.summary.mmr.current,
-      count: c,
-      winCount: hmw.length,
-      lossCount: hml.length,
-      win: _round(averageWin, 2),
-      loss: _round(averageLoss, 2),
-      gain: _round(averageGain, 2),
-    };
+    return r;
   });
 
   return {

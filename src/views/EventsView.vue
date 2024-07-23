@@ -39,6 +39,7 @@ import {
   getplayer,
   getwins,
   iswin,
+  numberOfGames,
 } from "@/utilities/matchcalculator";
 import { Race, raceIcon } from "@/stores/races";
 import _groupBy from "lodash/groupBy";
@@ -103,9 +104,6 @@ const options = {
     },
   },
 } as any;
-
-const numberOfGames = (target: number, avg: number) =>
-  Math.abs(Math.ceil(target / avg));
 
 const win = computed(() => {
   const wins: any[] = events.accounts.reduce(
@@ -196,29 +194,19 @@ const open = (path: string) => window.open(path, "_blank");
 const theme = useTheme();
 const isDark = computed(() => theme.global.current.value.dark);
 
-const daysToGoal = computed(() => {
-  if (events.loaded >= 3) {
-    const d = Math.ceil(
-      numberOfGames(3000 - events.prediction.current, events.prediction.gain) /
-        (events.prediction.count / days),
-    );
-
-    return { days: d, date: moment().add(d, "days").startOf("day") };
-  }
-
-  return { days: 0, date: null };
-});
-
 // Counter
+const tab = ref(events.accounts[0]);
+
 const dayz = ref(0);
 const hours = ref(0);
 const minutes = ref(0);
 const seconds = ref(0);
 
 setInterval(() => {
-  if (daysToGoal.value.date) {
+  if (events.prediction[tab.value].days.date) {
     const currentDate = moment();
-    const p = (daysToGoal.value.date as any) - (currentDate as any);
+    const p =
+      (events.prediction[tab.value].days.date as any) - (currentDate as any);
     seconds.value = parseInt((p / 1000) as any);
     minutes.value = parseInt((seconds.value / 60) as any);
     hours.value = parseInt((minutes.value / 60) as any);
@@ -649,70 +637,115 @@ const scores = computed(() => {
                 </v-row>
 
                 <section>
-                  <div class="text-h5 mt-5">Prediction</div>
-                  <hr />
+                  <div class="text-h5 mt-5">Predictions</div>
                   <v-row>
-                    <v-col cols="12" v-if="events.prediction.count">
-                      <section>
-                        Calculated by taking average mmr gained over all
-                        {{ events.prediction.count }} games played since ban ({{
-                          events.prediction.winCount
-                        }}
-                        wins, {{ events.prediction.lossCount }} losses,
-                        {{ events.prediction.win }}mmr gained,
-                        {{ events.prediction.loss }}
-                        mmr lost), for the currently highest account:
-                        <strong style="color: goldenrod">{{
-                          events.highest
-                        }}</strong>
-                      </section>
-                      <section>
-                        This means that he is currently
-                        {{
-                          Math.sign(events.prediction.gain) > 0
-                            ? "gaining"
-                            : "losing"
-                        }}
-                        <strong
-                          >{{ Math.abs(events.prediction.gain) }}MMR</strong
+                    <v-col cols="12">
+                      <v-tabs v-model="tab" slider-color="transparent">
+                        <v-tab
+                          class="text-none"
+                          v-for="(prediction, name) in events.prediction"
+                          :value="name"
+                          :style="
+                            tab === String(name)
+                              ? {
+                                  color: 'goldenrod',
+                                }
+                              : {}
+                          "
+                          ><strong v-if="tab === String(name)">{{
+                            name
+                          }}</strong
+                          ><span v-else>{{ name }}</span></v-tab
                         >
-                        per game (on average)
-                      </section>
-                      <v-sheet
-                        v-if="events.prediction.gain > 0"
-                        class="mt-1 text-green"
-                      >
-                        <section class="mt-1 font-weight-bold">
-                          And it will take him
-                          {{
-                            numberOfGames(
-                              3000 - events.prediction.current,
-                              events.prediction.gain,
-                            )
-                          }}
-                          games to reach 3000 MMR.
-                        </section>
-                        <section>
-                          He is currently playing
-                          <strong>
-                            {{ Math.ceil(events.prediction.count / days) }}
-                          </strong>
-                          games per day (on average) So he only needs another
-                          <strong>{{ daysToGoal.days }}</strong>
-                          days if he keeps this up!
-                        </section>
-                      </v-sheet>
-                      <div
-                        v-if="events.prediction.gain < 0"
-                        class="mt-1 text-red text-subtitle"
-                      >
-                        <section>
-                          Will not make it with the current trend! MMR will
-                          decrease by 100 points after
-                          {{ numberOfGames(100, events.prediction.gain) }}
-                          games if this continues!
-                        </section>
-                      </div>
+                      </v-tabs>
+                      <hr />
+                      <v-window v-model="tab">
+                        <v-window-item
+                          v-for="(prediction, name) in events.prediction"
+                          :value="name"
+                        >
+                          <v-row>
+                            <v-col cols="12">
+                              <section>
+                                Calculated by taking average mmr gained over all
+                                {{ prediction.count }} games played since ban
+                                ({{ prediction.winCount }} wins,
+                                {{ prediction.lossCount }} losses,
+                                {{ prediction.win }}mmr gained,
+                                {{ prediction.loss }}
+                                mmr lost), on
+                                <strong style="color: goldenrod">{{
+                                  name
+                                }}</strong>
+                              </section>
+                              <section>
+                                This means that he is currently
+                                {{
+                                  Math.sign(prediction.gain) > 0
+                                    ? "gaining"
+                                    : "losing"
+                                }}
+                                <strong
+                                  >{{ Math.abs(prediction.gain) }}MMR</strong
+                                >
+                                per game (on average)
+                              </section>
+                              <v-sheet
+                                v-if="prediction.gain > 0"
+                                class="mt-1 text-green"
+                              >
+                                <section class="mt-1">
+                                  And it will take him
+                                  <strong>{{
+                                    numberOfGames(
+                                      3000 - prediction.current,
+                                      prediction.gain,
+                                    )
+                                  }}</strong>
+                                  <span v-if="prediction.total">
+                                    games, to reach 3000 MMR.
+                                  </span>
+                                  <span v-else>
+                                    games on this account, to reach 3000 MMR.
+                                  </span>
+                                </section>
+                                <section>
+                                  He is currently playing
+                                  <strong>
+                                    {{ Math.round(prediction.count / days) }}
+                                  </strong>
+                                  <span v-if="prediction.total">
+                                    games in total per day on all accounts. If
+                                    he plays all of these games on his highest
+                                    account with
+                                    <strong>{{ prediction.current }}</strong>
+                                    MMR, he only needs another
+                                    <strong>{{ prediction.days.count }}</strong>
+                                    day(s).
+                                  </span>
+                                  <span v-else>
+                                    games per day (on average) So he only needs
+                                    another
+                                    <strong>{{ prediction.days.count }}</strong>
+                                    days if he keeps this up!
+                                  </span>
+                                </section>
+                              </v-sheet>
+                              <div
+                                v-if="prediction.gain < 0"
+                                class="mt-1 text-red text-subtitle"
+                              >
+                                <section>
+                                  Will not make it with the current trend! MMR
+                                  will decrease by 100 points after
+                                  {{ numberOfGames(100, prediction.gain) }}
+                                  games if this continues!
+                                </section>
+                              </div>
+                            </v-col>
+                          </v-row>
+                        </v-window-item>
+                      </v-window>
                     </v-col>
                   </v-row>
                 </section>
