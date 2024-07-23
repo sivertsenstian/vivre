@@ -19,7 +19,6 @@
     "axios": "^1.6.5",
     "chart.js": "^4.4.1",
     "chartjs-adapter-moment": "^1.0.1",
-    "chartjs-chart-matrix": "^2.0.1",
     "chartjs-plugin-datalabels": "^2.2.0",
     "lodash": "^4.17.21",
     "moment": "^2.30.1",

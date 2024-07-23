@@ -168,6 +168,14 @@ export const useEventsStore = defineStore("events", () => {
         performance: [],
         last: [],
         heroes: [],
+        mmr: {
+          gain: 0,
+          loss: 0,
+        },
+        expected: {
+          win: null,
+          loss: null,
+        },
       };
     }
 
@@ -183,11 +191,14 @@ export const useEventsStore = defineStore("events", () => {
           player.battleTag.toLowerCase()
       );
 
+      const wins = matches.filter((m: any) => getwins(player.battleTag, m));
+      const loss = matches.filter((m: any) => getloss(player.battleTag, m));
+
       return {
         performance,
         last: _take(performance, 18),
-        wins: matches.filter((m: any) => getwins(player.battleTag, m)).length,
-        loss: matches.filter((m: any) => getloss(player.battleTag, m)).length,
+        wins: wins.length,
+        loss: loss.length,
         total: historyResponse.count,
         heroes: {},
         mmr: {
@@ -197,6 +208,10 @@ export const useEventsStore = defineStore("events", () => {
           loss: _take(matches, 18)
             .filter((m: any) => getloss(player.battleTag, m))
             .reduce((s, m: any) => s + m.teams[0].players[0].mmrGain, 0),
+        },
+        expected: {
+          win: wins?.[0]?.teams[0].players[0].mmrGain,
+          loss: loss?.[0]?.teams[1].players[0].mmrGain,
         },
       } as any;
     } catch (error) {
@@ -399,7 +414,7 @@ export const useEventsStore = defineStore("events", () => {
         ) / c;
 
       let calculatedDays = { count: 0, date: null } as any;
-      if (loaded.value >= 3) {
+      if (loaded.value >= accounts.length) {
         const d = Math.ceil(
           numberOfGames(
             3000 - data.value[account].season.summary.mmr.current,
@@ -454,7 +469,7 @@ export const useEventsStore = defineStore("events", () => {
     );
     all.gain = _round(all.gain, 2);
     let calculatedDays = { count: 0, date: null } as any;
-    if (loaded.value >= 3) {
+    if (loaded.value >= accounts.length) {
       const d = Math.ceil(
         numberOfGames(3000 - all.current, all.gain) /
           (all.count / daysSinceStart)
