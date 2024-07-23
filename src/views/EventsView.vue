@@ -1287,6 +1287,9 @@ const scores = computed(() => {
                   :src="makrura"
                 />
               </v-col>
+              <v-col cols="12" style="display: none">
+                <pre>{{ events.ongoing }}</pre>
+              </v-col>
             </v-row>
           </v-sheet>
         </v-col>
