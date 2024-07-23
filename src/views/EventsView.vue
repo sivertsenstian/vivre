@@ -195,7 +195,7 @@ const theme = useTheme();
 const isDark = computed(() => theme.global.current.value.dark);
 
 // Counter
-const tab = ref(events.accounts[0]);
+const tab = ref("All Accounts");
 
 const dayz = ref(0);
 const hours = ref(0);
@@ -554,7 +554,7 @@ const scores = computed(() => {
                             <img
                               class="mx-2"
                               style="vertical-align: middle"
-                              width="70px"
+                              width="60px"
                               :src="raceIcon[events.ongoing.opponent.race]"
                             />
                             <span
@@ -565,6 +565,24 @@ const scores = computed(() => {
                                 events.ongoing.opponent?.oldMmr
                               }})</span
                             >
+                          </v-col>
+
+                          <v-col cols="12" class="text-center py-0">
+                            <span class="text-subtitle-2"
+                              >Predicted MMR Change:
+                              <span
+                                v-if="events.ongoing.history.expected.win"
+                                class="text-green-lighten-2 mr-1"
+                              >
+                                +{{ events.ongoing.history.expected.win }}</span
+                              >/
+                              <span
+                                v-if="events.ongoing.history.expected.loss"
+                                class="text-red-lighten-2"
+                              >
+                                {{ events.ongoing.history.expected.loss }}</span
+                              >
+                            </span>
                           </v-col>
                         </v-col>
 
@@ -877,6 +895,41 @@ const scores = computed(() => {
                   :label="account"
                   :highlight="account === events.highest"
                 />
+                <v-row
+                  v-if="events.data[account].day.total"
+                  class="text-center"
+                  style="position: relative"
+                >
+                  <v-col cols="12" class="py-0">
+                    <span
+                      >{{ events.data[account].day.total }} games played
+                      today,</span
+                    >
+                    <span class="text-green ml-1"
+                      >{{ events.data[account].day.wins }} win(s)</span
+                    >
+                    <span class="text-red ml-1"
+                      >{{ events.data[account].day.loss }} loss(es)</span
+                    >
+                  </v-col>
+                  <v-col cols="12" class="py-0">
+                    <span class="title">
+                      <span
+                        v-if="events.data[account].day.mmr.diff"
+                        :class="{
+                          'text-green': events.data[account].day.mmr.diff > 0,
+                          'text-red': events.data[account].day.mmr.diff < 0,
+                        }"
+                      >
+                        <span v-if="events.data[account].day.mmr.diff > 0"
+                          >+</span
+                        >
+                        {{ events.data[account].day.mmr.diff }}
+                      </span>
+                      MMR
+                    </span>
+                  </v-col>
+                </v-row>
               </v-col>
             </v-row>
             <v-row>
