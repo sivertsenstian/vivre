@@ -206,6 +206,7 @@ export const useEventsStore = defineStore("events", () => {
 
   // Do it live!
   setInterval(() => {
+    console.log("START ONGOING INTERVAL");
     accounts.forEach(async (account: string) => {
       const result = await getData(account);
       data.value[account] = result;
@@ -215,6 +216,14 @@ export const useEventsStore = defineStore("events", () => {
         (account === ongoing.value?.player?.battleTag &&
           o.id !== ongoing.value?.id)
       ) {
+        console.log("UPDATE");
+        console.log([
+          o.active && !ongoing.value?.active,
+          account === ongoing.value?.player?.battleTag &&
+            o.id !== ongoing.value?.id,
+        ]);
+        console.log({ ongoing: ongoing.value, o });
+
         ongoing.value = o;
       }
     });
@@ -405,7 +414,7 @@ export const useEventsStore = defineStore("events", () => {
         ...result,
         [account]: {
           days: calculatedDays,
-          current: data.value[account].season.summary.mmr.current,
+          current: data.value?.[account]?.season.summary.mmr.current,
           count: c,
           winCount: hmw.length,
           lossCount: hml.length,
