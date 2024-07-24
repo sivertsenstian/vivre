@@ -30,7 +30,6 @@
     "vue-confetti-explosion": "^1.0.2",
     "vue-number-animation": "^2.0.2",
     "vue-router": "^4.2.5",
-    "vue3-calendar-heatmap": "^2.0.5",
     "vuetify": "^3.5.1"
   },
   "devDependencies": {
