@@ -625,7 +625,14 @@ const scores = computed(() => {
                             >
                           </v-col>
 
-                          <v-col cols="12" class="text-center py-0">
+                          <v-col
+                            cols="12"
+                            class="text-center py-0"
+                            v-if="
+                              events.ongoing.history.expected.win ||
+                              events.ongoing.history.expected.loss
+                            "
+                          >
                             <span class="text-subtitle-2"
                               >Predicted MMR Change:
                               <span
@@ -1134,7 +1141,7 @@ const scores = computed(() => {
                 />
                 <v-row
                   v-if="events.data[account].day.total"
-                  class="text-center"
+                  class="text-center mt-1"
                   style="position: relative"
                 >
                   <v-col cols="12" class="py-0">
