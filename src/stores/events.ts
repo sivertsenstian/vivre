@@ -48,8 +48,8 @@ export const useEventsStore = defineStore("events", () => {
 
       const race = all?.[0]?.teams.find((t: any) =>
         t.players.some(
-          (p: any) => p.battleTag.toLowerCase() === tag.toLowerCase()
-        )
+          (p: any) => p.battleTag.toLowerCase() === tag.toLowerCase(),
+        ),
       )?.players?.[0]?.race;
 
       seasonActual = all;
@@ -67,7 +67,7 @@ export const useEventsStore = defineStore("events", () => {
         [Race.Orc]: seasonActual.filter((m) => isRace(tag, m, Race.Orc)),
         [Race.Undead]: seasonActual.filter((m) => isRace(tag, m, Race.Undead)),
         [Race.NightElf]: seasonActual.filter((m) =>
-          isRace(tag, m, Race.NightElf)
+          isRace(tag, m, Race.NightElf),
         ),
         [Race.Random]: seasonActual.filter((m) => isRace(tag, m, Race.Random)),
       };
@@ -132,13 +132,13 @@ export const useEventsStore = defineStore("events", () => {
       if (!_isNil(onGoingResponse?.id)) {
         const player = onGoingResponse.teams?.find((t: any) =>
           t.players.some(
-            (p: any) => p.battleTag.toLowerCase() === tag.toLowerCase()
-          )
+            (p: any) => p.battleTag.toLowerCase() === tag.toLowerCase(),
+          ),
         )?.players?.[0];
         const opponent = onGoingResponse.teams?.find((t: any) =>
           t.players.some(
-            (p: any) => p.battleTag.toLowerCase() != tag.toLowerCase()
-          )
+            (p: any) => p.battleTag.toLowerCase() != tag.toLowerCase(),
+          ),
         )?.players?.[0];
 
         result = {
@@ -181,14 +181,14 @@ export const useEventsStore = defineStore("events", () => {
 
     try {
       const { data: historyResponse } = await axios.get(
-        opponentHistoryUrl(player.battleTag, opponent.battleTag, 19)
+        opponentHistoryUrl(player.battleTag, opponent.battleTag, 19),
       );
 
       const matches = historyResponse?.matches ?? [];
       const performance = matches.map(
         (match: any) =>
           match?.teams?.[0]?.players?.[0]?.battleTag.toLowerCase() ===
-          player.battleTag.toLowerCase()
+          player.battleTag.toLowerCase(),
       );
 
       const wins = matches.filter((m: any) => getwins(player.battleTag, m));
@@ -242,7 +242,6 @@ export const useEventsStore = defineStore("events", () => {
         ongoing.value = o;
       }
     });
-    ongoing.value = c;
   }, 10000);
 
   const matches = computed(() => {
@@ -251,10 +250,10 @@ export const useEventsStore = defineStore("events", () => {
         (s: any[], a: any) => [
           ...s,
           ...(data.value[a]?.season[Race.Undead].matches.filter((m: any) =>
-            moment(m.endTime).isAfter(start)
+            moment(m.endTime).isAfter(start),
           ) ?? []),
         ],
-        []
+        [],
       )
       .sort((a: any, b: any) => moment(b.endTime).diff(moment(a.endTime)));
   });
@@ -265,10 +264,10 @@ export const useEventsStore = defineStore("events", () => {
         (s: any[], a: any) => [
           ...s,
           ...(data.value[a]?.season[Race.Undead].matches.filter((m: any) =>
-            moment(m.endTime).isBefore(start)
+            moment(m.endTime).isBefore(start),
           ) ?? []),
         ],
-        []
+        [],
       )
       .sort((a: any, b: any) => moment(b.endTime).diff(moment(a.endTime)));
   });
@@ -283,7 +282,7 @@ export const useEventsStore = defineStore("events", () => {
               ...s,
               ...bannedMatches.value.filter((m) => getwins(a, m)),
             ],
-            []
+            [],
           ).length ?? 0,
         loss:
           accounts.reduce(
@@ -291,7 +290,7 @@ export const useEventsStore = defineStore("events", () => {
               ...s,
               ...bannedMatches.value.filter((m) => getloss(a, m)),
             ],
-            []
+            [],
           ).length ?? 0,
       },
       after: {
@@ -302,7 +301,7 @@ export const useEventsStore = defineStore("events", () => {
               ...s,
               ...matches.value.filter((m) => getwins(a, m)),
             ],
-            []
+            [],
           ).length ?? 0,
         loss:
           accounts.reduce(
@@ -310,7 +309,7 @@ export const useEventsStore = defineStore("events", () => {
               ...s,
               ...matches.value.filter((m) => getloss(a, m)),
             ],
-            []
+            [],
           ).length ?? 0,
       },
     };
@@ -323,13 +322,12 @@ export const useEventsStore = defineStore("events", () => {
     return accounts[i];
   });
 
-  let c = { active: false };
   accounts.forEach(async (account: string) => {
+    console.log("INITIAL LOAD??");
     const result = await getData(account);
     data.value[account] = result;
     loaded.value += 1;
   });
-  ongoing.value = c;
 
   // Race stats across accounts
   const race = computed(() => {
@@ -338,7 +336,7 @@ export const useEventsStore = defineStore("events", () => {
         ...s,
         ...matches.value.filter((m) => getwins(a, m)),
       ],
-      []
+      [],
     );
 
     const loss: any[] = accounts.reduce(
@@ -346,7 +344,7 @@ export const useEventsStore = defineStore("events", () => {
         ...s,
         ...matches.value.filter((m) => getloss(a, m)),
       ],
-      []
+      [],
     );
 
     const grouped = {
@@ -399,18 +397,18 @@ export const useEventsStore = defineStore("events", () => {
         hmw.reduce((s, m) => {
           const gain = getplayer(account)(m).players[0].mmrGain;
           return gain > 0 ? s + gain : s;
-        }, 0)
+        }, 0),
       );
       const averageLoss = Math.abs(
         hml.reduce((s, m) => {
           const gain = getplayer(account)(m).players[0].mmrGain;
           return gain < 0 ? s + gain : s;
-        }, 0)
+        }, 0),
       );
       const averageGain =
         [...hmw, ...hml].reduce(
           (s, m) => s + getplayer(account)(m).players[0].mmrGain,
-          0
+          0,
         ) / c;
 
       let calculatedDays = { count: 0, date: null } as any;
@@ -418,9 +416,9 @@ export const useEventsStore = defineStore("events", () => {
         const d = Math.ceil(
           numberOfGames(
             3000 - data.value[account].season.summary.mmr.current,
-            averageGain
+            averageGain,
           ) /
-            (c / daysSinceStart)
+            (c / daysSinceStart),
         );
         calculatedDays = {
           count: d,
@@ -465,14 +463,14 @@ export const useEventsStore = defineStore("events", () => {
         loss: 0,
         gain: 0,
         total: true,
-      }
+      },
     );
     all.gain = _round(all.gain, 2);
     let calculatedDays = { count: 0, date: null } as any;
     if (loaded.value >= accounts.length) {
       const d = Math.ceil(
         numberOfGames(3000 - all.current, all.gain) /
-          (all.count / daysSinceStart)
+          (all.count / daysSinceStart),
       );
       calculatedDays = {
         count: d,
