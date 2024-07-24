@@ -38,6 +38,9 @@ const options = {
                       Number(props.played),
                       Number((props.goal ?? 0) - (props.played ?? 0)),
                     ],
+              datalabels: {
+                display: false,
+              },
             },
           ],
         }"
