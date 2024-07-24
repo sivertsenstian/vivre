@@ -9,9 +9,11 @@ import moment from "moment";
 import _range from "lodash/range";
 import _fill from "lodash/fill";
 import _map from "lodash/map";
+import _reduce from "lodash/reduce";
 import _maxBy from "lodash/maxBy";
 import _minBy from "lodash/minBy";
 import _round from "lodash/round";
+import _isNil from "lodash/isNil";
 import ConfettiExplosion from "vue-confetti-explosion";
 
 const events = useEventsStore();
@@ -46,7 +48,6 @@ import _groupBy from "lodash/groupBy";
 import _take from "lodash/take";
 import ResultChart from "@/components/ResultChart.vue";
 import { useTheme } from "vuetify";
-import { CalendarHeatmap } from "vue3-calendar-heatmap";
 
 ChartJS.register(
   LineController,
@@ -216,12 +217,69 @@ setInterval(() => {
 
 // Activity
 const activity = computed(() => {
-  const g = _groupBy(events.matches, (m: any) => moment(m.endTime).format("L"));
-  return _map(g, (items: any[], date: string) => ({
-    date,
-    count: items.length,
-  }));
+  const g = _groupBy(events.matches, (m: any) => [
+    moment(m.endTime).format("dddd"),
+    moment(m.endTime).format("HH"),
+  ]);
+  return _reduce(
+    g,
+    (r: any, v: any, k: string) => ({
+      ...r,
+      [k]: v.length,
+    }),
+    {},
+  );
 });
+
+const lightIntensity = (n: number) => {
+  const colors = [
+    "rgb(235, 237, 240)",
+    "rgb(218, 226, 239)",
+    "rgb(192, 221, 249)",
+    "rgb(115, 179, 243)",
+    "rgb(56, 134, 225)",
+    "rgb(23, 69, 158)",
+  ];
+
+  if (_isNil(n) || n === 0) {
+    return colors[0];
+  } else if (n <= 1) {
+    return colors[1];
+  } else if (n <= 2) {
+    return colors[2];
+  } else if (n <= 3) {
+    return colors[3];
+  } else if (n <= 5) {
+    return colors[4];
+  } else {
+    return colors[5];
+  }
+};
+
+const darkIntensity = (n: number) => {
+  const colors = [
+    "rgb(31, 31, 34)",
+    "rgb(30, 51, 74)",
+    "rgb(29, 70, 108)",
+    "rgb(29, 86, 137)",
+    "rgb(29, 106, 172)",
+    "rgb(27, 149, 209)",
+  ];
+
+  if (_isNil(n) || n === 0) {
+    return colors[0];
+  } else if (n <= 1) {
+    return colors[1];
+  } else if (n <= 2) {
+    return colors[2];
+  } else if (n <= 3) {
+    return colors[3];
+  } else if (n <= 5) {
+    return colors[4];
+  } else {
+    return colors[5];
+  }
+};
 
 // MMR
 const scores = computed(() => {
@@ -638,19 +696,198 @@ const scores = computed(() => {
                     </v-sheet>
                   </v-col>
                   <v-col cols="6" v-else>
-                    <div class="text-h6 text-center mb-5">
-                      Happy is not currently playing - Check out his recent
-                      activity below:
+                    <div class="text-h6 mb-1 text-center">
+                      Not currently playing - Check out his weekly activity
                     </div>
-                    <calendar-heatmap
-                      :dark-mode="isDark"
-                      :values="activity"
-                      :end-date="moment()"
-                      :max="20"
-                      no-data-text="no games played :("
-                      tooltip-unit="game(s)"
-                      :round="5"
-                    />
+                    <v-col cols="8" class="mx-auto">
+                      <v-table density="compact" class="time-table text-center">
+                        <thead style="color: #767676; font-size: 11px">
+                          <tr>
+                            <th class="text-center"></th>
+                            <th
+                              :class="{
+                                'text-center': true,
+                                'font-weight-bold':
+                                  moment().format('d') === '1',
+                              }"
+                              :style="{
+                                color:
+                                  moment().format('d') === '1'
+                                    ? 'goldenrod'
+                                    : 'inherit',
+                              }"
+                            >
+                              M
+                            </th>
+                            <th
+                              :class="{
+                                'text-center': true,
+                                'font-weight-bold':
+                                  moment().format('d') === '2',
+                              }"
+                              :style="{
+                                color:
+                                  moment().format('d') === '2'
+                                    ? 'goldenrod'
+                                    : 'inherit',
+                              }"
+                            >
+                              T
+                            </th>
+                            <th
+                              :class="{
+                                'text-center': true,
+                                'font-weight-bold':
+                                  moment().format('d') === '3',
+                              }"
+                              :style="{
+                                color:
+                                  moment().format('d') === '3'
+                                    ? 'goldenrod'
+                                    : 'inherit',
+                              }"
+                            >
+                              W
+                            </th>
+                            <th
+                              :class="{
+                                'text-center': true,
+                                'font-weight-bold':
+                                  moment().format('d') === '4',
+                              }"
+                              :style="{
+                                color:
+                                  moment().format('d') === '4'
+                                    ? 'goldenrod'
+                                    : 'inherit',
+                              }"
+                            >
+                              T
+                            </th>
+                            <th
+                              :class="{
+                                'text-center': true,
+                                'font-weight-bold':
+                                  moment().format('d') === '5',
+                              }"
+                              :style="{
+                                color:
+                                  moment().format('d') === '5'
+                                    ? 'goldenrod'
+                                    : 'inherit',
+                              }"
+                            >
+                              F
+                            </th>
+                            <th
+                              :class="{
+                                'text-center': true,
+                                'font-weight-bold':
+                                  moment().format('d') === '6',
+                              }"
+                              :style="{
+                                color:
+                                  moment().format('d') === '6'
+                                    ? 'goldenrod'
+                                    : 'inherit',
+                              }"
+                            >
+                              S
+                            </th>
+                            <th
+                              :class="{
+                                'text-center': true,
+                                'font-weight-bold':
+                                  moment().format('d') === '7',
+                              }"
+                              :style="{
+                                color:
+                                  moment().format('d') === '7'
+                                    ? 'goldenrod'
+                                    : 'inherit',
+                              }"
+                            >
+                              S
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr
+                            v-for="hour in [
+                              '08',
+                              '09',
+                              '10',
+                              '11',
+                              '12',
+                              '13',
+                              '14',
+                              '15',
+                              '16',
+                              '17',
+                              '18',
+                              '19',
+                              '20',
+                              '21',
+                            ]"
+                          >
+                            <td
+                              :class="{
+                                'font-weight-bold':
+                                  moment().format('HH') === hour,
+                              }"
+                              :style="{
+                                height: 'auto',
+                                width: 'auto',
+                                border: 'none',
+                                color:
+                                  moment().format('HH') === hour
+                                    ? 'goldenrod'
+                                    : '#767676',
+                                fontSize: '11px',
+                              }"
+                            >
+                              {{ hour }}:00
+                            </td>
+                            <td
+                              style="height: 21px; width: auto; border: none"
+                              v-for="day in [
+                                'Monday',
+                                'Tuesday',
+                                'Wednesday',
+                                'Thursday',
+                                'Friday',
+                                'Saturday',
+                                'Sunday',
+                              ]"
+                            >
+                              <svg height="10" width="10">
+                                <rect
+                                  rx="5"
+                                  ry="5"
+                                  width="10"
+                                  height="10"
+                                  :style="{
+                                    fill: isDark
+                                      ? darkIntensity(
+                                          activity[`${day},${hour}`],
+                                        )
+                                      : lightIntensity(
+                                          activity[`${day},${hour}`],
+                                        ),
+                                  }"
+                                >
+                                  <title>
+                                    {{ day }} {{ hour }}:00 -
+                                    {{ activity?.[`${day},${hour}`] ?? 0 }}
+                                    game(s) played
+                                  </title>
+                                </rect>
+                              </svg>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </v-table>
+                    </v-col>
                   </v-col>
                 </v-row>
 
