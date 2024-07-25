@@ -221,7 +221,6 @@ export const useEventsStore = defineStore("events", () => {
 
   // Do it live!
   setInterval(() => {
-    console.log("START ONGOING INTERVAL");
     accounts.forEach(async (account: string) => {
       const result = await getData(account);
       data.value[account] = result;
@@ -231,14 +230,6 @@ export const useEventsStore = defineStore("events", () => {
         (account === ongoing.value?.player?.battleTag &&
           o.id !== ongoing.value?.id)
       ) {
-        console.log("UPDATE");
-        console.log([
-          o.active && !ongoing.value?.active,
-          account === ongoing.value?.player?.battleTag &&
-            o.id !== ongoing.value?.id,
-        ]);
-        console.log({ ongoing: ongoing.value, o });
-
         ongoing.value = o;
       }
     });
@@ -440,6 +431,7 @@ export const useEventsStore = defineStore("events", () => {
       };
     }, {} as any);
 
+    // Calculate prediction based on ALL accounts if continue playing ONLY on HIGHEST
     const all = accounts.reduce(
       (t: any, a: any) => {
         t.days = r[a].days;
@@ -478,6 +470,79 @@ export const useEventsStore = defineStore("events", () => {
     }
     all.days = calculatedDays;
     r["All Accounts"] = all;
+
+    // Calculate MR.PRESIDENTS official prediction
+    const ape = accounts.reduce(
+      (result, account) => {
+        const hmw = _take(matches.value, 100).filter((m) =>
+          getwins(account, m),
+        );
+        const hml = _take(matches.value, 100).filter((m) =>
+          getloss(account, m),
+        );
+
+        const c = hmw.length + hml.length;
+
+        const averageWin = Math.abs(
+          hmw.reduce((s, m) => {
+            const gain = getplayer(account)(m).players[0].mmrGain;
+            return gain > 0 ? s + gain : s;
+          }, 0),
+        );
+        const averageLoss = Math.abs(
+          hml.reduce((s, m) => {
+            const gain = getplayer(account)(m).players[0].mmrGain;
+            return gain < 0 ? s + gain : s;
+          }, 0),
+        );
+        const averageGain =
+          c > 0
+            ? [...hmw, ...hml].reduce(
+                (s, m) => s + (getplayer(account)(m).players[0]?.mmrGain ?? 0),
+                0,
+              ) / c
+            : 0;
+
+        return {
+          days: { count: 0, date: null },
+          current: all.current,
+          count: result.count + c,
+          winCount: result.winCount + hmw.length,
+          lossCount: result.lossCount + hml.length,
+          win: result.win + averageWin,
+          loss: result.loss + averageLoss,
+          gain: result.gain + averageGain * (1 / 3),
+          saul: true,
+        };
+      },
+      {
+        days: { count: 0, date: null },
+        current: 0,
+        count: 0,
+        winCount: 0,
+        lossCount: 0,
+        win: 0,
+        loss: 0,
+        gain: 0,
+        saul: true,
+      } as any,
+    );
+
+    ape.gain = _round(ape.gain, 2);
+    let apeCalculatedDays = { count: 0, date: null } as any;
+    if (loaded.value >= accounts.length) {
+      const d =
+        (3000 - all.current) /
+        (ape.gain * 0.85) /
+        (Math.round(all.count / daysSinceStart) / accounts.length);
+
+      apeCalculatedDays = {
+        count: Math.floor(d),
+        date: moment().add(d, "days").startOf("day"),
+      };
+    }
+    ape.days = apeCalculatedDays;
+    r["SaulPredictionMan"] = ape;
 
     return r;
   });
