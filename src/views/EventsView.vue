@@ -685,16 +685,31 @@ const scores = computed(() => {
                           <v-row>
                             <v-col cols="12">
                               <section>
-                                Calculated by taking average mmr gained over all
-                                {{ prediction.count }} games played since ban
+                                Calculated by taking average mmr gained over
+                                <span v-if="prediction.saul"
+                                  >the last {{ prediction.count }} games</span
+                                >
+                                <span v-else
+                                  >all {{ prediction.count }} games played since
+                                  ban</span
+                                >
                                 ({{ prediction.winCount }} wins,
                                 {{ prediction.lossCount }} losses,
                                 {{ prediction.win }}mmr gained,
                                 {{ prediction.loss }}
-                                mmr lost), on
-                                <strong style="color: goldenrod">{{
-                                  name
-                                }}</strong>
+                                mmr lost),
+                                <span v-if="prediction.saul">
+                                  and using a SECRET calculation developed by
+                                  <strong style="color: goldenrod">
+                                    Mr. President Apeman
+                                  </strong>
+                                </span>
+                                <span v-else
+                                  >on
+                                  <strong style="color: goldenrod">{{
+                                    name
+                                  }}</strong>
+                                </span>
                               </section>
                               <section>
                                 This means that he is currently
@@ -720,14 +735,24 @@ const scores = computed(() => {
                                       prediction.gain,
                                     )
                                   }}</strong>
-                                  <span v-if="prediction.total">
+                                  <span
+                                    v-if="prediction.total || prediction.saul"
+                                  >
                                     games, to reach 3000 MMR.
                                   </span>
                                   <span v-else>
                                     games on this account, to reach 3000 MMR.
                                   </span>
                                 </section>
-                                <section>
+                                <section v-if="prediction.saul">
+                                  <span>
+                                    According to this SECRET calculation, he
+                                    only needs another
+                                    <strong>{{ prediction.days.count }}</strong>
+                                    days to reach his goal!
+                                  </span>
+                                </section>
+                                <section v-else>
                                   He is currently playing
                                   <strong>
                                     {{ Math.round(prediction.count / days) }}
