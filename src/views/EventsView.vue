@@ -11,6 +11,7 @@ import _fill from "lodash/fill";
 import _map from "lodash/map";
 import _maxBy from "lodash/maxBy";
 import _minBy from "lodash/minBy";
+import _sortBy from "lodash/sortBy";
 import _round from "lodash/round";
 import ConfettiExplosion from "vue-confetti-explosion";
 
@@ -47,6 +48,8 @@ import _take from "lodash/take";
 import ResultChart from "@/components/ResultChart.vue";
 import { useTheme } from "vuetify";
 import ActivityTable from "@/components/ActivityTable.vue";
+import RecentGames from "@/components/RecentGames.vue";
+import RecordGames from "@/components/RecordGames.vue";
 
 ChartJS.register(
   LineController,
@@ -245,6 +248,17 @@ const scores = computed(() => {
 
   return r as any;
 });
+
+// Records
+const recentTab = ref<"recent" | "record">("recent");
+
+const records = computed(() => {
+  const r = events.accounts.reduce((s: any[], a: string) => {
+    const h = events.matches.filter((m: any) => getwins(a, m));
+    return [...s, ...h];
+  }, []);
+  return _sortBy(r, (x: any) => x.teams[0].players[0].currentMmr).reverse();
+});
 </script>
 
 <template>
@@ -381,136 +395,35 @@ const scores = computed(() => {
 
                 <v-row>
                   <v-col cols="6" class="text-center">
-                    <v-card elevation="0">
-                      <v-list>
-                        <v-list-subheader class="justify-space-around"
-                          >Recent games
-                        </v-list-subheader>
-                      </v-list>
-                      <v-list-item v-for="game in _take(events.matches, 5)">
-                        <v-list-item-title
-                          class="ml-2"
-                          v-if="iswin(game, ...events.accounts)"
-                        >
-                          <span class="mr-5">
-                            {{ moment(game.endTime).fromNow() }}:</span
-                          >
-                          <img
-                            style="vertical-align: middle"
-                            width="30px"
-                            :src="raceIcon[game.teams[0].players[0].race]"
-                          />
-                          <a
-                            class="text-green-lighten-1"
-                            :href="`https://www.w3champions.com/player/${encodeURIComponent(
-                              game.teams[0].players[0].battleTag,
-                            )}`"
-                            target="_blank"
-                          >
-                            <strong>
-                              {{ game.teams[0].players[0].name }}
-                            </strong>
-                          </a>
+                    <v-tabs
+                      fixed-tabs
+                      v-model="recentTab"
+                      slider-color="#daa520"
+                      class="mb-2"
+                    >
+                      <v-tab
+                        class="text-none"
+                        text="Recent games"
+                        value="recent"
+                      ></v-tab>
+                      <v-tab
+                        class="text-none"
+                        text="MMR Records"
+                        value="record"
+                      ></v-tab>
+                    </v-tabs>
 
-                          vs.
-
-                          <img
-                            style="vertical-align: middle"
-                            width="30px"
-                            :src="raceIcon[game.teams[1].players[0].race]"
-                          />
-                          <a
-                            class="text-red-lighten-1"
-                            :href="`https://www.w3champions.com/player/${encodeURIComponent(
-                              game.teams[1].players[0].battleTag,
-                            )}`"
-                            target="_blank"
-                          >
-                            <strong>
-                              {{ game.teams[1].players[0].name }}
-                            </strong>
-                          </a>
-
-                          <span class="text-green">
-                            +{{
-                              Math.ceil(game.teams[0].players[0].mmrGain)
-                            }}
-                            MMR {{
-                          }}</span>
-                          <v-btn
-                            @click="
-                              () =>
-                                open(
-                                  `https://www.w3champions.com/match/${game.id}`,
-                                )
-                            "
-                            title="go to match"
-                            size="x-small"
-                            color="orange"
-                            icon="mdi-link"
-                            variant="text"
-                          />
-                        </v-list-item-title>
-                        <v-list-item-title class="ml-2" v-else>
-                          <span class="mr-5">
-                            {{ moment(game.endTime).fromNow() }}:</span
-                          >
-                          <img
-                            style="vertical-align: middle"
-                            width="30px"
-                            :src="raceIcon[game.teams[1].players[0].race]"
-                          />
-                          <a
-                            class="text-red-lighten-1"
-                            :href="`https://www.w3champions.com/player/${encodeURIComponent(
-                              game.teams[1].players[0].battleTag,
-                            )}`"
-                            target="_blank"
-                          >
-                            <strong>
-                              {{ game.teams[1].players[0].name }}
-                            </strong>
-                          </a>
-
-                          vs.
-
-                          <img
-                            style="vertical-align: middle"
-                            width="30px"
-                            :src="raceIcon[game.teams[0].players[0].race]"
-                          />
-                          <a
-                            class="text-green-lighten-1"
-                            :href="`https://www.w3champions.com/player/${encodeURIComponent(
-                              game.teams[0].players[0].battleTag,
-                            )}`"
-                            target="_blank"
-                          >
-                            <strong>
-                              {{ game.teams[0].players[0].name }}
-                            </strong>
-                          </a>
-
-                          <span class="text-red ml-2">
-                            {{ Math.ceil(game.teams[1].players[0].mmrGain) }}
-                            MMR {{
-                          }}</span>
-                          <v-btn
-                            @click="
-                              () =>
-                                open(
-                                  `https://www.w3champions.com/match/${game.id}`,
-                                )
-                            "
-                            title="go to match"
-                            size="x-small"
-                            color="orange"
-                            icon="mdi-link"
-                            variant="text"
-                          />
-                        </v-list-item-title>
-                      </v-list-item>
-                    </v-card>
+                    <v-window v-model="recentTab">
+                      <v-window-item value="recent">
+                        <RecentGames
+                          :matches="_take(events.matches, 5)"
+                          :accounts="events.accounts"
+                        />
+                      </v-window-item>
+                      <v-window-item value="record">
+                        <RecordGames :matches="_take(records, 5)" />
+                      </v-window-item>
+                    </v-window>
                   </v-col>
 
                   <v-col cols="6" v-if="events.ongoing?.active">
