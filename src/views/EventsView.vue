@@ -9,11 +9,9 @@ import moment from "moment";
 import _range from "lodash/range";
 import _fill from "lodash/fill";
 import _map from "lodash/map";
-import _reduce from "lodash/reduce";
 import _maxBy from "lodash/maxBy";
 import _minBy from "lodash/minBy";
 import _round from "lodash/round";
-import _isNil from "lodash/isNil";
 import ConfettiExplosion from "vue-confetti-explosion";
 
 const events = useEventsStore();
@@ -197,7 +195,7 @@ const theme = useTheme();
 const isDark = computed(() => theme.global.current.value.dark);
 
 // Counter
-const tab = ref("All Accounts");
+const tab = ref("SaulPredictionMan");
 
 const dayz = ref(0);
 const hours = ref(0);
