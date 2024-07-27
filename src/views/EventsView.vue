@@ -263,6 +263,9 @@ const records = computed(() => {
     (x: any) => x.teams[0].players[0].currentMmr,
   ).reverse();
 });
+
+// Race
+const raceTab = ref<"all" | "pro">("all");
 </script>
 
 <template>
@@ -1205,37 +1208,95 @@ const records = computed(() => {
                 </v-card>
               </v-col>
               <v-col cols="5">
-                <v-list lines="one" style="overflow: hidden">
-                  <v-list>
-                    <v-list-subheader
-                      >Race stats for all accounts</v-list-subheader
-                    >
-                  </v-list>
-                  <v-list-item :prepend-avatar="raceIcon[Race.Human]">
-                    <ResultChart percentage :result="events.race[Race.Human]" />
-                  </v-list-item>
-                  <v-list-item :prepend-avatar="raceIcon[Race.Orc]">
-                    <ResultChart percentage :result="events.race[Race.Orc]" />
-                  </v-list-item>
-                  <v-list-item :prepend-avatar="raceIcon[Race.NightElf]">
-                    <ResultChart
-                      percentage
-                      :result="events.race[Race.NightElf]"
-                    />
-                  </v-list-item>
-                  <v-list-item :prepend-avatar="raceIcon[Race.Undead]">
-                    <ResultChart
-                      percentage
-                      :result="events.race[Race.Undead]"
-                    />
-                  </v-list-item>
-                  <v-list-item :prepend-avatar="raceIcon[Race.Random]">
-                    <ResultChart
-                      percentage
-                      :result="events.race[Race.Random]"
-                    />
-                  </v-list-item>
-                </v-list>
+                <v-tabs
+                  fixed-tabs
+                  v-model="raceTab"
+                  slider-color="#daa520"
+                  class="mb-2"
+                >
+                  <v-tab
+                    class="text-none"
+                    text="Race stats vs everyone"
+                    value="all"
+                  ></v-tab>
+                  <v-tab
+                    class="text-none"
+                    text="vs. pro players (>2500 MMR)"
+                    value="pro"
+                  ></v-tab>
+                </v-tabs>
+
+                <v-window v-model="raceTab">
+                  <v-window-item value="all">
+                    <v-list lines="one" style="overflow: hidden">
+                      <v-list-item :prepend-avatar="raceIcon[Race.Human]">
+                        <ResultChart
+                          percentage
+                          :result="events.race[Race.Human]"
+                        />
+                      </v-list-item>
+                      <v-list-item :prepend-avatar="raceIcon[Race.Orc]">
+                        <ResultChart
+                          percentage
+                          :result="events.race[Race.Orc]"
+                        />
+                      </v-list-item>
+                      <v-list-item :prepend-avatar="raceIcon[Race.NightElf]">
+                        <ResultChart
+                          percentage
+                          :result="events.race[Race.NightElf]"
+                        />
+                      </v-list-item>
+                      <v-list-item :prepend-avatar="raceIcon[Race.Undead]">
+                        <ResultChart
+                          percentage
+                          :result="events.race[Race.Undead]"
+                        />
+                      </v-list-item>
+                      <v-list-item :prepend-avatar="raceIcon[Race.Random]">
+                        <ResultChart
+                          percentage
+                          :result="events.race[Race.Random]"
+                        />
+                      </v-list-item>
+                    </v-list>
+                  </v-window-item>
+
+                  <v-window-item value="pro">
+                    <v-list lines="one" style="overflow: hidden">
+                      <v-list-item :prepend-avatar="raceIcon[Race.Human]">
+                        <ResultChart
+                          percentage
+                          :result="events.race.pro[Race.Human]"
+                        />
+                      </v-list-item>
+                      <v-list-item :prepend-avatar="raceIcon[Race.Orc]">
+                        <ResultChart
+                          percentage
+                          :result="events.race.pro[Race.Orc]"
+                        />
+                      </v-list-item>
+                      <v-list-item :prepend-avatar="raceIcon[Race.NightElf]">
+                        <ResultChart
+                          percentage
+                          :result="events.race.pro[Race.NightElf]"
+                        />
+                      </v-list-item>
+                      <v-list-item :prepend-avatar="raceIcon[Race.Undead]">
+                        <ResultChart
+                          percentage
+                          :result="events.race.pro[Race.Undead]"
+                        />
+                      </v-list-item>
+                      <v-list-item :prepend-avatar="raceIcon[Race.Random]">
+                        <ResultChart
+                          percentage
+                          :result="events.race.pro[Race.Random]"
+                        />
+                      </v-list-item>
+                    </v-list>
+                  </v-window-item>
+                </v-window>
               </v-col>
             </v-row>
           </v-sheet>

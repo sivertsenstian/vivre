@@ -342,6 +342,17 @@ export const useEventsStore = defineStore("events", () => {
       loss: _groupBy(loss, (l) => l.teams[0].players[0].race),
     };
 
+    const pros = {
+      wins: _groupBy(
+        wins.filter((w: any) => w.teams[1].players[0].oldMmr >= 2500),
+        (w) => w.teams[1].players[0].race,
+      ),
+      loss: _groupBy(
+        loss.filter((l: any) => l.teams[0].players[0].currentMmr >= 2500),
+        (l) => l.teams[0].players[0].race,
+      ),
+    };
+
     return {
       [Race.Random]: {
         total: getTotal(grouped, Race.Random),
@@ -372,6 +383,39 @@ export const useEventsStore = defineStore("events", () => {
         percentage: getPercentage(grouped, Race.Undead),
         wins: grouped?.wins?.[Race.Undead]?.length ?? 0,
         loss: grouped?.loss?.[Race.Undead]?.length ?? 0,
+      },
+      pro: {
+        // vs >= 2500 MMR Players
+        [Race.Random]: {
+          total: getTotal(pros, Race.Random),
+          percentage: getPercentage(pros, Race.Random),
+          wins: pros?.wins?.[Race.Random]?.length ?? 0,
+          loss: pros?.loss?.[Race.Random]?.length ?? 0,
+        },
+        [Race.Human]: {
+          total: getTotal(pros, Race.Human),
+          percentage: getPercentage(pros, Race.Human),
+          wins: pros?.wins?.[Race.Human]?.length ?? 0,
+          loss: pros?.loss?.[Race.Human]?.length ?? 0,
+        },
+        [Race.Orc]: {
+          total: getTotal(pros, Race.Orc),
+          percentage: getPercentage(pros, Race.Orc),
+          wins: pros?.wins?.[Race.Orc]?.length ?? 0,
+          loss: pros?.loss?.[Race.Orc]?.length ?? 0,
+        },
+        [Race.NightElf]: {
+          total: getTotal(pros, Race.NightElf),
+          percentage: getPercentage(pros, Race.NightElf),
+          wins: pros?.wins?.[Race.NightElf]?.length ?? 0,
+          loss: pros?.loss?.[Race.NightElf]?.length ?? 0,
+        },
+        [Race.Undead]: {
+          total: getTotal(pros, Race.Undead),
+          percentage: getPercentage(pros, Race.Undead),
+          wins: pros?.wins?.[Race.Undead]?.length ?? 0,
+          loss: pros?.loss?.[Race.Undead]?.length ?? 0,
+        },
       },
     };
   });
