@@ -12,6 +12,7 @@ import _map from "lodash/map";
 import _maxBy from "lodash/maxBy";
 import _minBy from "lodash/minBy";
 import _sortBy from "lodash/sortBy";
+import _uniqueBy from "lodash/uniqBy";
 import _round from "lodash/round";
 import ConfettiExplosion from "vue-confetti-explosion";
 
@@ -257,7 +258,10 @@ const records = computed(() => {
     const h = events.matches.filter((m: any) => getwins(a, m));
     return [...s, ...h];
   }, []);
-  return _sortBy(r, (x: any) => x.teams[0].players[0].currentMmr).reverse();
+  return _sortBy(
+    _uniqueBy(r, (x: any) => x.teams[0].players[0].currentMmr),
+    (x: any) => x.teams[0].players[0].currentMmr,
+  ).reverse();
 });
 </script>
 
