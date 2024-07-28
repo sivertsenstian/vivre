@@ -135,4 +135,7 @@ defineProps<Props>();
       #5d4a1f 100%
     );
 }
+.plain {
+  background-color: transparent;
+}
 </style>

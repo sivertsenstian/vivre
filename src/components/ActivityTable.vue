@@ -156,7 +156,7 @@ const darkIntensity = (n: number) => {
             'font-weight-bold': moment().format('d') === '7',
           }"
           :style="{
-            color: moment().format('d') === '7' ? 'goldenrod' : 'inherit',
+            color: moment().format('d') === '0' ? 'goldenrod' : 'inherit',
           }"
         >
           S
