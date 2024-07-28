@@ -1,6 +1,11 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import makrura from "@/assets/makrura.png";
+import trophy from "@/assets/events/trophy.jpg";
+import confetti from "@/assets/events/confetti.png";
+import happa1 from "@/assets/events/happa1.mp4";
+import happa2 from "@/assets/events/happa2.mp4";
+import happa3 from "@/assets/events/happa3.mp4";
 import w3cicon from "@/assets/w3c.png";
 import w3ciconDark from "@/assets/w3c_dark.png";
 import Banner from "@/components/Banner.vue";
@@ -9,6 +14,8 @@ import moment from "moment";
 import _range from "lodash/range";
 import _fill from "lodash/fill";
 import _map from "lodash/map";
+import _isEmpty from "lodash/isEmpty";
+import _isNil from "lodash/isNil";
 import _maxBy from "lodash/maxBy";
 import _minBy from "lodash/minBy";
 import _sortBy from "lodash/sortBy";
@@ -242,9 +249,15 @@ const scores = computed(() => {
         s.highest.currentMmr > h.players[0].currentMmr
           ? s.highest
           : { ...h.players[0], match: h.match };
+
+      s.goal =
+        _isEmpty(s.goal) && h.players[0].currentMmr >= 3000
+          ? { ...h.players[0], match: h.match }
+          : {};
+
       return s;
     },
-    { lowest: {} as any, highest: {} as any },
+    { lowest: {} as any, highest: {} as any, goal: {} as any },
   );
 
   return r as any;
@@ -266,10 +279,155 @@ const records = computed(() => {
 
 // Race
 const raceTab = ref<"all" | "pro">("all");
+
+// Goal
+const explode = ref(true);
+setInterval(() => {
+  explode.value = !explode.value;
+}, 2000);
+
+const isTesting = ref(false);
+const isActive = computed(() => {
+  return (
+    isTesting.value ||
+    events.data[events.highest].season.summary.mmr.current >= 3000
+  );
+});
 </script>
 
 <template>
   <main style="height: 100vh; overflow-y: auto">
+    <v-dialog
+      max-width="80%"
+      v-model="isActive"
+      close-on-content-click
+      v-if="events.loaded >= 3"
+      style="z-index: 99999; font-family: Britannic !important"
+    >
+      <v-card
+        :elevation="20"
+        style="border: 3px solid goldenrod"
+        rounded="xl"
+        class="pa-5 text-center"
+      >
+        <img
+          :src="confetti"
+          width="100%"
+          height="100%"
+          style="
+            position: absolute;
+            left: 0;
+            top: 0;
+            object-fit: cover;
+            object-position: center center;
+            opacity: 0.7;
+          "
+        />
+        <v-card-title
+          class="text-h2"
+          style="color: goldenrod; font-family: Britannic"
+        >
+          He did it!
+          <hr style="color: goldenrod" class="mt-2" />
+        </v-card-title>
+        <v-card-item>
+          <ConfettiExplosion
+            :duration="2000"
+            :particelCount="400"
+            :stageHeight="1000"
+            v-if="explode"
+          />
+          <ConfettiExplosion
+            :duration="2000"
+            :particelCount="400"
+            :stageHeight="1000"
+            v-if="!explode"
+            style="float: right"
+          />
+          <img :src="trophy" width="300px" class="rounded-xl" />
+          <div
+            style="
+              height: 0;
+              display: block;
+              position: relative;
+              left: 20px;
+              bottom: 135px;
+              scale: 0.7;
+            "
+          >
+            <Banner
+              :race="events.data[events.highest].race"
+              :current="events.data[events.highest].season.summary.mmr.current"
+              :label="events.highest"
+            />
+          </div>
+        </v-card-item>
+        <span
+          class="text-h3"
+          style="
+            height: 0;
+            display: block;
+            color: goldenrod;
+            font-family: Britannic !important;
+            position: relative;
+            bottom: 30px;
+            z-index: 9999;
+          "
+          >{{
+            moment(scores.goal?.match?.endTime ?? new Date()).format(
+              "DD.MM.YYYY HH:mm:ss",
+            )
+          }}</span
+        >
+        <v-card-item class="d-flex justify-center" style="margin-top: -15px">
+          <video
+            autoplay
+            muted
+            loop
+            class="rounded-xl mx-1"
+            style="
+              width: 300px;
+              height: 175px;
+              object-fit: cover;
+              object-position: center center;
+              opacity: 0.8;
+            "
+          >
+            <source :src="happa1" type="video/mp4" />
+          </video>
+          <video
+            autoplay
+            muted
+            loop
+            class="rounded-xl mx-1"
+            style="
+              width: 300px;
+              height: 175px;
+              object-fit: cover;
+              object-position: center center;
+              opacity: 0.8;
+            "
+          >
+            <source :src="happa2" type="video/mp4" />
+          </video>
+          <video
+            autoplay
+            muted
+            loop
+            class="rounded-xl mx-1"
+            style="
+              width: 300px;
+              height: 175px;
+              object-fit: cover;
+              object-position: center center;
+              opacity: 0.8;
+            "
+          >
+            <source :src="happa3" type="video/mp4" />
+          </video>
+        </v-card-item>
+      </v-card>
+    </v-dialog>
     <v-progress-linear indeterminate v-if="events.loaded < 3" />
     <v-container fluid style="opacity: 0.9" v-if="events.loaded >= 3">
       <v-row>
@@ -1336,6 +1494,7 @@ const raceTab = ref<"all" | "pro">("all");
                   >Proudly sponsored by MAKRURA
                 </span>
                 <img
+                  @click="() => (isTesting = true)"
                   class="ml-3"
                   style="vertical-align: middle"
                   :src="makrura"
