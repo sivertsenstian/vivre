@@ -15,7 +15,6 @@ import _range from "lodash/range";
 import _fill from "lodash/fill";
 import _map from "lodash/map";
 import _isEmpty from "lodash/isEmpty";
-import _isNil from "lodash/isNil";
 import _maxBy from "lodash/maxBy";
 import _minBy from "lodash/minBy";
 import _sortBy from "lodash/sortBy";
@@ -188,7 +187,7 @@ const hitmen = computed(() => {
     )
     .sort((a: any, b: any) => moment(b.endTime).diff(moment(a.endTime)));
 
-  return _take(loss, 5);
+  return loss;
 });
 
 let duration = ref(
@@ -286,12 +285,8 @@ setInterval(() => {
   explode.value = !explode.value;
 }, 2000);
 
-const isTesting = ref(false);
 const isActive = computed(() => {
-  return (
-    isTesting.value ||
-    events.data[events.highest].season.summary.mmr.current >= 3000
-  );
+  return scores.value.highest.currentMmr >= 3000;
 });
 </script>
 
@@ -357,8 +352,8 @@ const isActive = computed(() => {
           >
             <Banner
               :race="events.data[events.highest].race"
-              :current="events.data[events.highest].season.summary.mmr.current"
-              :label="events.highest"
+              :current="scores.highest.currentMmr"
+              :label="scores.highest.battleTag"
             />
           </div>
         </v-card-item>
@@ -1316,53 +1311,72 @@ const isActive = computed(() => {
                   <v-list>
                     <v-list-subheader>Recent HITMEN</v-list-subheader>
                   </v-list>
-                  <v-list-item v-for="game in hitmen">
-                    <template v-slot:prepend>
-                      <img
-                        style="vertical-align: middle"
-                        width="40px"
-                        :src="raceIcon[game.teams[0].players[0].race]"
-                      />
-                    </template>
+                  <v-list style="max-height: 250px; overflow-y: auto">
+                    <v-list-item v-for="game in hitmen">
+                      <template v-slot:prepend>
+                        <img
+                          style="vertical-align: middle"
+                          width="40px"
+                          :src="raceIcon[game.teams[0].players[0].race]"
+                        />
+                      </template>
 
-                    <v-list-item-title class="ml-2">
-                      <a
-                        :href="`https://www.w3champions.com/player/${encodeURIComponent(
-                          game.teams[0].players[0].battleTag,
-                        )}`"
-                        target="_blank"
-                      >
-                        <strong>
-                          {{ game.teams[0].players[0].battleTag }}
-                        </strong>
-                      </a>
-                      <span>
-                        //
-                        {{
-                          moment(game.endTime).format("dddd, MMMM Do, HH:mm:ss")
-                        }}</span
-                      >
-                      <span class="text-red ml-2"
-                        >Lost
-                        {{ Math.ceil(game.teams[1].players[0].mmrGain) }}
-                        MMR</span
-                      >
-                      <span class="text-grey ml-2"
-                        >on {{ game.teams[1].players[0].name }}</span
-                      >
-                      <v-btn
-                        @click="
-                          () =>
-                            open(`https://www.w3champions.com/match/${game.id}`)
-                        "
-                        title="go to match"
-                        size="x-small"
-                        color="orange"
-                        icon="mdi-link"
-                        variant="text"
-                      />
-                    </v-list-item-title>
-                  </v-list-item>
+                      <v-list-item-title class="ml-2">
+                        <a
+                          :href="`https://www.w3champions.com/player/${encodeURIComponent(
+                            game.teams[0].players[0].battleTag,
+                          )}`"
+                          target="_blank"
+                        >
+                          <strong>
+                            {{ game.teams[0].players[0].battleTag }}
+                          </strong>
+                        </a>
+                        <span>
+                          //
+                          {{
+                            moment(game.endTime).format(
+                              "dddd, MMMM Do, HH:mm:ss",
+                            )
+                          }}</span
+                        >
+                        <span
+                          :class="{
+                            'ml-2': true,
+                            'text-red-accent-1':
+                              Math.abs(game.teams[1].players[0].mmrGain) <= 10,
+                            'text-red-accent-2':
+                              Math.abs(game.teams[1].players[0].mmrGain) > 10 &&
+                              Math.abs(game.teams[1].players[0].mmrGain) <= 14,
+                            'text-red-accent-3':
+                              Math.abs(game.teams[1].players[0].mmrGain) > 14 &&
+                              Math.abs(game.teams[1].players[0].mmrGain) <= 18,
+                            'text-red-accent-4':
+                              Math.abs(game.teams[1].players[0].mmrGain) > 18,
+                          }"
+                          >Lost
+                          {{ Math.ceil(game.teams[1].players[0].mmrGain) }}
+                          MMR</span
+                        >
+                        <span class="text-grey ml-2"
+                          >on {{ game.teams[1].players[0].name }}</span
+                        >
+                        <v-btn
+                          @click="
+                            () =>
+                              open(
+                                `https://www.w3champions.com/match/${game.id}`,
+                              )
+                          "
+                          title="go to match"
+                          size="x-small"
+                          color="orange"
+                          icon="mdi-link"
+                          variant="text"
+                        />
+                      </v-list-item-title>
+                    </v-list-item>
+                  </v-list>
                 </v-card>
               </v-col>
               <v-col cols="5">
@@ -1494,8 +1508,11 @@ const isActive = computed(() => {
                   >Proudly sponsored by MAKRURA
                 </span>
                 <img
-                  @click="() => (isTesting = true)"
-                  class="ml-3"
+                  title="MAKRURA for you!"
+                  @click="
+                    () => open('https://www.youtube.com/watch?v=NiHjhgbOHH8')
+                  "
+                  class="ml-3 makrura"
                   style="vertical-align: middle"
                   :src="makrura"
                 />
@@ -1541,5 +1558,15 @@ const isActive = computed(() => {
   left: 70px;
   bottom: 7px;
 }
+
+.makrura {
+  transition: border-color 0.4s ease-in-out;
+  cursor: pointer;
+  border: 2px solid transparent;
+}
+
+.makrura:hover {
+  opacity: 0.9;
+  border: 2px solid goldenrod;
+}
 </style>
-ctivity
