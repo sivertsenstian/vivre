@@ -430,40 +430,45 @@ const isActive = computed(() => {
           <v-sheet class="pa-5" elevation="5">
             <v-row>
               <v-col cols="12">
-                <div class="text-h4">
-                  <span class="text-gold">Happy's Road To 3000 MMR</span> -
-                  <v-progress-circular
-                    class="mr-2 elementToFadeInAndOut"
-                    :model-value="100"
-                    :rotate="360"
-                    :size="25"
-                    :width="12.5"
-                    :color="events.ongoing.active ? 'green' : 'red'"
-                  >
-                  </v-progress-circular>
-                  <span
-                    v-if="!events.ongoing.active"
-                    class="text-red text-h5"
-                    style="vertical-align: middle"
-                    >taking a breather...</span
-                  >
-                  <span v-else class="text-h5 text-green"
-                    >currently playing on '{{
-                      events.ongoing.player.battleTag
-                    }}'
-                    <ConfettiExplosion
-                      :particelCount="300"
-                      :stageWidth="2000"
-                      :stageHeight="2000"
-                    />
-                  </span>
+                <div class="text-md-h4 text-h5">
+                  <v-col cols="12" md="6" class="text-center">
+                    <span class="text-gold">Happy's Road To 3000 MMR</span> -
+                  </v-col>
+                  <v-col cols="12" md="6" class="text-center">
+                    <v-progress-circular
+                      class="mr-2 elementToFadeInAndOut"
+                      :model-value="100"
+                      :rotate="360"
+                      :size="25"
+                      :width="12.5"
+                      :color="events.ongoing.active ? 'green' : 'red'"
+                    >
+                    </v-progress-circular>
+                    <span
+                      v-if="!events.ongoing.active"
+                      class="text-red text-h5"
+                      style="vertical-align: middle"
+                      >taking a breather...</span
+                    >
+                    <span v-else class="text-h5 text-green"
+                      >currently playing on '<strong style="color: goldenrod">{{
+                        events.ongoing.player.battleTag
+                      }}</strong
+                      >'
+                      <ConfettiExplosion
+                        :particelCount="300"
+                        :stageWidth="2000"
+                        :stageHeight="2000"
+                      />
+                    </span>
+                  </v-col>
                 </div>
                 <hr />
               </v-col>
 
               <v-col cols="12">
                 <v-row>
-                  <v-col cols="6" class="d-flex align-center">
+                  <v-col cols="12" md="6" class="d-flex align-center">
                     <v-row class="text-center">
                       <v-col cols="12">
                         <section>
@@ -481,22 +486,26 @@ const isActive = computed(() => {
                           </span>
                         </section>
                       </v-col>
-                      <v-col cols="6">
+                      <v-col cols="12" md="6">
                         <div class="text-subtitle-2">Before Ban</div>
                         <ResultChart percentage :result="events.games.before" />
                       </v-col>
-                      <v-col cols="6">
+                      <v-col cols="12" md="6">
                         <div class="text-subtitle-2">After Ban</div>
                         <ResultChart percentage :result="events.games.after" />
                       </v-col>
                     </v-row>
                   </v-col>
-                  <v-col cols="6" v-if="seconds >= 0">
+                  <v-col cols="12" md="6" v-if="seconds >= 0">
                     <v-col cols="12" class="d-flex">
-                      <v-card class="ml-auto mr-2" width="150px" weight="120px">
+                      <v-card
+                        class="ml-md-auto mr-md-2"
+                        width="150px"
+                        weight="120px"
+                      >
                         <v-card-text>
                           <p
-                            class="text-h2 text--primary text-center font-weight-regular"
+                            class="text-md-h2 text-h5 text--primary text-center font-weight-regular text-no-wrap"
                           >
                             {{ dayz % 365 }}
                           </p>
@@ -507,10 +516,10 @@ const isActive = computed(() => {
                           </v-btn>
                         </v-card-actions>
                       </v-card>
-                      <v-card class="mx-2" width="150px" weight="120px">
+                      <v-card class="mx-md-2" width="150px" weight="120px">
                         <v-card-text>
                           <p
-                            class="text-h2 text--primary text-center font-weight-regular"
+                            class="text-md-h2 text-h5 text--primary text-center font-weight-regular text-no-wrap"
                           >
                             {{ hours % 24 }}
                           </p>
@@ -521,10 +530,10 @@ const isActive = computed(() => {
                           </v-btn>
                         </v-card-actions>
                       </v-card>
-                      <v-card class="mx-2" width="150px" weight="120px">
+                      <v-card class="mx-md-2" width="150px" weight="120px">
                         <v-card-text>
                           <p
-                            class="text-h2 text--primary text-center font-weight-regular"
+                            class="text-md-h2 text-h5 text--primary text-center font-weight-regular text-no-wrap"
                           >
                             {{ minutes % 60 }}
                           </p>
@@ -535,10 +544,14 @@ const isActive = computed(() => {
                           </v-btn>
                         </v-card-actions>
                       </v-card>
-                      <v-card class="mr-auto ml-2" width="150px" weight="120px">
+                      <v-card
+                        class="mr-md-auto ml-md-2"
+                        width="150px"
+                        weight="120px"
+                      >
                         <v-card-text>
                           <p
-                            class="text-h2 text--primary text-center font-weight-regular"
+                            class="text-md-h2 text-h5 text--primary text-center font-weight-regular text-no-wrap"
                           >
                             {{ seconds % 60 }}
                           </p>
@@ -554,7 +567,7 @@ const isActive = computed(() => {
                 </v-row>
 
                 <v-row>
-                  <v-col cols="6" class="text-center">
+                  <v-col cols="12" md="6" class="text-center">
                     <v-tabs
                       fixed-tabs
                       v-model="recentTab"
@@ -586,7 +599,7 @@ const isActive = computed(() => {
                     </v-window>
                   </v-col>
 
-                  <v-col cols="6" v-if="events.ongoing?.active">
+                  <v-col cols="12" md="6" v-if="events.ongoing?.active">
                     <v-sheet :elevation="0">
                       <v-row>
                         <v-col cols="12" class="text-center">
@@ -708,7 +721,7 @@ const isActive = computed(() => {
                       </v-row>
                     </v-sheet>
                   </v-col>
-                  <v-col cols="6" v-else>
+                  <v-col cols="12" md="6" v-else>
                     <div class="text-h6 mb-1 text-center">
                       Not currently playing - Check out his weekly activity
                     </div>
@@ -984,7 +997,7 @@ const isActive = computed(() => {
               </v-col>
             </v-row>
             <v-row style="margin-top: -225px">
-              <v-col cols="4" v-for="(account, i) in events.accounts">
+              <v-col cols="12" md="4" v-for="(account, i) in events.accounts">
                 <Banner
                   :race="events.data[account].race"
                   :current="events.data[account].season.summary.mmr.current"
@@ -1030,7 +1043,8 @@ const isActive = computed(() => {
             </v-row>
             <v-row>
               <v-col
-                cols="4"
+                cols="12"
+                md="4"
                 style="height: 300px"
                 v-for="account in events.accounts"
               >
@@ -1173,7 +1187,7 @@ const isActive = computed(() => {
             </v-row>
 
             <v-row>
-              <v-col cols="3" v-if="win" class="text-center">
+              <v-col cols="6" md="3" v-if="win" class="text-center">
                 <div class="font-weight-bold text-green">
                   BIGGEST WIN
                   <v-btn
@@ -1213,7 +1227,7 @@ const isActive = computed(() => {
                 </div>
               </v-col>
 
-              <v-col cols="3" v-if="loss" class="text-center">
+              <v-col cols="6" md="3" v-if="loss" class="text-center">
                 <div class="font-weight-bold text-red">
                   BIGGEST LOSS
                   <v-btn
@@ -1253,7 +1267,7 @@ const isActive = computed(() => {
                 </div>
               </v-col>
 
-              <v-col cols="3" v-if="donater" class="text-center">
+              <v-col cols="6" md="3" v-if="donater" class="text-center">
                 <div class="font-weight-bold text-green">MMR DONATOR</div>
                 <div class="title mb-2">
                   {{ donater.games.length }} games won
@@ -1279,7 +1293,7 @@ const isActive = computed(() => {
                 </div>
               </v-col>
 
-              <v-col cols="3" v-if="stealer" class="text-center">
+              <v-col cols="6" md="3" v-if="stealer" class="text-center">
                 <div class="font-weight-bold text-red">MMR STEALER</div>
                 <div class="title mb-2">
                   {{ stealer.games.length }} games lost
@@ -1306,7 +1320,7 @@ const isActive = computed(() => {
             </v-row>
 
             <v-row>
-              <v-col cols="7">
+              <v-col cols="12" md="7">
                 <v-card elevation="0">
                   <v-list>
                     <v-list-subheader>Recent HITMEN</v-list-subheader>
@@ -1379,7 +1393,7 @@ const isActive = computed(() => {
                   </v-list>
                 </v-card>
               </v-col>
-              <v-col cols="5">
+              <v-col cols="12" md="5">
                 <v-tabs
                   fixed-tabs
                   v-model="raceTab"
@@ -1479,7 +1493,7 @@ const isActive = computed(() => {
         <v-col cols="12">
           <v-sheet class="pa-8" elevation="5">
             <v-row>
-              <v-col cols="6" class="text-left">
+              <v-col cols="12" md="6" class="text-center">
                 <v-row>
                   <v-col cols="12">
                     <span style="vertical-align: bottom">
@@ -1503,7 +1517,7 @@ const isActive = computed(() => {
                   </v-col>
                 </v-row>
               </v-col>
-              <v-col cols="6" class="text-right">
+              <v-col cols="12" md="6" class="text-right">
                 <span style="vertical-align: middle"
                   >Proudly sponsored by MAKRURA
                 </span>
