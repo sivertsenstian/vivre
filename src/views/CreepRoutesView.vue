@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { Race, creeproutes, raceIcon, raceName } from "@/stores/races";
+
+const open = (path: string) => window.open(path, "_blank");
 </script>
 
 <template>
@@ -58,28 +60,49 @@ import { Race, creeproutes, raceIcon, raceName } from "@/stores/races";
               /></v-col>
               <v-col cols="3"
                 ><img
-                  :src="creeproutes[player][Race.Human][map]"
+                  :src="creeproutes[player][Race.Human][map].img"
                   width="100%"
                   style="border: 1px solid white"
               /></v-col>
               <v-col cols="3"
                 ><img
-                  :src="creeproutes[player][Race.Orc][map]"
+                  :src="creeproutes[player][Race.Orc][map].img"
                   width="100%"
                   style="border: 1px solid white"
               /></v-col>
               <v-col cols="3"
                 ><img
-                  :src="creeproutes[player][Race.Undead][map]"
+                  :src="creeproutes[player][Race.Undead][map].img"
                   width="100%"
                   style="border: 1px solid white"
               /></v-col>
-              <v-col cols="3"
-                ><img
-                  :src="creeproutes[player][Race.NightElf][map]"
-                  width="100%"
-                  style="border: 1px solid white"
-              /></v-col>
+              <v-col cols="3">
+                <v-row>
+                  <v-col cols="12">
+                    <img
+                      :src="creeproutes[player][Race.NightElf][map].img"
+                      width="100%"
+                      style="border: 1px solid white"
+                    />
+                  </v-col>
+                  <v-col cols="12" class="p-0 text-center">
+                    <v-btn
+                      v-for="(game, i) in creeproutes[player][Race.NightElf][
+                        map
+                      ].games"
+                      @click="
+                        () => open(`https://www.w3champions.com/match/${game}`)
+                      "
+                      :text="`Game ${i + 1}`"
+                      title="Go to match in w3champions demonstrating this creep route"
+                      size="x-small"
+                      color="orange"
+                      prepend-icon="mdi-link"
+                      variant="text"
+                    />
+                  </v-col>
+                </v-row>
+              </v-col>
             </v-row>
           </v-col>
         </v-row>
