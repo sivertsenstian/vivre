@@ -188,11 +188,17 @@ export const creeproutes: any = {
       },
       "Last Refuge": { img: cr_hu_vs_ne_4, games: [] },
       "Northern Isles": { img: cr_hu_vs_ne_5, games: [] },
-      "Shallow Grave": { img: cr_hu_vs_ne_6, games: [] },
+      "Shallow Grave": {
+        img: cr_hu_vs_ne_6,
+        games: ["6683e32a82a9ebbac56f2f0f", "6690d00d82a9ebbac5196bd6"],
+      },
       Springtime: { img: cr_hu_vs_ne_8, games: [] },
       "Shattered Exile v2": { img: cr_missing, games: [] },
       "Lost Temple LV": { img: cr_missing, games: [] },
-      Tidehunters: { img: cr_hu_vs_ne_7, games: [] },
+      Tidehunters: {
+        img: cr_hu_vs_ne_7,
+        games: ["66c1d0ad0ebc9196a2e7bce5", "66a4b6c282a9ebbac59b06a1"],
+      },
       "Twisted Meadows": { img: cr_missing, games: [] },
     },
     [Race.Undead]: {
