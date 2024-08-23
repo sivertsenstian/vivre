@@ -29,44 +29,67 @@ function toggleTheme() {
       <v-divider></v-divider>
       <v-list density="compact" nav>
         <v-list-item
+          active-color="green"
           prepend-icon="mdi-crown"
           title="Live"
           router
           to="/"
         ></v-list-item>
         <v-list-item
+          active-color="green"
           prepend-icon="mdi-flag"
           title="Season"
           router
           to="/season"
         ></v-list-item>
         <v-list-item
+          active-color="green"
           prepend-icon="mdi-vector-polyline"
           title="Creep Routes"
           router
           to="creeproutes"
         ></v-list-item>
-        <v-list-item
-          baseColor="red"
-          prepend-icon="mdi-podcast"
-          title="Events (live!)"
-          router
-          to="/events"
-        ></v-list-item>
+        <v-list-group>
+          <template v-slot:activator="{ props }">
+            <v-list-item
+              active-color="green"
+              v-bind="props"
+              prepend-icon="mdi-podcast"
+              title="Events"
+            ></v-list-item>
+          </template>
+          <v-list-item
+            prepend-icon="mdi-robot-happy"
+            title="Happy tracker"
+            active-color="green"
+            router
+            to="/events/happy-tracker"
+          ></v-list-item>
+          <v-list-item
+            prepend-icon="mdi-trophy"
+            title="3000 MMR"
+            active-color="green"
+            router
+            to="/events/road-to-3000"
+          ></v-list-item>
+        </v-list-group>
         <v-list-item
           :disabled="inProduction"
+          active-color="green"
           prepend-icon="mdi-castle"
           title="Build Orders"
           router
           to="buildorders"
         ></v-list-item>
         <v-list-item
+          active-color="green"
           prepend-icon="mdi-information"
           title="Settings"
           router
           to="settings"
         ></v-list-item>
         <v-list-item
+          active-color="yellow"
           prepend-icon="mdi-lightbulb"
           :title="isDark ? 'Light' : 'Dark'"
           @click="toggleTheme"

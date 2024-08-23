@@ -286,7 +286,7 @@ setInterval(() => {
 }, 2000);
 
 const isActive = computed(() => {
-  return scores.value.highest.currentMmr >= 3000;
+  return false;
 });
 </script>
 
@@ -429,43 +429,50 @@ const isActive = computed(() => {
         <v-col cols="12">
           <v-sheet class="pa-5" elevation="5">
             <v-row>
-              <v-col cols="12">
+              <v-col cols="6" class="text-center">
                 <div class="text-md-h4 text-h5">
-                  <v-col cols="12" md="6" class="text-center">
-                    <span class="text-gold">Happy's Road To 3000 MMR</span> -
-                  </v-col>
-                  <v-col cols="12" md="6" class="text-center">
-                    <v-progress-circular
-                      class="mr-2 elementToFadeInAndOut"
-                      :model-value="100"
-                      :rotate="360"
-                      :size="25"
-                      :width="12.5"
-                      :color="events.ongoing.active ? 'green' : 'red'"
-                    >
-                    </v-progress-circular>
-                    <span
-                      v-if="!events.ongoing.active"
-                      class="text-red text-h5"
-                      style="vertical-align: middle"
-                      >taking a breather...</span
-                    >
-                    <span v-else class="text-h5 text-green"
-                      >currently playing on '<strong style="color: goldenrod">{{
-                        events.ongoing.player.battleTag
-                      }}</strong
-                      >'
-                      <ConfettiExplosion
-                        :particelCount="300"
-                        :stageWidth="2000"
-                        :stageHeight="2000"
-                      />
-                    </span>
-                  </v-col>
+                  <v-icon color="purple" icon="mdi-robot-happy-outline" />
+                  <span style="vertical-align: sub" class="text-gold">
+                    Happy's Ladder Tracker</span
+                  >
                 </div>
+              </v-col>
+              <v-col cols="6" class="text-center">
+                <div class="text-md-h4 text-h5" style="vertical-align: middle">
+                  <v-progress-circular
+                    class="mr-2 elementToFadeInAndOut"
+                    :model-value="100"
+                    :rotate="360"
+                    :size="25"
+                    :width="12.5"
+                    :color="events.ongoing.active ? 'green' : 'gray'"
+                  >
+                  </v-progress-circular>
+                  <span
+                    v-if="!events.ongoing.active"
+                    class="text-gray text-h5"
+                    style="vertical-align: middle"
+                    >Not currently in a ladder game...</span
+                  >
+                  <span v-else class="text-h5 text-green"
+                    >currently playing on '<strong style="color: goldenrod">{{
+                      events.ongoing.player.battleTag
+                    }}</strong
+                    >'
+                    <ConfettiExplosion
+                      :particelCount="300"
+                      :stageWidth="2000"
+                      :stageHeight="2000"
+                    />
+                  </span>
+                </div>
+              </v-col>
+              <v-col cols="12">
                 <hr />
               </v-col>
+            </v-row>
 
+            <v-row>
               <v-col cols="12">
                 <v-row>
                   <v-col cols="12" md="6" class="d-flex align-center">
@@ -737,266 +744,9 @@ const isActive = computed(() => {
                     </v-col>
                   </v-col>
                 </v-row>
-
-                <section>
-                  <div class="text-h5 mt-5">Predictions</div>
-                  <v-row>
-                    <v-col cols="12">
-                      <v-tabs v-model="tab" slider-color="transparent">
-                        <v-tab
-                          class="text-none"
-                          v-for="(prediction, name) in events.prediction"
-                          :value="name"
-                          :style="
-                            tab === String(name)
-                              ? {
-                                  color: 'goldenrod',
-                                }
-                              : {}
-                          "
-                          ><strong v-if="tab === String(name)">{{
-                            name
-                          }}</strong
-                          ><span v-else>{{ name }}</span></v-tab
-                        >
-                      </v-tabs>
-                      <hr />
-                      <v-window v-model="tab">
-                        <v-window-item
-                          v-for="(prediction, name) in events.prediction"
-                          :value="name"
-                        >
-                          <v-row>
-                            <v-col cols="12">
-                              <section>
-                                Calculated by taking average mmr gained over
-                                <span v-if="prediction.saul"
-                                  >the last {{ prediction.count }} games</span
-                                >
-                                <span v-else
-                                  >all {{ prediction.count }} games played since
-                                  ban</span
-                                >
-                                ({{ prediction.winCount }} wins,
-                                {{ prediction.lossCount }} losses,
-                                {{ prediction.win }}mmr gained,
-                                {{ prediction.loss }}
-                                mmr lost),
-                                <span v-if="prediction.saul">
-                                  and using a SECRET calculation developed by
-                                  <strong style="color: goldenrod">
-                                    Mr. President Apeman
-                                  </strong>
-                                </span>
-                                <span v-else
-                                  >on
-                                  <strong style="color: goldenrod">{{
-                                    name
-                                  }}</strong>
-                                </span>
-                              </section>
-                              <section>
-                                This means that he is currently
-                                {{
-                                  Math.sign(prediction.gain) > 0
-                                    ? "gaining"
-                                    : "losing"
-                                }}
-                                <strong
-                                  >{{ Math.abs(prediction.gain) }}MMR</strong
-                                >
-                                per game (on average)
-                              </section>
-                              <v-sheet
-                                v-if="prediction.gain > 0"
-                                class="mt-1 text-green"
-                              >
-                                <section class="mt-1">
-                                  And it will take him
-                                  <strong>{{
-                                    numberOfGames(
-                                      3000 - prediction.current,
-                                      prediction.gain,
-                                    )
-                                  }}</strong>
-                                  <span
-                                    v-if="prediction.total || prediction.saul"
-                                  >
-                                    games, to reach 3000 MMR.
-                                  </span>
-                                  <span v-else>
-                                    games on this account, to reach 3000 MMR.
-                                  </span>
-                                </section>
-                                <section v-if="prediction.saul">
-                                  <span>
-                                    According to this SECRET calculation, he
-                                    only needs another
-                                    <strong>{{ prediction.days.count }}</strong>
-                                    days to reach his goal!
-                                  </span>
-                                </section>
-                                <section v-else>
-                                  He is currently playing
-                                  <strong>
-                                    {{ Math.round(prediction.count / days) }}
-                                  </strong>
-                                  <span v-if="prediction.total">
-                                    games in total per day on all accounts. If
-                                    he plays all of these games on his highest
-                                    account with
-                                    <strong>{{ prediction.current }}</strong>
-                                    MMR, he only needs another
-                                    <strong>{{ prediction.days.count }}</strong>
-                                    day(s).
-                                  </span>
-                                  <span v-else>
-                                    games per day (on average) So he only needs
-                                    another
-                                    <strong>{{ prediction.days.count }}</strong>
-                                    days if he keeps this up!
-                                  </span>
-                                </section>
-                              </v-sheet>
-                              <div
-                                v-if="prediction.gain < 0"
-                                class="mt-1 text-red text-subtitle"
-                              >
-                                <section>
-                                  Will not make it with the current trend! MMR
-                                  will decrease by 100 points after
-                                  {{ numberOfGames(100, prediction.gain) }}
-                                  games if this continues!
-                                </section>
-                              </div>
-                            </v-col>
-                          </v-row>
-                        </v-window-item>
-                      </v-window>
-                    </v-col>
-                  </v-row>
-                </section>
-              </v-col>
-
-              <v-col cols="12" class="text-center">
-                <span class="text-h6">MMR overview</span>
-                <v-progress-linear
-                  color="green"
-                  :model-value="
-                    ((Math.max(
-                      ...events.accounts.map(
-                        (a) => events.data[a].season.summary.mmr.current,
-                      ),
-                    ) -
-                      2700) /
-                      300) *
-                    100
-                  "
-                  height="30"
-                >
-                  <template v-slot:default="{ value }">
-                    <strong> {{ Math.ceil(value) }}%</strong>
-                  </template>
-                </v-progress-linear>
-                <span
-                  class="text-caption font-weight-bold"
-                  :style="{
-                    position: 'relative',
-                    bottom: '50px',
-                    right: 'calc(50% - 30px)',
-                  }"
-                  >2700 MMR</span
-                >
-                <span
-                  :style="{
-                    display: 'block',
-                    position: 'relative',
-                    border: '2px solid #daa520',
-                    height: '30px',
-                    width: '0px',
-                    bottom: '54px',
-                    left: `${
-                      ((scores.highest.currentMmr - 2700) / 300) * 100
-                    }%`,
-                  }"
-                >
-                  <span
-                    class="text-caption font-weight-bold text-no-wrap"
-                    style="
-                      font-size: 0.65rem !important;
-                      color: goldenrod;
-                      margin-left: 5px;
-                      top: 0px;
-                      position: relative;
-                    "
-                    >{{ scores.highest.currentMmr }} MMR on
-                    {{
-                      moment(scores.highest.match.endTime).format("D/MM HH:mm")
-                    }}</span
-                  >
-                </span>
-                <span
-                  :style="{
-                    display: 'block',
-                    position: 'relative',
-                    border: '2px solid grey',
-                    height: '30px',
-                    width: '0px',
-                    bottom: '84px',
-                    left: `${((scores.lowest.currentMmr - 2700) / 300) * 100}%`,
-                  }"
-                >
-                  <span
-                    class="text-caption font-weight-bold text-no-wrap"
-                    style="
-                      font-size: 0.65rem !important;
-                      color: grey;
-                      margin-left: 0px;
-                      top: 25px;
-                      position: relative;
-                    "
-                  >
-                    {{ scores.lowest.currentMmr }} MMR on
-                    {{
-                      moment(scores.lowest.match.endTime).format("D/MM HH:mm")
-                    }}
-                  </span>
-                </span>
-
-                <span
-                  v-for="(account, i) in events.accounts"
-                  :style="{
-                    zIndex: 0,
-                    display: 'block',
-                    position: 'relative',
-                    border: `1px dashed ${isDark ? 'white' : 'black'}`,
-                    height: `${45 + i * 15}px`,
-                    width: '0px',
-                    bottom: `${i === 0 ? 114 : i === 1 ? 158 : 218}px`,
-                    left: `${
-                      ((events.data[account].season.summary.mmr.current -
-                        2700) /
-                        300) *
-                      100
-                    }%`,
-                  }"
-                >
-                  <span
-                    class="text-caption font-weight-bold text-no-wrap"
-                    :style="{
-                      fontSize: '0.65rem !important',
-                      color: `1px dashed ${isDark ? 'white' : 'black'}`,
-                      marginLeft: '3px',
-                      top: `${30 + i * 15}px`,
-                      position: 'relative',
-                    }"
-                    >{{ events.data[account].season.summary.mmr.current }} MMR
-                    // {{ account }}
-                  </span>
-                </span>
               </v-col>
             </v-row>
-            <v-row style="margin-top: -225px">
+            <v-row class="mt-5">
               <v-col cols="12" md="4" v-for="(account, i) in events.accounts">
                 <Banner
                   :race="events.data[account].race"
@@ -1511,8 +1261,8 @@ const isActive = computed(() => {
                   </v-col>
                   <v-col cols="12">
                     <a href="https://www.twitch.tv/saulapeman" target="_blank">
-                      CLICK HERE - And follow this EXCITING journey
-                      <strong>LIVE</strong> with mr saul apeman</a
+                      CLICK HERE - To go <strong>LIVE</strong> with mr saul
+                      apeman</a
                     >
                   </v-col>
                 </v-row>

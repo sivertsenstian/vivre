@@ -4,7 +4,8 @@ import SettingsView from "@/views/SettingsView.vue";
 import CreepRoutesView from "@/views/CreepRoutesView.vue";
 import BuildOrderView from "@/views/BuildOrderView.vue";
 import SeasonView from "@/views/SeasonView.vue";
-import EventsView from "@/views/HappyRoadTo3000SummaryView.vue";
+import HappyTracker from "@/views/Events/HappyTrackerView.vue";
+import RoadTo3000 from "@/views/Events/HappyRoadTo3000SummaryView.vue";
 
 const router = createRouter({
   history: createWebHashHistory(import.meta.env.BASE_URL),
@@ -27,7 +28,16 @@ const router = createRouter({
     {
       path: "/events",
       name: "events",
-      component: EventsView,
+      children: [
+        {
+          path: "happy-tracker",
+          component: HappyTracker,
+        },
+        {
+          path: "road-to-3000",
+          component: RoadTo3000,
+        },
+      ],
     },
     {
       path: "/buildorders",
