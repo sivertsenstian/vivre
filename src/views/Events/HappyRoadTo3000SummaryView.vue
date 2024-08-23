@@ -18,13 +18,12 @@ import _isEmpty from "lodash/isEmpty";
 import _maxBy from "lodash/maxBy";
 import _toPairs from "lodash/toPairs";
 import _minBy from "lodash/minBy";
-import _sortBy from "lodash/sortBy";
-import _uniqueBy from "lodash/uniqBy";
 import _round from "lodash/round";
 import ConfettiExplosion from "vue-confetti-explosion";
 
 const events = useEventsStore();
 const start = moment("10.07.2024", "DD.MM.YYYY").startOf("day");
+const end = moment("21.08.2024", "DD.MM.YYYY").startOf("day");
 const today = moment().add(1, "day").startOf("day");
 const days = today.diff(start, "days");
 
@@ -111,13 +110,20 @@ const options = {
   },
 } as any;
 
+const finished = computed(() =>
+  events.matches.filter(
+    (m: any) =>
+      moment(m.endTime).isAfter(start) && moment(m.endTime).isBefore(end),
+  ),
+);
+
 const win = computed(() => {
-  const wins: any[] = events.matches.filter((m) => getwins("Cacxa26#2948", m));
+  const wins: any[] = finished.value.filter((m) => getwins("Cacxa26#2948", m));
   return _maxBy(wins, (m) => m.teams[0].players[0].mmrGain);
 });
 
 const donater = computed(() => {
-  const wins: any[] = events.matches.filter((m) => getwins("Cacxa26#2948", m));
+  const wins: any[] = finished.value.filter((m) => getwins("Cacxa26#2948", m));
 
   const players = _groupBy(wins, (m) => m.teams[1].players[0].battleTag);
 
@@ -130,7 +136,7 @@ const donater = computed(() => {
 });
 
 const streak = computed(() => {
-  const games: any[] = events.matches.filter(
+  const games: any[] = finished.value.filter(
     (m) => getwins("Cacxa26#2948", m) || getloss("Cacxa26#2948", m),
   );
   let mmr1 = 0;
@@ -158,7 +164,10 @@ const streak = computed(() => {
 
 const bestday = computed(() => {
   const r = events.data["Cacxa26#2948"].season[Race.Undead].matches
-    .filter((m: any) => moment(m.endTime).isAfter(start))
+    .filter(
+      (m: any) =>
+        moment(m.endTime).isAfter(start) && moment(m.endTime).isBefore(end),
+    )
     .reverse()
     ?.reduce((r: any, m: any) => {
       const d = moment(m.endTime).format("DD.MM.YYYY");
@@ -201,12 +210,12 @@ const scores = computed(() => {
     (s, a) => {
       const h =
         _maxBy(
-          events.matches.map((m: any) => getplayer(a)(m)),
+          finished.value.map((m: any) => getplayer(a)(m)),
           (p: any) => p?.players?.[0]?.currentMmr ?? 0,
         ) ?? {};
       const l =
         _minBy(
-          events.matches.map((m: any) => getplayer(a)(m)),
+          finished.value.map((m: any) => getplayer(a)(m)),
           (p: any) => p?.players?.[0]?.currentMmr ?? 9999,
         ) ?? {};
 
@@ -233,20 +242,6 @@ const scores = computed(() => {
   return r as any;
 });
 
-// Records
-const recentTab = ref<"recent" | "record">("recent");
-
-const records = computed(() => {
-  const r = events.accounts.reduce((s: any[], a: string) => {
-    const h = events.matches.filter((m: any) => getwins(a, m));
-    return [...s, ...h];
-  }, []);
-  return _sortBy(
-    _uniqueBy(r, (x: any) => x.teams[0].players[0].currentMmr),
-    (x: any) => x.teams[0].players[0].currentMmr,
-  ).reverse();
-});
-
 // Race
 const raceTab = ref<"all" | "pro">("all");
 
@@ -255,10 +250,6 @@ const explode = ref(true);
 setInterval(() => {
   explode.value = !explode.value;
 }, 2000);
-
-const isActive = computed(() => {
-  return scores.value.highest.currentMmr >= 3000;
-});
 </script>
 
 <template>
@@ -417,26 +408,32 @@ const isActive = computed(() => {
                   >Happy reached his goal of 3000 MMR!</span
                 >
                 <v-col cols="12" md="12" class="text-center">
-                  <div class="text-h4 mt-5">
+                  <div class="text-h5 mt-5">
                     Some stats since his unban on
                     {{ start.format("dddd, MMMM Do") }} where he started with
                     {{
                       getplayer("Cacxa26#2948")(
                         events.data["Cacxa26#2948"].season[Race.Undead].matches
-                          .filter((m: any) => moment(m.endTime).isAfter(start))
+                          .filter(
+                            (m: any) =>
+                              moment(m.endTime).isAfter(start) &&
+                              moment(m.endTime).isBefore(end),
+                          )
                           .reverse()[0],
                       )?.players[0].oldMmr
                     }}
-                    MMR
+                    MMR until he reached his goal
                   </div>
                 </v-col>
               </v-col>
               <v-col cols="12" style="height: 300px">
                 <Bar
                   :data="{
-                    labels: _range(0, days)
+                    labels: _range(0, end.diff(start, 'days'))
                       .map((n) => {
-                        return moment().subtract(n, 'days').startOf('day');
+                        return moment(end)
+                          .subtract(n + 1, 'days')
+                          .startOf('day');
                       })
                       .reverse(),
                     datasets: [
@@ -447,43 +444,15 @@ const isActive = computed(() => {
                         borderColor: 'transparent',
                         pointRadius: 10,
                         pointHoverRadius: 15,
-                        data: [
-                          events.data['Cacxa26#2948'].season[
-                            Race.Undead
-                          ].matches.filter((m: any) =>
-                            moment(m.endTime).isAfter(start),
-                          )[0],
-                        ]?.reduce(
-                          (r: number[], m: any) => {
-                            const d = moment(m.endTime).dayOfYear();
-                            const day = days - (today.dayOfYear() - d);
-                            const p = getplayer('Cacxa26#2948')(m);
-                            const mmr = p.players[0].currentMmr;
-
-                            for (let i = day; i < r.length; i++) {
-                              r[i] = mmr;
-                            }
-
-                            return r;
-                          },
-                          _fill(
-                            _range(today.dayOfYear() - days, today.dayOfYear()),
-                            undefined,
-                          ),
-                        ),
-                        datalabels: {
-                          display: false,
-                        },
-                      } as any,
-                      {
-                        type: 'line' as any,
-                        yAxisID: 'mmrAxis',
-                        backgroundColor: 'lime',
-                        borderColor: 'green',
                         data: events.data['Cacxa26#2948'].season[
                           Race.Undead
                         ].matches
-                          .filter((m: any) => moment(m.endTime).isAfter(start))
+                          .filter((m: any) => {
+                            return moment(m.endTime).isSame(
+                              moment(end).subtract(1, 'day'),
+                              'day',
+                            );
+                          })
                           .reverse()
                           ?.reduce(
                             (r: number[], m: any) => {
@@ -499,10 +468,43 @@ const isActive = computed(() => {
                               return r;
                             },
                             _fill(
-                              _range(
-                                today.dayOfYear() - days,
-                                today.dayOfYear(),
-                              ),
+                              _range(end.dayOfYear(), start.dayOfYear()),
+                              undefined,
+                            ),
+                          ),
+                        datalabels: {
+                          display: false,
+                        },
+                      } as any,
+                      {
+                        type: 'line' as any,
+                        yAxisID: 'mmrAxis',
+                        backgroundColor: 'lime',
+                        borderColor: 'green',
+                        data: events.data['Cacxa26#2948'].season[
+                          Race.Undead
+                        ].matches
+                          .filter(
+                            (m: any) =>
+                              moment(m.endTime).isAfter(start) &&
+                              moment(m.endTime).isBefore(end),
+                          )
+                          .reverse()
+                          ?.reduce(
+                            (r: number[], m: any) => {
+                              const d = moment(m.endTime).dayOfYear();
+                              const day = days - (today.dayOfYear() - d);
+                              const p = getplayer('Cacxa26#2948')(m);
+                              const mmr = p.players[0].currentMmr;
+
+                              for (let i = day; i < r.length; i++) {
+                                r[i] = mmr;
+                              }
+
+                              return r;
+                            },
+                            _fill(
+                              _range(end.dayOfYear(), start.dayOfYear()),
                               0,
                             ),
                           ),
@@ -517,7 +519,11 @@ const isActive = computed(() => {
                         data: events.data['Cacxa26#2948'].season[
                           Race.Undead
                         ].matches
-                          .filter((m: any) => moment(m.endTime).isAfter(start))
+                          .filter(
+                            (m: any) =>
+                              moment(m.endTime).isAfter(start) &&
+                              moment(m.endTime).isBefore(end),
+                          )
                           .filter((m: any) => getwins('Cacxa26#2948', m))
                           ?.reduce(
                             (r: number[], m: any) => {
@@ -528,10 +534,7 @@ const isActive = computed(() => {
                               return r;
                             },
                             _fill(
-                              _range(
-                                today.dayOfYear() - days,
-                                today.dayOfYear(),
-                              ),
+                              _range(end.dayOfYear(), start.dayOfYear()),
                               0,
                             ),
                           )
@@ -547,7 +550,11 @@ const isActive = computed(() => {
                         data: events.data['Cacxa26#2948'].season[
                           Race.Undead
                         ].matches
-                          .filter((m: any) => moment(m.endTime).isAfter(start))
+                          .filter(
+                            (m: any) =>
+                              moment(m.endTime).isAfter(start) &&
+                              moment(m.endTime).isBefore(end),
+                          )
                           .filter((m: any) => getloss('Cacxa26#2948', m))
                           ?.reduce(
                             (r: number[], m: any) => {
@@ -558,10 +565,7 @@ const isActive = computed(() => {
                               return r;
                             },
                             _fill(
-                              _range(
-                                today.dayOfYear() - days,
-                                today.dayOfYear(),
-                              ),
+                              _range(end.dayOfYear(), start.dayOfYear()),
                               0,
                             ),
                           )
@@ -653,8 +657,8 @@ const isActive = computed(() => {
               </v-col>
 
               <v-col cols="6" class="text-center text-h5">
-                He played <strong>{{ events.matches.length }}</strong> games in
-                total to reach his goal. With
+                He played <strong>{{ finished.length }}</strong> games in total
+                to reach his goal. With
                 <span class="text-green font-weight-bold">{{
                   events.games.after.wins
                 }}</span>
@@ -672,7 +676,7 @@ const isActive = computed(() => {
                   }}</span>
                   he played
                   <strong>{{
-                    events.matches.filter(
+                    finished.filter(
                       (m: any) =>
                         getwins(scores.highest.battleTag, m) ||
                         getloss(scores.highest.battleTag, m),
@@ -680,13 +684,13 @@ const isActive = computed(() => {
                   }}</strong>
                   games,
                   <span class="text-green font-weight-bold">{{
-                    events.matches.filter((m: any) =>
+                    finished.filter((m: any) =>
                       getwins(scores.highest.battleTag, m),
                     ).length
                   }}</span>
                   wins and
                   <span class="text-red font-weight-bold">{{
-                    events.matches.filter((m: any) =>
+                    finished.filter((m: any) =>
                       getloss(scores.highest.battleTag, m),
                     ).length
                   }}</span>
@@ -697,7 +701,7 @@ const isActive = computed(() => {
                     Spending
                     {{
                       _round(
-                        events.matches
+                        finished
                           .filter(
                             (m: any) =>
                               getwins(scores.highest.battleTag, m) ||
@@ -805,7 +809,7 @@ const isActive = computed(() => {
             <v-row>
               <v-col cols="10" class="text-center mx-auto">
                 <div class="text-h5 mb-5">
-                  Summary for games on all accounts since ban
+                  Summary for games on all accounts for the entire run
                 </div>
                 <ResultChart percentage :result="events.games.after" />
               </v-col>
