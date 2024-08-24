@@ -68,7 +68,7 @@ const buildorder = useDocument<IBuild>(
                   ><strong>Created</strong>:
                   <span class="text-secondary">
                     {{
-                      (buildorder.created.toDate
+                      (buildorder.created?.toDate
                         ? moment(buildorder.created.toDate())
                         : moment(buildorder.created)
                       ).format("MM.DD.YYYY HH:mm")
@@ -97,7 +97,7 @@ const buildorder = useDocument<IBuild>(
               </v-col>
 
               <v-col cols="5">
-                <v-row v-if="buildorder.games.length">
+                <v-row v-if="buildorder.games?.length">
                   <v-col cols="12">
                     <div class="text-subtitle-2 font-weight-bold">
                       Link to W3C games demonstrating build order
@@ -117,7 +117,7 @@ const buildorder = useDocument<IBuild>(
                     />
                   </v-col>
                 </v-row>
-                <v-row v-if="buildorder.description.length">
+                <v-row v-if="buildorder.description?.length">
                   <v-col cols="12">
                     <div class="text-subtitle-2 font-weight-bold">
                       Description
