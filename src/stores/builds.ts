@@ -55,11 +55,13 @@ export const useBuildsStore = defineStore("builds", () => {
       busy.value = true;
 
       // Remove empty sample games and get game id from links
-      item.games = item.games
-        .filter((g) => g?.id?.length)
-        .map((g) => ({
-          id: String(_last(_split(_trimEnd(g.id, "/"), "/"))),
-        }));
+      if (item.games) {
+        item.games = item.games
+          .filter((g) => g?.id?.length)
+          .map((g) => ({
+            id: String(_last(_split(_trimEnd(g.id, "/"), "/"))),
+          }));
+      }
 
       await setDoc(doc(db, "buildorders", item.id), item);
       await router.push(`/buildorders/${item.id}`);

@@ -160,7 +160,7 @@ const items = computed(() => {
 
                 <template v-slot:item.created="{ value }">
                   {{
-                    (value.toDate
+                    (value?.toDate
                       ? moment(value.toDate())
                       : moment(value)
                     ).fromNow()
