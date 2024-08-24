@@ -20,7 +20,7 @@ const races = [Race.Human, Race.Orc, Race.NightElf, Race.Undead];
 const order = computed(() => {
   let count: number[] = [];
   let c = 1;
-  if (builds.data.edit.steps.length) {
+  if (builds.data.edit.steps?.length) {
     for (let i = 0; i < builds.data.edit.steps.length; i++) {
       count[i] = c;
       if (builds.data.edit.steps[i].separator) {
