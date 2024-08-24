@@ -145,6 +145,28 @@ const order = computed(() => {
                     />
                   </v-col>
                 </v-row>
+                <v-row v-if="buildorder.difficulty">
+                  <v-col cols="12">
+                    <span class="text-subtitle-2 font-weight-bold mr-1"
+                      >Difficulty:
+                    </span>
+                    <v-chip
+                      variant="tonal"
+                      label
+                      size="small"
+                      :color="
+                        buildorder.difficulty === builds.difficulties[0]
+                          ? 'green'
+                          : buildorder.difficulty === builds.difficulties[1]
+                            ? 'orange'
+                            : 'red'
+                      "
+                      prepend-icon="mdi-weight-lifter"
+                    >
+                      {{ buildorder.difficulty }}
+                    </v-chip>
+                  </v-col>
+                </v-row>
                 <v-row v-if="buildorder.description?.length">
                   <v-col cols="12">
                     <div class="text-subtitle-2 font-weight-bold">

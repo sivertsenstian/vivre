@@ -103,6 +103,7 @@ export interface IBuild {
   name: string;
   description: string;
   version: string;
+  difficulty: string;
   games: ISampleGame[];
   stars: number;
   player: Race;

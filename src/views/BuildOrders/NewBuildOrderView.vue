@@ -108,6 +108,16 @@ const order = computed(() => {
                     ></v-text-field>
                   </v-col>
 
+                  <v-col cols="6">
+                    <v-select
+                      hide-details
+                      :items="builds.difficulties"
+                      density="compact"
+                      label="Difficulty (optional)"
+                      v-model="builds.data.new.difficulty"
+                    ></v-select>
+                  </v-col>
+
                   <v-col cols="12">
                     <v-row>
                       <v-col cols="12"

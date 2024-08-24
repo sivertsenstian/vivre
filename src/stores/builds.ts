@@ -26,6 +26,8 @@ export const useBuildsStore = defineStore("builds", () => {
 
   const busy = ref(false);
 
+  const difficulties = ["Beginner", "Amateur", "Pro"];
+
   const step = () => ({
     id: uuidv4(),
     time: "00:00",
@@ -43,6 +45,7 @@ export const useBuildsStore = defineStore("builds", () => {
     name: "",
     description: "",
     version: "1.36.2",
+    difficulty: "Amateur",
     games: [],
     stars: 0,
     player: Race.Human,
@@ -189,5 +192,6 @@ export const useBuildsStore = defineStore("builds", () => {
     addGame,
     removeGame,
     canEdit,
+    difficulties,
   };
 });
