@@ -4,6 +4,7 @@ import { Race, raceName, raceIcon } from "@/stores/races";
 import { useRoute, useRouter } from "vue-router";
 import { useDocument, useFirestore } from "vuefire";
 import { doc } from "firebase/firestore";
+import { computed } from "vue";
 
 const builds = useBuildsStore();
 
@@ -15,6 +16,21 @@ const buildorder = useDocument(doc(db, "buildorders", String(route.params.id)));
 builds.edit(buildorder);
 
 const races = [Race.Human, Race.Orc, Race.NightElf, Race.Undead];
+
+const order = computed(() => {
+  let count: number[] = [];
+  let c = 1;
+  if (builds.data.edit.steps.length) {
+    for (let i = 0; i < builds.data.edit.steps.length; i++) {
+      count[i] = c;
+      if (builds.data.edit.steps[i].separator) {
+      } else {
+        c++;
+      }
+    }
+  }
+  return count;
+});
 </script>
 
 <template>
@@ -82,13 +98,32 @@ const races = [Race.Human, Race.Orc, Race.NightElf, Race.Undead];
                     ></v-select>
                   </v-col>
 
-                  <v-col cols="12">
+                  <v-col cols="8">
                     <v-text-field
                       hide-details
                       density="compact"
                       v-model="builds.data.edit.author"
                       label="Author (optional)"
                     ></v-text-field>
+                  </v-col>
+
+                  <v-col cols="4">
+                    <v-text-field
+                      hide-details
+                      density="compact"
+                      v-model="builds.data.edit.version"
+                      label="Version (optional)"
+                    ></v-text-field>
+                  </v-col>
+
+                  <v-col cols="6">
+                    <v-select
+                      hide-details
+                      :items="builds.difficulties"
+                      density="compact"
+                      label="Difficulty (optional)"
+                      v-model="builds.data.edit.difficulty"
+                    ></v-select>
                   </v-col>
 
                   <v-col cols="12">
@@ -177,18 +212,26 @@ const races = [Race.Human, Race.Orc, Race.NightElf, Race.Undead];
                           </th>
                           <th class="text-left">Hotkey</th>
                           <th class="text-left" style="width: 20px">Timing</th>
+                          <th class="text-left" style="width: 20px">
+                            Separator
+                          </th>
                           <th class="text-center" style="width: 10px"></th>
                         </tr>
                       </thead>
                       <tbody>
                         <tr v-for="(item, index) in builds.data.edit.steps">
-                          <td>{{ index + 1 }}</td>
+                          <td>
+                            <span v-show="!item.separator">{{
+                              order[index]
+                            }}</span>
+                          </td>
                           <td>
                             <v-text-field
                               hide-details
                               density="compact"
                               variant="underlined"
                               v-model="item.time"
+                              v-if="!item.separator"
                             ></v-text-field>
                           </td>
                           <td>
@@ -197,6 +240,7 @@ const races = [Race.Human, Race.Orc, Race.NightElf, Race.Undead];
                               density="compact"
                               variant="underlined"
                               v-model="item.food"
+                              v-if="!item.separator"
                             ></v-text-field>
                           </td>
                           <td>
@@ -213,6 +257,7 @@ const races = [Race.Human, Race.Orc, Race.NightElf, Race.Undead];
                               density="compact"
                               variant="underlined"
                               v-model="item.hotkey"
+                              v-if="!item.separator"
                             ></v-text-field>
                           </td>
                           <td>
@@ -222,6 +267,16 @@ const races = [Race.Human, Race.Orc, Race.NightElf, Race.Undead];
                               hide-details
                               density="compact"
                               v-model="item.timing"
+                              v-if="!item.separator"
+                            ></v-checkbox>
+                          </td>
+                          <td>
+                            <v-checkbox
+                              title="Use step as a separator or an event with only a header/instruction"
+                              class="ml-3"
+                              hide-details
+                              density="compact"
+                              v-model="item.separator"
                             ></v-checkbox>
                           </td>
                           <td>

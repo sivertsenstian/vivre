@@ -90,6 +90,7 @@ export interface IStep {
   instructions: string;
   hotkey: string;
   timing: boolean;
+  separator: boolean;
 }
 export interface ISampleGame {
   id: string;
@@ -101,6 +102,8 @@ export interface IBuild {
   created: Moment;
   name: string;
   description: string;
+  version: string;
+  difficulty: string;
   games: ISampleGame[];
   stars: number;
   player: Race;
