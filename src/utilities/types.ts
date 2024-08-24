@@ -90,6 +90,7 @@ export interface IStep {
   instructions: string;
   hotkey: string;
   timing: boolean;
+  separator: boolean;
 }
 export interface ISampleGame {
   id: string;

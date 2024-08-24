@@ -13,6 +13,7 @@ import { useDocument, useFirestore } from "vuefire";
 import { doc } from "firebase/firestore";
 
 import type { IBuild } from "@/utilities/types";
+import { computed } from "vue";
 
 const open = (path: string) => window.open(path, "_blank");
 
@@ -24,6 +25,21 @@ const db = useFirestore();
 const buildorder = useDocument<IBuild>(
   doc(db, "buildorders", String(route.params.id)),
 );
+
+const order = computed(() => {
+  let count: number[] = [];
+  let c = 1;
+  if (buildorder.value?.steps?.length) {
+    for (let i = 0; i < buildorder.value.steps.length; i++) {
+      count[i] = c;
+      if (buildorder.value.steps[i].separator) {
+      } else {
+        c++;
+      }
+    }
+  }
+  return count;
+});
 </script>
 
 <template>
@@ -159,29 +175,47 @@ const buildorder = useDocument<IBuild>(
                         <tbody>
                           <tr
                             v-for="(step, i) in buildorder.steps"
-                            :class="{ timing: step.timing }"
+                            :class="{
+                              timing: step.timing,
+                              separator: step.separator,
+                            }"
                             :title="
                               step.timing ? 'This is an important timing!' : ''
                             "
                           >
-                            <td>{{ i + 1 }}</td>
-                            <td>{{ step.time }}</td>
-                            <td>{{ step.instructions }}</td>
-                            <td>
-                              <div
-                                style="
-                                  display: flex;
-                                  justify-content: center;
-                                  align-items: center;
-                                "
-                              >
-                                <img
-                                  :src="raceUpkeep[buildorder.player]"
-                                  width="25px"
-                                />
-                                <span class="ml-2">{{ step.food }}</span>
-                              </div>
-                            </td>
+                            <template v-if="!step.separator">
+                              <td>{{ order[i] }}</td>
+                              <td>{{ step.time }}</td>
+                              <td>{{ step.instructions }}</td>
+                              <td>
+                                <div
+                                  style="
+                                    display: flex;
+                                    justify-content: center;
+                                    align-items: center;
+                                  "
+                                >
+                                  <img
+                                    :src="raceUpkeep[buildorder.player]"
+                                    width="25px"
+                                  />
+                                  <span class="ml-2">{{ step.food }}</span>
+                                </div>
+                              </td>
+                            </template>
+                            <template v-else>
+                              <td colspan="4">
+                                <v-icon
+                                  color="primary"
+                                  variant=""
+                                  icon="mdi-shield-outline"
+                                /><span
+                                  class="ml-2 font-weight-bold"
+                                  style="vertical-align: middle"
+                                  >{{ step.instructions }}</span
+                                >
+                              </td>
+                            </template>
                           </tr>
                         </tbody>
                       </v-table>
@@ -213,5 +247,12 @@ tbody tr.timing {
     border-left: 2px solid rgba(var(--v-theme-secondary), 1);
   }
   background: rgba(var(--v-theme-secondary), 0.1);
+}
+
+tbody tr.separator {
+  td:first-child {
+    border-left: 10px solid rgba(var(--v-theme-primary), 1);
+  }
+  background: rgba(var(--v-theme-primary), 0.1);
 }
 </style>

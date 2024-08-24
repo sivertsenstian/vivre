@@ -33,6 +33,7 @@ export const useBuildsStore = defineStore("builds", () => {
     instructions: "",
     hotkey: "",
     timing: false,
+    separator: false,
   });
 
   const build = () => ({
