@@ -91,12 +91,16 @@ export interface IStep {
   hotkey: string;
   timing: boolean;
 }
+export interface ISampleGame {
+  id: string;
+}
+
 export interface IBuild {
   id: string;
   created: Moment;
   name: string;
   description: string;
-  games: { id: string }[];
+  games: ISampleGame[];
   stars: number;
   player: Race;
   opponent: Race;

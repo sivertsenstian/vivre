@@ -83,21 +83,24 @@ export const useBuildsStore = defineStore("builds", () => {
     data.value.edit = item;
   };
 
-  const update = async (item: IBuild) => {
+  const update = async (item: Partial<IBuild>) => {
     try {
       busy.value = true;
+      if (item.id) {
+        // Remove empty sample games and get game id from links
+        if (item.games) {
+          item.games = item.games
+            .filter((g) => g?.id?.length)
+            .map((g) => ({
+              id: String(_last(_split(_trimEnd(g.id, "/"), "/"))),
+            }));
+        }
 
-      // Remove empty sample games and get game id from links
-      item.games = item.games
-        .filter((g) => g?.id?.length)
-        .map((g) => ({
-          id: String(_last(_split(_trimEnd(g.id, "/"), "/"))),
-        }));
-
-      const reference = doc(db, "buildorders", item.id);
-      await updateDoc(reference, item as any);
-      await router.push(`/buildorders/${item.id}`);
-      clear();
+        const reference = doc(db, "buildorders", item.id);
+        await updateDoc(reference, item as any);
+        await router.push(`/buildorders/${item.id}`);
+        clear();
+      }
     } catch (e) {
       console.error(e);
     } finally {
