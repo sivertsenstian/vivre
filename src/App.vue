@@ -47,7 +47,7 @@ function toggleTheme() {
           prepend-icon="mdi-vector-polyline"
           title="Creep Routes"
           router
-          to="creeproutes"
+          to="/creeproutes"
         ></v-list-item>
         <v-list-group>
           <template v-slot:activator="{ props }">
@@ -79,7 +79,7 @@ function toggleTheme() {
           prepend-icon="mdi-castle"
           title="Build Orders"
           router
-          to="buildorders"
+          to="/buildorders"
         ></v-list-item>
         <v-list-item
           color="green"
