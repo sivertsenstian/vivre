@@ -1,12 +1,20 @@
 <script setup lang="ts">
 import moment from "moment";
 import { useBuildsStore } from "@/stores/builds";
-import { Race, raceName, raceIcon, raceUpkeep } from "@/stores/races";
+import {
+  Race,
+  raceName,
+  raceIcon,
+  raceUpkeep,
+  creeproutes,
+} from "@/stores/races";
 import { useRoute, useRouter } from "vue-router";
 import { useDocument, useFirestore } from "vuefire";
 import { doc } from "firebase/firestore";
 
 import type { IBuild } from "@/utilities/types";
+
+const open = (path: string) => window.open(path, "_blank");
 
 const route = useRoute();
 const router = useRouter();
@@ -58,9 +66,14 @@ const buildorder = useDocument<IBuild>(
                 >
                 <span class="ml-5 text-subtitle-2"
                   ><strong>Created</strong>:
-                  <span class="text-secondary">{{
-                    moment(buildorder.created).format("MM.DD.YYYY HH:mm")
-                  }}</span></span
+                  <span class="text-secondary">
+                    {{
+                      (buildorder.created.toDate
+                        ? moment(buildorder.created.toDate())
+                        : moment(buildorder.created)
+                      ).format("MM.DD.YYYY HH:mm")
+                    }}
+                  </span></span
                 >
               </v-col>
               <v-col cols="4" class="text-right">
@@ -84,18 +97,44 @@ const buildorder = useDocument<IBuild>(
               </v-col>
 
               <v-col cols="5">
-                <section
-                  :style="{
-                    color: buildorder.description ? 'inherit' : 'gray',
-                    whiteSpace: 'pre-wrap',
-                  }"
-                >
-                  {{
-                    buildorder.description.length
-                      ? buildorder.description
-                      : "No description..."
-                  }}
-                </section>
+                <v-row v-if="buildorder.games.length">
+                  <v-col cols="12">
+                    <div class="text-subtitle-2 font-weight-bold">
+                      Link to W3C games demonstrating build order
+                    </div>
+                    <v-btn
+                      v-for="(game, i) in buildorder.games"
+                      @click="
+                        () =>
+                          open(`https://www.w3champions.com/match/${game.id}`)
+                      "
+                      :text="`Game ${i + 1}`"
+                      title="Go to match in w3champions demonstrating this build order"
+                      size="small"
+                      color="secondary"
+                      prepend-icon="mdi-link"
+                      variant="text"
+                    />
+                  </v-col>
+                </v-row>
+                <v-row v-if="buildorder.description.length">
+                  <v-col cols="12">
+                    <div class="text-subtitle-2 font-weight-bold">
+                      Description
+                    </div>
+                    <hr />
+                  </v-col>
+                  <v-col cols="12">
+                    <section style="white-space: pre-wrap">
+                      {{ buildorder.description }}
+                    </section>
+                  </v-col>
+                </v-row>
+                <v-row v-else>
+                  <v-col cols="12">
+                    <section class="text-grey">No description..</section>
+                  </v-col>
+                </v-row>
               </v-col>
               <v-col cols="7">
                 <v-row>

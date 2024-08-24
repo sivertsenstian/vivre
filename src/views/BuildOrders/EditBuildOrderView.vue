@@ -85,6 +85,63 @@ const races = [Race.Human, Race.Orc, Race.NightElf, Race.Undead];
                   </v-col>
 
                   <v-col cols="12">
+                    <v-row>
+                      <v-col cols="12"
+                        ><div class="text-h6 font-weight-bold">
+                          Add links to sample games (optional)
+                        </div>
+                      </v-col>
+                      <v-col cols="12">
+                        <v-table fixed-header density="compact">
+                          <thead>
+                            <tr>
+                              <th class="text-left" style="width: 10px">#</th>
+                              <th class="text-left">Link or W3C Game Id</th>
+                              <th class="text-center" style="width: 10px"></th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr v-for="(item, index) in builds.data.edit.games">
+                              <td>{{ index + 1 }}</td>
+                              <td>
+                                <v-text-field
+                                  hide-details
+                                  density="compact"
+                                  variant="underlined"
+                                  v-model="item.id"
+                                  placeholder="e.g. https://w3champions.com/match/66c1ca3e0ebc9196a2e60095"
+                                ></v-text-field>
+                              </td>
+                              <td>
+                                <v-btn
+                                  title="Delete step"
+                                  icon="mdi-delete"
+                                  color="red-lighten-2"
+                                  variant="text"
+                                  density="compact"
+                                  @click="
+                                    () => builds.removeGame('edit', item.id)
+                                  "
+                                />
+                              </td>
+                            </tr>
+                          </tbody>
+                        </v-table>
+                      </v-col>
+                      <v-col cols="12" class="text-right">
+                        <v-btn
+                          @click="() => builds.addGame('edit')"
+                          color="success"
+                          variant="tonal"
+                          size="small"
+                        >
+                          Add Game
+                        </v-btn>
+                      </v-col>
+                    </v-row>
+                  </v-col>
+
+                  <v-col cols="12">
                     <v-textarea
                       hide-details
                       density="compact"
