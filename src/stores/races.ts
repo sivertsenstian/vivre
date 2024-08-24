@@ -28,6 +28,18 @@ export const raceIcon: any = {
   [Race.Random]: random,
 };
 
+import human_upkeep from "@/assets/upkeep/human.png";
+import orc_upkeep from "@/assets/upkeep/orc.png";
+import nightelf_upkeep from "@/assets/upkeep/nightelf.png";
+import undead_upkeep from "@/assets/upkeep/undead.png";
+
+export const raceUpkeep: any = {
+  [Race.Human]: human_upkeep,
+  [Race.Orc]: orc_upkeep,
+  [Race.Undead]: undead_upkeep,
+  [Race.NightElf]: nightelf_upkeep,
+};
+
 import alchemist from "@/assets/heroes/alchemist.png";
 import archmage from "@/assets/heroes/archmage.png";
 import avatarofflame from "@/assets/heroes/alchemist.png";

@@ -149,7 +149,12 @@ const items = computed(() => {
                 </template>
 
                 <template v-slot:item.created="{ value }">
-                  {{ moment(value).fromNow() }}
+                  {{
+                    (value.toDate
+                      ? moment(value.toDate())
+                      : moment(value)
+                    ).fromNow()
+                  }}
                 </template>
               </v-data-table>
             </v-col></v-row
