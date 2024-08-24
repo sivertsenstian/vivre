@@ -61,7 +61,7 @@ const buildorder = useDocument<IBuild>(
                   :variant="
                     builds.data.starred[buildorder.id] ? 'flat' : 'outlined'
                   "
-                  prepend-icon="mdi-star"
+                  prepend-icon="mdi-thumb-up-outline"
                   >{{ buildorder.stars }}</v-btn
                 >
                 <span class="ml-5 text-subtitle-2"
