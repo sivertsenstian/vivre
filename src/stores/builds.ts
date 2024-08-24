@@ -9,6 +9,7 @@ import {
 import _last from "lodash/last";
 import _trimEnd from "lodash/trimEnd";
 import _split from "lodash/split";
+import _isNil from "lodash/isNil";
 import { v4 as uuidv4 } from "uuid";
 import { defineStore } from "pinia";
 import { useStorage } from "@vueuse/core";
@@ -36,6 +37,7 @@ export const useBuildsStore = defineStore("builds", () => {
 
   const build = () => ({
     id: uuidv4(),
+    author: "",
     created: moment(),
     name: "",
     description: "",
@@ -159,6 +161,9 @@ export const useBuildsStore = defineStore("builds", () => {
 
   const setActive = (build: any) => {};
 
+  const canEdit = (id?: string): boolean =>
+    !_isNil(id) && data.value.owns?.[id];
+
   const data = useStorage("vivre/builds", {
     new: build(),
     edit: {},
@@ -181,5 +186,6 @@ export const useBuildsStore = defineStore("builds", () => {
     unstar,
     addGame,
     removeGame,
+    canEdit,
   };
 });

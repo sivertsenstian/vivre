@@ -75,6 +75,15 @@ const races = [Race.Human, Race.Orc, Race.NightElf, Race.Undead];
                   </v-col>
 
                   <v-col cols="12">
+                    <v-text-field
+                      hide-details
+                      density="compact"
+                      v-model="builds.data.new.author"
+                      label="Author (optional)"
+                    ></v-text-field>
+                  </v-col>
+
+                  <v-col cols="12">
                     <v-row>
                       <v-col cols="12"
                         ><div class="text-h6 font-weight-bold">

@@ -27,7 +27,7 @@ const races = [Race.Human, Race.Orc, Race.NightElf, Race.Undead];
         v-if="
           builds.data &&
           builds.data.edit?.id &&
-          builds.data.owns[builds.data.edit.id]
+          builds.canEdit(String(route.params.id))
         "
       >
         <v-btn
@@ -52,9 +52,7 @@ const races = [Race.Human, Race.Orc, Race.NightElf, Race.Undead];
                       hide-details
                       density="compact"
                       v-model="builds.data.edit.name"
-                      :counter="10"
                       label="Name"
-                      required
                     ></v-text-field>
                   </v-col>
                   <v-col cols="6">
@@ -82,6 +80,15 @@ const races = [Race.Human, Race.Orc, Race.NightElf, Race.Undead];
                       label="Opponent"
                       v-model="builds.data.edit.opponent"
                     ></v-select>
+                  </v-col>
+
+                  <v-col cols="12">
+                    <v-text-field
+                      hide-details
+                      density="compact"
+                      v-model="builds.data.edit.author"
+                      label="Author (optional)"
+                    ></v-text-field>
                   </v-col>
 
                   <v-col cols="12">
@@ -264,7 +271,7 @@ const races = [Race.Human, Race.Orc, Race.NightElf, Race.Undead];
         v-if="
           builds.data &&
           builds.data.edit?.id &&
-          !builds.data.owns[builds.data.edit.id]
+          !builds.canEdit(String(route.params.id))
         "
       >
         <v-btn

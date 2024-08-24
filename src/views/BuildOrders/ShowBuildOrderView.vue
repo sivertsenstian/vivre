@@ -75,10 +75,16 @@ const buildorder = useDocument<IBuild>(
                     }}
                   </span></span
                 >
+                <span class="ml-5 text-subtitle-2"
+                  ><strong>By</strong>:
+                  <span class="text-secondary">
+                    {{ buildorder.author ?? "Anonymous" }}
+                  </span></span
+                >
               </v-col>
               <v-col cols="4" class="text-right">
                 <v-btn
-                  v-if="builds.data.owns[buildorder.id]"
+                  :disabled="!builds.canEdit(buildorder.id)"
                   prepend-icon="mdi-pen"
                   variant="text"
                   color="secondary"
