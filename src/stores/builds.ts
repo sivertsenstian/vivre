@@ -14,6 +14,7 @@ import { Race } from "@/stores/races";
 import { useRouter } from "vue-router";
 import { ref } from "vue";
 import type { IBuildOrderState } from "@/utilities/types";
+import moment from "moment";
 
 export const useBuildsStore = defineStore("builds", () => {
   const db = useFirestore();
@@ -33,7 +34,7 @@ export const useBuildsStore = defineStore("builds", () => {
 
   const build = () => ({
     id: uuidv4(),
-    created: new Date(),
+    created: moment(),
     name: "",
     description: "",
     games: [],

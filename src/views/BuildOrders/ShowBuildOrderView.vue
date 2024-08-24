@@ -1,12 +1,11 @@
 <script setup lang="ts">
 import moment from "moment";
 import { useBuildsStore } from "@/stores/builds";
-import { Race, raceName, raceIcon } from "@/stores/races";
+import { Race, raceName, raceIcon, raceUpkeep } from "@/stores/races";
 import { useRoute, useRouter } from "vue-router";
 import { useDocument, useFirestore } from "vuefire";
 import { doc } from "firebase/firestore";
 
-import upkeep from "@/assets/upkeep.png";
 import type { IBuild } from "@/utilities/types";
 
 const route = useRoute();
@@ -125,7 +124,10 @@ const buildorder = useDocument<IBuild>(
                                   align-items: center;
                                 "
                               >
-                                <img :src="upkeep" width="25px" />
+                                <img
+                                  :src="raceUpkeep[buildorder.player]"
+                                  width="25px"
+                                />
                                 <span class="ml-2">{{ step.food }}</span>
                               </div>
                             </td>

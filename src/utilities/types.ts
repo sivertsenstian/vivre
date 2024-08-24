@@ -1,4 +1,5 @@
 ﻿import { Race } from "@/stores/races";
+import type { Moment } from "moment";
 
 export interface IVSRaceStatistics {
   total: number;
@@ -92,7 +93,7 @@ export interface IStep {
 }
 export interface IBuild {
   id: string;
-  created: Date;
+  created: Moment;
   name: string;
   description: string;
   games: string[];
