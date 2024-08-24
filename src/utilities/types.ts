@@ -81,3 +81,30 @@ export interface IOngoing {
   server: any;
   history: IOngoingHistory;
 }
+
+export interface IStep {
+  id: string;
+  time: string;
+  food: string;
+  instructions: string;
+  hotkey: string;
+  timing: boolean;
+}
+export interface IBuild {
+  id: string;
+  created: Date;
+  name: string;
+  description: string;
+  games: string[];
+  stars: number;
+  player: Race;
+  opponent: Race;
+  steps: IStep[];
+}
+export interface IBuildOrderState {
+  new: IBuild;
+  edit: Partial<IBuild>;
+  active: {};
+  starred: { [key: string]: boolean };
+  owns: { [key: string]: boolean };
+}

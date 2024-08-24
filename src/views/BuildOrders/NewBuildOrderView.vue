@@ -1,50 +1,41 @@
 <script setup lang="ts">
 import { useBuildsStore } from "@/stores/builds";
 import { Race, raceName, raceIcon } from "@/stores/races";
-import { ref } from "vue";
+import { useRouter } from "vue-router";
 
 const builds = useBuildsStore();
 
+const router = useRouter();
 const races = [Race.Human, Race.Orc, Race.NightElf, Race.Undead];
-
-const tab = ref("existing");
 </script>
 
 <template>
   <main>
     <v-container fluid>
       <v-sheet class="pa-8" elevation="5" style="min-height: 90vh">
-        <v-tabs v-model="tab" align-tabs="center" color="deep-purple-accent-2">
-          <v-tab value="existing">Available build orders</v-tab>
-          <v-tab value="new">New build order</v-tab>
-        </v-tabs>
-        <v-window v-model="tab">
-          <v-window-item value="existing">
-            <v-container>
-              <v-row
-                ><v-col cols="12">
-                  <div class="text-h5">Your Active Build Orders</div>
-                  <hr /></v-col
-              ></v-row>
-              <v-row
-                ><v-col cols="12">
-                  <div class="text-h5">Available Build Orders</div>
-                  <hr /></v-col
-              ></v-row>
-              <v-row>
-                <v-col cols="12"> </v-col>
-              </v-row>
-            </v-container>
-          </v-window-item>
-
-          <v-window-item value="new">
-            <v-form>
-              <v-container>
-                <v-row
-                  ><v-col cols="12">
-                    <div class="text-h4">New Build Order</div>
-                    <hr /></v-col
-                ></v-row>
+        <v-btn
+          prepend-icon="mdi-arrow-left"
+          color="secondary"
+          variant="text"
+          @click="() => router.push('/buildorders')"
+          >Go Back</v-btn
+        >
+        <v-form>
+          <v-container>
+            <v-row
+              ><v-col cols="8">
+                <div class="text-h5 font-weight-bold">
+                  Create New Build Order
+                </div>
+              </v-col>
+              <v-col cols="4" class="text-right">
+                <v-btn variant="text" color="error" @click="builds.clear">
+                  Reset Build
+                </v-btn>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col cols="5">
                 <v-row>
                   <v-col cols="12">
                     <v-text-field
@@ -52,41 +43,54 @@ const tab = ref("existing");
                       density="compact"
                       v-model="builds.data.new.name"
                       :counter="10"
-                      label="name"
+                      label="Name"
                       required
                     ></v-text-field>
                   </v-col>
-
                   <v-col cols="6">
                     <v-select
                       hide-details
-                      :items="races"
+                      :items="
+                        races.map((r) => ({ text: raceName[r], value: r }))
+                      "
+                      item-title="text"
+                      item-value="value"
                       density="compact"
                       label="Player"
-                      item-text=""
                       v-model="builds.data.new.player"
-                    >
-                      <template v-slot:item="{ props, item }">
-                        <v-list-item v-bind="props"
-                          ><img :src="raceIcon[item.raw]" width="50px;"
-                        /></v-list-item>
-                      </template>
-                    </v-select>
+                    />
                   </v-col>
                   <v-col cols="6">
                     <v-select
                       hide-details
-                      :items="races"
+                      :items="
+                        races.map((r) => ({ text: raceName[r], value: r }))
+                      "
+                      item-title="text"
+                      item-value="value"
                       density="compact"
                       label="Opponent"
                       v-model="builds.data.new.opponent"
                     ></v-select>
                   </v-col>
 
+                  <v-col cols="12">
+                    <v-textarea
+                      hide-details
+                      density="compact"
+                      label="Guide (optional)"
+                      v-model="builds.data.new.description"
+                    ></v-textarea>
+                  </v-col>
+                </v-row>
+              </v-col>
+              <v-col cols="7">
+                <v-row>
                   <v-col cols="12"
-                    ><div class="text-h6">Steps:</div>
-                    <hr
-                  /></v-col>
+                    ><div class="text-h6 font-weight-bold">
+                      Build order steps
+                    </div>
+                  </v-col>
                   <v-col cols="12">
                     <v-table fixed-header density="compact">
                       <thead>
@@ -103,10 +107,7 @@ const tab = ref("existing");
                         </tr>
                       </thead>
                       <tbody>
-                        <tr
-                          v-for="(item, index) in builds.data.new.steps"
-                          :key="item.id"
-                        >
+                        <tr v-for="(item, index) in builds.data.new.steps">
                           <td>{{ index + 1 }}</td>
                           <td>
                             <v-text-field
@@ -142,6 +143,7 @@ const tab = ref("existing");
                           </td>
                           <td>
                             <v-checkbox
+                              title="Mark this step as an important timing"
                               class="ml-3"
                               hide-details
                               density="compact"
@@ -150,34 +152,43 @@ const tab = ref("existing");
                           </td>
                           <td>
                             <v-btn
+                              title="Delete step"
                               icon="mdi-delete"
-                              variant="flat"
+                              color="red-lighten-2"
+                              variant="text"
                               density="compact"
-                              @click="() => builds.removeStep(item)"
+                              @click="() => builds.removeStep('new', item)"
                             />
                           </td>
                         </tr>
                       </tbody>
                     </v-table>
                   </v-col>
-                  <v-col cols="12" class="text-right">
-                    <v-btn @click="builds.addStep"> Add Step </v-btn>
-                  </v-col>
-                  <v-col cols="8">
-                    <v-btn color="success" block @click="builds.save">
-                      Save Build
-                    </v-btn>
-                  </v-col>
-                  <v-col cols="4">
-                    <v-btn color="error" block @click="builds.clear">
-                      Clear Build
+                  <v-col cols="12" class="text-center">
+                    <v-btn
+                      @click="() => builds.addStep('new')"
+                      color="success"
+                      variant="tonal"
+                    >
+                      Add Step
                     </v-btn>
                   </v-col>
                 </v-row>
-              </v-container>
-            </v-form>
-          </v-window-item>
-        </v-window>
+              </v-col>
+              <v-col cols="3" class="mx-auto">
+                <v-btn
+                  color="success"
+                  variant="tonal"
+                  block
+                  :loading="builds.busy"
+                  @click="() => builds.save(builds.data.new)"
+                >
+                  Create Build Order
+                </v-btn>
+              </v-col>
+            </v-row>
+          </v-container>
+        </v-form>
       </v-sheet>
     </v-container>
   </main>
