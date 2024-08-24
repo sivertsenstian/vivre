@@ -7,6 +7,8 @@ import "vuetify/styles";
 import { createVuetify } from "vuetify";
 import * as components from "vuetify/components";
 import * as directives from "vuetify/directives";
+import { initializeApp } from "firebase/app";
+import { VueFire } from "vuefire";
 
 import App from "./App.vue";
 import router from "./router";
@@ -26,5 +28,15 @@ const app = createApp(App);
 app.use(router);
 app.use(vuetify);
 app.use(pinia);
+app.use(VueFire, {
+  firebaseApp: initializeApp({
+    apiKey: "AIzaSyDVnLiWGERPNY9GfB2wscnQPSJaIm4moAI",
+    authDomain: "vivre-db.firebaseapp.com",
+    projectId: "vivre-db",
+    storageBucket: "vivre-db.appspot.com",
+    messagingSenderId: "844676752816",
+    appId: "1:844676752816:web:acb9f55e9d522d287be275",
+  }),
+});
 
 app.mount("#app");
