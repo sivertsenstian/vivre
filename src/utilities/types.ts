@@ -97,6 +97,7 @@ export interface ISampleGame {
 
 export interface IBuild {
   id: string;
+  author: string;
   created: Moment;
   name: string;
   description: string;
