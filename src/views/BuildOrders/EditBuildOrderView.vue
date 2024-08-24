@@ -18,8 +18,8 @@ const races = [Race.Human, Race.Orc, Race.NightElf, Race.Undead];
 </script>
 
 <template>
-  <main>
-    <v-container fluid>
+  <main style="height: 100vh; overflow-y: auto">
+    <v-container fluid style="opacity: 0.9">
       <v-sheet
         class="pa-8"
         elevation="5"

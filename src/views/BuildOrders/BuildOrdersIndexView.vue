@@ -36,8 +36,8 @@ const items = computed(() => {
 </script>
 
 <template>
-  <main>
-    <v-container fluid>
+  <main style="height: 100vh; overflow-y: auto">
+    <v-container fluid style="opacity: 0.9">
       <v-sheet class="pa-8" elevation="5" style="min-height: 90vh">
         <v-container>
           <v-row
