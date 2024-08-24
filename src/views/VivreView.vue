@@ -328,7 +328,7 @@ setInterval(() => {
                       :src="
                         creeproutes[stats.ongoing?.player?.race][
                           stats.ongoing?.opponent?.race
-                        ][stats.ongoing?.map]
+                        ][stats.ongoing?.map].img
                       "
                       width="100%"
                     />

@@ -143,7 +143,13 @@ const items = computed(() => {
                 </template>
 
                 <template v-slot:item.stars="{ value }">
-                  <v-chip variant="tonal" label :color="getRating(value)">
+                  <v-chip
+                    variant="tonal"
+                    label
+                    size="small"
+                    :color="getRating(value)"
+                    append-icon="mdi-star"
+                  >
                     {{ value }}
                   </v-chip>
                 </template>
