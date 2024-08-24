@@ -99,12 +99,13 @@ export interface ISampleGame {
 export interface IBuild {
   id: string;
   author: string;
-  created: Moment;
+  created: any;
   name: string;
   description: string;
   version: string;
   difficulty: string;
   games: ISampleGame[];
+  tags: string[];
   stars: number;
   player: Race;
   opponent: Race;

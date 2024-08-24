@@ -1,5 +1,13 @@
 <script setup lang="ts">
-import { Race, creeproutes, raceIcon, raceName } from "@/stores/races";
+import { Race, creeproutes, raceIcon } from "@/stores/races";
+
+const creepRouteRace: any = {
+  [Race.Human]: "Human",
+  [Race.Orc]: "Orc",
+  [Race.Undead]: "Undead",
+  [Race.NightElf]: "Night Elf",
+  [Race.Random]: "Random",
+};
 
 const open = (path: string) => window.open(path, "_blank");
 </script>
@@ -22,7 +30,7 @@ const open = (path: string) => window.open(path, "_blank");
               :src="raceIcon[player]"
             />
             <span class="text-h4 ml-1" style="vertical-align: middle"
-              >{{ raceName[player] }} - Standard</span
+              >{{ creepRouteRace[player] }} - Standard</span
             >
           </v-col>
           <v-col cols="11" class="mx-auto" v-for="(_, map) in v[0]">

@@ -5,6 +5,10 @@ import { raceName, raceIcon, Race } from "@/stores/races";
 import { useRouter } from "vue-router";
 import { computed, ref } from "vue";
 
+import { useStorage } from "@vueuse/core";
+
+const itemsPerPage = useStorage("vivre/itemsPerPage", 25);
+
 const builds = useBuildsStore();
 const router = useRouter();
 
@@ -112,6 +116,7 @@ const items = computed(() => {
                 </v-btn>
               </v-btn-toggle>
               <v-data-table
+                v-model:items-per-page="itemsPerPage"
                 hover
                 class="mt-3"
                 @click:row="
