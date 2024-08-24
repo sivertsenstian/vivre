@@ -151,7 +151,13 @@ const buildorder = useDocument<IBuild>(
                           </tr>
                         </thead>
                         <tbody>
-                          <tr v-for="(step, i) in buildorder.steps">
+                          <tr
+                            v-for="(step, i) in buildorder.steps"
+                            :class="{ timing: step.timing }"
+                            :title="
+                              step.timing ? 'This is an important timing!' : ''
+                            "
+                          >
                             <td>{{ i + 1 }}</td>
                             <td>{{ step.time }}</td>
                             <td>{{ step.instructions }}</td>
@@ -188,5 +194,18 @@ const buildorder = useDocument<IBuild>(
 <style scoped>
 tbody tr:nth-of-type(odd) {
   background-color: rgba(0, 0, 0, 0.1);
+}
+
+tbody tr {
+  td:first-child {
+    border-left: 2px solid transparent;
+  }
+}
+
+tbody tr.timing {
+  td:first-child {
+    border-left: 2px solid rgba(var(--v-theme-secondary), 1);
+  }
+  background: rgba(var(--v-theme-secondary), 0.1);
 }
 </style>
