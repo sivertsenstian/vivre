@@ -102,6 +102,7 @@ export interface IBuild {
   created: Moment;
   name: string;
   description: string;
+  version: string;
   games: ISampleGame[];
   stars: number;
   player: Race;

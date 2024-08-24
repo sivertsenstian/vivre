@@ -81,8 +81,8 @@ const order = computed(() => {
                   >{{ buildorder.stars }}</v-btn
                 >
                 <span class="ml-5 text-subtitle-2"
-                  ><strong>Created</strong>:
-                  <span class="text-secondary">
+                  ><strong>Created:</strong>
+                  <span class="text-secondary ml-1">
                     {{
                       (buildorder.created?.toDate
                         ? moment(buildorder.created.toDate())
@@ -92,9 +92,15 @@ const order = computed(() => {
                   </span></span
                 >
                 <span class="ml-5 text-subtitle-2"
-                  ><strong>By</strong>:
-                  <span class="text-secondary">
+                  ><strong>By:</strong>
+                  <span class="text-secondary ml-1">
                     {{ buildorder.author ?? "Anonymous" }}
+                  </span></span
+                >
+                <span class="ml-5 text-subtitle-2"
+                  ><strong>Version:</strong>
+                  <span class="text-secondary ml-1">
+                    {{ buildorder.version ?? "Unspecified" }}
                   </span></span
                 >
               </v-col>

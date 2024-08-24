@@ -42,6 +42,7 @@ export const useBuildsStore = defineStore("builds", () => {
     created: moment(),
     name: "",
     description: "",
+    version: "1.36.2",
     games: [],
     stars: 0,
     player: Race.Human,

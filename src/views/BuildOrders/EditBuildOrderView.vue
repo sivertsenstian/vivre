@@ -98,12 +98,21 @@ const order = computed(() => {
                     ></v-select>
                   </v-col>
 
-                  <v-col cols="12">
+                  <v-col cols="8">
                     <v-text-field
                       hide-details
                       density="compact"
                       v-model="builds.data.edit.author"
                       label="Author (optional)"
+                    ></v-text-field>
+                  </v-col>
+
+                  <v-col cols="4">
+                    <v-text-field
+                      hide-details
+                      density="compact"
+                      v-model="builds.data.edit.version"
+                      label="Version (optional)"
                     ></v-text-field>
                   </v-col>
 
