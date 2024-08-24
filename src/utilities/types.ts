@@ -96,7 +96,7 @@ export interface IBuild {
   created: Moment;
   name: string;
   description: string;
-  games: string[];
+  games: { id: string }[];
   stars: number;
   player: Race;
   opponent: Race;
