@@ -12,8 +12,12 @@ const races = [Race.Random, Race.Human, Race.Orc, Race.NightElf, Race.Undead];
 
 // Render helpers
 const getRating = (stars: number) => {
-  if (stars < 0) return "red";
-  else if (stars < 10) return "orange";
+  if (stars <= 0) return "grey";
+  else if (stars === 1) return `orange`;
+  else if (stars < 5) return `orange-lighten-${stars - 1}`;
+  else if (stars === 5) return `yellow`;
+  else if (stars < 10) return `yellow-lighten-${stars - 5}`;
+  else if (stars < 14) return `green-lighten-${4 - (stars - 10)}`;
   else return "green";
 };
 
