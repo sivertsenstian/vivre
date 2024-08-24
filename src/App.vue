@@ -74,7 +74,6 @@ function toggleTheme() {
           ></v-list-item>
         </v-list-group>
         <v-list-item
-          :disabled="inProduction"
           color="green"
           prepend-icon="mdi-castle"
           title="Build Orders"
