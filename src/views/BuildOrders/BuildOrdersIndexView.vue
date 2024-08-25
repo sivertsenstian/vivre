@@ -34,11 +34,13 @@ const items = computed(() => {
   let result = builds.buildorders;
 
   if (player.value > 0) {
-    result = builds.buildorders.filter((b) => b.player === player.value);
+    result = result.filter((b) => b.player === player.value);
   }
 
   if (opponent.value > 0) {
-    result = builds.buildorders.filter((b) => b.opponent === opponent.value);
+    result = result.filter(
+      (b) => b.opponent === opponent.value || b.opponent === Race.Random,
+    );
   }
 
   return result;

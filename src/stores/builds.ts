@@ -7,8 +7,6 @@ import {
   increment,
 } from "firebase/firestore";
 import _last from "lodash/last";
-import _trimEnd from "lodash/trimEnd";
-import _split from "lodash/split";
 import _isNil from "lodash/isNil";
 import { v4 as uuidv4 } from "uuid";
 import { defineStore } from "pinia";
