@@ -117,7 +117,7 @@ const order = computed(() => {
                       hide-details
                       density="compact"
                       v-model="builds.data.new.version"
-                      label="Version (optional)"
+                      label="Patch (optional)"
                     ></v-text-field>
                   </v-col>
 

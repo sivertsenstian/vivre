@@ -4,6 +4,8 @@ import { useBuildsStore } from "@/stores/builds";
 import { raceName, raceIcon, Race } from "@/stores/races";
 import { useRouter } from "vue-router";
 import { computed, ref } from "vue";
+import _take from "lodash/take";
+import _skip from "lodash/drop";
 
 import { useStorage } from "@vueuse/core";
 
@@ -129,6 +131,21 @@ const items = computed(() => {
                   { title: 'Player', value: 'player', key: 'player' },
                   { title: 'Opponent', value: 'opponent', key: 'opponent' },
                   { title: 'Rating', value: 'stars', key: 'stars' },
+                  {
+                    title: 'Difficulty',
+                    value: 'difficulty',
+                    key: 'difficulty',
+                  },
+                  {
+                    title: 'Tags',
+                    value: 'tags',
+                    key: 'tags',
+                  },
+                  {
+                    title: 'Patch',
+                    value: 'version',
+                    key: 'version',
+                  },
                   { title: 'Created', value: 'created', key: 'created' },
                 ]"
                 :sort-by="[{ key: 'stars', order: 'desc' }]"
@@ -163,6 +180,46 @@ const items = computed(() => {
                   </v-chip>
                 </template>
 
+                <template v-slot:item.difficulty="{ value }">
+                  <v-chip
+                    v-if="value"
+                    variant="tonal"
+                    label
+                    size="small"
+                    :title="value"
+                    :color="
+                      value === builds.difficulties[0]
+                        ? 'green'
+                        : value === builds.difficulties[1]
+                          ? 'orange'
+                          : 'red'
+                    "
+                  >
+                    <v-icon icon="mdi-weight-lifter" />
+                  </v-chip>
+                </template>
+
+                <template v-slot:item.tags="{ value }">
+                  <v-chip-group column variant="tonal">
+                    <v-chip
+                      v-for="tag in _take(value, 2)"
+                      :text="String(tag)"
+                      size="small"
+                    >
+                    </v-chip>
+                    <v-chip
+                      v-if="value?.length > 2"
+                      :title="
+                        _skip(value, 2)
+                          .map((v) => `'${v}'`)
+                          .join(', ')
+                      "
+                      :text="`+${value.length - 2} more`"
+                      size="small"
+                    >
+                    </v-chip>
+                  </v-chip-group>
+                </template>
                 <template v-slot:item.created="{ value }">
                   {{
                     (value?.toDate

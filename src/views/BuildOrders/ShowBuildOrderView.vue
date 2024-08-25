@@ -129,7 +129,7 @@ const order = computed(() => {
                   </span></span
                 >
                 <span class="ml-5 text-subtitle-2"
-                  ><strong>Version:</strong>
+                  ><strong>Patch:</strong>
                   <span class="text-secondary ml-1">
                     {{ buildorder.version ?? "Unspecified" }}
                   </span></span
@@ -198,7 +198,7 @@ const order = computed(() => {
                 </v-row>
                 <v-row v-if="buildorder.tags">
                   <v-col cols="12">
-                    <v-chip-group column color="red" variant="tonal">
+                    <v-chip-group column variant="tonal">
                       <v-chip
                         v-for="tag in buildorder.tags"
                         :text="tag"
