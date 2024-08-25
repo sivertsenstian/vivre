@@ -232,7 +232,35 @@ const items = computed(() => {
             </v-col></v-row
           >
           <v-row>
-            <v-col cols="12"> </v-col>
+            <v-col cols="12">
+              <v-alert
+                text="
+25.08
+-------
+- Add 'Any' as a possible (and default) opponent race
+- Add Tags field
+- Rework games => now 'Link' and supports any http link, youtube, w3c and twitch links have a unique icon!
+- Add some of the new fields as columns to the index
+- Food for initial step should now reflect the player race. This will only change on update if you have a single step
+  as otherwise I would have to re-calculate all consequent steps.
+
+24.08
+-------
+- Add Difficulty, Author and Patch fields
+- Add 'separator' to build steps - to be used to signify section changes or highlight events.
+
+
+Thanks for testing out the build order builder!
+It's still a work in progress, so issues might arise.
+If you have any feedback - don't hesitate to contact me @Longjacket in the w3c or gym discord <3
+"
+                title="Recent changes"
+                type="info"
+                variant="tonal"
+                style="white-space: pre-wrap; border: 1px solid"
+                border-color="primary"
+              ></v-alert>
+            </v-col>
           </v-row>
         </v-container>
       </v-sheet>

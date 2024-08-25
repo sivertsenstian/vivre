@@ -30,6 +30,30 @@ const order = computed(() => {
   }
   return count;
 });
+
+const updateFood = (race: Race) => {
+  if (builds.data.new.steps.length === 1) {
+    switch (race) {
+      case Race.Human: {
+        builds.data.new.steps[0].food = "5/12";
+        break;
+      }
+      case Race.Orc: {
+        builds.data.new.steps[0].food = "5/11";
+        break;
+      }
+      case Race.Undead:
+      case Race.NightElf: {
+        builds.data.new.steps[0].food = "5/10";
+        break;
+      }
+      default: {
+        builds.data.new.steps[0].food = "0/10";
+        break;
+      }
+    }
+  }
+};
 </script>
 
 <template>
@@ -84,6 +108,7 @@ const order = computed(() => {
                       density="compact"
                       label="Player"
                       v-model="builds.data.new.player"
+                      @update:modelValue="updateFood"
                     />
                   </v-col>
                   <v-col cols="6">

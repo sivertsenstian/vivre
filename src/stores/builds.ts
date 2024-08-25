@@ -28,10 +28,10 @@ export const useBuildsStore = defineStore("builds", () => {
 
   const difficulties = ["Beginner", "Amateur", "Pro"];
 
-  const step = () => ({
+  const step = (food: string = "0/10") => ({
     id: uuidv4(),
     time: "00:00",
-    food: "5/12",
+    food,
     instructions: "",
     hotkey: "",
     timing: false,
@@ -51,7 +51,7 @@ export const useBuildsStore = defineStore("builds", () => {
     stars: 0,
     player: Race.Human,
     opponent: Race.Random,
-    steps: [step()],
+    steps: [step("5/12")],
   });
 
   const game = () => ({
