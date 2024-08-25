@@ -15,7 +15,14 @@ const db = useFirestore();
 const buildorder = useDocument(doc(db, "buildorders", String(route.params.id)));
 builds.edit(buildorder);
 
-const races = [Race.Human, Race.Orc, Race.NightElf, Race.Undead];
+const playerRaces = [Race.Human, Race.Orc, Race.NightElf, Race.Undead];
+const opponentRaces = [
+  Race.Random,
+  Race.Human,
+  Race.Orc,
+  Race.NightElf,
+  Race.Undead,
+];
 
 const order = computed(() => {
   let count: number[] = [];
@@ -31,6 +38,30 @@ const order = computed(() => {
   }
   return count;
 });
+
+const updateFood = (race: Race) => {
+  if (builds.data.new.steps.length === 1) {
+    switch (race) {
+      case Race.Human: {
+        builds.data.new.steps[0].food = "5/12";
+        break;
+      }
+      case Race.Orc: {
+        builds.data.new.steps[0].food = "5/11";
+        break;
+      }
+      case Race.Undead:
+      case Race.NightElf: {
+        builds.data.new.steps[0].food = "5/10";
+        break;
+      }
+      default: {
+        builds.data.new.steps[0].food = "0/10";
+        break;
+      }
+    }
+  }
+};
 </script>
 
 <template>
@@ -75,20 +106,27 @@ const order = computed(() => {
                     <v-select
                       hide-details
                       :items="
-                        races.map((r) => ({ text: raceName[r], value: r }))
+                        playerRaces.map((r) => ({
+                          text: raceName[r],
+                          value: r,
+                        }))
                       "
                       item-title="text"
                       item-value="value"
                       density="compact"
                       label="Player"
                       v-model="builds.data.edit.player"
+                      @update:modelValue="updateFood"
                     />
                   </v-col>
                   <v-col cols="6">
                     <v-select
                       hide-details
                       :items="
-                        races.map((r) => ({ text: raceName[r], value: r }))
+                        opponentRaces.map((r) => ({
+                          text: raceName[r],
+                          value: r,
+                        }))
                       "
                       item-title="text"
                       item-value="value"
@@ -112,7 +150,7 @@ const order = computed(() => {
                       hide-details
                       density="compact"
                       v-model="builds.data.edit.version"
-                      label="Version (optional)"
+                      label="Patch (optional)"
                     ></v-text-field>
                   </v-col>
 
@@ -127,10 +165,24 @@ const order = computed(() => {
                   </v-col>
 
                   <v-col cols="12">
+                    <v-combobox
+                      v-model="builds.data.edit.tags"
+                      label="Tags (optional)"
+                      prepend-inner-icon="mdi-tag-heart"
+                      chips
+                      closable-chips
+                      clearable
+                      multiple
+                      placeholder="Press [Enter] to create the tag..."
+                    >
+                    </v-combobox>
+                  </v-col>
+
+                  <v-col cols="12">
                     <v-row>
                       <v-col cols="12"
                         ><div class="text-h6 font-weight-bold">
-                          Add links to sample games (optional)
+                          Add helpful links (optional)
                         </div>
                       </v-col>
                       <v-col cols="12">
@@ -138,7 +190,7 @@ const order = computed(() => {
                           <thead>
                             <tr>
                               <th class="text-left" style="width: 10px">#</th>
-                              <th class="text-left">Link or W3C Game Id</th>
+                              <th class="text-left">Link</th>
                               <th class="text-center" style="width: 10px"></th>
                             </tr>
                           </thead>
@@ -177,7 +229,7 @@ const order = computed(() => {
                           variant="tonal"
                           size="small"
                         >
-                          Add Game
+                          Add Link
                         </v-btn>
                       </v-col>
                     </v-row>

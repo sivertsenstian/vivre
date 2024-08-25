@@ -11,7 +11,7 @@ export const raceName: any = {
   [Race.Orc]: "Orc",
   [Race.Undead]: "Undead",
   [Race.NightElf]: "Night Elf",
-  [Race.Random]: "Random",
+  [Race.Random]: "Any",
 };
 
 import human from "@/assets/race/human.png";

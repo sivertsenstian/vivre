@@ -28,10 +28,10 @@ export const useBuildsStore = defineStore("builds", () => {
 
   const difficulties = ["Beginner", "Amateur", "Pro"];
 
-  const step = () => ({
+  const step = (food: string = "0/10") => ({
     id: uuidv4(),
     time: "00:00",
-    food: "5/12",
+    food,
     instructions: "",
     hotkey: "",
     timing: false,
@@ -41,16 +41,17 @@ export const useBuildsStore = defineStore("builds", () => {
   const build = () => ({
     id: uuidv4(),
     author: "",
-    created: moment(),
+    created: moment().toDate(),
     name: "",
     description: "",
     version: "1.36.2",
     difficulty: "Amateur",
     games: [],
+    tags: [],
     stars: 0,
     player: Race.Human,
-    opponent: Race.Orc,
-    steps: [step()],
+    opponent: Race.Random,
+    steps: [step("5/12")],
   });
 
   const game = () => ({
@@ -60,15 +61,6 @@ export const useBuildsStore = defineStore("builds", () => {
   const save = async (item: IBuild) => {
     try {
       busy.value = true;
-
-      // Remove empty sample games and get game id from links
-      if (item.games) {
-        item.games = item.games
-          .filter((g) => g?.id?.length)
-          .map((g) => ({
-            id: String(_last(_split(_trimEnd(g.id, "/"), "/"))),
-          }));
-      }
 
       await setDoc(doc(db, "buildorders", item.id), item);
       await router.push(`/buildorders/${item.id}`);
@@ -96,15 +88,6 @@ export const useBuildsStore = defineStore("builds", () => {
     try {
       busy.value = true;
       if (item.id) {
-        // Remove empty sample games and get game id from links
-        if (item.games) {
-          item.games = item.games
-            .filter((g) => g?.id?.length)
-            .map((g) => ({
-              id: String(_last(_split(_trimEnd(g.id, "/"), "/"))),
-            }));
-        }
-
         const reference = doc(db, "buildorders", item.id);
         await updateDoc(reference, item as any);
         await router.push(`/buildorders/${item.id}`);

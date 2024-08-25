@@ -12,10 +12,41 @@ import { useRoute, useRouter } from "vue-router";
 import { useDocument, useFirestore } from "vuefire";
 import { doc } from "firebase/firestore";
 
-import type { IBuild } from "@/utilities/types";
+import type { IBuild, IBuildOrderState } from "@/utilities/types";
 import { computed } from "vue";
 
 const open = (path: string) => window.open(path, "_blank");
+
+const getLinkType = (path: string) => {
+  const p = path.toLowerCase();
+  if (["youtube", "youtu.be"].some((v) => p.includes(v))) {
+    return "mdi-youtube";
+  } else if (["w3champions.com"].some((v) => p.includes(v))) {
+    return "mdi-controller";
+  } else if (["twitch"].some((v) => p.includes(v))) {
+    return "mdi-twitch";
+  }
+  return "mdi-link";
+};
+
+const getLinkColor = (path: string) => {
+  const p = path.toLowerCase();
+  if (["youtube", "youtu.be"].some((v) => p.includes(v))) {
+    return "red";
+  } else if (["w3champions.com"].some((v) => p.includes(v))) {
+    return "yellow";
+  } else if (["twitch"].some((v) => p.includes(v))) {
+    return "purple";
+  }
+  return "secondary";
+};
+
+const isValidLink = (path: string) => {
+  const p = path.toLowerCase();
+  return ["youtube", "youtu.be", "w3champions.com", "twitch"].some((v) =>
+    p.includes(v),
+  );
+};
 
 const route = useRoute();
 const router = useRouter();
@@ -98,7 +129,7 @@ const order = computed(() => {
                   </span></span
                 >
                 <span class="ml-5 text-subtitle-2"
-                  ><strong>Version:</strong>
+                  ><strong>Patch:</strong>
                   <span class="text-secondary ml-1">
                     {{ buildorder.version ?? "Unspecified" }}
                   </span></span
@@ -128,21 +159,19 @@ const order = computed(() => {
                 <v-row v-if="buildorder.games?.length">
                   <v-col cols="12">
                     <div class="text-subtitle-2 font-weight-bold">
-                      Link to W3C games demonstrating build order
+                      Helpful Links
                     </div>
-                    <v-btn
-                      v-for="(game, i) in buildorder.games"
-                      @click="
-                        () =>
-                          open(`https://www.w3champions.com/match/${game.id}`)
-                      "
-                      :text="`Game ${i + 1}`"
-                      title="Go to match in w3champions demonstrating this build order"
-                      size="small"
-                      color="secondary"
-                      prepend-icon="mdi-link"
-                      variant="text"
-                    />
+                    <template v-for="(game, i) in buildorder.games">
+                      <v-btn
+                        v-if="isValidLink(game.id)"
+                        @click="() => open(game.id)"
+                        :title="`Open '${game.id}'`"
+                        size="small"
+                        :color="getLinkColor(game.id)"
+                        :prepend-icon="getLinkType(game.id)"
+                        variant="text"
+                      />
+                    </template>
                   </v-col>
                 </v-row>
                 <v-row v-if="buildorder.difficulty">
@@ -165,6 +194,20 @@ const order = computed(() => {
                     >
                       {{ buildorder.difficulty }}
                     </v-chip>
+                  </v-col>
+                </v-row>
+                <v-row v-if="buildorder.tags">
+                  <v-col cols="12">
+                    <v-chip-group column variant="tonal">
+                      <v-chip
+                        v-for="tag in buildorder.tags"
+                        :text="tag"
+                        prepend-icon="mdi-tag"
+                        color="primary"
+                        size="small"
+                      >
+                      </v-chip>
+                    </v-chip-group>
                   </v-col>
                 </v-row>
                 <v-row v-if="buildorder.description?.length">
@@ -190,7 +233,28 @@ const order = computed(() => {
                 <v-row>
                   <v-col cols="12">
                     <v-sheet elevation="10" border class="py-5 px-8">
-                      <div class="text-h5 font-weight-bold">Build Order</div>
+                      <div class="text-h5 font-weight-bold">
+                        Build Order
+                        <div
+                          class="text-subtitle-2 ml-auto"
+                          style="display: inline-block; float: right"
+                        >
+                          <img
+                            style="vertical-align: middle"
+                            width="20px"
+                            :src="raceIcon[buildorder.player]"
+                          />
+                          {{ raceName[buildorder.player] }}
+                          <span class="font-weight-bold"> vs </span>
+
+                          <img
+                            style="vertical-align: middle"
+                            width="20px"
+                            :src="raceIcon[buildorder.opponent]"
+                          />
+                          {{ raceName[buildorder.opponent] }}
+                        </div>
+                      </div>
                       <v-table hover>
                         <thead>
                           <tr>
