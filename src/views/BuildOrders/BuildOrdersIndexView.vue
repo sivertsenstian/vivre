@@ -153,21 +153,25 @@ const items = computed(() => {
                 :sort-by="[{ key: 'stars', order: 'desc' }]"
               >
                 <template v-slot:item.player="{ value }">
-                  <img
-                    style="vertical-align: middle"
-                    width="25px"
-                    :src="raceIcon[value]"
-                  />
-                  {{ raceName[value] }}
+                  <div style="white-space: nowrap">
+                    <img
+                      style="vertical-align: middle"
+                      width="25px"
+                      :src="raceIcon[value]"
+                    />
+                    {{ raceName[value] }}
+                  </div>
                 </template>
 
                 <template v-slot:item.opponent="{ value }">
-                  <img
-                    style="vertical-align: middle"
-                    width="25px"
-                    :src="raceIcon[value]"
-                  />
-                  {{ raceName[value] }}
+                  <div style="white-space: nowrap">
+                    <img
+                      style="vertical-align: middle"
+                      width="25px"
+                      :src="raceIcon[value]"
+                    />
+                    {{ raceName[value] }}
+                  </div>
                 </template>
 
                 <template v-slot:item.stars="{ value }">
