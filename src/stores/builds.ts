@@ -148,8 +148,8 @@ export const useBuildsStore = defineStore("builds", () => {
 
   const setActive = (build: any) => {};
 
-  const canEdit = (id?: string): boolean =>
-    !_isNil(id) && data.value.owns?.[id];
+  const canEdit = (id?: string): boolean => true;
+  // !_isNil(id) && data.value.owns?.[id];
 
   const data = useStorage("vivre/builds", {
     new: build(),

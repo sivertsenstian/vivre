@@ -1,0 +1,33 @@
+﻿.md-editor, .md-editor-modal-container[data-theme="light"] {
+    --md-color: rgba(var(--v-theme-on-surface), var(--v-high-emphasis-opacity))!important;
+    --md-bk-color: rgb(var(--v-theme-surface))!important;
+    --md-bk-color-outstand: rgb(var(--v-theme-surface))!important;
+    --md-modal-mask: rgba(var(--v-theme-surface), 0.5)!important;
+
+    div.github-theme {
+        color: rgba(var(--v-theme-on-surface), var(--v-high-emphasis-opacity))!important;
+    }
+
+    * {
+        word-break: normal !important;
+    }
+}
+
+.md-editor-dark, .md-editor-modal-container[data-theme="dark"] {
+    --md-color: rgba(var(--v-theme-on-surface), var(--v-high-emphasis-opacity))!important;
+    --md-bk-color: rgb(var(--v-theme-surface))!important;
+    --md-bk-color-outstand: rgb(var(--v-theme-surface))!important;
+    --md-modal-mask: rgba(var(--v-theme-surface), 0.5)!important;
+
+    div.github-theme {
+        color: rgba(var(--v-theme-on-surface), var(--v-high-emphasis-opacity))!important;
+    }
+
+    * {
+        word-break: normal !important;
+    }
+}
+
+.md-editor-fullscreen {
+    margin-left: 55px;
+}

@@ -6,6 +6,7 @@ import { useDocument, useFirestore } from "vuefire";
 import { doc } from "firebase/firestore";
 import { computed } from "vue";
 import ViabilitySlider from "@/components/ViabilitySlider.vue";
+import MarkdownEditor from "@/components/MarkdownEditor.vue";
 
 const builds = useBuildsStore();
 
@@ -238,14 +239,8 @@ const updateFood = (race: Race) => {
                     </v-col>
                   </v-row>
                 </v-col>
-
-                <v-col cols="12">
-                  <v-textarea
-                    hide-details
-                    density="compact"
-                    label="Guide (optional)"
-                    v-model="builds.data.edit.description"
-                  ></v-textarea>
+                <v-col cols="12" style="height: auto">
+                  <markdown-editor v-model="builds.data.edit.description" />
                 </v-col>
               </v-row>
             </v-col>

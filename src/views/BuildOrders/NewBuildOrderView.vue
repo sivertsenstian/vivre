@@ -4,6 +4,7 @@ import { Race, raceName, raceIcon } from "@/stores/races";
 import { useRouter } from "vue-router";
 import { computed } from "vue";
 import ViabilitySlider from "@/components/ViabilitySlider.vue";
+import MarkdownEditor from "@/components/MarkdownEditor.vue";
 
 const builds = useBuildsStore();
 
@@ -226,14 +227,8 @@ const updateFood = (race: Race) => {
                     </v-col>
                   </v-row>
                 </v-col>
-
-                <v-col cols="12">
-                  <v-textarea
-                    hide-details
-                    density="compact"
-                    label="Guide (optional)"
-                    v-model="builds.data.new.description"
-                  ></v-textarea>
+                <v-col cols="12" style="height: auto">
+                  <markdown-editor v-model="builds.data.new.description" />
                 </v-col>
               </v-row>
             </v-col>
