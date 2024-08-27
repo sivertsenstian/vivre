@@ -219,7 +219,7 @@ const order = computed(() => {
                   <hr />
                 </v-col>
                 <v-col cols="12">
-                  <section style="white-space: pre-wrap">
+                  <section class="description" style="white-space: pre-wrap">
                     {{ buildorder.description }}
                   </section>
                 </v-col>
@@ -236,6 +236,13 @@ const order = computed(() => {
                   <v-sheet elevation="10" border class="py-5 px-8">
                     <div class="text-h5 font-weight-bold">
                       Build Order
+                      <span class="text-grey"
+                        >//
+                        {{
+                          buildorder.steps.filter((s) => !s.separator).length
+                        }}
+                        steps</span
+                      >
                       <div
                         class="text-subtitle-2 ml-auto"
                         style="display: inline-block; float: right"
@@ -256,7 +263,7 @@ const order = computed(() => {
                         {{ raceName[buildorder.opponent] }}
                       </div>
                     </div>
-                    <v-table hover>
+                    <v-table hover height="70vh" fixed-header>
                       <thead>
                         <tr>
                           <th class="text-left">#</th>
@@ -277,7 +284,7 @@ const order = computed(() => {
                           "
                         >
                           <template v-if="!step.separator">
-                            <td>{{ order[i] }}</td>
+                            <td class="text-center">{{ order[i] }}</td>
                             <td>{{ step.time }}</td>
                             <td>{{ step.instructions }}</td>
                             <td>
@@ -297,13 +304,16 @@ const order = computed(() => {
                             </td>
                           </template>
                           <template v-else>
-                            <td colspan="4">
+                            <td class="pl-2">
                               <v-icon
                                 color="primary"
                                 variant=""
                                 icon="mdi-shield-outline"
-                              /><span
-                                class="ml-2 font-weight-bold"
+                              />
+                            </td>
+                            <td colspan="3" class="py-2">
+                              <span
+                                class="font-weight-bold"
                                 style="vertical-align: middle"
                                 >{{ step.instructions }}</span
                               >
@@ -346,5 +356,12 @@ tbody tr.separator {
     border-left: 10px solid rgba(var(--v-theme-primary), 1);
   }
   background: rgba(var(--v-theme-primary), 0.1);
+}
+
+.description {
+  padding: 8px;
+  border-left: 5px solid rgba(var(--v-theme-secondary), 0.5);
+  max-height: 60vh;
+  overflow-y: auto;
 }
 </style>
