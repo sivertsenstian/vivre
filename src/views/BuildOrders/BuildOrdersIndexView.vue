@@ -257,6 +257,7 @@ const items = computed(() => {
 -------
 - Add 'Viability' field to build, to indicate how close to meta/standard the build is
 - Improve readability by using more of the horizontal screen space
+- Add support for markdown in build order descriptions! Check this guide: https://www.markdownguide.org/basic-syntax/ if interested :)
 
 Previously
 -------
