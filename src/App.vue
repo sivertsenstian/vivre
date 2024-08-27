@@ -88,6 +88,13 @@ function toggleTheme() {
           to="settings"
         ></v-list-item>
         <v-list-item
+          color="green"
+          prepend-icon="mdi-handshake-outline"
+          title="About"
+          router
+          to="about"
+        ></v-list-item>
+        <v-list-item
           color="yellow"
           prepend-icon="mdi-lightbulb"
           :title="isDark ? 'Light' : 'Dark'"
