@@ -91,236 +91,232 @@ const order = computed(() => {
           >Go Back</v-btn
         >
         <v-form>
-          <v-container>
-            <v-row
-              ><v-col cols="12">
-                <div class="text-h3 font-weight-bold">
-                  {{ buildorder.name }}
-                </div>
-              </v-col>
-              <v-col cols="8">
-                <v-btn
-                  @click="
-                    builds.data.starred[buildorder.id]
-                      ? builds.unstar(buildorder)
-                      : builds.star(buildorder)
-                  "
-                  color="secondary"
-                  :variant="
-                    builds.data.starred[buildorder.id] ? 'flat' : 'outlined'
-                  "
-                  prepend-icon="mdi-thumb-up-outline"
-                  >{{ buildorder.stars }}</v-btn
-                >
-                <span class="ml-5 text-subtitle-2"
-                  ><strong>Created:</strong>
-                  <span class="text-secondary ml-1">
-                    {{
-                      (buildorder.created?.toDate
-                        ? moment(buildorder.created.toDate())
-                        : moment(buildorder.created)
-                      ).format("MM.DD.YYYY HH:mm")
-                    }}
-                  </span></span
-                >
-                <span class="ml-5 text-subtitle-2"
-                  ><strong>By:</strong>
-                  <span class="text-secondary ml-1">
-                    {{ buildorder.author ?? "Anonymous" }}
-                  </span></span
-                >
-                <span class="ml-5 text-subtitle-2"
-                  ><strong>Patch:</strong>
-                  <span class="text-secondary ml-1">
-                    {{ buildorder.version ?? "Unspecified" }}
-                  </span></span
-                >
-              </v-col>
-              <v-col cols="4" class="text-right">
-                <v-btn
-                  :disabled="!builds.canEdit(buildorder.id)"
-                  prepend-icon="mdi-pen"
-                  variant="text"
-                  color="secondary"
-                  @click="
-                    () =>
-                      buildorder?.id
-                        ? router.push(`/buildorders/${buildorder.id}/edit`)
-                        : null
-                  "
-                >
-                  Edit Build
-                </v-btn>
-              </v-col>
-              <v-col cols="12">
-                <hr />
-              </v-col>
+          <v-row
+            ><v-col cols="12">
+              <div class="text-h3 font-weight-bold">
+                {{ buildorder.name }}
+              </div>
+            </v-col>
+            <v-col cols="8">
+              <v-btn
+                @click="
+                  builds.data.starred[buildorder.id]
+                    ? builds.unstar(buildorder)
+                    : builds.star(buildorder)
+                "
+                color="secondary"
+                :variant="
+                  builds.data.starred[buildorder.id] ? 'flat' : 'outlined'
+                "
+                prepend-icon="mdi-thumb-up-outline"
+                >{{ buildorder.stars }}</v-btn
+              >
+              <span class="ml-5 text-subtitle-2"
+                ><strong>Created:</strong>
+                <span class="text-secondary ml-1">
+                  {{
+                    (buildorder.created?.toDate
+                      ? moment(buildorder.created.toDate())
+                      : moment(buildorder.created)
+                    ).format("MM.DD.YYYY HH:mm")
+                  }}
+                </span></span
+              >
+              <span class="ml-5 text-subtitle-2"
+                ><strong>By:</strong>
+                <span class="text-secondary ml-1">
+                  {{ buildorder.author ?? "Anonymous" }}
+                </span></span
+              >
+              <span class="ml-5 text-subtitle-2"
+                ><strong>Patch:</strong>
+                <span class="text-secondary ml-1">
+                  {{ buildorder.version ?? "Unspecified" }}
+                </span></span
+              >
+            </v-col>
+            <v-col cols="4" class="text-right">
+              <v-btn
+                :disabled="!builds.canEdit(buildorder.id)"
+                prepend-icon="mdi-pen"
+                variant="text"
+                color="secondary"
+                @click="
+                  () =>
+                    buildorder?.id
+                      ? router.push(`/buildorders/${buildorder.id}/edit`)
+                      : null
+                "
+              >
+                Edit Build
+              </v-btn>
+            </v-col>
+            <v-col cols="12">
+              <hr />
+            </v-col>
 
-              <v-col cols="5">
-                <v-row v-if="buildorder.games?.length">
-                  <v-col cols="12">
-                    <div class="text-subtitle-2 font-weight-bold">
-                      Helpful Links
-                    </div>
-                    <template v-for="(game, i) in buildorder.games">
-                      <v-btn
-                        v-if="isValidLink(game.id)"
-                        @click="() => open(game.id)"
-                        :title="`Open '${game.id}'`"
-                        size="small"
-                        :color="getLinkColor(game.id)"
-                        :prepend-icon="getLinkType(game.id)"
-                        variant="text"
-                      />
-                    </template>
-                  </v-col>
-                </v-row>
-                <v-row v-if="buildorder.difficulty || buildorder.viability">
-                  <v-col cols="6" v-if="buildorder.viability">
-                    <viability-slider readonly v-model="buildorder.viability"
-                  /></v-col>
-                  <v-col cols="6" v-if="buildorder.difficulty">
-                    <span class="text-subtitle-2 font-weight-bold mr-1"
-                      >Difficulty:
-                    </span>
-                    <v-chip
-                      variant="tonal"
-                      label
+            <v-col cols="6">
+              <v-row v-if="buildorder.games?.length">
+                <v-col cols="6">
+                  <div class="text-subtitle-2 font-weight-bold">
+                    Helpful Links
+                  </div>
+                  <template v-for="(game, i) in buildorder.games">
+                    <v-btn
+                      v-if="isValidLink(game.id)"
+                      @click="() => open(game.id)"
+                      :title="`Open '${game.id}'`"
                       size="small"
-                      :color="
-                        buildorder.difficulty === builds.difficulties[0]
-                          ? 'green'
-                          : buildorder.difficulty === builds.difficulties[1]
-                            ? 'orange'
-                            : 'red'
-                      "
-                      prepend-icon="mdi-weight-lifter"
+                      :color="getLinkColor(game.id)"
+                      :prepend-icon="getLinkType(game.id)"
+                      variant="text"
+                    />
+                  </template>
+                </v-col>
+                <v-col cols="3" v-if="buildorder.viability">
+                  <viability-slider readonly v-model="buildorder.viability"
+                /></v-col>
+                <v-col cols="3" v-if="buildorder.difficulty">
+                  <span class="text-subtitle-2 font-weight-bold mr-1"
+                    >Difficulty:
+                  </span>
+                  <v-chip
+                    variant="tonal"
+                    label
+                    size="small"
+                    :color="
+                      buildorder.difficulty === builds.difficulties[0]
+                        ? 'green'
+                        : buildorder.difficulty === builds.difficulties[1]
+                          ? 'orange'
+                          : 'red'
+                    "
+                    prepend-icon="mdi-weight-lifter"
+                  >
+                    {{ buildorder.difficulty }}
+                  </v-chip>
+                </v-col>
+              </v-row>
+              <v-row v-if="buildorder.tags">
+                <v-col cols="12">
+                  <v-chip-group column variant="tonal">
+                    <v-chip
+                      v-for="tag in buildorder.tags"
+                      :text="tag"
+                      prepend-icon="mdi-tag"
+                      color="primary"
+                      size="small"
                     >
-                      {{ buildorder.difficulty }}
                     </v-chip>
-                  </v-col>
-                </v-row>
-                <v-row v-if="buildorder.tags">
-                  <v-col cols="12">
-                    <v-chip-group column variant="tonal">
-                      <v-chip
-                        v-for="tag in buildorder.tags"
-                        :text="tag"
-                        prepend-icon="mdi-tag"
-                        color="primary"
-                        size="small"
+                  </v-chip-group>
+                </v-col>
+              </v-row>
+              <v-row v-if="buildorder.description?.length">
+                <v-col cols="12">
+                  <div class="text-subtitle-2 font-weight-bold">
+                    Description
+                  </div>
+                  <hr />
+                </v-col>
+                <v-col cols="12">
+                  <section style="white-space: pre-wrap">
+                    {{ buildorder.description }}
+                  </section>
+                </v-col>
+              </v-row>
+              <v-row v-else>
+                <v-col cols="12">
+                  <section class="text-grey">No description..</section>
+                </v-col>
+              </v-row>
+            </v-col>
+            <v-col cols="6">
+              <v-row>
+                <v-col cols="12">
+                  <v-sheet elevation="10" border class="py-5 px-8">
+                    <div class="text-h5 font-weight-bold">
+                      Build Order
+                      <div
+                        class="text-subtitle-2 ml-auto"
+                        style="display: inline-block; float: right"
                       >
-                      </v-chip>
-                    </v-chip-group>
-                  </v-col>
-                </v-row>
-                <v-row v-if="buildorder.description?.length">
-                  <v-col cols="12">
-                    <div class="text-subtitle-2 font-weight-bold">
-                      Description
-                    </div>
-                    <hr />
-                  </v-col>
-                  <v-col cols="12">
-                    <section style="white-space: pre-wrap">
-                      {{ buildorder.description }}
-                    </section>
-                  </v-col>
-                </v-row>
-                <v-row v-else>
-                  <v-col cols="12">
-                    <section class="text-grey">No description..</section>
-                  </v-col>
-                </v-row>
-              </v-col>
-              <v-col cols="7">
-                <v-row>
-                  <v-col cols="12">
-                    <v-sheet elevation="10" border class="py-5 px-8">
-                      <div class="text-h5 font-weight-bold">
-                        Build Order
-                        <div
-                          class="text-subtitle-2 ml-auto"
-                          style="display: inline-block; float: right"
-                        >
-                          <img
-                            style="vertical-align: middle"
-                            width="20px"
-                            :src="raceIcon[buildorder.player]"
-                          />
-                          {{ raceName[buildorder.player] }}
-                          <span class="font-weight-bold"> vs </span>
+                        <img
+                          style="vertical-align: middle"
+                          width="20px"
+                          :src="raceIcon[buildorder.player]"
+                        />
+                        {{ raceName[buildorder.player] }}
+                        <span class="font-weight-bold"> vs </span>
 
-                          <img
-                            style="vertical-align: middle"
-                            width="20px"
-                            :src="raceIcon[buildorder.opponent]"
-                          />
-                          {{ raceName[buildorder.opponent] }}
-                        </div>
+                        <img
+                          style="vertical-align: middle"
+                          width="20px"
+                          :src="raceIcon[buildorder.opponent]"
+                        />
+                        {{ raceName[buildorder.opponent] }}
                       </div>
-                      <v-table hover>
-                        <thead>
-                          <tr>
-                            <th class="text-left">#</th>
-                            <th class="text-left">Time</th>
-                            <th class="text-left">Instructions</th>
-                            <th class="text-center">Food</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr
-                            v-for="(step, i) in buildorder.steps"
-                            :class="{
-                              timing: step.timing,
-                              separator: step.separator,
-                            }"
-                            :title="
-                              step.timing ? 'This is an important timing!' : ''
-                            "
-                          >
-                            <template v-if="!step.separator">
-                              <td>{{ order[i] }}</td>
-                              <td>{{ step.time }}</td>
-                              <td>{{ step.instructions }}</td>
-                              <td>
-                                <div
-                                  style="
-                                    display: flex;
-                                    justify-content: center;
-                                    align-items: center;
-                                  "
-                                >
-                                  <img
-                                    :src="raceUpkeep[buildorder.player]"
-                                    width="25px"
-                                  />
-                                  <span class="ml-2">{{ step.food }}</span>
-                                </div>
-                              </td>
-                            </template>
-                            <template v-else>
-                              <td colspan="4">
-                                <v-icon
-                                  color="primary"
-                                  variant=""
-                                  icon="mdi-shield-outline"
-                                /><span
-                                  class="ml-2 font-weight-bold"
-                                  style="vertical-align: middle"
-                                  >{{ step.instructions }}</span
-                                >
-                              </td>
-                            </template>
-                          </tr>
-                        </tbody>
-                      </v-table>
-                    </v-sheet>
-                  </v-col>
-                </v-row>
-              </v-col>
-            </v-row>
-          </v-container>
+                    </div>
+                    <v-table hover>
+                      <thead>
+                        <tr>
+                          <th class="text-left">#</th>
+                          <th class="text-left">Time</th>
+                          <th class="text-left">Instructions</th>
+                          <th class="text-center">Food</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr
+                          v-for="(step, i) in buildorder.steps"
+                          :class="{
+                            timing: step.timing,
+                            separator: step.separator,
+                          }"
+                          :title="
+                            step.timing ? 'This is an important timing!' : ''
+                          "
+                        >
+                          <template v-if="!step.separator">
+                            <td>{{ order[i] }}</td>
+                            <td>{{ step.time }}</td>
+                            <td>{{ step.instructions }}</td>
+                            <td>
+                              <div
+                                style="
+                                  display: flex;
+                                  justify-content: center;
+                                  align-items: center;
+                                "
+                              >
+                                <img
+                                  :src="raceUpkeep[buildorder.player]"
+                                  width="25px"
+                                />
+                                <span class="ml-2">{{ step.food }}</span>
+                              </div>
+                            </td>
+                          </template>
+                          <template v-else>
+                            <td colspan="4">
+                              <v-icon
+                                color="primary"
+                                variant=""
+                                icon="mdi-shield-outline"
+                              /><span
+                                class="ml-2 font-weight-bold"
+                                style="vertical-align: middle"
+                                >{{ step.instructions }}</span
+                              >
+                            </td>
+                          </template>
+                        </tr>
+                      </tbody>
+                    </v-table>
+                  </v-sheet>
+                </v-col>
+              </v-row>
+            </v-col>
+          </v-row>
         </v-form>
       </v-sheet>
     </v-container>
