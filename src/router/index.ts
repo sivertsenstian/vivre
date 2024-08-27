@@ -1,6 +1,7 @@
 import { createRouter, createWebHashHistory } from "vue-router";
 import VivreView from "@/views/VivreView.vue";
 import SettingsView from "@/views/SettingsView.vue";
+import AboutView from "@/views/AboutView.vue";
 import CreepRoutesView from "@/views/CreepRoutesView.vue";
 import SeasonView from "@/views/SeasonView.vue";
 import HappyTracker from "@/views/Events/HappyTrackerView.vue";
@@ -64,6 +65,11 @@ const router = createRouter({
       path: "/settings",
       name: "settings",
       component: SettingsView,
+    },
+    {
+      path: "/about",
+      name: "about",
+      component: AboutView,
     },
   ],
 });
