@@ -11,6 +11,7 @@ import { useStorage } from "@vueuse/core";
 import ViabilitySlider from "@/components/ViabilitySlider.vue";
 
 const itemsPerPage = useStorage("vivre/itemsPerPage", 25);
+const currentPage = useStorage("vivre/currentPage", 1);
 
 const builds = useBuildsStore();
 const router = useRouter();
@@ -122,6 +123,7 @@ const items = computed(() => {
               </v-btn-toggle>
               <v-data-table
                 v-model:items-per-page="itemsPerPage"
+                :page="currentPage"
                 hover
                 class="mt-3"
                 @click:row="

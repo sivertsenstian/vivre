@@ -16,6 +16,9 @@ import type { IBuild, IBuildOrderState } from "@/utilities/types";
 import { computed } from "vue";
 import ViabilitySlider from "@/components/ViabilitySlider.vue";
 
+import { MdPreview } from "md-editor-v3";
+import MarkdownViewer from "@/components/MarkdownViewer.vue";
+
 const open = (path: string) => window.open(path, "_blank");
 
 const getLinkType = (path: string) => {
@@ -219,8 +222,8 @@ const order = computed(() => {
                   <hr />
                 </v-col>
                 <v-col cols="12">
-                  <section class="description" style="white-space: pre-wrap">
-                    {{ buildorder.description }}
+                  <section class="description">
+                    <markdown-viewer v-model="buildorder.description" />
                   </section>
                 </v-col>
               </v-row>
@@ -263,7 +266,7 @@ const order = computed(() => {
                         {{ raceName[buildorder.opponent] }}
                       </div>
                     </div>
-                    <v-table hover height="70vh" fixed-header>
+                    <v-table class="steps" hover height="70vh" fixed-header>
                       <thead>
                         <tr>
                           <th class="text-left">#</th>
@@ -333,34 +336,34 @@ const order = computed(() => {
   </main>
 </template>
 
-<style scoped>
-tbody tr:nth-of-type(odd) {
-  background-color: rgba(0, 0, 0, 0.1);
-}
-
-tbody tr {
-  td:first-child {
-    border-left: 2px solid transparent;
+<style>
+table.steps {
+  tbody tr:nth-of-type(odd) {
+    background-color: rgba(0, 0, 0, 0.1);
   }
-}
 
-tbody tr.timing {
-  td:first-child {
-    border-left: 2px solid rgba(var(--v-theme-secondary), 1);
+  tbody tr {
+    td:first-child {
+      border-left: 2px solid transparent;
+    }
   }
-  background: rgba(var(--v-theme-secondary), 0.1);
-}
 
-tbody tr.separator {
-  td:first-child {
-    border-left: 10px solid rgba(var(--v-theme-primary), 1);
+  tbody tr.timing {
+    td:first-child {
+      border-left: 2px solid rgba(var(--v-theme-secondary), 1);
+    }
+    background: rgba(var(--v-theme-secondary), 0.1);
   }
-  background: rgba(var(--v-theme-primary), 0.1);
+
+  tbody tr.separator {
+    td:first-child {
+      border-left: 10px solid rgba(var(--v-theme-primary), 1);
+    }
+    background: rgba(var(--v-theme-primary), 0.1);
+  }
 }
 
 .description {
-  padding: 8px;
-  border-left: 5px solid rgba(var(--v-theme-secondary), 0.5);
   max-height: 60vh;
   overflow-y: auto;
 }

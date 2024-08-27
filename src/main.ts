@@ -4,6 +4,7 @@ import { createApp } from "vue";
 import { createPinia } from "pinia";
 import "@mdi/font/css/materialdesignicons.css";
 import "vuetify/styles";
+import "md-editor-v3/lib/style.css";
 import { createVuetify } from "vuetify";
 import * as components from "vuetify/components";
 import * as directives from "vuetify/directives";
