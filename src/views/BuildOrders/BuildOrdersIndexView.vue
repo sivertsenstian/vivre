@@ -12,6 +12,8 @@ import ViabilitySlider from "@/components/ViabilitySlider.vue";
 
 const itemsPerPage = useStorage("vivre/itemsPerPage", 25);
 const currentPage = useStorage("vivre/currentPage", 1);
+const player = useStorage("vivre/filterPlayer", Race.Random);
+const opponent = useStorage("vivre/filterOpponent", Race.Random);
 
 const builds = useBuildsStore();
 const router = useRouter();
@@ -28,9 +30,6 @@ const getRating = (stars: number) => {
   else if (stars < 14) return `green-lighten-${4 - (stars - 10)}`;
   else return "green";
 };
-
-const player = ref(Race.Random);
-const opponent = ref(Race.Random);
 
 const items = computed(() => {
   let result = builds.buildorders;
@@ -124,8 +123,9 @@ const items = computed(() => {
               <v-data-table
                 v-model:items-per-page="itemsPerPage"
                 :page="currentPage"
+                @update:page="(newPage: number) => (currentPage = newPage)"
                 hover
-                class="mt-3"
+                class="build-orders mt-3"
                 @click:row="
                   (_: any, row: any) =>
                     router.push(`/buildorders/${row.item.id}`)
@@ -160,6 +160,26 @@ const items = computed(() => {
                 ]"
                 :sort-by="[{ key: 'stars', order: 'desc' }]"
               >
+                <template v-slot:top>
+                  <div
+                    title="reset filters"
+                    class="text-right text-grey filter"
+                    v-if="[player, opponent].some((v) => v !== Race.Random)"
+                    @click="
+                      () => {
+                        player = Race.Random;
+                        opponent = Race.Random;
+                      }
+                    "
+                  >
+                    <v-icon size="small" icon="mdi-filter" color="primary" />
+                    <span class="ml-1" style="vertical-align: bottom"
+                      >data is filtered</span
+                    >
+                  </div>
+                  <div v-else>&nbsp;</div>
+                </template>
+
                 <template v-slot:item.player="{ value }">
                   <div style="white-space: nowrap">
                     <img
@@ -288,3 +308,10 @@ If you have any feedback - don't hesitate to contact me @Longjacket in the w3c o
     </v-container>
   </main>
 </template>
+
+<style lang="css">
+.build-orders div.text-grey.filter > span:hover {
+  cursor: pointer;
+  color: rgba(var(--v-theme-secondary), 1);
+}
+</style>

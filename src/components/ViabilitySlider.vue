@@ -8,7 +8,7 @@ const viabilities = [
 
 interface Props {
   readonly?: boolean;
-  icon?: boolean;
+  icon?: number;
 }
 defineProps<Props>();
 
@@ -18,11 +18,11 @@ const model = defineModel<number>({ default: 2 });
 <template>
   <v-chip
     v-if="icon"
-    :title="viabilities[Number(icon) - 1].name"
+    :title="viabilities[icon - 1].name"
     variant="tonal"
     label
     size="small"
-    :color="viabilities[Number(icon) - 1].color"
+    :color="viabilities[icon - 1].color"
   >
     <v-icon icon="mdi-heart-pulse" />
   </v-chip>
