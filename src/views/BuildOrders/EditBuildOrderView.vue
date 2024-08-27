@@ -5,6 +5,7 @@ import { useRoute, useRouter } from "vue-router";
 import { useDocument, useFirestore } from "vuefire";
 import { doc } from "firebase/firestore";
 import { computed } from "vue";
+import ViabilitySlider from "@/components/ViabilitySlider.vue";
 
 const builds = useBuildsStore();
 
@@ -154,7 +155,11 @@ const updateFood = (race: Race) => {
                     ></v-text-field>
                   </v-col>
 
-                  <v-col cols="6">
+                  <v-col cols="8">
+                    <viability-slider v-model="builds.data.edit.viability" />
+                  </v-col>
+
+                  <v-col cols="4">
                     <v-select
                       hide-details
                       :items="builds.difficulties"
