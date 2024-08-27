@@ -8,6 +8,7 @@ import _take from "lodash/take";
 import _skip from "lodash/drop";
 
 import { useStorage } from "@vueuse/core";
+import ViabilitySlider from "@/components/ViabilitySlider.vue";
 
 const itemsPerPage = useStorage("vivre/itemsPerPage", 25);
 
@@ -139,6 +140,11 @@ const items = computed(() => {
                     key: 'difficulty',
                   },
                   {
+                    title: 'Viability',
+                    value: 'viability',
+                    key: 'viability',
+                  },
+                  {
                     title: 'Tags',
                     value: 'tags',
                     key: 'tags',
@@ -205,6 +211,10 @@ const items = computed(() => {
                   </v-chip>
                 </template>
 
+                <template v-slot:item.viability="{ value }">
+                  <viability-slider v-if="value" :icon="value" />
+                </template>
+
                 <template v-slot:item.tags="{ value }">
                   <v-chip-group column variant="tonal">
                     <v-chip
@@ -241,7 +251,11 @@ const items = computed(() => {
             <v-col cols="12">
               <v-alert
                 text="
-25.08
+27.08
+-------
+- Add 'Viability' field to build, to indicate how close to meta/standard the build is
+
+Previously
 -------
 - Add 'Any' as a possible (and default) opponent race
 - Add Tags field
@@ -249,9 +263,6 @@ const items = computed(() => {
 - Add some of the new fields as columns to the index
 - Food for initial step should now reflect the player race. This will only change on update if you have a single step
   as otherwise I would have to re-calculate all consequent steps.
-
-24.08
--------
 - Add Difficulty, Author and Patch fields
 - Add 'separator' to build steps - to be used to signify section changes or highlight events.
 

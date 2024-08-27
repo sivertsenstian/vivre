@@ -14,6 +14,7 @@ import { doc } from "firebase/firestore";
 
 import type { IBuild, IBuildOrderState } from "@/utilities/types";
 import { computed } from "vue";
+import ViabilitySlider from "@/components/ViabilitySlider.vue";
 
 const open = (path: string) => window.open(path, "_blank");
 
@@ -174,8 +175,11 @@ const order = computed(() => {
                     </template>
                   </v-col>
                 </v-row>
-                <v-row v-if="buildorder.difficulty">
-                  <v-col cols="12">
+                <v-row v-if="buildorder.difficulty || buildorder.viability">
+                  <v-col cols="6" v-if="buildorder.viability">
+                    <viability-slider readonly v-model="buildorder.viability"
+                  /></v-col>
+                  <v-col cols="6" v-if="buildorder.difficulty">
                     <span class="text-subtitle-2 font-weight-bold mr-1"
                       >Difficulty:
                     </span>

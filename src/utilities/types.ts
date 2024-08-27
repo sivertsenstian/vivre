@@ -104,6 +104,7 @@ export interface IBuild {
   description: string;
   version: string;
   difficulty: string;
+  viability: number;
   games: ISampleGame[];
   tags: string[];
   stars: number;
