@@ -3,7 +3,6 @@ import MarkdownViewer from "@/components/MarkdownViewer.vue";
 
 const model = defineModel<string>({
   default: `
-
   # Hello and welcome to my page!
   Hello, I'm Longjacket. I like to code and make things.
   I also like to play Warcraft 3. I am good at one of these things.
@@ -14,7 +13,7 @@ const model = defineModel<string>({
   - You can use the [Live](/#/) feature to track weekly progress and get live information while laddering on w3champions.
     Just enter your w3champions battle tag at the top right on the page.
   - You can browse the different [Creep Routes](/#/creeproutes) available on the page.
-    - I have added all the Human creep routes, based on Fortitudes recent ladder preferance.
+    - I have added all the Human creep routes, based on Fortitudes recent ladder preference.
     - Razer from the wc3 community recently added the Undead creep routes, based on Happy!
   - You can browse, add and rate [Build Orders](/#/buildorders) that are defined by the community.
   - I sometimes also create an [Event](/#/events/road-to-3000) page, most recently Mr.SaulApeMan was [Tracking](/#/events/happy-tracker) Happys run to 3000 MR, which was shown live here in the app and on twitch stream!
