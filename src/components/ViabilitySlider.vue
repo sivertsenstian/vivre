@@ -28,7 +28,7 @@ const model = defineModel<number>({ default: 2 });
   </v-chip>
 
   <span v-if="readonly" class="text-subtitle-2 font-weight-bold mr-1"
-    >Viabilty:
+    >Viability:
   </span>
   <v-chip
     v-if="readonly"
