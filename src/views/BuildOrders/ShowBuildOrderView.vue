@@ -307,7 +307,7 @@ const order = computed(() => {
                             </td>
                           </template>
                           <template v-else>
-                            <td class="pl-2">
+                            <td class="text-center">
                               <v-icon
                                 color="primary"
                                 variant=""
