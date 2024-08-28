@@ -85,14 +85,14 @@ function toggleTheme() {
           prepend-icon="mdi-information"
           title="Settings"
           router
-          to="settings"
+          to="/settings"
         ></v-list-item>
         <v-list-item
           color="green"
           prepend-icon="mdi-handshake-outline"
           title="About"
           router
-          to="about"
+          to="/about"
         ></v-list-item>
         <v-list-item
           color="yellow"
