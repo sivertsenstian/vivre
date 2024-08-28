@@ -431,7 +431,7 @@ const updateFood = (race: Race) => {
                 >
                   <template v-slot:append>
                     <v-btn
-                        @click="() => (claimed = builds.claim(buildorder, secret))"
+                        @click="async () => (claimed = await builds.claim(buildorder, secret))"
                         color="success"
                         variant="tonal"
                         prepend-icon="mdi-shield-lock-open-outline"
