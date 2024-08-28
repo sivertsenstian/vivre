@@ -140,7 +140,6 @@ const order = computed(() => {
             </v-col>
             <v-col cols="4" class="text-right">
               <v-btn
-                :disabled="!builds.canEdit(buildorder.id)"
                 prepend-icon="mdi-pen"
                 variant="text"
                 color="secondary"

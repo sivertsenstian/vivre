@@ -145,7 +145,20 @@ export const useBuildsStore = defineStore("builds", () => {
     data.value[mode].games = games.filter((g) => g.id !== game);
   };
 
-  const setActive = (build: any) => {};
+  const claim = async (build: any, secret: string) => {
+    console.log("claim?")
+    if (build.secret === secret && secret.length > 0) {
+      try {
+        data.value.owns[build.id] = true;
+        const reference = doc(db, "buildorders", build.id);
+        await updateDoc(reference, { secret: "" } as any);
+      } catch (error) {
+        return false
+      }
+      return true;
+    }
+    return false;
+  };
 
   const canEdit = (id?: string): boolean => !_isNil(id) && (data.value.owns?.[id] ?? false);
 
@@ -173,5 +186,6 @@ export const useBuildsStore = defineStore("builds", () => {
     removeGame,
     canEdit,
     difficulties,
+    claim
   };
 });
