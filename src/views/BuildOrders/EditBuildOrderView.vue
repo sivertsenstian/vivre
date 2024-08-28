@@ -4,7 +4,7 @@ import { Race, raceName } from "@/stores/races";
 import { useRoute, useRouter } from "vue-router";
 import { useDocument, useFirestore } from "vuefire";
 import { doc } from "firebase/firestore";
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import ViabilitySlider from "@/components/ViabilitySlider.vue";
 import MarkdownEditor from "@/components/MarkdownEditor.vue";
 import draggable from "vuedraggable";
@@ -17,6 +17,9 @@ const router = useRouter();
 const db = useFirestore();
 const buildorder = useDocument(doc(db, "buildorders", String(route.params.id)));
 builds.edit(buildorder);
+
+const secret = ref<string>('');
+const claimed = ref<boolean>();
 
 const playerRaces = [Race.Human, Race.Orc, Race.NightElf, Race.Undead];
 const opponentRaces = [
@@ -65,6 +68,7 @@ const updateFood = (race: Race) => {
     }
   }
 };
+
 </script>
 
 <template>
@@ -412,6 +416,42 @@ const updateFood = (race: Race) => {
               <div class="text-h5 text-grey">
                 You can only edit builds you have created.
               </div>
+            </v-col>
+            <v-col cols="12" class="text-center text-grey mt-5" v-if="buildorder?.id">
+              <v-col cols="12">
+              If this is <i>your</i> build order, you can attempt to claim it.
+              </v-col>
+              <v-col cols="4" offset="4">
+                <v-text-field
+                    hide-details
+                    label="Secret"
+                    density="compact"
+                    variant="underlined"
+                    v-model="secret"
+                >
+                  <template v-slot:append>
+                    <v-btn
+                        @click="() => (claimed = builds.claim(buildorder, secret))"
+                        color="success"
+                        variant="tonal"
+                        prepend-icon="mdi-shield-lock-open-outline"
+                    >
+                      Claim
+                    </v-btn>
+                  </template>
+                </v-text-field>
+              </v-col>
+              <v-col cols="12" v-show="claimed !== undefined">
+                <span class="text-success" v-if="claimed">
+                  <v-icon icon="mdi-party-popper" color="success" class="mr-2"/> <span style="vertical-align: middle">Build claimed</span>
+                </span>
+                <span class="text-error" v-else>
+                  <v-icon icon="mdi-alert-circle" color="error" class="mr-2"/> <span style="vertical-align: middle">Unable to claim build</span>
+                </span>
+              </v-col>
+              <v-col cols="12">
+              Please contact @Longjacket at the <a href="https://discord.gg/uJmQxG2" target="_blank">w3champions discord</a> to get your secret.
+              </v-col>
             </v-col>
           </v-row>
         </v-form>

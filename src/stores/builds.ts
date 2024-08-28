@@ -145,7 +145,15 @@ export const useBuildsStore = defineStore("builds", () => {
     data.value[mode].games = games.filter((g) => g.id !== game);
   };
 
-  const setActive = (build: any) => {};
+  const claim = (build: any, secret: string) => {
+    console.log("claim?")
+    if (build.secret === secret) {
+      // mark it as owned to allow editing
+      data.value.owns[build.id] = true;
+      return true;
+    }
+    return false;
+  };
 
   const canEdit = (id?: string): boolean => !_isNil(id) && (data.value.owns?.[id] ?? false);
 
@@ -173,5 +181,6 @@ export const useBuildsStore = defineStore("builds", () => {
     removeGame,
     canEdit,
     difficulties,
+    claim
   };
 });
