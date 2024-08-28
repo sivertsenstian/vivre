@@ -100,7 +100,7 @@ export interface IBuild {
   author: string;
   created: any;
   name: string;
-  secret: string;
+  secret?: string;
   description: string;
   version: string;
   difficulty: string;
