@@ -32,6 +32,7 @@
     "vue-confetti-explosion": "^1.0.2",
     "vue-number-animation": "^2.0.2",
     "vue-router": "^4.2.5",
+    "vuedraggable": "^4.1.0",
     "vuefire": "^3.2.0",
     "vuetify": "^3.7.0"
   },

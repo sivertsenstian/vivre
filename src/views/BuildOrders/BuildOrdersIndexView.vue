@@ -3,7 +3,7 @@ import moment from "moment";
 import { useBuildsStore } from "@/stores/builds";
 import { raceName, raceIcon, Race } from "@/stores/races";
 import { useRouter } from "vue-router";
-import { computed, ref } from "vue";
+import { computed } from "vue";
 import _take from "lodash/take";
 import _skip from "lodash/drop";
 
@@ -273,14 +273,15 @@ const items = computed(() => {
             <v-col cols="12">
               <v-alert
                 text="
-27.08
+28.08
+-------
+- Add drag and drop support for build order steps in create and edit mode
+
+Previously
 -------
 - Add 'Viability' field to build, to indicate how close to meta/standard the build is
 - Improve readability by using more of the horizontal screen space
 - Add support for markdown in build order descriptions! Check this guide: https://www.markdownguide.org/basic-syntax/ if interested :)
-
-Previously
--------
 - Add 'Any' as a possible (and default) opponent race
 - Add Tags field
 - Rework games => now 'Link' and supports any http link, youtube, w3c and twitch links have a unique icon!
@@ -313,5 +314,10 @@ If you have any feedback - don't hesitate to contact me @Longjacket in the w3c o
 .build-orders div.text-grey.filter > span:hover {
   cursor: pointer;
   color: rgba(var(--v-theme-secondary), 1);
+}
+
+.v-alert__content {
+  height: 250px;
+  overflow-y: auto;
 }
 </style>

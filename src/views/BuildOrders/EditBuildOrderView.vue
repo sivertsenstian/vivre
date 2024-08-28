@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { useBuildsStore } from "@/stores/builds";
-import { Race, raceName, raceIcon } from "@/stores/races";
+import { Race, raceName } from "@/stores/races";
 import { useRoute, useRouter } from "vue-router";
 import { useDocument, useFirestore } from "vuefire";
 import { doc } from "firebase/firestore";
 import { computed } from "vue";
 import ViabilitySlider from "@/components/ViabilitySlider.vue";
 import MarkdownEditor from "@/components/MarkdownEditor.vue";
+import draggable from "vuedraggable";
 
 const builds = useBuildsStore();
 
@@ -253,91 +254,100 @@ const updateFood = (race: Race) => {
                   <v-table fixed-header density="compact">
                     <thead>
                       <tr>
+                        <th style="width: 5px" />
                         <th class="text-left">#</th>
                         <th class="text-left">Time</th>
                         <th class="text-left">Food</th>
                         <th class="text-left" style="width: 50%">
                           Instructions
                         </th>
-                        <th class="text-left">Hotkey</th>
                         <th class="text-left" style="width: 20px">Timing</th>
                         <th class="text-left" style="width: 20px">Separator</th>
                         <th class="text-center" style="width: 10px"></th>
                       </tr>
                     </thead>
-                    <tbody>
-                      <tr v-for="(item, index) in builds.data.edit.steps">
-                        <td>
-                          <span v-show="!item.separator">{{
-                            order[index]
-                          }}</span>
-                        </td>
-                        <td>
-                          <v-text-field
-                            hide-details
-                            density="compact"
-                            variant="underlined"
-                            v-model="item.time"
-                            v-if="!item.separator"
-                          ></v-text-field>
-                        </td>
-                        <td>
-                          <v-text-field
-                            hide-details
-                            density="compact"
-                            variant="underlined"
-                            v-model="item.food"
-                            v-if="!item.separator"
-                          ></v-text-field>
-                        </td>
-                        <td>
-                          <v-text-field
-                            hide-details
-                            density="compact"
-                            variant="underlined"
-                            v-model="item.instructions"
-                          ></v-text-field>
-                        </td>
-                        <td>
-                          <v-text-field
-                            hide-details
-                            density="compact"
-                            variant="underlined"
-                            v-model="item.hotkey"
-                            v-if="!item.separator"
-                          ></v-text-field>
-                        </td>
-                        <td>
-                          <v-checkbox
-                            title="Mark this step as an important timing"
-                            class="ml-3"
-                            hide-details
-                            density="compact"
-                            v-model="item.timing"
-                            v-if="!item.separator"
-                          ></v-checkbox>
-                        </td>
-                        <td>
-                          <v-checkbox
-                            title="Use step as a separator or an event with only a header/instruction"
-                            class="ml-3"
-                            hide-details
-                            density="compact"
-                            v-model="item.separator"
-                          ></v-checkbox>
-                        </td>
-                        <td>
-                          <v-btn
-                            title="Delete step"
-                            icon="mdi-delete"
-                            color="red-lighten-2"
-                            variant="text"
-                            density="compact"
-                            @click="() => builds.removeStep('edit', item)"
-                          />
-                        </td>
-                      </tr>
-                    </tbody>
+                    <draggable
+                      v-model="builds.data.edit.steps"
+                      tag="tbody"
+                      item-key="id"
+                      handle=".handle"
+                      :animation="200"
+                      ghost-class="ghost"
+                      :disabled="false"
+                      group="description"
+                    >
+                      <template #item="{ element, index }">
+                        <tr>
+                          <td class="handle px-0">
+                            <v-icon
+                              size="small"
+                              color="grey"
+                              icon="mdi-drag-horizontal"
+                            />
+                          </td>
+                          <td>
+                            <span v-show="!element.separator">{{
+                              order[index]
+                            }}</span>
+                          </td>
+                          <td>
+                            <v-text-field
+                              hide-details
+                              density="compact"
+                              variant="underlined"
+                              v-model="element.time"
+                              v-if="!element.separator"
+                            ></v-text-field>
+                          </td>
+                          <td>
+                            <v-text-field
+                              hide-details
+                              density="compact"
+                              variant="underlined"
+                              v-model="element.food"
+                              v-if="!element.separator"
+                            ></v-text-field>
+                          </td>
+                          <td>
+                            <v-text-field
+                              hide-details
+                              density="compact"
+                              variant="underlined"
+                              v-model="element.instructions"
+                            ></v-text-field>
+                          </td>
+                          <td>
+                            <v-checkbox
+                              title="Mark this step as an important timing"
+                              class="ml-3"
+                              hide-details
+                              density="compact"
+                              v-model="element.timing"
+                              v-if="!element.separator"
+                            ></v-checkbox>
+                          </td>
+                          <td>
+                            <v-checkbox
+                              title="Use step as a separator or an event with only a header/instruction"
+                              class="ml-3"
+                              hide-details
+                              density="compact"
+                              v-model="element.separator"
+                            ></v-checkbox>
+                          </td>
+                          <td>
+                            <v-btn
+                              title="Delete step"
+                              icon="mdi-delete"
+                              color="red-lighten-2"
+                              variant="text"
+                              density="compact"
+                              @click="() => builds.removeStep('edit', element)"
+                            />
+                          </td>
+                        </tr>
+                      </template>
+                    </draggable>
                   </v-table>
                 </v-col>
                 <v-col cols="12" class="text-center">
@@ -409,3 +419,18 @@ const updateFood = (race: Race) => {
     </v-container>
   </main>
 </template>
+
+<style>
+.handle {
+  cursor: grab;
+}
+
+.sortable-chosen {
+  .handle {
+    cursor: grabbing !important;
+  }
+}
+.ghost {
+  background: rgba(var(--v-theme-primary), 0.1);
+}
+</style>
