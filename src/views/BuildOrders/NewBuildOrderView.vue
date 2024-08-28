@@ -270,7 +270,7 @@ const updateFood = (race: Race) => {
                           <v-icon
                               size="small"
                               color="grey"
-                              icon="mdi-drag-horizontal"
+                              icon="mdi-drag-vertical"
                           />
                         </td>
                         <td>
