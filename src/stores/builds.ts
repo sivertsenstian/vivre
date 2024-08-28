@@ -31,7 +31,6 @@ export const useBuildsStore = defineStore("builds", () => {
     time: "00:00",
     food,
     instructions: "",
-    hotkey: "",
     timing: false,
     separator: false,
   });
@@ -148,8 +147,7 @@ export const useBuildsStore = defineStore("builds", () => {
 
   const setActive = (build: any) => {};
 
-  const canEdit = (id?: string): boolean =>
-    !_isNil(id) && data.value.owns?.[id];
+  const canEdit = (id?: string): boolean => !_isNil(id) && (data.value.owns?.[id] ?? false);
 
   const data = useStorage("vivre/builds", {
     new: build(),

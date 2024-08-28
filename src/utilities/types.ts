@@ -88,7 +88,6 @@ export interface IStep {
   time: string;
   food: string;
   instructions: string;
-  hotkey: string;
   timing: boolean;
   separator: boolean;
 }
