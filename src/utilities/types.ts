@@ -99,6 +99,7 @@ export interface IBuild {
   id: string;
   author: string;
   created: any;
+  updated?: any;
   name: string;
   secret?: string;
   description: string;
@@ -108,6 +109,7 @@ export interface IBuild {
   games: ISampleGame[];
   tags: string[];
   stars: number;
+  starred?: any;
   player: Race;
   opponent: Race;
   steps: IStep[];
