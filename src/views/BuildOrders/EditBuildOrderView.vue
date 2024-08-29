@@ -8,6 +8,7 @@ import { computed, ref } from "vue";
 import ViabilitySlider from "@/components/ViabilitySlider.vue";
 import MarkdownEditor from "@/components/MarkdownEditor.vue";
 import draggable from "vuedraggable";
+import UpsertStepAnnotation from "@/components/UpsertStepAnnotation.vue";
 
 const builds = useBuildsStore();
 
@@ -18,7 +19,7 @@ const db = useFirestore();
 const buildorder = useDocument(doc(db, "buildorders", String(route.params.id)));
 builds.edit(buildorder);
 
-const secret = ref<string>('');
+const secret = ref<string>("");
 const claimed = ref<boolean>();
 
 const playerRaces = [Race.Human, Race.Orc, Race.NightElf, Race.Undead];
@@ -68,7 +69,6 @@ const updateFood = (race: Race) => {
     }
   }
 };
-
 </script>
 
 <template>
@@ -218,11 +218,12 @@ const updateFood = (race: Race) => {
                             </td>
                             <td>
                               <v-btn
-                                title="Delete step"
-                                icon="mdi-delete"
+                                title="Delete link"
+                                icon="mdi-delete-outline"
                                 color="red-lighten-2"
                                 variant="text"
                                 density="compact"
+                                size="small"
                                 @click="
                                   () => builds.removeGame('edit', item.id)
                                 "
@@ -258,16 +259,12 @@ const updateFood = (race: Race) => {
                   <v-table fixed-header density="compact">
                     <thead>
                       <tr>
-                        <th style="width: 5px" />
-                        <th class="text-left">#</th>
-                        <th class="text-left">Time</th>
-                        <th class="text-left">Food</th>
-                        <th class="text-left" style="width: 50%">
-                          Instructions
-                        </th>
-                        <th class="text-left" style="width: 20px">Timing</th>
-                        <th class="text-left" style="width: 20px">Separator</th>
-                        <th class="text-center" style="width: 10px"></th>
+                        <th />
+                        <th>#</th>
+                        <th style="min-width: 75px">Time</th>
+                        <th style="min-width: 75px">Food</th>
+                        <th style="width: 60%">Instructions</th>
+                        <th>Actions</th>
                       </tr>
                     </thead>
                     <draggable
@@ -321,33 +318,36 @@ const updateFood = (race: Race) => {
                             ></v-text-field>
                           </td>
                           <td>
-                            <v-checkbox
-                              title="Mark this step as an important timing"
-                              class="ml-3"
-                              hide-details
-                              density="compact"
-                              v-model="element.timing"
-                              v-if="!element.separator"
-                            ></v-checkbox>
-                          </td>
-                          <td>
-                            <v-checkbox
-                              title="Use step as a separator or an event with only a header/instruction"
-                              class="ml-3"
-                              hide-details
-                              density="compact"
-                              v-model="element.separator"
-                            ></v-checkbox>
-                          </td>
-                          <td>
-                            <v-btn
-                              title="Delete step"
-                              icon="mdi-delete"
-                              color="red-lighten-2"
-                              variant="text"
-                              density="compact"
-                              @click="() => builds.removeStep('edit', element)"
-                            />
+                            <v-btn-group>
+                              <v-btn
+                                title="Highlight this step as important/timing"
+                                variant="text"
+                                icon="mdi-clock-outline"
+                                :color="element.timing ? 'success' : 'grey'"
+                                @click="element.timing = !element.timing"
+                                :disabled="element.separator"
+                                size="small"
+                              />
+                              <v-btn
+                                title="Use step as a separator or an event with only a header/instruction"
+                                variant="text"
+                                icon="mdi-shield-outline"
+                                :color="element.separator ? 'primary' : 'grey'"
+                                @click="element.separator = !element.separator"
+                                size="small"
+                              />
+                              <upsert-step-annotation :step="element" edit />
+                              <v-btn
+                                title="Delete step"
+                                icon="mdi-delete-outline"
+                                color="red-lighten-2"
+                                variant="text"
+                                size="small"
+                                @click="
+                                  () => builds.removeStep('edit', element)
+                                "
+                              />
+                            </v-btn-group>
                           </td>
                         </tr>
                       </template>
@@ -417,24 +417,31 @@ const updateFood = (race: Race) => {
                 You can only edit builds you have created.
               </div>
             </v-col>
-            <v-col cols="12" class="text-center text-grey mt-5" v-if="buildorder?.id">
+            <v-col
+              cols="12"
+              class="text-center text-grey mt-5"
+              v-if="buildorder?.id"
+            >
               <v-col cols="12">
-              If this is <i>your</i> build order, you can attempt to claim it.
+                If this is <i>your</i> build order, you can attempt to claim it.
               </v-col>
               <v-col cols="4" offset="4">
                 <v-text-field
-                    hide-details
-                    label="Secret"
-                    density="compact"
-                    variant="underlined"
-                    v-model="secret"
+                  hide-details
+                  label="Secret"
+                  density="compact"
+                  variant="underlined"
+                  v-model="secret"
                 >
                   <template v-slot:append>
                     <v-btn
-                        @click="async () => (claimed = await builds.claim(buildorder, secret))"
-                        color="success"
-                        variant="tonal"
-                        prepend-icon="mdi-shield-lock-open-outline"
+                      @click="
+                        async () =>
+                          (claimed = await builds.claim(buildorder, secret))
+                      "
+                      color="success"
+                      variant="tonal"
+                      prepend-icon="mdi-shield-lock-open-outline"
                     >
                       Claim
                     </v-btn>
@@ -443,14 +450,26 @@ const updateFood = (race: Race) => {
               </v-col>
               <v-col cols="12" v-show="claimed !== undefined">
                 <span class="text-success" v-if="claimed">
-                  <v-icon icon="mdi-party-popper" color="success" class="mr-2"/> <span style="vertical-align: middle">Build claimed</span>
+                  <v-icon
+                    icon="mdi-party-popper"
+                    color="success"
+                    class="mr-2"
+                  />
+                  <span style="vertical-align: middle">Build claimed</span>
                 </span>
                 <span class="text-error" v-else>
-                  <v-icon icon="mdi-alert-circle" color="error" class="mr-2"/> <span style="vertical-align: middle">Unable to claim build</span>
+                  <v-icon icon="mdi-alert-circle" color="error" class="mr-2" />
+                  <span style="vertical-align: middle"
+                    >Unable to claim build</span
+                  >
                 </span>
               </v-col>
               <v-col cols="12">
-              Please contact @Longjacket at the <a href="https://discord.gg/uJmQxG2" target="_blank">w3champions discord</a> to get your secret.
+                Please contact @Longjacket at the
+                <a href="https://discord.gg/uJmQxG2" target="_blank"
+                  >w3champions discord</a
+                >
+                to get your secret.
               </v-col>
             </v-col>
           </v-row>

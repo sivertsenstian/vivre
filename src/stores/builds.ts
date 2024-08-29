@@ -28,7 +28,7 @@ export const useBuildsStore = defineStore("builds", () => {
 
   const difficulties = ["Beginner", "Amateur", "Pro"];
 
-  const step = (food: string = "0/10") => ({
+  const step = (food: string = "0/10"): IStep => ({
     id: uuidv4(),
     time: "00:00",
     food,
@@ -37,7 +37,7 @@ export const useBuildsStore = defineStore("builds", () => {
     separator: false,
   });
 
-  const build = () => ({
+  const build = (): IBuild => ({
     id: uuidv4(),
     author: "",
     created: moment().toDate(),
