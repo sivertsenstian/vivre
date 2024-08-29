@@ -298,12 +298,15 @@ const items = computed(() => {
           <v-col cols="12">
             <v-alert
               text="
-28.08
+29.08
 -------
-- Add drag and drop support for build order steps in create and edit mode
+- Add 'Annotation' functionality to buildorder steps, making it possible to add additional context/information to the step/instruction
+- Add search field to build order list and use more of the page
+- Add author column to build order list
 
 Previously
 -------
+- Add drag and drop support for build order steps in create and edit mode
 - Add 'Viability' field to build, to indicate how close to meta/standard the build is
 - Improve readability by using more of the horizontal screen space
 - Add support for markdown in build order descriptions! Check this guide: https://www.markdownguide.org/basic-syntax/ if interested :)
