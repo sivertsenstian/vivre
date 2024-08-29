@@ -83,6 +83,11 @@ export interface IOngoing {
   history: IOngoingHistory;
 }
 
+export interface IStepAnnotation {
+  type: "None" | "Army" | "Tech" | "Information";
+  text: string;
+}
+
 export interface IStep {
   id: string;
   time: string;
@@ -90,6 +95,7 @@ export interface IStep {
   instructions: string;
   timing: boolean;
   separator: boolean;
+  annotation?: IStepAnnotation;
 }
 export interface ISampleGame {
   id: string;
@@ -99,6 +105,7 @@ export interface IBuild {
   id: string;
   author: string;
   created: any;
+  updated?: any;
   name: string;
   secret?: string;
   description: string;
@@ -108,6 +115,7 @@ export interface IBuild {
   games: ISampleGame[];
   tags: string[];
   stars: number;
+  starred?: any;
   player: Race;
   opponent: Race;
   steps: IStep[];

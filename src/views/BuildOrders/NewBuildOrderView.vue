@@ -6,6 +6,7 @@ import { computed } from "vue";
 import ViabilitySlider from "@/components/ViabilitySlider.vue";
 import MarkdownEditor from "@/components/MarkdownEditor.vue";
 import draggable from "vuedraggable";
+import UpsertStepAnnotation from "@/components/UpsertStepAnnotation.vue";
 
 const builds = useBuildsStore();
 
@@ -204,11 +205,12 @@ const updateFood = (race: Race) => {
                             </td>
                             <td>
                               <v-btn
-                                title="Delete step"
-                                icon="mdi-delete"
+                                title="Delete link"
+                                icon="mdi-delete-outline"
                                 color="red-lighten-2"
                                 variant="text"
                                 density="compact"
+                                size="small"
                                 @click="() => builds.removeGame('new', item.id)"
                               />
                             </td>
@@ -242,98 +244,95 @@ const updateFood = (race: Race) => {
                   <v-table fixed-header density="compact">
                     <thead>
                       <tr>
-                        <th style="width: 5px" />
-                        <th class="text-left">#</th>
-                        <th class="text-left">Time</th>
-                        <th class="text-left">Food</th>
-                        <th class="text-left" style="width: 50%">
-                          Instructions
-                        </th>
-                        <th class="text-left" style="width: 20px">Timing</th>
-                        <th class="text-left" style="width: 20px">Separator</th>
-                        <th class="text-center" style="width: 10px"></th>
+                        <th />
+                        <th>#</th>
+                        <th style="min-width: 75px">Time</th>
+                        <th style="min-width: 75px">Food</th>
+                        <th style="width: 60%">Instructions</th>
+                        <th>Actions</th>
                       </tr>
                     </thead>
                     <draggable
-                        v-model="builds.data.new.steps"
-                        tag="tbody"
-                        item-key="id"
-                        handle=".handle"
-                        :animation="200"
-                        ghost-class="ghost"
-                        :disabled="false"
-                        group="description"
+                      v-model="builds.data.new.steps"
+                      tag="tbody"
+                      item-key="id"
+                      handle=".handle"
+                      :animation="200"
+                      ghost-class="ghost"
+                      :disabled="false"
+                      group="description"
                     >
                       <template #item="{ element, index }">
-                      <tr>
-                        <td class="handle px-0">
-                          <v-icon
+                        <tr>
+                          <td class="handle px-0">
+                            <v-icon
                               size="small"
                               color="grey"
                               icon="mdi-drag-vertical"
-                          />
-                        </td>
-                        <td>
-                          <span v-show="!element.separator">{{
-                            order[index]
-                          }}</span>
-                        </td>
-                        <td>
-                          <v-text-field
-                            hide-details
-                            density="compact"
-                            variant="underlined"
-                            v-model="element.time"
-                            v-if="!element.separator"
-                          ></v-text-field>
-                        </td>
-                        <td>
-                          <v-text-field
-                            hide-details
-                            density="compact"
-                            variant="underlined"
-                            v-model="element.food"
-                            v-if="!element.separator"
-                          ></v-text-field>
-                        </td>
-                        <td>
-                          <v-text-field
-                            hide-details
-                            density="compact"
-                            variant="underlined"
-                            v-model="element.instructions"
-                          ></v-text-field>
-                        </td>
-                        <td>
-                          <v-checkbox
-                            title="Mark this step as an important timing"
-                            class="ml-3"
-                            hide-details
-                            density="compact"
-                            v-model="element.timing"
-                            v-if="!element.separator"
-                          ></v-checkbox>
-                        </td>
-                        <td>
-                          <v-checkbox
-                            title="Use step as a separator or an event with only a header/instruction"
-                            class="ml-3"
-                            hide-details
-                            density="compact"
-                            v-model="element.separator"
-                          ></v-checkbox>
-                        </td>
-                        <td>
-                          <v-btn
-                            title="Delete step"
-                            icon="mdi-delete"
-                            color="red-lighten-2"
-                            variant="text"
-                            density="compact"
-                            @click="() => builds.removeStep('new', element)"
-                          />
-                        </td>
-                      </tr>
+                            />
+                          </td>
+                          <td>
+                            <span v-show="!element.separator">{{
+                              order[index]
+                            }}</span>
+                          </td>
+                          <td>
+                            <v-text-field
+                              hide-details
+                              density="compact"
+                              variant="underlined"
+                              v-model="element.time"
+                              v-if="!element.separator"
+                            ></v-text-field>
+                          </td>
+                          <td>
+                            <v-text-field
+                              hide-details
+                              density="compact"
+                              variant="underlined"
+                              v-model="element.food"
+                              v-if="!element.separator"
+                            ></v-text-field>
+                          </td>
+                          <td>
+                            <v-text-field
+                              hide-details
+                              density="compact"
+                              variant="underlined"
+                              v-model="element.instructions"
+                            ></v-text-field>
+                          </td>
+                          <td>
+                            <v-btn-group>
+                              <v-btn
+                                title="Highlight this step as important/timing"
+                                variant="text"
+                                icon="mdi-clock-outline"
+                                :color="element.timing ? 'success' : 'grey'"
+                                @click="element.timing = !element.timing"
+                                :disabled="element.separator"
+                                size="small"
+                              />
+                              <v-btn
+                                title="Use step as a separator or an event with only a header/instruction"
+                                variant="text"
+                                icon="mdi-shield-outline"
+                                :color="element.separator ? 'primary' : 'grey'"
+                                @click="element.separator = !element.separator"
+                                size="small"
+                              />
+                              <upsert-step-annotation :step="element" />
+                              <v-btn
+                                title="Delete step"
+                                icon="mdi-delete-outline"
+                                color="red-lighten-2"
+                                variant="text"
+                                size="small"
+                                @click="() => builds.removeStep('new', element)"
+                              />
+                            </v-btn-group>
+                          </td>
+                        </tr>
                       </template>
                     </draggable>
                   </v-table>

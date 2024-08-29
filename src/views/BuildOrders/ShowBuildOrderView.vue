@@ -13,11 +13,12 @@ import { useDocument, useFirestore } from "vuefire";
 import { doc } from "firebase/firestore";
 
 import type { IBuild, IBuildOrderState } from "@/utilities/types";
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import ViabilitySlider from "@/components/ViabilitySlider.vue";
 
 import { MdPreview } from "md-editor-v3";
 import MarkdownViewer from "@/components/MarkdownViewer.vue";
+import StepAnnotation from "@/components/StepAnnotation.vue";
 
 const open = (path: string) => window.open(path, "_blank");
 
@@ -93,6 +94,7 @@ const order = computed(() => {
           @click="() => router.push('/buildorders')"
           >Go Back</v-btn
         >
+
         <v-form>
           <v-row
             ><v-col cols="12">
@@ -271,6 +273,7 @@ const order = computed(() => {
                           <th class="text-left">#</th>
                           <th class="text-left">Time</th>
                           <th class="text-left">Instructions</th>
+                          <th style="width: 5px" />
                           <th class="text-center">Food</th>
                         </tr>
                       </thead>
@@ -288,16 +291,22 @@ const order = computed(() => {
                           <template v-if="!step.separator">
                             <td class="text-center">{{ order[i] }}</td>
                             <td>{{ step.time }}</td>
-                            <td>{{ step.instructions }}</td>
+                            <td>
+                              {{ step.instructions }}
+                            </td>
+                            <td class="text-right">
+                              <step-annotation :annotation="step.annotation" />
+                            </td>
                             <td>
                               <div
                                 style="
                                   display: flex;
-                                  justify-content: center;
+                                  justify-content: start;
                                   align-items: center;
                                 "
                               >
                                 <img
+                                  class="ml-2"
                                   :src="raceUpkeep[buildorder.player]"
                                   width="25px"
                                 />
@@ -313,13 +322,17 @@ const order = computed(() => {
                                 icon="mdi-shield-outline"
                               />
                             </td>
-                            <td colspan="3" class="py-2">
+                            <td colspan="2" class="py-2">
                               <span
                                 class="font-weight-bold"
                                 style="vertical-align: middle"
-                                >{{ step.instructions }}</span
-                              >
+                                >{{ step.instructions }}
+                              </span>
                             </td>
+                            <td class="text-right">
+                              <step-annotation :annotation="step.annotation" />
+                            </td>
+                            <td />
                           </template>
                         </tr>
                       </tbody>

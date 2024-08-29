@@ -19,14 +19,16 @@ import moment from "moment";
 
 export const useBuildsStore = defineStore("builds", () => {
   const db = useFirestore();
-  const buildorders = useCollection(collection(db, "buildorders"));
+  const { data: buildorders, pending } = useCollection(
+    collection(db, "buildorders"),
+  );
   const router = useRouter();
 
   const busy = ref(false);
 
   const difficulties = ["Beginner", "Amateur", "Pro"];
 
-  const step = (food: string = "0/10") => ({
+  const step = (food: string = "0/10"): IStep => ({
     id: uuidv4(),
     time: "00:00",
     food,
@@ -35,7 +37,7 @@ export const useBuildsStore = defineStore("builds", () => {
     separator: false,
   });
 
-  const build = () => ({
+  const build = (): IBuild => ({
     id: uuidv4(),
     author: "",
     created: moment().toDate(),
@@ -87,6 +89,7 @@ export const useBuildsStore = defineStore("builds", () => {
       busy.value = true;
       if (item.id) {
         const reference = doc(db, "buildorders", item.id);
+        item.updated = moment().toDate();
         await updateDoc(reference, item as any);
         await router.push(`/buildorders/${item.id}`);
         clear();
@@ -101,7 +104,10 @@ export const useBuildsStore = defineStore("builds", () => {
   const star = async (item: any) => {
     try {
       const reference = doc(db, "buildorders", item.id);
-      await updateDoc(reference, { stars: increment(1) });
+      await updateDoc(reference, {
+        stars: increment(1),
+        starred: moment().toDate(),
+      });
       data.value.starred[item.id] = true;
     } catch (e) {
       console.error(e);
@@ -146,21 +152,21 @@ export const useBuildsStore = defineStore("builds", () => {
   };
 
   const claim = async (build: any, secret: string) => {
-    console.log("claim?")
     if (build.secret === secret && secret.length > 0) {
       try {
         data.value.owns[build.id] = true;
         const reference = doc(db, "buildorders", build.id);
         await updateDoc(reference, { secret: "" } as any);
       } catch (error) {
-        return false
+        return false;
       }
       return true;
     }
     return false;
   };
 
-  const canEdit = (id?: string): boolean => !_isNil(id) && (data.value.owns?.[id] ?? false);
+  const canEdit = (id?: string): boolean =>
+    !_isNil(id) && (data.value.owns?.[id] ?? false);
 
   const data = useStorage("vivre/builds", {
     new: build(),
@@ -172,6 +178,7 @@ export const useBuildsStore = defineStore("builds", () => {
 
   return {
     buildorders,
+    pending,
     data,
     addStep,
     removeStep,
@@ -186,6 +193,6 @@ export const useBuildsStore = defineStore("builds", () => {
     removeGame,
     canEdit,
     difficulties,
-    claim
+    claim,
   };
 });
