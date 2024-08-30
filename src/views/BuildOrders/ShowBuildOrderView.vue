@@ -267,7 +267,12 @@ const order = computed(() => {
                         {{ raceName[buildorder.opponent] }}
                       </div>
                     </div>
-                    <v-table class="steps" hover height="70vh" fixed-header>
+                    <v-table
+                      class="steps-table"
+                      hover
+                      height="70vh"
+                      fixed-header
+                    >
                       <thead>
                         <tr>
                           <th class="text-left">#</th>
@@ -349,7 +354,7 @@ const order = computed(() => {
 </template>
 
 <style>
-table.steps {
+.steps-table {
   tbody tr:nth-of-type(odd) {
     background-color: rgba(0, 0, 0, 0.1);
   }
