@@ -99,6 +99,7 @@ export interface IStep {
 }
 export interface ISampleGame {
   id: string;
+  name?: string;
 }
 
 export interface IBuild {
