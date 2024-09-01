@@ -14,7 +14,12 @@ import { useStorage } from "@vueuse/core";
 import { Race } from "@/stores/races";
 import { useRouter } from "vue-router";
 import { ref } from "vue";
-import type { IBuild, IBuildOrderState, IStep } from "@/utilities/types";
+import type {
+  IBuild,
+  IBuildOrderState,
+  ISampleGame,
+  IStep,
+} from "@/utilities/types";
 import moment from "moment";
 
 export const useBuildsStore = defineStore("builds", () => {
@@ -54,7 +59,7 @@ export const useBuildsStore = defineStore("builds", () => {
     steps: [step("5/12")],
   });
 
-  const game = () => ({
+  const game = (): ISampleGame => ({
     id: "",
   });
 

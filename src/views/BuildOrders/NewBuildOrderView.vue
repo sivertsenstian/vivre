@@ -179,7 +179,7 @@ const updateFood = (race: Race) => {
                   <v-row>
                     <v-col cols="12"
                       ><div class="text-h6 font-weight-bold">
-                        Add helpful links (optional)
+                        Ankdd helpful links (optional)
                       </div>
                     </v-col>
                     <v-col cols="12">
@@ -187,7 +187,8 @@ const updateFood = (race: Race) => {
                         <thead>
                           <tr>
                             <th class="text-left" style="width: 10px">#</th>
-                            <th class="text-left">Link</th>
+                            <th class="text-left" style="width: 60%">Link</th>
+                            <th class="text-left">Name (optional)</th>
                             <th class="text-center" style="width: 10px"></th>
                           </tr>
                         </thead>
@@ -201,6 +202,15 @@ const updateFood = (race: Race) => {
                                 variant="underlined"
                                 v-model="item.id"
                                 placeholder="e.g. https://w3champions.com/match/66c1ca3e0ebc9196a2e60095"
+                              ></v-text-field>
+                            </td>
+                            <td>
+                              <v-text-field
+                                hide-details
+                                density="compact"
+                                variant="underlined"
+                                v-model="item.name"
+                                placeholder="e.g. 'Replay'"
                               ></v-text-field>
                             </td>
                             <td>

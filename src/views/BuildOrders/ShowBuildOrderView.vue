@@ -174,7 +174,8 @@ const order = computed(() => {
                       :color="getLinkColor(game.id)"
                       :prepend-icon="getLinkType(game.id)"
                       variant="text"
-                    />
+                      >{{ game.name }}</v-btn
+                    >
                   </template>
                 </v-col>
                 <v-col cols="3" v-if="buildorder.viability">
