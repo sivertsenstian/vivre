@@ -1,6 +1,6 @@
 ﻿<script setup lang="ts">
 import moment from "moment/moment";
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import _groupBy from "lodash/groupBy";
 import _reduce from "lodash/reduce";
 import _isNil from "lodash/isNil";
@@ -12,6 +12,8 @@ interface Props {
 
 const props = defineProps<Props>();
 
+const maxActivity = ref(5);
+
 // Activity
 const activity = computed(() => {
   const g = _groupBy(props.matches, (m: any) => [
@@ -20,10 +22,13 @@ const activity = computed(() => {
   ]);
   return _reduce(
     g,
-    (r: any, v: any, k: string) => ({
-      ...r,
-      [k]: v.length,
-    }),
+    (r: any, v: any, k: string) => {
+      maxActivity.value = Math.max(v.length, maxActivity.value);
+      return {
+        ...r,
+        [k]: v.length,
+      };
+    },
     {},
   );
 });
@@ -40,13 +45,13 @@ const lightIntensity = (n: number) => {
 
   if (_isNil(n) || n === 0) {
     return colors[0];
-  } else if (n <= 1) {
+  } else if (n <= maxActivity.value * 0.2) {
     return colors[1];
-  } else if (n <= 2) {
+  } else if (n <= maxActivity.value * 0.4) {
     return colors[2];
-  } else if (n <= 3) {
+  } else if (n <= maxActivity.value * 0.6) {
     return colors[3];
-  } else if (n <= 5) {
+  } else if (n <= maxActivity.value * 0.8) {
     return colors[4];
   } else {
     return colors[5];
@@ -65,13 +70,13 @@ const darkIntensity = (n: number) => {
 
   if (_isNil(n) || n === 0) {
     return colors[0];
-  } else if (n <= 1) {
+  } else if (n <= maxActivity.value * 0.2) {
     return colors[1];
-  } else if (n <= 2) {
+  } else if (n <= maxActivity.value * 0.4) {
     return colors[2];
-  } else if (n <= 3) {
+  } else if (n <= maxActivity.value * 0.6) {
     return colors[3];
-  } else if (n <= 5) {
+  } else if (n <= maxActivity.value * 0.8) {
     return colors[4];
   } else {
     return colors[5];
