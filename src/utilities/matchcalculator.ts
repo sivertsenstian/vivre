@@ -264,16 +264,11 @@ export const getSeasonGamesBetween = async (
 
     all = [...all, ...response.matches];
 
-    console.log({
-      last: moment(_last(all).endTime),
-      before: moment(_last(all).endTime).isBefore(from),
-    });
-
     finished =
-      moment(_last(all)?.endTime).isBefore(from) ||
       all.length === response.count ||
       all.length === prev ||
-      (max !== 0 && all.length > max);
+      (max !== 0 && all.length > max) ||
+      moment(_last(all)?.endTime).isBefore(from);
     prev = all.length;
     failsafe++;
   }

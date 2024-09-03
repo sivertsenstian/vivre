@@ -67,25 +67,24 @@ export const createGNLStore = (
         .diff(moment("01.07.2024", "DD.MM.YYYY").startOf("day"), "days"),
     };
 
-    console.log("HELLO!");
-    console.log({ dates });
-
     // Do it live!
-    const refresh = () => {
-      console.log("REFRESHING!");
+    const refresh = async () => {
+      const result = {};
+      await Promise.all(
+        [...coaches, ...players].map(async (account: IGNLAccount): Promise => {
+          result[account.battleTag] = await getData(
+            account.battleTag,
+            dates.start,
+            dates.end,
+          );
+        }),
+      );
 
-      [...coaches, ...players].forEach(async (account: IGNLAccount) => {
-        data.value[account.battleTag] = await getData(
-          account.battleTag,
-          dates.start,
-          dates.end,
-        );
-      });
-
+      data.value = result;
       // setTimeout(refresh, 10000);
     };
 
-    refresh();
-    return { season, data, dates };
+    void refresh();
+    return { season, data, dates, coaches, players };
   });
 };
