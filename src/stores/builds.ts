@@ -21,6 +21,7 @@ import type {
   IStep,
 } from "@/utilities/types";
 import moment from "moment";
+import { detectIncognito } from "detectincognitojs";
 
 export const useBuildsStore = defineStore("builds", () => {
   const db = useFirestore();
@@ -108,12 +109,15 @@ export const useBuildsStore = defineStore("builds", () => {
 
   const star = async (item: any) => {
     try {
-      const reference = doc(db, "buildorders", item.id);
-      await updateDoc(reference, {
-        stars: increment(1),
-        starred: moment().toDate(),
-      });
-      data.value.starred[item.id] = true;
+      const result = await detectIncognito();
+      if (!result.isPrivate) {
+        const reference = doc(db, "buildorders", item.id);
+        await updateDoc(reference, {
+          stars: increment(1),
+          starred: moment().toDate(),
+        });
+        data.value.starred[item.id] = true;
+      }
     } catch (e) {
       console.error(e);
     }
@@ -121,10 +125,13 @@ export const useBuildsStore = defineStore("builds", () => {
 
   const unstar = async (item: any) => {
     try {
-      const reference = doc(db, "buildorders", item.id);
-      await updateDoc(reference, { stars: increment(-1) });
+      const result = await detectIncognito();
+      if (!result.isPrivate) {
+        const reference = doc(db, "buildorders", item.id);
+        await updateDoc(reference, { stars: increment(-1) });
 
-      delete data.value.starred[item.id];
+        delete data.value.starred[item.id];
+      }
     } catch (e) {
       console.error(e);
     }
