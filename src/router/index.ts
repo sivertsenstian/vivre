@@ -10,6 +10,7 @@ import BuildOrdersIndexView from "@/views/BuildOrders/BuildOrdersIndexView.vue";
 import NewBuildOrderView from "@/views/BuildOrders/NewBuildOrderView.vue";
 import ShowBuildOrderView from "@/views/BuildOrders/ShowBuildOrderView.vue";
 import EditBuildOrderView from "@/views/BuildOrders/EditBuildOrderView.vue";
+import GNLSeason15View from "@/views/Events/GNLSeason15View.vue";
 
 const router = createRouter({
   history: createWebHashHistory(import.meta.env.BASE_URL),
@@ -33,6 +34,10 @@ const router = createRouter({
       path: "/events",
       name: "events",
       children: [
+        {
+          path: "gnl-season-15",
+          component: GNLSeason15View,
+        },
         {
           path: "happy-tracker",
           component: HappyTracker,

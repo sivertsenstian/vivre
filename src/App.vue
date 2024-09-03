@@ -59,6 +59,13 @@ function toggleTheme() {
             ></v-list-item>
           </template>
           <v-list-item
+            prepend-icon="mdi-podium"
+            title="GNL Season 15"
+            color="green"
+            router
+            to="/events/gnl-season-15"
+          ></v-list-item>
+          <v-list-item
             prepend-icon="mdi-robot-happy"
             title="Happy tracker"
             color="green"
