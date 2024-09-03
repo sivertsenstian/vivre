@@ -28,7 +28,7 @@ const model = defineModel<string>({
    - Thanks to https://www.back2warcraft.com/ for helping promote, use and support my efforts.
      - Check out the stream at https://www.twitch.tv/back2warcraft
    - Thanks to mr. president SaulApeMan for coming up with the idea of the Happy event, and starting to use and promote the page when I was the only user.
-     - Check out his stream at https://www.twitch.tv/back2warcraft!
+     - Check out his stream at https://www.twitch.tv/saulapeman!
    - Thanks to Razer for providing creeproutes for the Undeads!.
      - Check out his stream at https://www.twitch.tv/razerwc3
   `,
