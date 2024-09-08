@@ -10,7 +10,8 @@ import _range from "lodash/range";
 import moment from "moment/moment";
 import { getloss, getplayer, getwins } from "@/utilities/matchcalculator";
 import _fill from "lodash/fill";
-import _round from "lodash/round";
+import w3cicon from "@/assets/w3c.png";
+import w3ciconDark from "@/assets/w3c_dark.png";
 
 // Chart stuff
 import { Bar } from "vue-chartjs";
@@ -27,6 +28,7 @@ import {
 } from "chart.js";
 import "chartjs-adapter-moment";
 import ChartDataLabels from "chartjs-plugin-datalabels";
+import {computed} from "vue";
 
 ChartJS.register(
   LineController,
@@ -111,12 +113,65 @@ interface Props {
   battleTag: string;
   data: any;
 }
-defineProps<Props>();
+const props = defineProps<Props>();
+
+const mmr = computed(() => {
+   return props.data.matches.reverse()?.reduce(
+      (r: number[], m: any) => {
+        const d = moment(m.endTime).dayOfYear();
+        const day = days - (today.dayOfYear() - d);
+        const p = getplayer(props.battleTag)(m);
+        const mmr = p.players[0].currentMmr;
+
+        for (let i = day; i < r.length; i++) {
+          r[i] = mmr;
+        }
+
+        return r;
+      },
+      _fill(_range(today.dayOfYear() - days, today.dayOfYear()), 0),
+  )
+})
+
+const wins = computed(() => {
+  return props.data.matches
+      .filter((m: any) => getwins(props.battleTag, m))
+      ?.reduce(
+          (r: number[], m: any) => {
+            const d = moment(m.endTime).dayOfYear();
+            const day = days - (today.dayOfYear() - d);
+
+            r[day]++;
+            return r;
+          },
+          _fill(_range(today.dayOfYear() - days, today.dayOfYear()), 0),
+      )
+      .map((v: number) => v)
+})
+
+const loss = computed(() => {
+  return props.data.matches
+      .filter((m: any) => getloss(props.battleTag, m))
+      ?.reduce(
+          (r: number[], m: any) => {
+            const d = moment(m.endTime).dayOfYear();
+            const day = days - (today.dayOfYear() - d);
+
+            r[day]++;
+            return r;
+          },
+          _fill(_range(today.dayOfYear() - days, today.dayOfYear()), 0),
+      )
+      .map((v: number) => v)
+})
+
+const open = (battleTag: string) => window.open(`https://www.w3champions.com/player/${encodeURIComponent(
+battleTag
+)}`, "_blank");
 </script>
 
 <template>
-  <div class="text-h6 text-black text-center">
-    <v-card color="surface" :elevation="10">
+    <v-card class="text-center" color="surface" :elevation="10" style="border: 2px solid silver;">
       <v-list-item class="px-3">
         <template v-slot:prepend>
           <img
@@ -138,7 +193,8 @@ defineProps<Props>();
         gradient="to bottom, rgba(0,0,0,.5), rgba(0,0,0,.5)"></v-img>
 
       <Bar
-        style="position: absolute; bottom: 340px"
+          v-if="data.matches.length"
+        style="position: absolute; bottom: 350px"
         :data="{
           labels: _range(0, days)
             .map((n) => {
@@ -149,23 +205,9 @@ defineProps<Props>();
             {
               type: 'line' as any,
               yAxisID: 'mmrAxis',
-              backgroundColor: 'lime',
-              borderColor: 'green',
-              data: data.matches.reverse()?.reduce(
-                (r: number[], m: any) => {
-                  const d = moment(m.endTime).dayOfYear();
-                  const day = days - (today.dayOfYear() - d);
-                  const p = getplayer(battleTag)(m);
-                  const mmr = p.players[0].currentMmr;
-
-                  for (let i = day; i < r.length; i++) {
-                    r[i] = mmr;
-                  }
-
-                  return r;
-                },
-                _fill(_range(today.dayOfYear() - days, today.dayOfYear()), 0),
-              ),
+              borderColor: 'lime',
+              pointStyle: false,
+              data: mmr,
               datalabels: {
                 display: false,
               },
@@ -174,19 +216,7 @@ defineProps<Props>();
               label: 'won',
               yAxisID: 'gamesAxis',
               backgroundColor: '#66BB6A',
-              data: data.matches
-                .filter((m: any) => getwins(battleTag, m))
-                ?.reduce(
-                  (r: number[], m: any) => {
-                    const d = moment(m.endTime).dayOfYear();
-                    const day = days - (today.dayOfYear() - d);
-
-                    r[day]++;
-                    return r;
-                  },
-                  _fill(_range(today.dayOfYear() - days, today.dayOfYear()), 0),
-                )
-                .map((v: number) => v),
+              data: wins,
               datalabels: {
                 display: false,
               },
@@ -195,48 +225,9 @@ defineProps<Props>();
               label: 'lost',
               yAxisID: 'gamesAxis',
               backgroundColor: '#EF5350',
-              data: data.matches
-                .filter((m: any) => getloss(battleTag, m))
-                ?.reduce(
-                  (r: number[], m: any) => {
-                    const d = moment(m.endTime).dayOfYear();
-                    const day = days - (today.dayOfYear() - d);
-
-                    r[day]++;
-                    return r;
-                  },
-                  _fill(_range(today.dayOfYear() - days, today.dayOfYear()), 0),
-                )
-                .map((v: number) => v),
+              data: loss,
               datalabels: {
-                clip: false,
-                clamp: false,
-                anchor: 'end',
-                align: 'end',
-                offset: -7,
-                color: 'goldenrod',
-                formatter: function (value, context) {
-                  const all = context.chart.data.datasets
-                    .filter((d: any) => d.yAxisID === 'gamesAxis')
-                    .map((d: any) => d.data)
-                    .reduce(
-                      (s: number[], d: number[]) => s.map((v, i) => v + d[i]),
-                      _fill(
-                        _range(0, context.chart.data.datasets[0].data.length),
-                        0,
-                      ),
-                    );
-
-                  const r = _round(
-                    ((all[context.dataIndex] -
-                      Number(context.dataset.data[context.dataIndex])) /
-                      all[context.dataIndex]) *
-                      100,
-                    1,
-                  );
-
-                  return r > 0 && r < 100 ? r + '%' : '';
-                },
+                display: false
               },
             },
           ],
@@ -259,12 +250,12 @@ defineProps<Props>();
 
       <v-card-item>
         <v-card-title>
-          <span class="text-h4 fontweight-bold text-orange">{{
+          <span class="text-h3 fontweight-bold" style="color: goldenrod;">{{
             data.wins * 3 + data.loss
           }}</span>
         </v-card-title>
         <v-card-subtitle>
-          <span class="text-subtitle-2 text-orange">points</span>
+          <span class="text-subtitle-2" style="color: goldenrod;">points</span>
         </v-card-subtitle>
       </v-card-item>
 
@@ -289,14 +280,13 @@ defineProps<Props>();
 
       <v-card-actions>
         <v-btn
-          color="primary"
-          text="Open profile page"
+          title="Open W3Champions Profile Page"
+            color="primary"
           block
           border
-          @click="() => console.log('yp')"></v-btn>
+          @click="() => open(battleTag)"><img :src="w3ciconDark" height="22px"/></v-btn>
       </v-card-actions>
     </v-card>
-  </div>
 </template>
 
 <style scoped>

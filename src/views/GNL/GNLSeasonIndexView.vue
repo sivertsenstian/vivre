@@ -4,7 +4,8 @@ import { computed } from "vue";
 import { createGNLStore } from "@/stores/gnl";
 import { Race } from "@/stores/races";
 import ActivityTable from "@/components/ActivityTable.vue";
-import GNLBanner from "@/components/gnl/GNLBanner.vue";
+import GNLPlayerBanner from "@/components/gnl/GNLPLayerBanner.vue";
+import GNLCoachBanner from "@/components/gnl/GNLCoachBanner.vue";
 import _isEmpty from "lodash/isEmpty";
 
 const theme = useTheme();
@@ -19,15 +20,18 @@ const useGNLStore = createGNLStore(
   ],
   [
     { battleTag: "Longjacket#2840", race: Race.Human },
-    { battleTag: "NiteKat#1209", race: Race.NightElf },
-    // { battleTag: "BigBwana#11605", race: Race.Undead },
-    // { battleTag: "Dzdrprm#2997", race: Race.Orc },
+    { battleTag: "SneakyTurtle#2326919", race: Race.NightElf },
+    { battleTag: "siyanleo#1295", race: Race.Orc },
+    { battleTag: "FVB#1736", race: Race.Orc },
     { battleTag: "RaZeR#23389", race: Race.Undead },
-    // { battleTag: "BFR#11734", race: Race.Orc },
-    // { battleTag: "pischner#2950", race: Race.NightElf },
-    // { battleTag: "Disproved#21742", race: Race.Undead },
-    // { battleTag: "ffm#2836", race: Race.Human },
-    { battleTag: "veS#1614", race: Race.Undead },
+    { battleTag: "hengyi#31966", race: Race.Human },
+    { battleTag: "Stakr#21386", race: Race.NightElf },
+    { battleTag: "jung#31458", race: Race.Human },
+    { battleTag: "Lonestar#1441", race: Race.Orc },
+    { battleTag: "K0rbinian#21728", race: Race.Human },
+    { battleTag: "sd1528681#2302", race: Race.NightElf },
+    { battleTag: "ET3#31514", race: Race.Human },
+    { battleTag: "vscan#3284", race: Race.Orc },
   ],
 );
 const store = useGNLStore();
@@ -54,7 +58,7 @@ const store = useGNLStore();
         </v-row>
         <v-row class="justify-center">
           <v-col cols="3" v-for="coach in store.coaches">
-            <GNLBanner
+            <GNLCoachBanner
               :data="store.data[coach.battleTag].season[coach.race]"
               :battle-tag="coach.battleTag"
               :race="coach.race"
@@ -72,7 +76,7 @@ const store = useGNLStore();
         </v-row>
         <v-row class="justify-center">
           <v-col cols="3" v-for="player in store.players">
-            <GNLBanner
+            <GNLPlayerBanner
               :data="store.data[player.battleTag].season[player.race]"
               :battle-tag="player.battleTag"
               :race="player.race"

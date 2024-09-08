@@ -59,13 +59,6 @@ function toggleTheme() {
             ></v-list-item>
           </template>
           <v-list-item
-            prepend-icon="mdi-podium"
-            title="GNL Season 15"
-            color="green"
-            router
-            to="/events/gnl-season-15"
-          ></v-list-item>
-          <v-list-item
             prepend-icon="mdi-robot-happy"
             title="Happy tracker"
             color="green"
@@ -87,6 +80,46 @@ function toggleTheme() {
           router
           to="/buildorders"
         ></v-list-item>
+        <v-list-group>
+          <template v-slot:activator="{ props }">
+            <v-list-item
+                color="green"
+                v-bind="props"
+                prepend-icon="mdi-podium"
+                title="Gym Newbie League"
+                router
+                to="/gnl"
+            ></v-list-item>
+          </template>
+          <v-list-item
+              prepend-icon="mdi-shield-crown-outline"
+              title="Apelords"
+              color="blue"
+              router
+              to="/gnl/apelords"
+          ></v-list-item>
+          <v-list-item
+              prepend-icon="mdi-shield-crown-outline"
+              title="The Banana Pickers"
+              color="yellow"
+              router
+              to="/gnl/thebananapickers"
+          ></v-list-item>
+          <v-list-item
+              prepend-icon="mdi-shield-crown-outline"
+              title="Giggling Goblins"
+              color="green"
+              router
+              to="/gnl/gigglinggoblins"
+          ></v-list-item>
+          <v-list-item
+              prepend-icon="mdi-shield-crown-outline"
+              title="GNL Bears"
+              color="red"
+              router
+              to="/gnl/gnlbears"
+          ></v-list-item>
+        </v-list-group>
         <v-list-item
           color="green"
           prepend-icon="mdi-information"
