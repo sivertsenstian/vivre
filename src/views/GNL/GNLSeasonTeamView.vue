@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { useTheme } from "vuetify";
 import { computed } from "vue";
-import { createGNLStore } from "@/stores/gnl";
+import { useGNLStore } from "@/stores/gnl";
 import { Race } from "@/stores/races";
 import ActivityTable from "@/components/ActivityTable.vue";
 import GNLPlayerBanner from "@/components/gnl/GNLPLayerBanner.vue";
 import GNLCoachBanner from "@/components/gnl/GNLCoachBanner.vue";
 import _isEmpty from "lodash/isEmpty";
-import {onBeforeRouteUpdate, useRoute, useRouter} from "vue-router";
+import { onBeforeRouteUpdate, useRoute, useRouter } from "vue-router";
 
 const theme = useTheme();
 const isDark = computed(() => theme.global.current.value.dark);
@@ -15,43 +15,57 @@ const isDark = computed(() => theme.global.current.value.dark);
 const route = useRoute();
 const router = useRouter();
 
-
 const teams = {
-  'apelords': {
-    'coaches': [{ battleTag: "SaulApeMan#2163", race: Race.Undead }],
-    'players': [{ battleTag: "Longjacket#2840", race: Race.Human },
-      { battleTag: "SneakyTurtle#2326919", race: Race.NightElf },
-      { battleTag: "siyanleo#1295", race: Race.Orc },
-      { battleTag: "FVB#1736", race: Race.Orc },
+  apelords: {
+    coaches: [
+      {
+        battleTag: "gotQuail#1103",
+        race: Race.Human,
+        races: [Race.Human],
+        roles: ["Coach"],
+      },
+    ],
+    players: [
+      { battleTag: "Longjacket#2840", race: Race.Human },
       { battleTag: "RaZeR#23389", race: Race.Undead },
       { battleTag: "hengyi#31966", race: Race.Human },
-      { battleTag: "Stakr#21386", race: Race.NightElf },
-      { battleTag: "jung#31458", race: Race.Human },
-      { battleTag: "Lonestar#1441", race: Race.Orc },
       { battleTag: "K0rbinian#21728", race: Race.Human },
       { battleTag: "sd1528681#2302", race: Race.NightElf },
       { battleTag: "ET3#31514", race: Race.Human },
-      { battleTag: "vscan#3284", race: Race.Orc }],
+      { battleTag: "vscan#3284", race: Race.Orc },
+    ],
   },
-  'thebananapickers': {
-    'coaches': [{ battleTag: "gotQuail#1103", race: Race.Human }],
-    'players': [{ battleTag: "Longjacket#2840", race: Race.Human },
+  thebananapickers: {
+    coaches: [
+      {
+        battleTag: "SaulApeMan#2163",
+        race: Race.Random,
+        races: [Race.Human, Race.Undead, Race.Orc, Race.NightElf],
+        roles: ["Caster", "Coach", "Ape"],
+      },
+    ],
+    players: [
+      { battleTag: "Longjacket#2840", race: Race.Human },
       { battleTag: "SneakyTurtle#2326919", race: Race.NightElf },
       { battleTag: "siyanleo#1295", race: Race.Orc },
       { battleTag: "FVB#1736", race: Race.Orc },
       { battleTag: "RaZeR#23389", race: Race.Undead },
-      { battleTag: "hengyi#31966", race: Race.Human },
-      { battleTag: "Stakr#21386", race: Race.NightElf },
-      { battleTag: "jung#31458", race: Race.Human },
-      { battleTag: "Lonestar#1441", race: Race.Orc },
-      { battleTag: "K0rbinian#21728", race: Race.Human },
       { battleTag: "sd1528681#2302", race: Race.NightElf },
       { battleTag: "ET3#31514", race: Race.Human },
-      { battleTag: "vscan#3284", race: Race.Orc }],
+      { battleTag: "vscan#3284", race: Race.Orc },
+    ],
   },
-  'gigglinggoblins': {
-    'coaches': [{ battleTag: "Barren#1153", race: Race.Undead }],
-    'players': [{ battleTag: "Longjacket#2840", race: Race.Human },
+  gigglinggoblins: {
+    coaches: [
+      {
+        battleTag: "KaGeMaN#1160",
+        race: Race.Human,
+        races: [Race.Human],
+        roles: ["Coach"],
+      },
+    ],
+    players: [
+      { battleTag: "Longjacket#2840", race: Race.Human },
       { battleTag: "SneakyTurtle#2326919", race: Race.NightElf },
       { battleTag: "siyanleo#1295", race: Race.Orc },
       { battleTag: "FVB#1736", race: Race.Orc },
@@ -59,40 +73,224 @@ const teams = {
       { battleTag: "hengyi#31966", race: Race.Human },
       { battleTag: "Stakr#21386", race: Race.NightElf },
       { battleTag: "jung#31458", race: Race.Human },
+    ],
+  },
+  gnlbears: {
+    coaches: [
+      {
+        battleTag: "SaulApeMan#2163",
+        race: Race.Random,
+        races: [Race.Human, Race.Undead, Race.Orc, Race.NightElf],
+        roles: ["Caster", "Coach", "Ape"],
+      },
+    ],
+    players: [
+      { battleTag: "Stakr#21386", race: Race.NightElf },
+      { battleTag: "jung#31458", race: Race.Human },
       { battleTag: "Lonestar#1441", race: Race.Orc },
       { battleTag: "K0rbinian#21728", race: Race.Human },
       { battleTag: "sd1528681#2302", race: Race.NightElf },
       { battleTag: "ET3#31514", race: Race.Human },
-      { battleTag: "vscan#3284", race: Race.Orc }],
-  }
-}
+      { battleTag: "vscan#3284", race: Race.Orc },
+    ],
+  },
+};
 
-let store = null;
+const season = 15;
+const store = useGNLStore();
+
+const team = String(route.params.team).toLowerCase();
+store.initialize(teams[team].coaches, teams[team].players);
 
 onBeforeRouteUpdate((to) => {
-  
-  console.log({to});
   const team = String(to.params.team).toLowerCase();
-  console.log("CREATING TEAM " + team)
-  
-  const useGNLStore = createGNLStore(15, teams[team].coaches, teams[team].players )
-  store = useGNLStore();
-})
+  store.initialize(teams[team].coaches, teams[team].players);
+});
 
+const points = computed(() => {
+  try {
+    return store.players.map((p) => {
+      const d = store.data[p.battleTag].season[p.race];
+      return { battleTag: p.battleTag, points: d.wins * 3 + d.loss };
+    });
+  } catch {
+    return [];
+  }
+});
+
+const players = computed(() => {
+  try {
+    return store.players
+      .map((p) => {
+        const d = store.data[p.battleTag].season[p.race];
+        return { battleTag: p.battleTag, points: d.wins * 3 + d.loss };
+      })
+      .sort((a, b) => b.points - a.points)
+      .map((p) => {
+        return store.players.find((x) => x.battleTag === p.battleTag);
+      });
+  } catch {
+    return [];
+  }
+});
+
+const matches = computed(() => {
+  try {
+    return store.players
+      .map((p) => store.data[p.battleTag].season[p.race].matches)
+      .reduce((s, m) => [...s, ...m], []);
+  } catch {
+    return [];
+  }
+});
+
+// Chart stuff
+import { Bar } from "vue-chartjs";
+import {
+  Chart as ChartJS,
+  LineElement,
+  BarElement,
+  CategoryScale,
+  LinearScale,
+  TimeScale,
+  PointElement,
+  Tooltip,
+  LineController,
+} from "chart.js";
+import "chartjs-adapter-moment";
+import ChartDataLabels from "chartjs-plugin-datalabels";
+
+ChartJS.register(
+  LineController,
+  CategoryScale,
+  LinearScale,
+  TimeScale,
+  BarElement,
+  LineElement,
+  PointElement,
+  Tooltip,
+  ChartDataLabels,
+);
+
+const options = {
+  responsive: true,
+  maintainAspectRatio: false,
+  scales: {
+    x: {
+      grid: { display: false },
+      type: "category",
+    },
+  },
+} as any;
+// End
 </script>
+
 <template>
   <main style="height: 100vh; overflow-y: auto">
     <v-container fluid style="opacity: 1">
-      <pre>{{store}}</pre>
       <v-sheet
-        class="pa-8"
+        class="pa-12"
         elevation="10"
         style="min-height: 90vh"
-        v-if="!_isEmpty(store?.data)">
+        v-if="_isEmpty(store.data)">
         <v-row>
           <v-col cols="12" class="text-center"
-            ><div class="text-h2">GNL Season {{ store.season }}</div> </v-col>
+            ><div class="text-h2">GNL Season {{ season }}</div>
+            <v-progress-linear indeterminate />
+          </v-col>
         </v-row>
+
+        <v-row>
+          <v-col cols="8">
+            <v-skeleton-loader height="100%" type="image"></v-skeleton-loader>
+          </v-col>
+          <v-col cols="4"
+            ><v-skeleton-loader type="table"></v-skeleton-loader
+          ></v-col>
+        </v-row>
+        <v-row>
+          <v-col offset="4" cols="4" class="text-center">
+            <div class="text-h4">Coaches</div>
+            <hr />
+          </v-col>
+        </v-row>
+        <v-row class="justify-center">
+          <v-col cols="3"> <v-skeleton-loader type="card" /> </v-col>
+          <v-col cols="3"> <v-skeleton-loader type="card" /> </v-col>
+        </v-row>
+        <v-row>
+          <v-col offset="4" cols="4" class="text-center">
+            <div class="text-h4">Players</div>
+            <hr />
+          </v-col>
+        </v-row>
+        <v-row class="justify-center">
+          <v-col cols="3"> <v-skeleton-loader type="card" /> </v-col>
+          <v-col cols="3"> <v-skeleton-loader type="card" /> </v-col>
+          <v-col cols="3"> <v-skeleton-loader type="card" /> </v-col>
+          <v-col cols="3"> <v-skeleton-loader type="card" /> </v-col>
+        </v-row>
+      </v-sheet>
+
+      <v-sheet class="pa-12" elevation="10" style="min-height: 90vh" v-else>
+        <v-row>
+          <v-col cols="12" class="text-center"
+            ><div class="text-h2">GNL Season {{ season }}</div>
+            <hr />
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col cols="8">
+            <v-row>
+              <v-col cols="12">
+                <div class="text-h5">
+                  Team Points:
+                  <span class="font-weight-bold" style="color: goldenrod">
+                    <span style="vertical-align: middle">{{
+                      points.reduce((s, p) => (s += p.points), 0)
+                    }}</span>
+                    <v-icon
+                      size="x-small"
+                      class="ml-1"
+                      icon="mdi-progress-star-four-points"
+                  /></span>
+                </div>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col cols="12">
+                <Bar
+                  height="315px"
+                  :data="{
+                    labels: points.map((p) => p.battleTag),
+                    datasets: [
+                      {
+                        label: 'points',
+                        backgroundColor: 'goldenrod',
+                        borderColor: 'darkgoldenrod',
+                        borderWidth: 0,
+                        data: points.map((p) => p.points),
+                        datalabels: {
+                          clip: false,
+                          clamp: false,
+                          anchor: 'end',
+                          align: 'end',
+                          offset: 0,
+                          color: 'goldenrod',
+                        },
+                      },
+                    ],
+                  }"
+                  :options="options" />
+              </v-col>
+            </v-row>
+          </v-col>
+          <v-col cols="4">
+            <div class="text-h5">Team Ladder Activity</div>
+            <ActivityTable :matches="matches" :dark="isDark" />
+          </v-col>
+        </v-row>
+
         <v-row>
           <v-col offset="4" cols="4" class="text-center">
             <div class="text-h4">Coaches</div>
@@ -105,6 +303,8 @@ onBeforeRouteUpdate((to) => {
               :data="store.data[coach.battleTag].season[coach.race]"
               :battle-tag="coach.battleTag"
               :race="coach.race"
+              :races="coach.races"
+              :roles="coach.roles"
               :current="
                 store.data[coach.battleTag].season[coach.race].mmr.current
               "
@@ -118,8 +318,9 @@ onBeforeRouteUpdate((to) => {
           </v-col>
         </v-row>
         <v-row class="justify-center">
-          <v-col cols="3" v-for="player in store.players">
+          <v-col cols="3" v-for="(player, rank) in players">
             <GNLPlayerBanner
+              :rank="rank"
               :data="store.data[player.battleTag].season[player.race]"
               :battle-tag="player.battleTag"
               :race="player.race"
@@ -127,15 +328,6 @@ onBeforeRouteUpdate((to) => {
                 store.data[player.battleTag].season[player.race].mmr.current
               "
               :label="player.battleTag" />
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col cols="12">
-            <ActivityTable
-              :matches="
-                store.data?.['SaulApeMan#2163']?.season[Race.Undead].matches
-              "
-              :dark="isDark" />
           </v-col>
         </v-row>
       </v-sheet>

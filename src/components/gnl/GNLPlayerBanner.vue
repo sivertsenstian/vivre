@@ -23,6 +23,13 @@ const raceGnlBanner = {
   [Race.Orc]: gnl_banner_oc,
 };
 
+const raceGnlColor = {
+  [Race.Human]: "#e8b453",
+  [Race.NightElf]: "#6a5693",
+  [Race.Undead]: "#5198ba",
+  [Race.Orc]: "#7b1414",
+};
+
 // Chart stuff
 import { Bar } from "vue-chartjs";
 import {
@@ -187,11 +194,11 @@ const avg = computed(() => Math.ceil(props.data.total / days));
 
 <template>
   <v-card
-    class="text-center pa-3 card-shine-effect"
     color="surface"
+    class="text-center pa-0 card-shine-effect"
     :elevation="10"
     style="border: 1px solid black">
-    <v-list-item class="px-0">
+    <v-list-item class="px-3" :style="`background: ${raceGnlColor[race]}`">
       <template v-slot:prepend>
         <img
           style="vertical-align: middle"
@@ -205,15 +212,11 @@ const avg = computed(() => Math.ceil(props.data.total / days));
       </template>
     </v-list-item>
 
-    <v-img
-      class="rounded"
-      height="250"
-      :src="raceGnlBanner[race]"
-      cover></v-img>
+    <v-img height="250" :src="raceGnlBanner[race]" cover></v-img>
 
     <Bar
       v-if="data.matches.length"
-      style="position: absolute; bottom: 228px"
+      style="position: absolute; bottom: 215px"
       :data="{
         labels: _range(0, days)
           .map((n) => {
@@ -268,8 +271,6 @@ const avg = computed(() => Math.ceil(props.data.total / days));
       </v-card-subtitle>
     </v-card-item>
 
-    <v-divider />
-
     <v-card-item class="py-0">
       <v-card-title>
         <v-icon icon="mdi-progress-star-four-points" style="color: goldenrod" />
@@ -308,10 +309,9 @@ const avg = computed(() => Math.ceil(props.data.total / days));
     <v-card-actions>
       <v-btn
         title="Open W3Champions Profile Page"
-        color="dark"
+        color="transparent"
         block
-        border
-        variant="text"
+        variant="flat"
         @click="() => open(battleTag)"
         ><img :src="w3ciconDark" height="22px"
       /></v-btn>
@@ -320,28 +320,6 @@ const avg = computed(() => Math.ceil(props.data.total / days));
 </template>
 
 <style scoped>
-.gold {
-  background: radial-gradient(
-      ellipse farthest-corner at right bottom,
-      #fedb37 0%,
-      #fdb931 8%,
-      #9f7928 30%,
-      #8a6e2f 40%,
-      transparent 80%
-    ),
-    radial-gradient(
-      ellipse farthest-corner at left top,
-      #ffffff 0%,
-      #ffffac 8%,
-      #d1b464 25%,
-      #5d4a1f 62.5%,
-      #5d4a1f 100%
-    );
-}
-.plain {
-  background-color: transparent;
-}
-
 .card-shine-effect {
   --shine-deg: 45deg;
   position: relative;

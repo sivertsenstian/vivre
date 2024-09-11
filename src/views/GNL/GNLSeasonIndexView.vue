@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useTheme } from "vuetify";
 import { computed } from "vue";
-import { createGNLStore } from "@/stores/gnl";
+import { useGNLStore } from "@/stores/gnl";
 import { Race } from "@/stores/races";
 import ActivityTable from "@/components/ActivityTable.vue";
 import GNLPlayerBanner from "@/components/gnl/GNLPLayerBanner.vue";
@@ -12,8 +12,10 @@ import { Bar } from "vue-chartjs";
 const theme = useTheme();
 const isDark = computed(() => theme.global.current.value.dark);
 
-const useGNLStore = createGNLStore(
-  15,
+const season = 15;
+const store = useGNLStore();
+
+store.initialize(
   [
     {
       battleTag: "SaulApeMan#2163",
@@ -44,7 +46,6 @@ const useGNLStore = createGNLStore(
     { battleTag: "vscan#3284", race: Race.Orc },
   ],
 );
-const store = useGNLStore();
 
 const points = computed(() => {
   return store.players.map((p) => {
@@ -115,11 +116,8 @@ const options = {
 <template>
   <main style="height: 100vh; overflow-y: auto">
     <v-container fluid style="opacity: 1">
-      <v-sheet
-        class="pa-12"
-        elevation="10"
-        style="min-height: 90vh"
-        v-if="!_isEmpty(store.data)">
+      <v-skeleton-loader v-if="_isEmpty(store.data)"></v-skeleton-loader>
+      <v-sheet v-else class="pa-12" elevation="10" style="min-height: 90vh">
         <v-row>
           <v-col cols="12" class="text-center"
             ><div class="text-h2">GNL Season {{ store.season }}</div>
@@ -154,6 +152,8 @@ const options = {
                       {
                         label: 'points',
                         backgroundColor: 'goldenrod',
+                        borderColor: 'darkgoldenrod',
+                        borderWidth: 0,
                         data: points.map((p) => p.points),
                         datalabels: {
                           clip: false,

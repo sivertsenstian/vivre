@@ -2,21 +2,16 @@
 import { Race, raceIcon } from "@/stores/races";
 import gnl_coach_saulapeman from "@assets/gnl/coaches/saulapeman.jpg";
 import gnl_coach_kageman from "@assets/gnl/coaches/kageman.jpg";
-import _range from "lodash/range";
+import gnl_coach_missing from "@/assets/creeproutes/missing.png";
+
 import moment from "moment/moment";
 import w3cicon from "@/assets/w3c.png";
 import w3ciconDark from "@/assets/w3c_dark.png";
-
-const days = moment()
-  .startOf("day")
-  .diff(moment("01.07.2024", "DD.MM.YYYY").startOf("day"), "days");
 
 const coachGnlBanner = {
   ["KaGeMaN#1160"]: gnl_coach_kageman,
   ["SaulApeMan#2163"]: gnl_coach_saulapeman,
 };
-
-import { computed } from "vue";
 
 interface Props {
   race: Race;
@@ -39,11 +34,7 @@ const open = (battleTag: string) =>
 </script>
 
 <template>
-  <v-card
-    class="text-center pa-3 gold"
-    color="surface"
-    :elevation="10"
-    style="border: 1px solid darkgoldenrod">
+  <v-card class="text-center pa-3 gold" color="surface" :elevation="10">
     <v-list-item class="px-0">
       <template v-slot:prepend>
         <img
@@ -61,7 +52,7 @@ const open = (battleTag: string) =>
     <v-img
       class="rounded portrait"
       height="250"
-      :src="coachGnlBanner[battleTag]"
+      :src="coachGnlBanner?.[battleTag] ?? gnl_coach_missing"
       cover></v-img>
 
     <v-card-item>
@@ -102,6 +93,11 @@ const open = (battleTag: string) =>
 
 <style scoped>
 .gold {
+  border-radius: 0.875rem;
+  padding: 4rem 2rem;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  border: 1px solid darkgoldenrod;
+
   background: radial-gradient(
       ellipse farthest-corner at right bottom,
       #fedb37 0%,
@@ -124,44 +120,5 @@ const open = (battleTag: string) =>
   border-width: 3px;
   border-style: solid;
   border-color: darkgoldenrod;
-}
-
-.card-shine-effect {
-  --shine-deg: 45deg;
-  position: relative;
-  overflow: hidden;
-  border-radius: 0.875rem;
-  border: 1px solid rgb(15 23 42);
-  background-color: rgb(9 9 11);
-  padding: 4rem 2rem;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-  max-width: 28rem;
-
-  background-repeat: no-repeat;
-  background-position:
-    -100% 0,
-    0 0;
-
-  background-image: linear-gradient(
-    var(--shine-deg),
-    transparent 20%,
-    transparent 40%,
-    rgb(68, 68, 68, 0.2) 50%,
-    rgb(68, 68, 68, 0.2) 55%,
-    transparent 70%,
-    transparent 100%
-  );
-
-  background-size:
-    250% 250%,
-    100% 100%;
-  transition: background-position 0s ease;
-}
-
-.card-shine-effect:hover {
-  background-position:
-    200%0,
-    0 0;
-  transition-duration: 1.5s;
 }
 </style>

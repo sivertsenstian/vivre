@@ -5,7 +5,6 @@ import {
   getInfo,
   getRaceStatistics,
   getSeasonGamesBetween,
-  getwins,
   isRace,
 } from "@/utilities/matchcalculator";
 import { Race } from "@/stores/races";
@@ -51,40 +50,49 @@ const getData = async (tag: string, start: Moment, end: Moment) => {
   return result;
 };
 
-export const createGNLStore = (
-  season: number,
-  coaches: IGNLAccount[],
-  players: IGNLAccount[],
-) => {
-  return defineStore(`gnl/${season}`, () => {
-    const data = ref<any>({} as any);
-    const dates = {
-      start: moment("01.08.2024", "DD.MM.YYYY").startOf("day"),
-      end: moment("01.10.2024", "DD.MM.YYYY").startOf("day"),
-      today: moment().startOf("day"),
-      daysSinceStart: moment()
-        .startOf("day")
-        .diff(moment("01.07.2024", "DD.MM.YYYY").startOf("day"), "days"),
-    };
+export const useGNLStore = defineStore("gnl", () => {
+  const coaches = ref<IGNLAccount[]>([]);
+  const players = ref<IGNLAccount[]>([]);
+  const timer = ref<number>();
 
-    // Do it live!
-    const refresh = async () => {
-      const result = {};
-      await Promise.all(
-        [...coaches, ...players].map(async (account: IGNLAccount): Promise => {
+  const data = ref<any>({} as any);
+  const dates = {
+    start: moment("01.08.2024", "DD.MM.YYYY").startOf("day"),
+    end: moment("01.10.2024", "DD.MM.YYYY").startOf("day"),
+    today: moment().startOf("day"),
+    daysSinceStart: moment()
+      .startOf("day")
+      .diff(moment("01.07.2024", "DD.MM.YYYY").startOf("day"), "days"),
+  };
+
+  // Do it live!
+  const refresh = async () => {
+    const result = {};
+    await Promise.all(
+      [...coaches.value, ...players.value].map(
+        async (account: IGNLAccount): Promise => {
           result[account.battleTag] = await getData(
             account.battleTag,
             dates.start,
             dates.end,
           );
-        }),
-      );
+        },
+      ),
+    );
 
-      data.value = result;
-      // setTimeout(refresh, 10000);
-    };
+    data.value = result;
+    timer.value = setTimeout(refresh, 10000);
+  };
+
+  const initialize = (c, p) => {
+    clearTimeout(timer.value);
+    data.value = {};
+
+    coaches.value = c;
+    players.value = p;
 
     void refresh();
-    return { season, data, dates, coaches, players };
-  });
-};
+  };
+
+  return { initialize, data, dates, coaches, players };
+});
