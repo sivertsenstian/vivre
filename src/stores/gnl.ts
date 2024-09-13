@@ -1,6 +1,11 @@
 import { defineStore } from "pinia";
-import type { IGNLAccount, IStatistics } from "@/utilities/types";
+import type {
+  IGNLAccount,
+  IGNLStatistics,
+  IStatistics,
+} from "@/utilities/types";
 import moment from "moment";
+import type { Moment } from "moment";
 import {
   getInfo,
   getRaceStatistics,
@@ -10,9 +15,10 @@ import {
 import { Race } from "@/stores/races";
 import { computed, ref } from "vue";
 import { doc, setDoc } from "firebase/firestore";
+import { useFirestore } from "vuefire";
 
 const getData = async (tag: string, start: Moment, end: Moment) => {
-  let result: IStatistics = {} as any;
+  let result: IGNLStatistics = {} as any;
   let seasonActual = [];
 
   try {
@@ -76,9 +82,9 @@ export const useGNLStore = defineStore("gnl", () => {
 
   // Do it live!
   const refresh = async () => {
-    const result = {};
+    const result: any = {};
     await Promise.all(
-      players.value.map(async (account: IGNLAccount): Promise => {
+      players.value.map(async (account: IGNLAccount): Promise<void> => {
         result[account.battleTag] = await getData(
           account.battleTag,
           dates.value.start,
@@ -91,7 +97,7 @@ export const useGNLStore = defineStore("gnl", () => {
     timer.value = setTimeout(refresh, 10000);
   };
 
-  const initialize = (d, t) => {
+  const initialize = (d: any, t: any) => {
     start.value = moment(d.start, "DD.MM.YYYY");
     end.value = moment(d.end, "DD.MM.YYYY");
 
@@ -118,13 +124,15 @@ export const useGNLStore = defineStore("gnl", () => {
     for (let i = 0; i < d.teams.length; i++) {
       const team = d.teams[i];
       const data = await Promise.all(
-        team.players.map(async (account: IGNLAccount): Promise => {
-          return await getData(
-            account.battleTag,
-            dates.value.start,
-            dates.value.end,
-          );
-        }),
+        team.players.map(
+          async (account: IGNLAccount): Promise<IGNLStatistics> => {
+            return await getData(
+              account.battleTag,
+              dates.value.start,
+              dates.value.end,
+            );
+          },
+        ),
       );
 
       result.push({
@@ -136,6 +144,7 @@ export const useGNLStore = defineStore("gnl", () => {
   };
 
   const save = async (item: any) => {
+    const db = useFirestore();
     try {
       await setDoc(doc(db, "gnl", item.id), item);
     } catch (e) {
