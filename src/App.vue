@@ -72,7 +72,7 @@ function toggleTheme() {
           title="Build Orders"
           router
           to="/buildorders"></v-list-item>
-        <v-list-group>
+        <v-list-group v-if="false">
           <template v-slot:activator="{ props }">
             <v-list-item
               color="green"
