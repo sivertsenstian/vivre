@@ -1,22 +1,15 @@
 <script setup lang="ts">
 import moment from "moment";
 import { useBuildsStore } from "@/stores/builds";
-import {
-  Race,
-  raceName,
-  raceIcon,
-  raceUpkeep,
-  creeproutes,
-} from "@/stores/races";
+import { raceName, raceIcon, raceUpkeep } from "@/stores/races";
 import { useRoute, useRouter } from "vue-router";
 import { useDocument, useFirestore } from "vuefire";
 import { doc } from "firebase/firestore";
 
-import type { IBuild, IBuildOrderState } from "@/utilities/types";
-import { computed, ref } from "vue";
+import type { IBuild } from "@/utilities/types";
+import { computed } from "vue";
 import ViabilitySlider from "@/components/ViabilitySlider.vue";
 
-import { MdPreview } from "md-editor-v3";
 import MarkdownViewer from "@/components/MarkdownViewer.vue";
 import StepAnnotation from "@/components/StepAnnotation.vue";
 
@@ -85,8 +78,7 @@ const order = computed(() => {
         class="pa-8"
         elevation="10"
         style="min-height: 90vh"
-        v-if="buildorder?.id"
-      >
+        v-if="buildorder?.id">
         <v-btn
           prepend-icon="mdi-arrow-left"
           color="secondary"
@@ -150,8 +142,7 @@ const order = computed(() => {
                     buildorder?.id
                       ? router.push(`/buildorders/${buildorder.id}/edit`)
                       : null
-                "
-              >
+                ">
                 Edit Build
               </v-btn>
             </v-col>
@@ -196,8 +187,7 @@ const order = computed(() => {
                           ? 'orange'
                           : 'red'
                     "
-                    prepend-icon="mdi-weight-lifter"
-                  >
+                    prepend-icon="mdi-weight-lifter">
                     {{ buildorder.difficulty }}
                   </v-chip>
                 </v-col>
@@ -210,8 +200,7 @@ const order = computed(() => {
                       :text="tag"
                       prepend-icon="mdi-tag"
                       color="primary"
-                      size="small"
-                    >
+                      size="small">
                     </v-chip>
                   </v-chip-group>
                 </v-col>
@@ -250,21 +239,18 @@ const order = computed(() => {
                       >
                       <div
                         class="text-subtitle-2 ml-auto"
-                        style="display: inline-block; float: right"
-                      >
+                        style="display: inline-block; float: right">
                         <img
                           style="vertical-align: middle"
                           width="20px"
-                          :src="raceIcon[buildorder.player]"
-                        />
+                          :src="raceIcon[buildorder.player]" />
                         {{ raceName[buildorder.player] }}
                         <span class="font-weight-bold"> vs </span>
 
                         <img
                           style="vertical-align: middle"
                           width="20px"
-                          :src="raceIcon[buildorder.opponent]"
-                        />
+                          :src="raceIcon[buildorder.opponent]" />
                         {{ raceName[buildorder.opponent] }}
                       </div>
                     </div>
@@ -272,8 +258,7 @@ const order = computed(() => {
                       class="steps-table"
                       hover
                       height="70vh"
-                      fixed-header
-                    >
+                      fixed-header>
                       <thead>
                         <tr>
                           <th class="text-left">#</th>
@@ -292,8 +277,7 @@ const order = computed(() => {
                           }"
                           :title="
                             step.timing ? 'This is an important timing!' : ''
-                          "
-                        >
+                          ">
                           <template v-if="!step.separator">
                             <td class="text-center">{{ order[i] }}</td>
                             <td>{{ step.time }}</td>
@@ -309,13 +293,11 @@ const order = computed(() => {
                                   display: flex;
                                   justify-content: start;
                                   align-items: center;
-                                "
-                              >
+                                ">
                                 <img
                                   class="ml-2"
                                   :src="raceUpkeep[buildorder.player]"
-                                  width="25px"
-                                />
+                                  width="25px" />
                                 <span class="ml-2">{{ step.food }}</span>
                               </div>
                             </td>
@@ -325,8 +307,7 @@ const order = computed(() => {
                               <v-icon
                                 color="primary"
                                 variant=""
-                                icon="mdi-shield-outline"
-                              />
+                                icon="mdi-shield-outline" />
                             </td>
                             <td colspan="2" class="py-2">
                               <span

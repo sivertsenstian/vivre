@@ -6,6 +6,7 @@ import _round from "lodash/round";
 import _first from "lodash/first";
 import _groupBy from "lodash/groupBy";
 import axios from "axios";
+import moment from "moment";
 
 export const getPercentage = (data: any, race: Race) => {
   return _round(
@@ -51,15 +52,14 @@ export const getInfo = (tag: string, matches: any[]) => {
 };
 
 export const iswin = (m: any, ...tags: string[]) => {
-  return tags.some(
-    (tag: string) =>
-      m?.teams?.some(
-        (t: any) =>
-          t.won &&
-          t.players.some(
-            (p: any) => p.battleTag.toLowerCase() === tag.toLowerCase(),
-          ),
-      ),
+  return tags.some((tag: string) =>
+    m?.teams?.some(
+      (t: any) =>
+        t.won &&
+        t.players.some(
+          (p: any) => p.battleTag.toLowerCase() === tag.toLowerCase(),
+        ),
+    ),
   );
 };
 
@@ -243,6 +243,39 @@ export const getAllSeasonGames = async (
   }
 
   return all;
+};
+
+export const getSeasonGamesBetween = async (
+  tag: string,
+  season: number,
+  from: Moment,
+  to: Moment,
+  max: number = 0,
+) => {
+  let all: any[] = [];
+  let finished = false;
+  let prev = all.length;
+  let failsafe = 0;
+
+  while (!finished && failsafe < 10) {
+    const { data: response } = await axios.get(
+      url(tag, all.length, 100, season),
+    );
+
+    all = [...all, ...response.matches];
+
+    finished =
+      all.length === response.count ||
+      all.length === prev ||
+      (max !== 0 && all.length > max) ||
+      moment(_last(all)?.endTime).isBefore(from);
+    prev = all.length;
+    failsafe++;
+  }
+
+  return all.filter(
+    (m) => moment(m.endTime).isAfter(from) && moment(m.endTime).isBefore(to),
+  );
 };
 
 export const numberOfGames = (target: number, avg: number) =>
