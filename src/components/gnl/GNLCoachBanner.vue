@@ -10,7 +10,7 @@ import gnl_coach_missing from "@/assets/creeproutes/missing.png";
 import w3cicon from "@/assets/w3c.png";
 import w3ciconDark from "@/assets/w3c_dark.png";
 
-const coachGnlBanner = {
+const coachGnlBanner: any = {
   ["KaGeMaN#1160"]: gnl_coach_kageman,
   ["SaulApeMan#2163"]: gnl_coach_saulapeman,
   ["gotQuail#1103"]: gnl_coach_gotquail,

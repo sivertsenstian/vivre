@@ -58,6 +58,19 @@ export interface IStatistics {
   };
 }
 
+export interface IGNLStatistics {
+  battleTag: string;
+  race: Race;
+  season: {
+    summary: IRaceStatistics;
+    [Race.Random]: IRaceStatistics;
+    [Race.Human]: IRaceStatistics;
+    [Race.Orc]: IRaceStatistics;
+    [Race.NightElf]: IRaceStatistics;
+    [Race.Undead]: IRaceStatistics;
+  };
+}
+
 export interface IOngoingHistory {
   wins: number;
   loss: number;

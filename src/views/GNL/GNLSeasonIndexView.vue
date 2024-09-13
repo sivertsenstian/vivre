@@ -4,7 +4,6 @@ import { computed } from "vue";
 import { useGNLStore } from "@/stores/gnl";
 import { Race } from "@/stores/races";
 import _isEmpty from "lodash/isEmpty";
-import { Bar } from "vue-chartjs";
 import { useDocument, useFirestore } from "vuefire";
 import { doc } from "firebase/firestore";
 import gnl_team_apelords from "@assets/gnl/teams/apelords.jpg";
@@ -13,7 +12,7 @@ import gnl_team_gigglinggoblins from "@assets/gnl/teams/goblins.jpg";
 import gnl_team_gnlbears from "@assets/gnl/teams/bears.jpg";
 import gnl_team_missing from "@/assets/creeproutes/missing.png";
 
-const teamGnlBanner = {
+const teamGnlBanner: any = {
   ["apelords"]: gnl_team_apelords,
   ["thebananapickers"]: gnl_team_bananapickers,
   ["gigglinggoblins"]: gnl_team_gigglinggoblins,
@@ -184,8 +183,8 @@ const options = {
 // End
 
 const points = computed(() => {
-  return store.allData.map((t) => {
-    return t.data.reduce((s, p) => {
+  return store.allData.map((t: any) => {
+    return t.data.reduce((s: number, p: any) => {
       const d = p.season[p.race];
       return s + ((d?.wins ?? 0) * 3 + (d?.loss ?? 0));
     }, 0);
@@ -330,7 +329,7 @@ const model = defineModel<string>({
             <Bar
               height="250px"
               :data="{
-                labels: store.allData.map((t) => t.name),
+                labels: store.allData.map((t: any) => t.name),
                 datasets: [
                   {
                     label: 'points',

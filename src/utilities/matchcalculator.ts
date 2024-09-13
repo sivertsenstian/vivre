@@ -7,6 +7,7 @@ import _first from "lodash/first";
 import _groupBy from "lodash/groupBy";
 import axios from "axios";
 import moment from "moment";
+import type { Moment } from "moment";
 
 export const getPercentage = (data: any, race: Race) => {
   return _round(

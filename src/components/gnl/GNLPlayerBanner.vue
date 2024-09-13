@@ -16,14 +16,14 @@ import _fill from "lodash/fill";
 import w3cicon from "@/assets/w3c.png";
 import w3ciconDark from "@/assets/w3c_dark.png";
 
-const raceGnlBanner = {
+const raceGnlBanner: any = {
   [Race.Human]: gnl_banner_hu,
   [Race.NightElf]: gnl_banner_ne,
   [Race.Undead]: gnl_banner_ud,
   [Race.Orc]: gnl_banner_oc,
 };
 
-const raceGnlColor = {
+const raceGnlColor: any = {
   [Race.Human]: "#e8b453",
   [Race.NightElf]: "#6a5693",
   [Race.Undead]: "#5198ba",
@@ -110,25 +110,13 @@ const options = {
 } as any;
 // End
 
-const raceBanner: any = {
-  [Race.Human]: hu_banner,
-  [Race.Orc]: oc_banner,
-  [Race.Undead]: ud_banner,
-  [Race.NightElf]: ne_banner,
-  [Race.Random]: r_banner,
-};
-
 interface Props {
   player: any;
   dates: any;
   teamPoints: number;
   rank: number;
-  race: Race;
   current: number;
-  diff?: number;
-  label: string;
   highlight?: boolean;
-  battleTag: string;
   data: any;
 }
 const props = defineProps<Props>();
@@ -139,7 +127,7 @@ const mmr = computed(() => {
       const d = moment(m.endTime).dayOfYear();
       const day =
         props.dates.daysSinceStart - (props.dates.today.dayOfYear() - d);
-      const p = getplayer(props.battleTag)(m);
+      const p = getplayer(props.player.battleTag)(m);
       const mmr = p.players[0].currentMmr;
 
       for (let i = day; i < r.length; i++) {
@@ -160,7 +148,7 @@ const mmr = computed(() => {
 
 const wins = computed(() => {
   return props.data.matches
-    .filter((m: any) => getwins(props.battleTag, m))
+    .filter((m: any) => getwins(props.player.battleTag, m))
     ?.reduce(
       (r: number[], m: any) => {
         const d = moment(m.endTime).dayOfYear();
@@ -183,7 +171,7 @@ const wins = computed(() => {
 
 const loss = computed(() => {
   return props.data.matches
-    .filter((m: any) => getloss(props.battleTag, m))
+    .filter((m: any) => getloss(props.player.battleTag, m))
     ?.reduce(
       (r: number[], m: any) => {
         const d = moment(m.endTime).dayOfYear();
@@ -223,21 +211,23 @@ const points = computed(() => props.data.wins * 3 + props.data.loss);
     color="surface"
     :class="`text-center pa-0 card-shine-effect ${points >= goal ? 'goal' : ''}`"
     :elevation="10">
-    <v-list-item class="px-3" :style="`background: ${raceGnlColor[race]}`">
+    <v-list-item
+      class="px-3"
+      :style="`background: ${raceGnlColor[player.race]}`">
       <template v-slot:prepend>
         <img
           style="vertical-align: middle"
           width="40px"
-          :src="raceIcon[race]" />
+          :src="raceIcon[player.race]" />
       </template>
       <template v-slot:title>
         <div class="ml-1 text-left text-h5">
-          {{ battleTag }}
+          {{ player.battleTag }}
         </div>
       </template>
     </v-list-item>
 
-    <v-img height="250" :src="raceGnlBanner[race]" cover></v-img>
+    <v-img height="250" :src="raceGnlBanner[player.race]" cover></v-img>
 
     <Bar
       v-if="data.matches.length"
@@ -353,7 +343,7 @@ const points = computed(() => props.data.wins * 3 + props.data.loss);
         color="transparent"
         block
         variant="flat"
-        @click="() => open(battleTag)"
+        @click="() => open(player.battleTag)"
         ><img :src="w3ciconDark" height="22px"
       /></v-btn>
     </v-card-actions>

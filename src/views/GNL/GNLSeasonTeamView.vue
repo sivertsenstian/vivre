@@ -3,7 +3,7 @@ import { useTheme } from "vuetify";
 import { computed, ref } from "vue";
 import { useGNLStore } from "@/stores/gnl";
 import ActivityTable from "@/components/ActivityTable.vue";
-import GNLPlayerBanner from "@/components/gnl/GNLPLayerBanner.vue";
+import GNLPlayerBanner from "@/components/gnl/GNLPlayerBanner.vue";
 import GNLCoachBanner from "@/components/gnl/GNLCoachBanner.vue";
 import _isEmpty from "lodash/isEmpty";
 import {
@@ -20,7 +20,7 @@ import gnl_team_gigglinggoblins from "@assets/gnl/teams/goblins.jpg";
 import gnl_team_gnlbears from "@assets/gnl/teams/bears.jpg";
 import gnl_team_missing from "@/assets/creeproutes/missing.png";
 
-const teamGnlBanner = {
+const teamGnlBanner: any = {
   ["apelords"]: gnl_team_apelords,
   ["thebananapickers"]: gnl_team_bananapickers,
   ["gigglinggoblins"]: gnl_team_gigglinggoblins,
@@ -40,11 +40,11 @@ const { data, promise } = useDocument<any>(
   doc(db, "gnl", "90807d36-a989-4c90-9363-9d064db121ca"),
 );
 
-const current = ref({});
+const current = ref<any>({});
 
 promise.value.then((data) => {
   const team = data.teams.find(
-    (t) => t.id.toLowerCase() === String(route.params.team).toLowerCase(),
+    (t: any) => t.id.toLowerCase() === String(route.params.team).toLowerCase(),
   );
 
   if (team) {
@@ -55,7 +55,7 @@ promise.value.then((data) => {
 
 onBeforeRouteUpdate((to) => {
   const team = data.value?.teams.find(
-    (t) => t.id.toLowerCase() === String(to.params.team).toLowerCase(),
+    (t: any) => t.id.toLowerCase() === String(to.params.team).toLowerCase(),
   );
 
   if (team) {
@@ -318,17 +318,15 @@ const options = {
         <v-row class="justify-center">
           <v-col cols="3" v-for="(player, rank) in players">
             <GNLPlayerBanner
+              v-if="player"
               :dates="store.dates"
               :rank="rank"
               :team-points="teamPoints"
               :player="player"
               :data="store.data[player.battleTag].season[player.race]"
-              :battle-tag="player.battleTag"
-              :race="player.race"
               :current="
                 store.data[player.battleTag].season[player.race].mmr.current
-              "
-              :label="player.battleTag" />
+              " />
           </v-col>
         </v-row>
       </v-sheet>
