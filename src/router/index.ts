@@ -10,6 +10,8 @@ import BuildOrdersIndexView from "@/views/BuildOrders/BuildOrdersIndexView.vue";
 import NewBuildOrderView from "@/views/BuildOrders/NewBuildOrderView.vue";
 import ShowBuildOrderView from "@/views/BuildOrders/ShowBuildOrderView.vue";
 import EditBuildOrderView from "@/views/BuildOrders/EditBuildOrderView.vue";
+import GNLSeasonIndexView from "@/views/GNL/GNLSeasonIndexView.vue";
+import GNLSeasonTeamView from "@/views/GNL/GNLSeasonTeamView.vue";
 
 const router = createRouter({
   history: createWebHashHistory(import.meta.env.BASE_URL),
@@ -42,7 +44,7 @@ const router = createRouter({
           component: RoadTo3000,
         },
       ],
-    },
+   },
     {
       path: "/buildorders",
       children: [
@@ -62,6 +64,15 @@ const router = createRouter({
       ],
     },
     {
+      path: "/gnl",
+      children: [
+        { path: "", name: "gnl", component: GNLSeasonIndexView },
+        {
+          path: ":team",
+          component: GNLSeasonTeamView,
+        },
+      ],
+    },{
       path: "/settings",
       name: "settings",
       component: SettingsView,

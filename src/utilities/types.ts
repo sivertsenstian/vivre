@@ -128,3 +128,8 @@ export interface IBuildOrderState {
   starred: { [key: string]: boolean };
   owns: { [key: string]: boolean };
 }
+
+export interface IGNLAccount {
+  battleTag: string;
+  race: Race;
+}
