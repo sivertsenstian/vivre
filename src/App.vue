@@ -23,8 +23,7 @@ function toggleTheme() {
         <v-list-item
           :prepend-avatar="logo"
           title="Vivre"
-          subtitle="Dashboard Apelication"
-        ></v-list-item>
+          subtitle="Dashboard Apelication"></v-list-item>
       </v-list>
       <v-divider></v-divider>
       <v-list density="compact" nav>
@@ -33,113 +32,98 @@ function toggleTheme() {
           prepend-icon="mdi-crown"
           title="Live"
           router
-          to="/"
-        ></v-list-item>
+          to="/"></v-list-item>
         <v-list-item
           color="green"
           prepend-icon="mdi-flag"
           title="Season"
           router
-          to="/season"
-        ></v-list-item>
+          to="/season"></v-list-item>
         <v-list-item
           color="green"
           prepend-icon="mdi-vector-polyline"
           title="Creep Routes"
           router
-          to="/creeproutes"
-        ></v-list-item>
+          to="/creeproutes"></v-list-item>
         <v-list-group>
           <template v-slot:activator="{ props }">
             <v-list-item
               color="green"
               v-bind="props"
               prepend-icon="mdi-podcast"
-              title="Events"
-            ></v-list-item>
+              title="Events"></v-list-item>
           </template>
           <v-list-item
             prepend-icon="mdi-robot-happy"
             title="Happy tracker"
-            color="green"
+            color="green-lighten-3"
             router
-            to="/events/happy-tracker"
-          ></v-list-item>
+            to="/events/happy-tracker"></v-list-item>
           <v-list-item
             prepend-icon="mdi-trophy"
             title="3000 MMR"
-            color="green"
+            color="green-lighten-3"
             router
-            to="/events/road-to-3000"
-          ></v-list-item>
+            to="/events/road-to-3000"></v-list-item>
         </v-list-group>
         <v-list-item
           color="green"
           prepend-icon="mdi-castle"
           title="Build Orders"
           router
-          to="/buildorders"
-        ></v-list-item>
+          to="/buildorders"></v-list-item>
         <v-list-group>
           <template v-slot:activator="{ props }">
             <v-list-item
-                color="green"
-                v-bind="props"
-                prepend-icon="mdi-podium"
-                title="Gym Newbie League"
-                router
-                to="/gnl"
-            ></v-list-item>
+              color="green"
+              v-bind="props"
+              prepend-icon="mdi-podium"
+              title="Gym Newbie League"
+              router
+              to="/gnl"></v-list-item>
           </template>
           <v-list-item
-              prepend-icon="mdi-shield-crown-outline"
-              title="Apelords"
-              color="blue"
-              router
-              to="/gnl/apelords"
-          ></v-list-item>
+            prepend-icon="mdi-shield-crown-outline"
+            title="Apelords"
+            color="green-lighten-3"
+            router
+            to="/gnl/apelords"></v-list-item>
           <v-list-item
-              prepend-icon="mdi-shield-crown-outline"
-              title="The Banana Pickers"
-              color="yellow"
-              router
-              to="/gnl/thebananapickers"
-          ></v-list-item>
+            prepend-icon="mdi-shield-crown-outline"
+            title="The Banana Pickers"
+            color="green-lighten-3"
+            router
+            to="/gnl/thebananapickers"></v-list-item>
           <v-list-item
-              prepend-icon="mdi-shield-crown-outline"
-              title="Giggling Goblins"
-              color="green"
-              router
-              to="/gnl/gigglinggoblins"
-          ></v-list-item>
+            prepend-icon="mdi-shield-crown-outline"
+            title="Giggling Goblins"
+            color="green-lighten-3"
+            router
+            to="/gnl/gigglinggoblins"></v-list-item>
           <v-list-item
-              prepend-icon="mdi-shield-crown-outline"
-              title="GNL Bears"
-              color="red"
-              router
-              to="/gnl/gnlbears"
-          ></v-list-item>
+            prepend-icon="mdi-shield-crown-outline"
+            title="GNL Bears"
+            color="green-lighten-3"
+            router
+            to="/gnl/gnlbears"></v-list-item>
         </v-list-group>
         <v-list-item
           color="green"
           prepend-icon="mdi-information"
           title="Settings"
           router
-          to="/settings"
-        ></v-list-item>
+          to="/settings"></v-list-item>
         <v-list-item
           color="green"
           prepend-icon="mdi-handshake-outline"
           title="About"
           router
-          to="/about"
-        ></v-list-item>
+          to="/about"></v-list-item>
         <v-list-item
           color="yellow"
           prepend-icon="mdi-lightbulb"
           :title="isDark ? 'Light' : 'Dark'"
-          @click="toggleTheme"
-        >
+          @click="toggleTheme">
         </v-list-item>
       </v-list>
     </v-navigation-drawer>
@@ -149,8 +133,7 @@ function toggleTheme() {
         :style="{
           overflow: 'hidden',
           background: 'url(' + (isDark ? bgDarkUrl : bgLightUrl) + ')',
-        }"
-      >
+        }">
         <RouterView />
       </div>
     </v-main>
@@ -162,5 +145,9 @@ div.container {
   height: 100vh;
   background-attachment: fixed !important;
   background-size: cover !important;
+}
+
+.v-list-group__items .v-list-item {
+  padding-inline-start: 15px !important;
 }
 </style>

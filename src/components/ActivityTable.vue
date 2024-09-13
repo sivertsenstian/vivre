@@ -96,8 +96,7 @@ const darkIntensity = (n: number) => {
           }"
           :style="{
             color: moment().format('d') === '1' ? 'goldenrod' : 'inherit',
-          }"
-        >
+          }">
           M
         </th>
         <th
@@ -107,8 +106,7 @@ const darkIntensity = (n: number) => {
           }"
           :style="{
             color: moment().format('d') === '2' ? 'goldenrod' : 'inherit',
-          }"
-        >
+          }">
           T
         </th>
         <th
@@ -118,8 +116,7 @@ const darkIntensity = (n: number) => {
           }"
           :style="{
             color: moment().format('d') === '3' ? 'goldenrod' : 'inherit',
-          }"
-        >
+          }">
           W
         </th>
         <th
@@ -129,8 +126,7 @@ const darkIntensity = (n: number) => {
           }"
           :style="{
             color: moment().format('d') === '4' ? 'goldenrod' : 'inherit',
-          }"
-        >
+          }">
           T
         </th>
         <th
@@ -140,8 +136,7 @@ const darkIntensity = (n: number) => {
           }"
           :style="{
             color: moment().format('d') === '5' ? 'goldenrod' : 'inherit',
-          }"
-        >
+          }">
           F
         </th>
         <th
@@ -151,8 +146,7 @@ const darkIntensity = (n: number) => {
           }"
           :style="{
             color: moment().format('d') === '6' ? 'goldenrod' : 'inherit',
-          }"
-        >
+          }">
           S
         </th>
         <th
@@ -162,8 +156,7 @@ const darkIntensity = (n: number) => {
           }"
           :style="{
             color: moment().format('d') === '0' ? 'goldenrod' : 'inherit',
-          }"
-        >
+          }">
           S
         </th>
       </tr>
@@ -185,8 +178,7 @@ const darkIntensity = (n: number) => {
           '19',
           '20',
           '21',
-        ]"
-      >
+        ]">
         <td
           :class="{
             'font-weight-bold': moment().format('HH') === hour,
@@ -197,8 +189,7 @@ const darkIntensity = (n: number) => {
             border: 'none',
             color: moment().format('HH') === hour ? 'goldenrod' : '#767676',
             fontSize: '11px',
-          }"
-        >
+          }">
           {{ hour }}:00
         </td>
         <td
@@ -211,8 +202,7 @@ const darkIntensity = (n: number) => {
             'Friday',
             'Saturday',
             'Sunday',
-          ]"
-        >
+          ]">
           <svg height="10" width="10">
             <rect
               rx="5"
@@ -223,8 +213,7 @@ const darkIntensity = (n: number) => {
                 fill: dark
                   ? darkIntensity(activity[`${day},${hour}`])
                   : lightIntensity(activity[`${day},${hour}`]),
-              }"
-            >
+              }">
               <title>
                 {{ day }} {{ hour }}:00 -
                 {{ activity?.[`${day},${hour}`] ?? 0 }}

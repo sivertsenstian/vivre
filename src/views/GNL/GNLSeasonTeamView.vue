@@ -1,13 +1,31 @@
 <script setup lang="ts">
 import { useTheme } from "vuetify";
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import { useGNLStore } from "@/stores/gnl";
-import { Race } from "@/stores/races";
 import ActivityTable from "@/components/ActivityTable.vue";
 import GNLPlayerBanner from "@/components/gnl/GNLPLayerBanner.vue";
 import GNLCoachBanner from "@/components/gnl/GNLCoachBanner.vue";
 import _isEmpty from "lodash/isEmpty";
-import { onBeforeRouteUpdate, useRoute, useRouter } from "vue-router";
+import {
+  onBeforeRouteLeave,
+  onBeforeRouteUpdate,
+  useRoute,
+  useRouter,
+} from "vue-router";
+import { useDocument, useFirestore } from "vuefire";
+import { doc } from "firebase/firestore";
+import gnl_team_apelords from "@assets/gnl/teams/apelords.jpg";
+import gnl_team_bananapickers from "@assets/gnl/teams/banana.jpg";
+import gnl_team_gigglinggoblins from "@assets/gnl/teams/goblins.jpg";
+import gnl_team_gnlbears from "@assets/gnl/teams/bears.jpg";
+import gnl_team_missing from "@/assets/creeproutes/missing.png";
+
+const teamGnlBanner = {
+  ["apelords"]: gnl_team_apelords,
+  ["thebananapickers"]: gnl_team_bananapickers,
+  ["gigglinggoblins"]: gnl_team_gigglinggoblins,
+  ["gnlbears"]: gnl_team_gnlbears,
+};
 
 const theme = useTheme();
 const isDark = computed(() => theme.global.current.value.dark);
@@ -15,96 +33,39 @@ const isDark = computed(() => theme.global.current.value.dark);
 const route = useRoute();
 const router = useRouter();
 
-const teams = {
-  apelords: {
-    coaches: [
-      {
-        battleTag: "gotQuail#1103",
-        race: Race.Human,
-        races: [Race.Human],
-        roles: ["Coach"],
-      },
-    ],
-    players: [
-      { battleTag: "Longjacket#2840", race: Race.Human },
-      { battleTag: "RaZeR#23389", race: Race.Undead },
-      { battleTag: "hengyi#31966", race: Race.Human },
-      { battleTag: "K0rbinian#21728", race: Race.Human },
-      { battleTag: "sd1528681#2302", race: Race.NightElf },
-      { battleTag: "ET3#31514", race: Race.Human },
-      { battleTag: "vscan#3284", race: Race.Orc },
-    ],
-  },
-  thebananapickers: {
-    coaches: [
-      {
-        battleTag: "SaulApeMan#2163",
-        race: Race.Random,
-        races: [Race.Human, Race.Undead, Race.Orc, Race.NightElf],
-        roles: ["Caster", "Coach", "Ape"],
-      },
-    ],
-    players: [
-      { battleTag: "Longjacket#2840", race: Race.Human },
-      { battleTag: "SneakyTurtle#2326919", race: Race.NightElf },
-      { battleTag: "siyanleo#1295", race: Race.Orc },
-      { battleTag: "FVB#1736", race: Race.Orc },
-      { battleTag: "RaZeR#23389", race: Race.Undead },
-      { battleTag: "sd1528681#2302", race: Race.NightElf },
-      { battleTag: "ET3#31514", race: Race.Human },
-      { battleTag: "vscan#3284", race: Race.Orc },
-    ],
-  },
-  gigglinggoblins: {
-    coaches: [
-      {
-        battleTag: "KaGeMaN#1160",
-        race: Race.Human,
-        races: [Race.Human],
-        roles: ["Coach"],
-      },
-    ],
-    players: [
-      { battleTag: "Longjacket#2840", race: Race.Human },
-      { battleTag: "SneakyTurtle#2326919", race: Race.NightElf },
-      { battleTag: "siyanleo#1295", race: Race.Orc },
-      { battleTag: "FVB#1736", race: Race.Orc },
-      { battleTag: "RaZeR#23389", race: Race.Undead },
-      { battleTag: "hengyi#31966", race: Race.Human },
-      { battleTag: "Stakr#21386", race: Race.NightElf },
-      { battleTag: "jung#31458", race: Race.Human },
-    ],
-  },
-  gnlbears: {
-    coaches: [
-      {
-        battleTag: "SaulApeMan#2163",
-        race: Race.Random,
-        races: [Race.Human, Race.Undead, Race.Orc, Race.NightElf],
-        roles: ["Caster", "Coach", "Ape"],
-      },
-    ],
-    players: [
-      { battleTag: "Stakr#21386", race: Race.NightElf },
-      { battleTag: "jung#31458", race: Race.Human },
-      { battleTag: "Lonestar#1441", race: Race.Orc },
-      { battleTag: "K0rbinian#21728", race: Race.Human },
-      { battleTag: "sd1528681#2302", race: Race.NightElf },
-      { battleTag: "ET3#31514", race: Race.Human },
-      { battleTag: "vscan#3284", race: Race.Orc },
-    ],
-  },
-};
-
-const season = 15;
 const store = useGNLStore();
 
-const team = String(route.params.team).toLowerCase();
-store.initialize(teams[team].coaches, teams[team].players);
+const db = useFirestore();
+const { data, promise } = useDocument<any>(
+  doc(db, "gnl", "90807d36-a989-4c90-9363-9d064db121ca"),
+);
+
+const current = ref({});
+
+promise.value.then((data) => {
+  const team = data.teams.find(
+    (t) => t.id.toLowerCase() === String(route.params.team).toLowerCase(),
+  );
+
+  if (team) {
+    current.value = team;
+    store.initialize(data, team);
+  }
+});
 
 onBeforeRouteUpdate((to) => {
-  const team = String(to.params.team).toLowerCase();
-  store.initialize(teams[team].coaches, teams[team].players);
+  const team = data.value?.teams.find(
+    (t) => t.id.toLowerCase() === String(to.params.team).toLowerCase(),
+  );
+
+  if (team) {
+    current.value = team;
+    store.initialize(data, team);
+  }
+});
+
+onBeforeRouteLeave(() => {
+  store.clear();
 });
 
 const points = computed(() => {
@@ -116,6 +77,10 @@ const points = computed(() => {
   } catch {
     return [];
   }
+});
+
+const teamPoints = computed(() => {
+  return points.value.reduce((s, p) => (s += p.points), 0);
 });
 
 const players = computed(() => {
@@ -180,6 +145,10 @@ const options = {
       grid: { display: false },
       type: "category",
     },
+    y: {
+      grid: { display: false },
+      suggestedMax: 800,
+    },
   },
 } as any;
 // End
@@ -192,17 +161,21 @@ const options = {
         class="pa-12"
         elevation="10"
         style="min-height: 90vh"
+        transition="fade-transition"
         v-if="_isEmpty(store.data)">
         <v-row>
-          <v-col cols="12" class="text-center"
-            ><div class="text-h2">GNL Season {{ season }}</div>
+          <v-col cols="12" class="text-center">
+            <div class="text-h2">GNL Season {{ data?.season }}</div>
             <v-progress-linear indeterminate />
           </v-col>
         </v-row>
 
         <v-row>
-          <v-col cols="8">
-            <v-skeleton-loader height="100%" type="image"></v-skeleton-loader>
+          <v-col cols="4">
+            <v-skeleton-loader type="table"></v-skeleton-loader>
+          </v-col>
+          <v-col cols="4">
+            <v-skeleton-loader type="table"></v-skeleton-loader>
           </v-col>
           <v-col cols="4"
             ><v-skeleton-loader type="table"></v-skeleton-loader
@@ -232,27 +205,53 @@ const options = {
         </v-row>
       </v-sheet>
 
-      <v-sheet class="pa-12" elevation="10" style="min-height: 90vh" v-else>
+      <v-sheet
+        class="pa-12"
+        elevation="10"
+        style="min-height: 90vh"
+        transition="fade-transition"
+        v-else>
+        <v-btn
+          prepend-icon="mdi-arrow-left"
+          color="secondary"
+          variant="text"
+          @click="() => router.push('/gnl')"
+          >Go Back</v-btn
+        >
+
         <v-row>
           <v-col cols="12" class="text-center"
-            ><div class="text-h2">GNL Season {{ season }}</div>
+            ><div class="text-h2">
+              <span>GNL Season {{ data?.season }}</span>
+              <span class="text-grey mx-2">//</span>
+              <span class="text-secondary">{{ current?.name }}</span>
+            </div>
             <hr />
           </v-col>
         </v-row>
         <v-row>
-          <v-col cols="8">
+          <v-col cols="4">
+            <v-card>
+              <v-img
+                height="380"
+                :src="teamGnlBanner?.[current.id] ?? gnl_team_missing"
+                class="align-end"
+                gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
+                cover>
+                <v-card-title
+                  class="text-white"
+                  v-text="current.name"></v-card-title>
+              </v-img>
+            </v-card>
+          </v-col>
+          <v-col cols="4">
             <v-row>
               <v-col cols="12">
                 <div class="text-h5">
                   Team Points:
                   <span class="font-weight-bold" style="color: goldenrod">
-                    <span style="vertical-align: middle">{{
-                      points.reduce((s, p) => (s += p.points), 0)
-                    }}</span>
-                    <v-icon
-                      size="x-small"
-                      class="ml-1"
-                      icon="mdi-progress-star-four-points"
+                    <span style="vertical-align: middle">{{ teamPoints }}</span>
+                    <v-icon size="x-small" class="ml-1" icon="mdi-medal"
                   /></span>
                 </div>
               </v-col>
@@ -261,6 +260,7 @@ const options = {
               <v-col cols="12">
                 <Bar
                   height="315px"
+                  style="overflow: visible"
                   :data="{
                     labels: points.map((p) => p.battleTag),
                     datasets: [
@@ -269,10 +269,11 @@ const options = {
                         backgroundColor: 'goldenrod',
                         borderColor: 'darkgoldenrod',
                         borderWidth: 0,
+                        barPercentage: 0.8,
                         data: points.map((p) => p.points),
                         datalabels: {
-                          clip: false,
-                          clamp: false,
+                          clip: true,
+                          clamp: true,
                           anchor: 'end',
                           align: 'end',
                           offset: 0,
@@ -292,6 +293,12 @@ const options = {
         </v-row>
 
         <v-row>
+          <v-col cols="12">
+            <v-divider />
+          </v-col>
+        </v-row>
+
+        <v-row>
           <v-col offset="4" cols="4" class="text-center">
             <div class="text-h4">Coaches</div>
             <hr />
@@ -299,16 +306,7 @@ const options = {
         </v-row>
         <v-row class="justify-center">
           <v-col cols="3" v-for="coach in store.coaches">
-            <GNLCoachBanner
-              :data="store.data[coach.battleTag].season[coach.race]"
-              :battle-tag="coach.battleTag"
-              :race="coach.race"
-              :races="coach.races"
-              :roles="coach.roles"
-              :current="
-                store.data[coach.battleTag].season[coach.race].mmr.current
-              "
-              :label="coach.battleTag" />
+            <GNLCoachBanner :coach="coach" />
           </v-col>
         </v-row>
         <v-row>
@@ -320,7 +318,10 @@ const options = {
         <v-row class="justify-center">
           <v-col cols="3" v-for="(player, rank) in players">
             <GNLPlayerBanner
+              :dates="store.dates"
               :rank="rank"
+              :team-points="teamPoints"
+              :player="player"
               :data="store.data[player.battleTag].season[player.race]"
               :battle-tag="player.battleTag"
               :race="player.race"

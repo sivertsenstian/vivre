@@ -46,6 +46,7 @@ import {
 import "chartjs-adapter-moment";
 import ChartDataLabels from "chartjs-plugin-datalabels";
 import { computed } from "vue";
+import _round from "lodash/round";
 
 ChartJS.register(
   LineController,
@@ -109,10 +110,6 @@ const options = {
 } as any;
 // End
 
-const start = moment("01.08.2024", "DD.MM.YYYY").startOf("day");
-const today = moment().add(1, "day").startOf("day");
-const days = today.diff(start, "days");
-
 const raceBanner: any = {
   [Race.Human]: hu_banner,
   [Race.Orc]: oc_banner,
@@ -122,6 +119,9 @@ const raceBanner: any = {
 };
 
 interface Props {
+  player: any;
+  dates: any;
+  teamPoints: number;
   rank: number;
   race: Race;
   current: number;
@@ -137,7 +137,8 @@ const mmr = computed(() => {
   return props.data.matches.reverse()?.reduce(
     (r: number[], m: any) => {
       const d = moment(m.endTime).dayOfYear();
-      const day = days - (today.dayOfYear() - d);
+      const day =
+        props.dates.daysSinceStart - (props.dates.today.dayOfYear() - d);
       const p = getplayer(props.battleTag)(m);
       const mmr = p.players[0].currentMmr;
 
@@ -147,7 +148,13 @@ const mmr = computed(() => {
 
       return r;
     },
-    _fill(_range(today.dayOfYear() - days, today.dayOfYear()), 0),
+    _fill(
+      _range(
+        props.dates.today.dayOfYear() - props.dates.daysSinceStart,
+        props.dates.today.dayOfYear(),
+      ),
+      0,
+    ),
   );
 });
 
@@ -157,12 +164,19 @@ const wins = computed(() => {
     ?.reduce(
       (r: number[], m: any) => {
         const d = moment(m.endTime).dayOfYear();
-        const day = days - (today.dayOfYear() - d);
+        const day =
+          props.dates.daysSinceStart - (props.dates.today.dayOfYear() - d);
 
         r[day]++;
         return r;
       },
-      _fill(_range(today.dayOfYear() - days, today.dayOfYear()), 0),
+      _fill(
+        _range(
+          props.dates.today.dayOfYear() - props.dates.daysSinceStart,
+          props.dates.today.dayOfYear(),
+        ),
+        0,
+      ),
     )
     .map((v: number) => v);
 });
@@ -173,12 +187,19 @@ const loss = computed(() => {
     ?.reduce(
       (r: number[], m: any) => {
         const d = moment(m.endTime).dayOfYear();
-        const day = days - (today.dayOfYear() - d);
+        const day =
+          props.dates.daysSinceStart - (props.dates.today.dayOfYear() - d);
 
         r[day]++;
         return r;
       },
-      _fill(_range(today.dayOfYear() - days, today.dayOfYear()), 0),
+      _fill(
+        _range(
+          props.dates.today.dayOfYear() - props.dates.daysSinceStart,
+          props.dates.today.dayOfYear(),
+        ),
+        0,
+      ),
     )
     .map((v: number) => v);
 });
@@ -189,15 +210,19 @@ const open = (battleTag: string) =>
     "_blank",
   );
 
-const avg = computed(() => Math.ceil(props.data.total / days));
+const avg = computed(() =>
+  Math.ceil(props.data.total / props.dates.daysSinceStart),
+);
+
+const goal = 400;
+const points = computed(() => props.data.wins * 3 + props.data.loss);
 </script>
 
 <template>
   <v-card
     color="surface"
-    class="text-center pa-0 card-shine-effect"
-    :elevation="10"
-    style="border: 1px solid black">
+    :class="`text-center pa-0 card-shine-effect ${points >= goal ? 'goal' : ''}`"
+    :elevation="10">
     <v-list-item class="px-3" :style="`background: ${raceGnlColor[race]}`">
       <template v-slot:prepend>
         <img
@@ -216,9 +241,9 @@ const avg = computed(() => Math.ceil(props.data.total / days));
 
     <Bar
       v-if="data.matches.length"
-      style="position: absolute; bottom: 215px"
+      style="position: absolute; bottom: 219px"
       :data="{
-        labels: _range(0, days)
+        labels: _range(0, dates.daysSinceStart)
           .map((n) => {
             return moment().subtract(n, 'days').startOf('day');
           })
@@ -265,15 +290,26 @@ const avg = computed(() => Math.ceil(props.data.total / days));
         >
         <span>{{ data.mmr.current }} MMR</span></v-card-title
       >
-      <v-card-subtitle class="d-flex justify-space-between">
-        <span class="me-1">Avg. games: {{ avg }} per day </span>
-        <span class="me-1">Contribution: 21%</span>
+      <v-card-subtitle class="d-flex justify-space-between" style="opacity: 1">
+        <span style="opacity: 0.7" class="me-1"
+          >Avg. games: {{ avg }} per day
+        </span>
+        <v-rating
+          half-increments
+          :title="`Team points contribution: ${_round(((data.wins * 3 + data.loss) / teamPoints) * 100)}%`"
+          :length="5"
+          :size="20"
+          :model-value="((data.wins * 3 + data.loss) / goal) * 5"
+          color="#b8860b"
+          active-color="#daa520"
+          empty-icon="mdi-circle-outline"
+          half-icon="mdi-circle-half-full"
+          :full-icon="points < goal ? 'mdi-circle' : 'mdi-medal'" />
       </v-card-subtitle>
     </v-card-item>
 
     <v-card-item class="py-0">
       <v-card-title>
-        <v-icon icon="mdi-progress-star-four-points" style="color: goldenrod" />
         <span
           class="text-h3 fontweight-bold"
           style="color: goldenrod; vertical-align: middle"
@@ -281,7 +317,12 @@ const avg = computed(() => Math.ceil(props.data.total / days));
         >
       </v-card-title>
       <v-card-subtitle>
-        <span class="text-subtitle-2" style="color: goldenrod">points</span>
+        <v-icon size="x-small" icon="mdi-medal" style="color: goldenrod" />
+        <span
+          class="text-subtitle-2"
+          style="vertical-align: middle; color: goldenrod"
+          >points</span
+        >
       </v-card-subtitle>
     </v-card-item>
 
@@ -320,6 +361,25 @@ const avg = computed(() => Math.ceil(props.data.total / days));
 </template>
 
 <style scoped>
+.goal {
+  box-shadow: 0 0 15px 5px goldenrod !important;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    border-color: white;
+  }
+
+  50% {
+    border-color: goldenrod;
+  }
+
+  100% {
+    border-color: white;
+  }
+}
+
 .card-shine-effect {
   --shine-deg: 45deg;
   position: relative;

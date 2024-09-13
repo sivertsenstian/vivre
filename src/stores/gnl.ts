@@ -8,7 +8,8 @@ import {
   isRace,
 } from "@/utilities/matchcalculator";
 import { Race } from "@/stores/races";
-import { ref } from "vue";
+import { computed, ref } from "vue";
+import { doc, setDoc } from "firebase/firestore";
 
 const getData = async (tag: string, start: Moment, end: Moment) => {
   let result: IStatistics = {} as any;
@@ -55,44 +56,102 @@ export const useGNLStore = defineStore("gnl", () => {
   const players = ref<IGNLAccount[]>([]);
   const timer = ref<number>();
 
+  const allData = ref<any>({} as any);
   const data = ref<any>({} as any);
-  const dates = {
-    start: moment("01.08.2024", "DD.MM.YYYY").startOf("day"),
-    end: moment("01.10.2024", "DD.MM.YYYY").startOf("day"),
+
+  const start = ref<Moment>(moment());
+  const end = ref<Moment>(moment());
+
+  const dates = computed(() => ({
+    start: start.value.startOf("day"),
+    end: end.value.startOf("day"),
     today: moment().startOf("day"),
     daysSinceStart: moment()
       .startOf("day")
-      .diff(moment("01.07.2024", "DD.MM.YYYY").startOf("day"), "days"),
-  };
+      .diff(start.value.startOf("day"), "days"),
+    durationInDays: Math.abs(
+      end.value.startOf("day").diff(start.value.startOf("day"), "days"),
+    ),
+  }));
 
   // Do it live!
   const refresh = async () => {
     const result = {};
     await Promise.all(
-      [...coaches.value, ...players.value].map(
-        async (account: IGNLAccount): Promise => {
-          result[account.battleTag] = await getData(
-            account.battleTag,
-            dates.start,
-            dates.end,
-          );
-        },
-      ),
+      players.value.map(async (account: IGNLAccount): Promise => {
+        result[account.battleTag] = await getData(
+          account.battleTag,
+          dates.value.start,
+          dates.value.end,
+        );
+      }),
     );
 
     data.value = result;
     timer.value = setTimeout(refresh, 10000);
   };
 
-  const initialize = (c, p) => {
+  const initialize = (d, t) => {
+    start.value = moment(d.start, "DD.MM.YYYY");
+    end.value = moment(d.end, "DD.MM.YYYY");
+
     clearTimeout(timer.value);
     data.value = {};
 
-    coaches.value = c;
-    players.value = p;
+    coaches.value = t.coaches;
+    players.value = t.players;
 
     void refresh();
   };
 
-  return { initialize, data, dates, coaches, players };
+  const clear = () => {
+    data.value = {};
+    coaches.value = [];
+    players.value = [];
+  };
+
+  const all = async (d: any) => {
+    start.value = moment(d.start, "DD.MM.YYYY");
+    end.value = moment(d.end, "DD.MM.YYYY");
+
+    let result = [];
+    for (let i = 0; i < d.teams.length; i++) {
+      const team = d.teams[i];
+      const data = await Promise.all(
+        team.players.map(async (account: IGNLAccount): Promise => {
+          return await getData(
+            account.battleTag,
+            dates.value.start,
+            dates.value.end,
+          );
+        }),
+      );
+
+      result.push({
+        ...team,
+        data: data,
+      });
+    }
+    allData.value = result;
+  };
+
+  const save = async (item: any) => {
+    try {
+      await setDoc(doc(db, "gnl", item.id), item);
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  return {
+    initialize,
+    clear,
+    all,
+    allData,
+    data,
+    dates,
+    coaches,
+    players,
+    save,
+  };
 });

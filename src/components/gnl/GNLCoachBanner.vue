@@ -1,28 +1,23 @@
 ﻿<script setup lang="ts">
+import _sample from "lodash/sample";
+
 import { Race, raceIcon } from "@/stores/races";
 import gnl_coach_saulapeman from "@assets/gnl/coaches/saulapeman.jpg";
 import gnl_coach_kageman from "@assets/gnl/coaches/kageman.jpg";
+import gnl_coach_gotquail from "@assets/gnl/coaches/gotquail.jpg";
 import gnl_coach_missing from "@/assets/creeproutes/missing.png";
 
-import moment from "moment/moment";
 import w3cicon from "@/assets/w3c.png";
 import w3ciconDark from "@/assets/w3c_dark.png";
 
 const coachGnlBanner = {
   ["KaGeMaN#1160"]: gnl_coach_kageman,
   ["SaulApeMan#2163"]: gnl_coach_saulapeman,
+  ["gotQuail#1103"]: gnl_coach_gotquail,
 };
 
 interface Props {
-  race: Race;
-  current: number;
-  diff?: number;
-  label: string;
-  highlight?: boolean;
-  battleTag: string;
-  data: any;
-  races: Race[];
-  roles: string[];
+  coach: any;
 }
 const props = defineProps<Props>();
 
@@ -40,11 +35,11 @@ const open = (battleTag: string) =>
         <img
           style="vertical-align: middle"
           width="40px"
-          :src="raceIcon[race]" />
+          :src="raceIcon[coach.race]" />
       </template>
       <template v-slot:title>
         <div class="ml-1 text-left text-h5">
-          {{ battleTag }}
+          {{ coach.battleTag }}
         </div>
       </template>
     </v-list-item>
@@ -52,13 +47,13 @@ const open = (battleTag: string) =>
     <v-img
       class="rounded portrait"
       height="250"
-      :src="coachGnlBanner?.[battleTag] ?? gnl_coach_missing"
+      :src="coachGnlBanner?.[coach.battleTag] ?? gnl_coach_missing"
       cover></v-img>
 
     <v-card-item>
       <v-card-title class="text-left"
         >Role:
-        <v-chip class="ml-1" v-for="role in roles">{{
+        <v-chip class="ml-1" v-for="role in coach.roles">{{
           role
         }}</v-chip></v-card-title
       >
@@ -73,7 +68,18 @@ const open = (battleTag: string) =>
           :src="raceIcon[race]"
           width="35px"
           class="ml-1"
-          v-for="race in races" />
+          v-for="race in coach.races" />
+      </v-card-title>
+    </v-card-item>
+
+    <v-card-item>
+      <v-card-title class="d-flex align-center"
+        ><i
+          v-if="coach.quotes?.length"
+          class="text-subtitle-2"
+          style="opacity: 0.7"
+          >{{ _sample(coach.quotes) }}</i
+        >
       </v-card-title>
     </v-card-item>
 
@@ -84,7 +90,7 @@ const open = (battleTag: string) =>
         block
         border
         variant="text"
-        @click="() => open(battleTag)"
+        @click="() => open(coach.battleTag)"
         ><img :src="w3ciconDark" height="22px"
       /></v-btn>
     </v-card-actions>
