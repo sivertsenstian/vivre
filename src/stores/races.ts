@@ -101,6 +101,7 @@ import cr_hu_vs_hu_5 from "@/assets/creeproutes/human/human/NiS.jpg";
 import cr_hu_vs_hu_6 from "@/assets/creeproutes/human/human/SG.jpg";
 import cr_hu_vs_hu_7 from "@/assets/creeproutes/human/human/TH.jpg";
 import cr_hu_vs_hu_8 from "@/assets/creeproutes/human/human/ST.jpg";
+import cr_hu_vs_hu_9 from "@/assets/creeproutes/human/human/LT.jpg";
 
 import cr_hu_vs_ne_1 from "@/assets/creeproutes/human/nightelf/AL.jpg";
 import cr_hu_vs_ne_2 from "@/assets/creeproutes/human/nightelf/CH.jpg";
@@ -110,6 +111,7 @@ import cr_hu_vs_ne_5 from "@/assets/creeproutes/human/nightelf/NiS.jpg";
 import cr_hu_vs_ne_6 from "@/assets/creeproutes/human/nightelf/SG.jpg";
 import cr_hu_vs_ne_7 from "@/assets/creeproutes/human/nightelf/TH.jpg";
 import cr_hu_vs_ne_8 from "@/assets/creeproutes/human/nightelf/ST.jpg";
+import cr_hu_vs_ne_9 from "@/assets/creeproutes/human/nightelf/LT.jpg";
 
 import cr_hu_vs_oc_1 from "@/assets/creeproutes/human/orc/AL.jpg";
 import cr_hu_vs_oc_2 from "@/assets/creeproutes/human/orc/CH.jpg";
@@ -119,6 +121,7 @@ import cr_hu_vs_oc_5 from "@/assets/creeproutes/human/orc/NiS.jpg";
 import cr_hu_vs_oc_6 from "@/assets/creeproutes/human/orc/SG.jpg";
 import cr_hu_vs_oc_7 from "@/assets/creeproutes/human/orc/TH.jpg";
 import cr_hu_vs_oc_8 from "@/assets/creeproutes/human/orc/ST.jpg";
+import cr_hu_vs_oc_9 from "@/assets/creeproutes/human/orc/LT.jpg";
 
 import cr_hu_vs_ud_1 from "@/assets/creeproutes/human/undead/AL.jpg";
 import cr_hu_vs_ud_2 from "@/assets/creeproutes/human/undead/CH.jpg";
@@ -127,6 +130,7 @@ import cr_hu_vs_ud_4 from "@/assets/creeproutes/human/undead/LR.jpg";
 import cr_hu_vs_ud_5 from "@/assets/creeproutes/human/undead/NiS.jpg";
 import cr_hu_vs_ud_6 from "@/assets/creeproutes/human/undead/SG.jpg";
 import cr_hu_vs_ud_7 from "@/assets/creeproutes/human/undead/TH.jpg";
+import cr_hu_vs_ud_9 from "@/assets/creeproutes/human/undead/LT.jpg";
 
 import cr_hu_vs_r_1 from "@/assets/creeproutes/human/random/AL.jpg";
 import cr_hu_vs_r_2 from "@/assets/creeproutes/human/random/CH.jpg";
@@ -136,6 +140,7 @@ import cr_hu_vs_r_5 from "@/assets/creeproutes/human/random/NiS.jpg";
 import cr_hu_vs_r_6 from "@/assets/creeproutes/human/random/SG.jpg";
 import cr_hu_vs_r_7 from "@/assets/creeproutes/human/random/TH.jpg";
 import cr_hu_vs_r_8 from "@/assets/creeproutes/human/random/ST.jpg";
+import cr_hu_vs_r_9 from "@/assets/creeproutes/human/random/LT.jpg";
 
 // Undead
 import cr_ud_vs_hu_1 from "@/assets/creeproutes/undead/human/AL.jpg";
@@ -202,7 +207,7 @@ export const creeproutes: any = {
       "Shallow Grave": { img: cr_hu_vs_r_6, games: [] },
       Springtime: { img: cr_hu_vs_r_8, games: [] },
       "Shattered Exile v2": { img: cr_missing, games: [] },
-      "Lost Temple LV": { img: cr_missing, games: [] },
+      "Lost Temple LV": { img: cr_hu_vs_r_9, games: [] },
       Tidehunters: { img: cr_hu_vs_r_7, games: [] },
       "Twisted Meadows": { img: cr_missing, games: [] },
     },
@@ -217,7 +222,14 @@ export const creeproutes: any = {
       "Shallow Grave": { img: cr_hu_vs_hu_6, games: [] },
       Springtime: { img: cr_hu_vs_hu_8, games: [] },
       "Shattered Exile v2": { img: cr_missing, games: [] },
-      "Lost Temple LV": { img: cr_missing, games: [] },
+      "Lost Temple LV": {
+        img: cr_hu_vs_hu_9,
+        games: [
+          "66d071d40ebc9196a25eac04",
+          "66cc79510ebc9196a2651c0e",
+          "66cd72580ebc9196a2a6ce5d",
+        ],
+      },
       Tidehunters: { img: cr_hu_vs_hu_7, games: [] },
       "Twisted Meadows": { img: cr_missing, games: [] },
     },
@@ -232,7 +244,14 @@ export const creeproutes: any = {
       "Shallow Grave": { img: cr_hu_vs_oc_6, games: [] },
       Springtime: { img: cr_hu_vs_oc_8, games: [] },
       "Shattered Exile v2": { img: cr_missing, games: [] },
-      "Lost Temple LV": { img: cr_missing, games: [] },
+      "Lost Temple LV": {
+        img: cr_hu_vs_oc_9,
+        games: [
+          "669bc76a82a9ebbac5943a02",
+          "667c08cd82a9ebbac5b513ab",
+          "66a8cd0682a9ebbac58df2c7",
+        ],
+      },
       Tidehunters: { img: cr_hu_vs_oc_7, games: [] },
       "Twisted Meadows": { img: cr_missing, games: [] },
     },
@@ -257,7 +276,10 @@ export const creeproutes: any = {
       },
       Springtime: { img: cr_hu_vs_ne_8, games: [] },
       "Shattered Exile v2": { img: cr_missing, games: [] },
-      "Lost Temple LV": { img: cr_missing, games: [] },
+      "Lost Temple LV": {
+        img: cr_hu_vs_ne_9,
+        games: ["66a35ba182a9ebbac547e377"],
+      },
       Tidehunters: {
         img: cr_hu_vs_ne_7,
         games: ["66c1d0ad0ebc9196a2e7bce5", "66a4b6c282a9ebbac59b06a1"],
@@ -275,7 +297,14 @@ export const creeproutes: any = {
       "Shallow Grave": { img: cr_hu_vs_ud_6, games: [] },
       Springtime: { img: cr_missing, games: [] },
       "Shattered Exile v2": { img: cr_missing, games: [] },
-      "Lost Temple LV": { img: cr_missing, games: [] },
+      "Lost Temple LV": {
+        img: cr_hu_vs_ud_9,
+        games: [
+          "66d1b2a40ebc9196a2a75214",
+          "66e2db8a0ebc9196a2034d84",
+          "66e532b70ebc9196a2987c13",
+        ],
+      },
       Tidehunters: { img: cr_hu_vs_ud_7, games: [] },
       "Twisted Meadows": { img: cr_missing, games: [] },
     },
