@@ -92,8 +92,7 @@ const updateFood = (race: Race) => {
                     v-model="builds.data.new.name"
                     :counter="10"
                     label="Name"
-                    required
-                  ></v-text-field>
+                    required></v-text-field>
                 </v-col>
                 <v-col cols="6">
                   <v-select
@@ -109,8 +108,7 @@ const updateFood = (race: Race) => {
                     density="compact"
                     label="Player"
                     v-model="builds.data.new.player"
-                    @update:modelValue="updateFood"
-                  />
+                    @update:modelValue="updateFood" />
                 </v-col>
                 <v-col cols="6">
                   <v-select
@@ -125,8 +123,7 @@ const updateFood = (race: Race) => {
                     item-value="value"
                     density="compact"
                     label="Opponent"
-                    v-model="builds.data.new.opponent"
-                  ></v-select>
+                    v-model="builds.data.new.opponent"></v-select>
                 </v-col>
 
                 <v-col cols="8">
@@ -134,8 +131,7 @@ const updateFood = (race: Race) => {
                     hide-details
                     density="compact"
                     v-model="builds.data.new.author"
-                    label="Author (optional)"
-                  ></v-text-field>
+                    label="Author (optional)"></v-text-field>
                 </v-col>
 
                 <v-col cols="4">
@@ -143,8 +139,7 @@ const updateFood = (race: Race) => {
                     hide-details
                     density="compact"
                     v-model="builds.data.new.version"
-                    label="Patch (optional)"
-                  ></v-text-field>
+                    label="Patch (optional)"></v-text-field>
                 </v-col>
 
                 <v-col cols="8">
@@ -157,8 +152,7 @@ const updateFood = (race: Race) => {
                     :items="builds.difficulties"
                     density="compact"
                     label="Difficulty (optional)"
-                    v-model="builds.data.new.difficulty"
-                  ></v-select>
+                    v-model="builds.data.new.difficulty"></v-select>
                 </v-col>
 
                 <v-col cols="12">
@@ -170,8 +164,7 @@ const updateFood = (race: Race) => {
                     closable-chips
                     clearable
                     multiple
-                    placeholder="Press [Enter] to create the tag..."
-                  >
+                    placeholder="Press [Enter] to create the tag...">
                   </v-combobox>
                 </v-col>
 
@@ -179,7 +172,7 @@ const updateFood = (race: Race) => {
                   <v-row>
                     <v-col cols="12"
                       ><div class="text-h6 font-weight-bold">
-                        Ankdd helpful links (optional)
+                        Add helpful links (optional)
                       </div>
                     </v-col>
                     <v-col cols="12">
@@ -201,8 +194,7 @@ const updateFood = (race: Race) => {
                                 density="compact"
                                 variant="underlined"
                                 v-model="item.id"
-                                placeholder="e.g. https://w3champions.com/match/66c1ca3e0ebc9196a2e60095"
-                              ></v-text-field>
+                                placeholder="e.g. https://w3champions.com/match/66c1ca3e0ebc9196a2e60095"></v-text-field>
                             </td>
                             <td>
                               <v-text-field
@@ -210,8 +202,7 @@ const updateFood = (race: Race) => {
                                 density="compact"
                                 variant="underlined"
                                 v-model="item.name"
-                                placeholder="e.g. 'Replay'"
-                              ></v-text-field>
+                                placeholder="e.g. 'Replay'"></v-text-field>
                             </td>
                             <td>
                               <v-btn
@@ -221,8 +212,9 @@ const updateFood = (race: Race) => {
                                 variant="text"
                                 density="compact"
                                 size="small"
-                                @click="() => builds.removeGame('new', item.id)"
-                              />
+                                @click="
+                                  () => builds.removeGame('new', item.id)
+                                " />
                             </td>
                           </tr>
                         </tbody>
@@ -233,8 +225,7 @@ const updateFood = (race: Race) => {
                         @click="() => builds.addGame('new')"
                         color="success"
                         variant="tonal"
-                        size="small"
-                      >
+                        size="small">
                         Add Link
                       </v-btn>
                     </v-col>
@@ -270,16 +261,14 @@ const updateFood = (race: Race) => {
                       :animation="200"
                       ghost-class="ghost"
                       :disabled="false"
-                      group="description"
-                    >
+                      group="description">
                       <template #item="{ element, index }">
                         <tr>
                           <td class="handle px-0">
                             <v-icon
                               size="small"
                               color="grey"
-                              icon="mdi-drag-vertical"
-                            />
+                              icon="mdi-drag-vertical" />
                           </td>
                           <td>
                             <span v-show="!element.separator">{{
@@ -292,8 +281,7 @@ const updateFood = (race: Race) => {
                               density="compact"
                               variant="underlined"
                               v-model="element.time"
-                              v-if="!element.separator"
-                            ></v-text-field>
+                              v-if="!element.separator"></v-text-field>
                           </td>
                           <td>
                             <v-text-field
@@ -301,16 +289,14 @@ const updateFood = (race: Race) => {
                               density="compact"
                               variant="underlined"
                               v-model="element.food"
-                              v-if="!element.separator"
-                            ></v-text-field>
+                              v-if="!element.separator"></v-text-field>
                           </td>
                           <td>
                             <v-text-field
                               hide-details
                               density="compact"
                               variant="underlined"
-                              v-model="element.instructions"
-                            ></v-text-field>
+                              v-model="element.instructions"></v-text-field>
                           </td>
                           <td>
                             <v-btn-group>
@@ -321,16 +307,14 @@ const updateFood = (race: Race) => {
                                 :color="element.timing ? 'success' : 'grey'"
                                 @click="element.timing = !element.timing"
                                 :disabled="element.separator"
-                                size="small"
-                              />
+                                size="small" />
                               <v-btn
                                 title="Use step as a separator or an event with only a header/instruction"
                                 variant="text"
                                 icon="mdi-shield-outline"
                                 :color="element.separator ? 'primary' : 'grey'"
                                 @click="element.separator = !element.separator"
-                                size="small"
-                              />
+                                size="small" />
                               <upsert-step-annotation :step="element" />
                               <v-btn
                                 title="Delete step"
@@ -338,8 +322,9 @@ const updateFood = (race: Race) => {
                                 color="red-lighten-2"
                                 variant="text"
                                 size="small"
-                                @click="() => builds.removeStep('new', element)"
-                              />
+                                @click="
+                                  () => builds.removeStep('new', element)
+                                " />
                             </v-btn-group>
                           </td>
                         </tr>
@@ -351,8 +336,7 @@ const updateFood = (race: Race) => {
                   <v-btn
                     @click="() => builds.addStep('new')"
                     color="success"
-                    variant="tonal"
-                  >
+                    variant="tonal">
                     Add Step
                   </v-btn>
                 </v-col>
@@ -364,8 +348,7 @@ const updateFood = (race: Race) => {
                 variant="tonal"
                 block
                 :loading="builds.busy"
-                @click="() => builds.save(builds.data.new)"
-              >
+                @click="() => builds.save(builds.data.new)">
                 Create Build Order
               </v-btn>
             </v-col>
