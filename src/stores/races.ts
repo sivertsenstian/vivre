@@ -131,6 +131,7 @@ import cr_hu_vs_ud_4 from "@/assets/creeproutes/human/undead/LR.jpg";
 import cr_hu_vs_ud_5 from "@/assets/creeproutes/human/undead/NiS.jpg";
 import cr_hu_vs_ud_6 from "@/assets/creeproutes/human/undead/SG.jpg";
 import cr_hu_vs_ud_7 from "@/assets/creeproutes/human/undead/TH.jpg";
+import cr_hu_vs_ud_8 from "@/assets/creeproutes/human/undead/ST.jpg";
 import cr_hu_vs_ud_9 from "@/assets/creeproutes/human/undead/LT.jpg";
 
 import cr_hu_vs_r_1 from "@/assets/creeproutes/human/random/AL.jpg";
@@ -313,7 +314,7 @@ export const creeproutes: any = {
       "Last Refuge": { img: cr_hu_vs_ud_4, games: [] },
       "Northern Isles": { img: cr_hu_vs_ud_5, games: [] },
       "Shallow Grave": { img: cr_hu_vs_ud_6, games: [] },
-      Springtime: { img: cr_hu_vs_ud_7, games: ["66d85de90ebc9196a23fe29d"] },
+      Springtime: { img: cr_hu_vs_ud_8, games: ["66d85de90ebc9196a23fe29d"] },
       "Shattered Exile v2": { img: cr_missing, games: [] },
       "Lost Temple LV": {
         img: cr_hu_vs_ud_9,
