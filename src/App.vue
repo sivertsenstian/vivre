@@ -22,8 +22,8 @@ function toggleTheme() {
       <v-list>
         <v-list-item
           :prepend-avatar="logo"
-          title="Vivre"
-          subtitle="Dashboard Apelication"></v-list-item>
+          title="APE SCIENCE"
+          subtitle="WC3 Research Facility"></v-list-item>
       </v-list>
       <v-divider></v-divider>
       <v-list density="compact" nav>

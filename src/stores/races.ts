@@ -102,6 +102,7 @@ import cr_hu_vs_hu_6 from "@/assets/creeproutes/human/human/SG.jpg";
 import cr_hu_vs_hu_7 from "@/assets/creeproutes/human/human/TH.jpg";
 import cr_hu_vs_hu_8 from "@/assets/creeproutes/human/human/ST.jpg";
 import cr_hu_vs_hu_9 from "@/assets/creeproutes/human/human/LT.jpg";
+import cr_hu_vs_hu_10 from "@/assets/creeproutes/human/human/TM.jpg";
 
 import cr_hu_vs_ne_1 from "@/assets/creeproutes/human/nightelf/AL.jpg";
 import cr_hu_vs_ne_2 from "@/assets/creeproutes/human/nightelf/CH.jpg";
@@ -231,7 +232,14 @@ export const creeproutes: any = {
         ],
       },
       Tidehunters: { img: cr_hu_vs_hu_7, games: [] },
-      "Twisted Meadows": { img: cr_missing, games: [] },
+      "Twisted Meadows": {
+        img: cr_hu_vs_hu_10,
+        games: [
+          "66e2edbf0ebc9196a2085301",
+          "66cc6fcd0ebc9196a26200f2",
+          "66cb2dd70ebc9196a209063e",
+        ],
+      },
     },
     [Race.Orc]: {
       "Autumn Leaves v2": { img: cr_hu_vs_oc_1, games: [] },

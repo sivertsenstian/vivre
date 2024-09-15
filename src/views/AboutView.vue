@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import MarkdownViewer from "@/components/MarkdownViewer.vue";
+import logo from "@/assets/logo.png";
 
 const model = defineModel<string>({
   default: `
@@ -20,7 +21,7 @@ const model = defineModel<string>({
 
   ## How to help?
    - If you would like to contribute with Orc or Night Elf creep routes, give me a message on the [w3champions](https://discord.gg/uJmQxG2) or [wc3 gym](https://discord.com/invite/7HUyQAKQ8p) discord - @Longjacket
-   - Otherwise just using the page, or giving feedback is always appreciated, a coffee to help me code and update the page is also greatly appreciated - see link at the bottom!
+   - Otherwise just using the page, or giving feedback is always appreciated, a coffee to help me code and update the page is also greatly appreciated - see link at the top!
 
   ## Thanks <3
    - Thanks to all the people behind https://w3champions.com/ for creating and maintaining an awesome wc3 ladder and community
@@ -38,18 +39,24 @@ const model = defineModel<string>({
 <template>
   <main style="height: 100vh; overflow-y: auto">
     <v-container fluid style="opacity: 0.9">
-      <v-sheet class="pa-8" elevation="10" style="min-height: 90vh">
+      <v-sheet class="pa-6" elevation="10" style="min-height: 90vh">
         <v-row>
-          <v-col cols="12">
-            <markdown-viewer v-model="model" />
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col cols="12">
+          <v-col cols="12" class="text-right ma-0 pa-0">
             <a href="https://www.buymeacoffee.com/longjacket" target="_blank"
               ><img
                 src="https://img.buymeacoffee.com/button-api/?text=Buy me a coffee&emoji=&slug=longjacket&button_colour=FFDD00&font_colour=000000&font_family=Cookie&outline_colour=000000&coffee_colour=ffffff"
             /></a>
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col cols="12" class="text-center ma-0 pa-0">
+            <img :src="logo" alt="APE SCIENCE - WC3 RESEARCH FACILITY" />
+            <div class="text-h5 font-weight-bold">
+              APE SCIENCE - WC3 RESEARCH FACILITY
+            </div>
+          </v-col>
+          <v-col cols="12">
+            <markdown-viewer v-model="model" />
           </v-col>
         </v-row>
       </v-sheet>
