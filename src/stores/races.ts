@@ -221,7 +221,7 @@ export const creeproutes: any = {
       "Last Refuge": { img: cr_hu_vs_hu_4, games: [] },
       "Northern Isles": { img: cr_hu_vs_hu_5, games: [] },
       "Shallow Grave": { img: cr_hu_vs_hu_6, games: [] },
-      Springtime: { img: cr_hu_vs_hu_8, games: [] },
+      Springtime: { img: cr_hu_vs_hu_8, games: ["66e58c470ebc9196a2b19213"] },
       "Shattered Exile v2": { img: cr_missing, games: [] },
       "Lost Temple LV": {
         img: cr_hu_vs_hu_9,
@@ -250,7 +250,10 @@ export const creeproutes: any = {
       "Last Refuge": { img: cr_hu_vs_oc_4, games: [] },
       "Northern Isles": { img: cr_hu_vs_oc_5, games: [] },
       "Shallow Grave": { img: cr_hu_vs_oc_6, games: [] },
-      Springtime: { img: cr_hu_vs_oc_8, games: [] },
+      Springtime: {
+        img: cr_hu_vs_oc_8,
+        games: ["66c4e2820ebc9196a2a0b5f1", "66b740930ebc9196a27fb261"],
+      },
       "Shattered Exile v2": { img: cr_missing, games: [] },
       "Lost Temple LV": {
         img: cr_hu_vs_oc_9,
@@ -282,7 +285,14 @@ export const creeproutes: any = {
         img: cr_hu_vs_ne_6,
         games: ["6683e32a82a9ebbac56f2f0f", "6690d00d82a9ebbac5196bd6"],
       },
-      Springtime: { img: cr_hu_vs_ne_8, games: [] },
+      Springtime: {
+        img: cr_hu_vs_ne_8,
+        games: [
+          "66e5bf5e0ebc9196a2c353d6",
+          "66cc7e1d0ebc9196a266a3e3",
+          "66e042810ebc9196a25fc9b0",
+        ],
+      },
       "Shattered Exile v2": { img: cr_missing, games: [] },
       "Lost Temple LV": {
         img: cr_hu_vs_ne_9,
@@ -303,7 +313,7 @@ export const creeproutes: any = {
       "Last Refuge": { img: cr_hu_vs_ud_4, games: [] },
       "Northern Isles": { img: cr_hu_vs_ud_5, games: [] },
       "Shallow Grave": { img: cr_hu_vs_ud_6, games: [] },
-      Springtime: { img: cr_missing, games: [] },
+      Springtime: { img: cr_hu_vs_ud_7, games: ["66d85de90ebc9196a23fe29d"] },
       "Shattered Exile v2": { img: cr_missing, games: [] },
       "Lost Temple LV": {
         img: cr_hu_vs_ud_9,
