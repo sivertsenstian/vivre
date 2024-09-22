@@ -1,10 +1,5 @@
 ﻿<script setup lang="ts">
 import { Race, raceIcon } from "@/stores/races";
-import hu_banner from "@/assets/take_a_look_at_banner_michael.png";
-import oc_banner from "@/assets/take_a_look_at_banner_orc.png";
-import ud_banner from "@/assets/take_a_look_at_banner_undead.png";
-import ne_banner from "@/assets/take_a_look_at_banner_nightelf.png";
-import r_banner from "@/assets/take_a_look_at_banner_random.png";
 import gnl_banner_hu from "@assets/gnl_banner_hu.png";
 import gnl_banner_ne from "@assets/gnl_banner_ne.png";
 import gnl_banner_ud from "@assets/gnl_banner_ud.png";

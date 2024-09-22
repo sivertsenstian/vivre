@@ -1,19 +1,35 @@
 ﻿<script setup lang="ts">
 import _sample from "lodash/sample";
 
-import { Race, raceIcon } from "@/stores/races";
+import { raceIcon } from "@/stores/races";
 import gnl_coach_saulapeman from "@assets/gnl/coaches/saulapeman.jpg";
-import gnl_coach_kageman from "@assets/gnl/coaches/kageman.jpg";
 import gnl_coach_gotquail from "@assets/gnl/coaches/gotquail.jpg";
+import gnl_coach_barren from "@assets/gnl/coaches/barren.jpg";
+import gnl_coach_spycreed from "@assets/gnl/coaches/spycreed.jpg";
+import gnl_coach_tod from "@assets/gnl/coaches/tod.jpg";
+import gnl_coach_jabba from "@assets/gnl/coaches/jabba.jpg";
+import gnl_coach_northdrakkar from "@assets/gnl/coaches/northdrakkar.jpg";
+
 import gnl_coach_missing from "@/assets/creeproutes/missing.png";
 
 import w3cicon from "@/assets/w3c.png";
 import w3ciconDark from "@/assets/w3c_dark.png";
 
 const coachGnlBanner: any = {
-  ["KaGeMaN#1160"]: gnl_coach_kageman,
+  ["Barren#1153"]: gnl_coach_barren,
   ["SaulApeMan#2163"]: gnl_coach_saulapeman,
   ["gotQuail#1103"]: gnl_coach_gotquail,
+  ["jolin#31419"]: gnl_coach_jabba,
+  ["ToD#2792"]: gnl_coach_tod,
+  ["spycreed#2536"]: gnl_coach_spycreed,
+  ["NorthDrakkar#1745"]: gnl_coach_northdrakkar,
+
+  ["kennyg6050#1543"]: gnl_coach_missing,
+  ["EmilyHuttson#1378"]: gnl_coach_missing,
+  ["floss2xdaily#1987"]: gnl_coach_missing,
+  ["Ember#21963"]: gnl_coach_missing,
+  ["Wontu#1218"]: gnl_coach_missing,
+  ["Lucker#11299"]: gnl_coach_missing,
 };
 
 interface Props {
@@ -86,10 +102,9 @@ const open = (battleTag: string) =>
     <v-card-actions>
       <v-btn
         title="Open W3Champions Profile Page"
-        color="dark"
+        color="transparent"
         block
-        border
-        variant="text"
+        variant="flat"
         @click="() => open(coach.battleTag)"
         ><img :src="w3ciconDark" height="22px"
       /></v-btn>

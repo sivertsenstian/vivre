@@ -15,7 +15,25 @@ import {
 import { Race } from "@/stores/races";
 import { computed, ref } from "vue";
 import { doc, setDoc } from "firebase/firestore";
-import { useFirestore } from "vuefire";
+import { useDocument, useFirestore } from "vuefire";
+import gnl_team_rageandape from "@assets/gnl/teams/rage_and_ape.jpg";
+import gnl_team_apelords from "@assets/gnl/teams/apelords.jpg";
+import gnl_team_bananapickers from "@assets/gnl/teams/banana.jpg";
+import gnl_team_gigglinggoblins from "@assets/gnl/teams/goblins.jpg";
+import gnl_team_gnlbears from "@assets/gnl/teams/bears.jpg";
+import gnl_team_chinesepaladin from "@assets/gnl/teams/chinesepaladin.jpg";
+import gnl_team_missing from "@/assets/creeproutes/missing.png";
+
+const gnlBanners = {
+  ["chinesepaladin"]: gnl_team_chinesepaladin,
+  ["rageandape"]: gnl_team_rageandape,
+  ["apelords"]: gnl_team_apelords,
+  ["thebananapickers"]: gnl_team_bananapickers,
+  ["gigglinggoblins"]: gnl_team_gigglinggoblins,
+  ["gnlbears"]: gnl_team_gnlbears,
+};
+export const teamGnlBanner: any = (id: string) =>
+  gnlBanners?.[id] ?? gnl_team_missing;
 
 const getData = async (tag: string, start: Moment, end: Moment) => {
   let result: IGNLStatistics = {} as any;
@@ -62,11 +80,15 @@ export const useGNLStore = defineStore("gnl", () => {
   const players = ref<IGNLAccount[]>([]);
   const timer = ref<number>();
 
-  const allData = ref<any>({} as any);
+  const allData = ref<any>([] as any);
   const data = ref<any>({} as any);
 
   const start = ref<Moment>(moment());
   const end = ref<Moment>(moment());
+
+  const initialized = ref<boolean>(false);
+  const gnlData = ref<any>([]);
+  const current = ref<any>({});
 
   const dates = computed(() => ({
     start: start.value.startOf("day"),
@@ -79,6 +101,22 @@ export const useGNLStore = defineStore("gnl", () => {
       end.value.startOf("day").diff(start.value.startOf("day"), "days"),
     ),
   }));
+
+  const db = useFirestore();
+  const { promise } = useDocument<any>(
+    doc(db, "gnl", "45b5decb-26ec-4a52-a8ec-982d07aecd3d"),
+  );
+
+  promise.value.then((d) => {
+    start.value = moment(d.start, "DD.MM.YYYY");
+    end.value = moment(d.end, "DD.MM.YYYY");
+    gnlData.value = d;
+
+    initialized.value = true;
+
+    //TODO: Fix
+    void all(d);
+  });
 
   // Do it live!
   const refresh = async () => {
@@ -162,5 +200,8 @@ export const useGNLStore = defineStore("gnl", () => {
     coaches,
     players,
     save,
+
+    initialized,
+    gnlData,
   };
 });

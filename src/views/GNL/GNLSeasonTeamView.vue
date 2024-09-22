@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useTheme } from "vuetify";
 import { computed, ref } from "vue";
-import { useGNLStore } from "@/stores/gnl";
+import { teamGnlBanner, useGNLStore } from "@/stores/gnl";
 import ActivityTable from "@/components/ActivityTable.vue";
 import GNLPlayerBanner from "@/components/gnl/GNLPlayerBanner.vue";
 import GNLCoachBanner from "@/components/gnl/GNLCoachBanner.vue";
@@ -14,18 +14,6 @@ import {
 } from "vue-router";
 import { useDocument, useFirestore } from "vuefire";
 import { doc } from "firebase/firestore";
-import gnl_team_apelords from "@assets/gnl/teams/apelords.jpg";
-import gnl_team_bananapickers from "@assets/gnl/teams/banana.jpg";
-import gnl_team_gigglinggoblins from "@assets/gnl/teams/goblins.jpg";
-import gnl_team_gnlbears from "@assets/gnl/teams/bears.jpg";
-import gnl_team_missing from "@/assets/creeproutes/missing.png";
-
-const teamGnlBanner: any = {
-  ["apelords"]: gnl_team_apelords,
-  ["thebananapickers"]: gnl_team_bananapickers,
-  ["gigglinggoblins"]: gnl_team_gigglinggoblins,
-  ["gnlbears"]: gnl_team_gnlbears,
-};
 
 const theme = useTheme();
 const isDark = computed(() => theme.global.current.value.dark);
@@ -37,7 +25,7 @@ const store = useGNLStore();
 
 const db = useFirestore();
 const { data, promise } = useDocument<any>(
-  doc(db, "gnl", "90807d36-a989-4c90-9363-9d064db121ca"),
+  doc(db, "gnl", "45b5decb-26ec-4a52-a8ec-982d07aecd3d"),
 );
 
 const current = ref<any>({});
@@ -234,7 +222,7 @@ const options = {
             <v-card>
               <v-img
                 height="380"
-                :src="teamGnlBanner?.[current.id] ?? gnl_team_missing"
+                :src="teamGnlBanner(current.id)"
                 class="align-end"
                 gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
                 cover>
@@ -266,9 +254,9 @@ const options = {
                     datasets: [
                       {
                         label: 'points',
-                        backgroundColor: 'goldenrod',
-                        borderColor: 'darkgoldenrod',
-                        borderWidth: 0,
+                        backgroundColor: 'rgba(218, 165, 32, 0.3)',
+                        borderColor: 'goldenrod',
+                        borderWidth: 2,
                         barPercentage: 0.8,
                         data: points.map((p) => p.points),
                         datalabels: {

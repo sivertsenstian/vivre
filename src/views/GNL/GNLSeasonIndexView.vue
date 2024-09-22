@@ -1,23 +1,8 @@
 <script setup lang="ts">
 import { useTheme } from "vuetify";
 import { computed } from "vue";
-import { useGNLStore } from "@/stores/gnl";
+import { teamGnlBanner, useGNLStore } from "@/stores/gnl";
 import { Race } from "@/stores/races";
-import _isEmpty from "lodash/isEmpty";
-import { useDocument, useFirestore } from "vuefire";
-import { doc } from "firebase/firestore";
-import gnl_team_apelords from "@assets/gnl/teams/apelords.jpg";
-import gnl_team_bananapickers from "@assets/gnl/teams/banana.jpg";
-import gnl_team_gigglinggoblins from "@assets/gnl/teams/goblins.jpg";
-import gnl_team_gnlbears from "@assets/gnl/teams/bears.jpg";
-import gnl_team_missing from "@/assets/creeproutes/missing.png";
-
-const teamGnlBanner: any = {
-  ["apelords"]: gnl_team_apelords,
-  ["thebananapickers"]: gnl_team_bananapickers,
-  ["gigglinggoblins"]: gnl_team_gigglinggoblins,
-  ["gnlbears"]: gnl_team_gnlbears,
-};
 
 const theme = useTheme();
 const isDark = computed(() => theme.global.current.value.dark);
@@ -25,29 +10,88 @@ const isDark = computed(() => theme.global.current.value.dark);
 const router = useRouter();
 const store = useGNLStore();
 
-const db = useFirestore();
-const { data, promise } = useDocument<any>(
-  doc(db, "gnl", "90807d36-a989-4c90-9363-9d064db121ca"),
-);
-
-promise.value.then((data) => {
-  store.all(data);
-});
-
 const current = {
   id: uuidv4(),
   created: moment().toDate(),
   updated: moment().toDate(),
   season: 15,
+  start: "01.09.2024",
+  end: "01.10.2024",
   teams: [
+    {
+      id: "chinesepaladin",
+      name: "Chinese Paldin",
+      coaches: [
+        {
+          battleTag: "Barren#1153",
+          race: Race.Undead,
+          races: [Race.Undead],
+          roles: ["Coach", "Lawyer"],
+          quotes: [],
+        },
+        {
+          battleTag: "EmilyHuttson#1378",
+          race: Race.Random,
+          races: [Race.Human, Race.Orc, Race.NightElf, Race.Undead],
+          roles: ["Coach", "Bajo Jajo"],
+          quotes: [],
+        },
+        {
+          battleTag: "jolin#31419",
+          race: Race.NightElf,
+          races: [Race.NightElf],
+          roles: ["Coach", "Jabba"],
+          quotes: [],
+        },
+      ],
+      players: [
+        { battleTag: "RaZeR#23389", race: Race.Undead },
+        { battleTag: "sd1528681#2302", race: Race.NightElf },
+        { battleTag: "ET3#31514", race: Race.Human },
+        { battleTag: "vscan#3284", race: Race.Orc },
+      ],
+    },
+    {
+      id: "rageandape",
+      name: "Rage & Ape: Attorneys at War",
+      coaches: [
+        {
+          battleTag: "floss2xdaily#1987",
+          race: Race.Human,
+          races: [Race.Human],
+          roles: ["Coach"],
+          quotes: [],
+        },
+        {
+          battleTag: "ToD#2792",
+          race: Race.Human,
+          races: [Race.Human],
+          roles: ["Caster", "Coach"],
+          quotes: [],
+        },
+      ],
+      players: [
+        { battleTag: "K0rbinian#21728", race: Race.Human },
+        { battleTag: "sd1528681#2302", race: Race.NightElf },
+        { battleTag: "ET3#31514", race: Race.Human },
+        { battleTag: "vscan#3284", race: Race.Orc },
+      ],
+    },
     {
       id: "apelords",
       name: "Apelords",
       coaches: [
         {
-          battleTag: "gotQuail#1103",
-          race: Race.Human,
-          races: [Race.Human],
+          battleTag: "SaulApeMan#2163",
+          race: Race.Random,
+          races: [Race.Human, Race.Undead, Race.Orc, Race.NightElf],
+          roles: ["Caster", "Coach", "Ape"],
+          quotes: ["Makrura for you!", "Ladies and Gentlemen, welcome to GNL!"],
+        },
+        {
+          battleTag: "spycreed#2536",
+          race: Race.Undead,
+          races: [Race.Undead],
           roles: ["Coach"],
         },
       ],
@@ -55,10 +99,7 @@ const current = {
         { battleTag: "Longjacket#2840", race: Race.Human },
         { battleTag: "RaZeR#23389", race: Race.Undead },
         { battleTag: "hengyi#31966", race: Race.Human },
-        { battleTag: "K0rbinian#21728", race: Race.Human },
-        { battleTag: "sd1528681#2302", race: Race.NightElf },
-        { battleTag: "ET3#31514", race: Race.Human },
-        { battleTag: "vscan#3284", race: Race.Orc },
+        { battleTag: "hengyi#31966", race: Race.Human },
       ],
     },
     {
@@ -66,15 +107,18 @@ const current = {
       name: "The Banana Pickers",
       coaches: [
         {
-          battleTag: "SaulApeMan#2163",
-          race: Race.Random,
-          races: [Race.Human, Race.Undead, Race.Orc, Race.NightElf],
-          roles: ["Caster", "Coach", "Ape"],
-          quotes: [
-            "Ladies and gentlemen, welcome to GNL!",
-            "MAKRURA for YOU",
-            "Have you seen the size of my EXCEL SHEETS?",
-          ],
+          battleTag: "gotquail#1103",
+          race: Race.Human,
+          races: [Race.Human],
+          roles: ["Coach"],
+          quotes: [],
+        },
+        {
+          battleTag: "kennyg6050#1543",
+          race: Race.Undead,
+          races: [Race.Undead],
+          roles: ["Coach"],
+          quotes: [],
         },
       ],
       players: [
@@ -82,10 +126,6 @@ const current = {
         { battleTag: "SneakyTurtle#2326919", race: Race.NightElf },
         { battleTag: "siyanleo#1295", race: Race.Orc },
         { battleTag: "FVB#1736", race: Race.Orc },
-        { battleTag: "RaZeR#23389", race: Race.Undead },
-        { battleTag: "sd1528681#2302", race: Race.NightElf },
-        { battleTag: "ET3#31514", race: Race.Human },
-        { battleTag: "vscan#3284", race: Race.Orc },
       ],
     },
     {
@@ -93,21 +133,23 @@ const current = {
       name: "Giggling Goblins",
       coaches: [
         {
-          battleTag: "KaGeMaN#1160",
-          race: Race.Human,
-          races: [Race.Human],
+          battleTag: "NorthDrakkar#1745",
+          race: Race.Undead,
+          races: [Race.Undead],
+          roles: ["Coach"],
+        },
+        {
+          battleTag: "Ember#21963",
+          race: Race.Undead,
+          races: [Race.Undead],
           roles: ["Coach"],
         },
       ],
       players: [
-        { battleTag: "Longjacket#2840", race: Race.Human },
-        { battleTag: "SneakyTurtle#2326919", race: Race.NightElf },
         { battleTag: "siyanleo#1295", race: Race.Orc },
-        { battleTag: "FVB#1736", race: Race.Orc },
-        { battleTag: "RaZeR#23389", race: Race.Undead },
-        { battleTag: "hengyi#31966", race: Race.Human },
-        { battleTag: "Stakr#21386", race: Race.NightElf },
         { battleTag: "jung#31458", race: Race.Human },
+        { battleTag: "K0rbinian#21728", race: Race.Human },
+        { battleTag: "sd1528681#2302", race: Race.NightElf },
       ],
     },
     {
@@ -115,20 +157,23 @@ const current = {
       name: "GNL Bears",
       coaches: [
         {
-          battleTag: "SaulApeMan#2163",
-          race: Race.Random,
-          races: [Race.Human, Race.Undead, Race.Orc, Race.NightElf],
-          roles: ["Caster", "Coach", "Ape"],
+          battleTag: "Wontu#1218",
+          race: Race.NightElf,
+          races: [Race.NightElf],
+          roles: ["Coach"],
+        },
+        {
+          battleTag: "Lucker#11299",
+          race: Race.Orc,
+          races: [Race.Orc],
+          roles: ["Coach"],
         },
       ],
       players: [
-        { battleTag: "Stakr#21386", race: Race.NightElf },
-        { battleTag: "jung#31458", race: Race.Human },
-        { battleTag: "Lonestar#1441", race: Race.Orc },
-        { battleTag: "K0rbinian#21728", race: Race.Human },
-        { battleTag: "sd1528681#2302", race: Race.NightElf },
         { battleTag: "ET3#31514", race: Race.Human },
         { battleTag: "vscan#3284", race: Race.Orc },
+        { battleTag: "Longjacket#2840", race: Race.Human },
+        { battleTag: "SneakyTurtle#2326919", race: Race.NightElf },
       ],
     },
   ],
@@ -154,6 +199,8 @@ import moment from "moment/moment";
 import { useRouter } from "vue-router";
 import _round from "lodash/round";
 import MarkdownViewer from "@/components/MarkdownViewer.vue";
+import _range from "lodash/range";
+import _isEmpty from "lodash/isEmpty";
 
 ChartJS.register(
   LineController,
@@ -177,12 +224,17 @@ const options = {
     },
     y: {
       grid: { display: false },
+      min: 0,
+      suggestedMax: 1000,
     },
   },
 } as any;
 // End
 
 const points = computed(() => {
+  if (_isEmpty(store.allData)) {
+    return [];
+  }
   return store.allData.map((t: any) => {
     return t.data.reduce((s: number, p: any) => {
       const d = p.season[p.race];
@@ -202,12 +254,12 @@ const model = defineModel<string>({
   # Information about the page
   This page is a support tool to help motivate all the GNL participants and teams to practice on the [w3c ladder](https://w3champions.com/) in between official GNL games.
   If you are on a team, you can contribute to make sure that **your** team wins the GNL Ladder race!
-  
+
   Every win on the ladder awards **3** points, and every loss awards **1** point for the team that you represent. __Regardless of MMR__
-  
+
   This overview page shows the current total ladder points for each team, with the current leader - and the individual team pages show both information
   about coaches and players! You can access the team pages in the menu on the left or by clicking the team icon above!
-  
+
   Can you help your team win the ladder race? Are you the one to claim ladder RANK #1 on your team?
   Why delay? Go search for a ladder game right now and find out!
   `,
@@ -218,7 +270,7 @@ const model = defineModel<string>({
   <main style="height: 100vh; overflow-y: auto">
     <v-container fluid style="opacity: 1">
       <v-sheet
-        v-if="_isEmpty(store.allData)"
+        v-if="!store.initialized"
         class="pa-12"
         elevation="10"
         transition="fade-transition"
@@ -226,7 +278,7 @@ const model = defineModel<string>({
         <v-row>
           <v-col cols="12" class="text-center"
             ><div class="text-h2">
-              <span>GNL Season {{ data?.season }}</span>
+              <span>GNL Season {{ store.gnlData?.season }}</span>
               <span class="text-grey mx-2">//</span>
               <span class="text-secondary">Overview</span>
             </div>
@@ -235,23 +287,14 @@ const model = defineModel<string>({
         </v-row>
 
         <v-row class="text-center">
-          <v-col cols="6">
+          <v-col cols="8">
             <v-row>
-              <v-col cols="6">
-                <v-skeleton-loader type="image" />
-              </v-col>
-              <v-col cols="6">
-                <v-skeleton-loader type="image" />
-              </v-col>
-              <v-col cols="6">
-                <v-skeleton-loader type="image" />
-              </v-col>
-              <v-col cols="6">
+              <v-col cols="4" v-for="_ in _range(0, 6)">
                 <v-skeleton-loader type="image" />
               </v-col>
             </v-row>
           </v-col>
-          <v-col cols="6">
+          <v-col cols="4">
             <v-skeleton-loader type="table" />
           </v-col>
         </v-row>
@@ -281,12 +324,12 @@ const model = defineModel<string>({
         <v-row>
           <v-col cols="12" class="text-center"
             ><div class="text-h2">
-              <span>GNL Season {{ data?.season }}</span>
+              <span>GNL Season {{ store.gnlData?.season }}</span>
               <span class="text-grey mx-2">//</span>
               <span class="text-secondary">Overview</span>
             </div>
             <v-btn
-              v-if="false"
+              v-if="true"
               color="success"
               @click="() => store.save(current)"
               >SAVE</v-btn
@@ -295,14 +338,14 @@ const model = defineModel<string>({
           </v-col>
         </v-row>
         <v-row class="text-center">
-          <v-col cols="6">
+          <v-col cols="8">
             <v-row>
-              <v-col v-for="team in store.allData" cols="6">
+              <v-col v-for="team in store.gnlData.teams" cols="4">
                 <v-card
                   :class="`team ${leader?.id === team.id ? 'gold' : ''}`"
                   @click="() => router.push(`/gnl/${team.id}`)">
                   <v-img
-                    :src="teamGnlBanner?.[team.id] ?? gnl_team_missing"
+                    :src="teamGnlBanner(team.id)"
                     class="align-end"
                     gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
                     height="200px"
@@ -325,17 +368,19 @@ const model = defineModel<string>({
               </v-col>
             </v-row>
           </v-col>
-          <v-col cols="6">
+          <v-col cols="4">
             <Bar
               height="250px"
               :data="{
-                labels: store.allData.map((t: any) => t.name),
+                labels: _isEmpty(store.allData)
+                  ? []
+                  : store.allData?.map((t: any) => t.name),
                 datasets: [
                   {
                     label: 'points',
-                    backgroundColor: 'goldenrod',
-                    borderColor: 'darkgoldenrod',
-                    borderWidth: 0,
+                    backgroundColor: 'rgba(218, 165, 32, 0.3)',
+                    borderColor: 'goldenrod',
+                    borderWidth: 2,
                     barPercentage: 0.5,
                     data: points,
                     datalabels: {
@@ -411,13 +456,6 @@ const model = defineModel<string>({
                 }}%</strong
               >
             </v-progress-linear>
-            <v-icon
-              icon="mdi-run-fast"
-              color="warning"
-              size="x-large"
-              :style="`width: 0; heigth: 0; position: relative; 
-              right: calc(${100 - (store.dates.daysSinceStart / store.dates.durationInDays) * 100}% - 10px)
-              `" />
             <v-icon icon="mdi-exit-run" size="x-large" />
             <v-icon icon="mdi-flag-checkered" size="x-large" />
             <span
@@ -432,6 +470,18 @@ const model = defineModel<string>({
               {{ store.dates.end.format("DD.MM.YYYY") }}
             </span>
           </v-col>
+          <v-icon
+            v-if="
+              store.dates.daysSinceStart / store.dates.durationInDays > 0.05 &&
+              store.dates.daysSinceStart / store.dates.durationInDays < 0.9
+            "
+            icon="mdi-run-fast"
+            color="warning"
+            size="x-large"
+            :style="`width: 0; heigth: 0; position: relative; 
+            top: -50px;
+              left: calc(${(store.dates.daysSinceStart / store.dates.durationInDays) * 100}%)
+              `" />
           <v-col
             cols="12"
             class="text-center"

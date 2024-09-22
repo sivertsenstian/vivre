@@ -21,6 +21,7 @@ import r_banner from "@/assets/take_a_look_at_banner_random.png";
 import ud_banner from "@/assets/take_a_look_at_banner_undead.png";
 import ne_banner from "@/assets/take_a_look_at_banner_nightelf.png";
 import oc_banner from "@/assets/take_a_look_at_banner_orc.png";
+import GNLPlayerBanner from "@/components/gnl/GNLPlayerBanner.vue";
 
 const raceBanner: any = {
   [Race.Human]: hu_banner,
@@ -66,8 +67,7 @@ setInterval(() => {
                         stats.player.day.total > 0 &&
                         stats.player.day.total ===
                           Math.ceil(settings.data.goal / 7)
-                      "
-                    />
+                      " />
                     <hr />
                   </v-col>
                   <v-col cols="12">
@@ -91,8 +91,7 @@ setInterval(() => {
                       "
                       :model-value="stats.player.day.total"
                       :max="Math.ceil(settings.data.goal / 7)"
-                      :height="50"
-                    >
+                      :height="50">
                       <template v-slot:default="{ value }">
                         <span class="text-gray text-h6"
                           >{{
@@ -112,8 +111,7 @@ setInterval(() => {
                     class="text-center mt-5"
                     v-if="
                       stats.player.day.total < Math.ceil(settings.data.goal / 7)
-                    "
-                  >
+                    ">
                     <div class="text-h6">
                       Only
                       {{
@@ -126,15 +124,23 @@ setInterval(() => {
                   <v-col cols="12">
                     <WeeklyResultChart
                       :weekly="stats.weekly"
-                      :goal="Math.ceil(settings.data.goal / 7)"
-                    />
+                      :goal="Math.ceil(settings.data.goal / 7)" />
                   </v-col>
                 </v-col>
-                <v-col cols="6">
+                <v-col cols="5">
+                  <GNLPlayerBanner
+                    :dates="{
+                      daysSinceStart: 3,
+                      today: moment().startOf('day'),
+                    }"
+                    :rank="0"
+                    :team-points="100"
+                    :player="stats.player"
+                    :data="stats.player.week"
+                    :current="stats.player.week.mmr.current" />
                   <WeeklyGoalChart
                     :played="Number(stats.player.week.total)"
-                    :goal="Number(settings.data.goal)"
-                  />
+                    :goal="Number(settings.data.goal)" />
                 </v-col>
               </v-row>
               <v-row>
@@ -187,8 +193,7 @@ setInterval(() => {
                       </section>
                       <v-sheet
                         v-if="stats.player.week.mmr.averages.gain > 0"
-                        class="mt-1 text-green"
-                      >
+                        class="mt-1 text-green">
                         <section class="font-weight-bold">
                           On your current path it will take you
                           {{
@@ -204,8 +209,7 @@ setInterval(() => {
                           v-if="
                             settings.data?.mmr &&
                             settings.data.mmr > stats.player.week.mmr.current
-                          "
-                        >
+                          ">
                           And it will take you
                           {{
                             numberOfGames(
@@ -219,8 +223,7 @@ setInterval(() => {
                       </v-sheet>
                       <div
                         v-if="stats.player.week.mmr.averages.gain < 0"
-                        class="mt-1 text-red text-subtitle"
-                      >
+                        class="mt-1 text-red text-subtitle">
                         <section>
                           On your current path - you will have decreased your
                           MMR by 100 points after
@@ -258,8 +261,7 @@ setInterval(() => {
                       class="mx-6"
                       style="vertical-align: middle"
                       width="100px"
-                      :src="raceIcon[stats.ongoing.opponent.race]"
-                    />
+                      :src="raceIcon[stats.ongoing.opponent.race]" />
                     <span class="text-h5" style="vertical-align: text-top">
                       {{ stats.ongoing.opponent?.name }} ({{
                         stats.ongoing.opponent?.oldMmr
@@ -277,8 +279,7 @@ setInterval(() => {
                     :class="{
                       'text-right': stats.ongoing.history.last.length,
                       'text-center': !stats.ongoing.history.last.length,
-                    }"
-                  >
+                    }">
                     <div>
                       <span
                         class="text-caption font-weight-bold"
@@ -295,8 +296,7 @@ setInterval(() => {
                           variant="tonal"
                           color="green"
                           label
-                          class="rounded-0"
-                        >
+                          class="rounded-0">
                           <v-icon icon="mdi-shield-sword-outline" />
                         </v-chip>
                         <v-chip
@@ -305,8 +305,7 @@ setInterval(() => {
                           variant="tonal"
                           color="red"
                           label
-                          class="rounded-0"
-                        >
+                          class="rounded-0">
                           <v-icon icon="mdi-shield-sword-outline" />
                         </v-chip>
                       </template>
@@ -321,8 +320,7 @@ setInterval(() => {
                         stats.ongoing.opponent?.race,
                         stats.ongoing.map,
                       ])
-                    "
-                  >
+                    ">
                     <span class="caption">Suggested Creep Route</span>
                     <img
                       :src="
@@ -330,8 +328,7 @@ setInterval(() => {
                           stats.ongoing?.opponent?.race
                         ][stats.ongoing?.map].img
                       "
-                      width="100%"
-                    />
+                      width="100%" />
                   </v-col>
                 </v-col>
               </v-row>
@@ -344,15 +341,13 @@ setInterval(() => {
                         <img
                           style="vertical-align: middle"
                           width="50"
-                          :src="raceIcon[stats.ongoing.player.race]"
-                        />
+                          :src="raceIcon[stats.ongoing.player.race]" />
                         <hr />
                       </div>
                     </v-col>
                   </v-row>
                   <v-row
-                    v-for="([heroes, n], i) in stats.ongoing.history.heroes"
-                  >
+                    v-for="([heroes, n], i) in stats.ongoing.history.heroes">
                     <div class="text-h5 ml-5" style="align-self: center">
                       #{{ i + 1 }}
                     </div>
@@ -370,8 +365,7 @@ setInterval(() => {
                   v-if="
                     stats.ongoing.history.games.winDuration > 0 &&
                     stats.ongoing.history.games.lossDuration > 0
-                  "
-                >
+                  ">
                   <v-row>
                     <v-col cols="12">
                       <section>
@@ -391,8 +385,7 @@ setInterval(() => {
                       <section class="mt-4">
                         <div
                           v-if="stats.ongoing.history.games.isLamer"
-                          class="text-red font-weight-bold text-h5"
-                        >
+                          class="text-red font-weight-bold text-h5">
                           MIGHT BE A LAMER
                         </div>
                         <div v-else class="text-green font-weight-bold">
@@ -424,8 +417,7 @@ setInterval(() => {
                     variant="solo"
                     item-title="battleTag"
                     item-value="battleTag"
-                    auto-select-first
-                  />
+                    auto-select-first />
                   <v-card-item>
                     <v-card-title>
                       <span
@@ -433,13 +425,11 @@ setInterval(() => {
                           display: flex;
                           align-items: center;
                           justify-content: center;
-                        "
-                      >
+                        ">
                         <img
                           style="vertical-align: middle"
                           width="135px"
-                          :src="raceBanner[stats.player.race]"
-                        />
+                          :src="raceBanner[stats.player.race]" />
                         <span
                           style="
                             opacity: 0.87;
@@ -448,13 +438,11 @@ setInterval(() => {
                             right: 103px;
                             bottom: 55px;
                             width: 0;
-                          "
-                        >
+                          ">
                           <img
                             style="vertical-align: middle"
                             width="75px"
-                            :src="raceIcon[stats.player.race]"
-                          />
+                            :src="raceIcon[stats.player.race]" />
                         </span>
                         <span
                           v-if="stats.player.week.mmr.current > 100"
@@ -466,8 +454,7 @@ setInterval(() => {
                             right: 92px;
                             bottom: 0px;
                             width: 0;
-                          "
-                        >
+                          ">
                           <NumberAnimation
                             :from="
                               stats.player.week.mmr.current +
@@ -503,8 +490,7 @@ setInterval(() => {
                               :class="{
                                 'text-green': stats.player?.day?.mmr.diff > 0,
                                 'text-red': stats.player?.day?.mmr.diff < 0,
-                              }"
-                            >
+                              }">
                               <span v-if="stats.player?.day?.mmr.diff > 0"
                                 >+</span
                               >
@@ -519,8 +505,7 @@ setInterval(() => {
                               :class="{
                                 'text-green': stats.player?.week?.mmr.diff > 0,
                                 'text-red': stats.player?.week?.mmr.diff < 0,
-                              }"
-                            >
+                              }">
                               <span v-if="stats.player?.week?.mmr.diff > 0"
                                 >+</span
                               >{{ stats.player?.week?.mmr.diff }}
@@ -543,26 +528,22 @@ setInterval(() => {
                   <v-list lines="one" style="overflow: hidden">
                     <v-list-item :prepend-avatar="raceIcon[Race.Human]">
                       <ResultChart
-                        :result="stats.player.week.race[Race.Human]"
-                      />
+                        :result="stats.player.week.race[Race.Human]" />
                     </v-list-item>
                     <v-list-item :prepend-avatar="raceIcon[Race.Orc]">
                       <ResultChart :result="stats.player.week.race[Race.Orc]" />
                     </v-list-item>
                     <v-list-item :prepend-avatar="raceIcon[Race.NightElf]">
                       <ResultChart
-                        :result="stats.player.week.race[Race.NightElf]"
-                      />
+                        :result="stats.player.week.race[Race.NightElf]" />
                     </v-list-item>
                     <v-list-item :prepend-avatar="raceIcon[Race.Undead]">
                       <ResultChart
-                        :result="stats.player.week.race[Race.Undead]"
-                      />
+                        :result="stats.player.week.race[Race.Undead]" />
                     </v-list-item>
                     <v-list-item :prepend-avatar="raceIcon[Race.Random]">
                       <ResultChart
-                        :result="stats.player.week.race[Race.Random]"
-                      />
+                        :result="stats.player.week.race[Race.Random]" />
                     </v-list-item>
                   </v-list>
                 </v-col>
@@ -581,8 +562,7 @@ setInterval(() => {
                   <Performance
                     :visible="stats.player.week.total > 0"
                     :performance="stats.player.week.performance"
-                    :today="stats.player.day.total"
-                  />
+                    :today="stats.player.day.total" />
                 </v-col>
               </v-row>
             </v-sheet>
