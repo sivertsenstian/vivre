@@ -151,8 +151,8 @@ const order = computed(() => {
             </v-col>
 
             <v-col cols="6">
-              <v-row v-if="buildorder.games?.length">
-                <v-col cols="6">
+              <v-row>
+                <v-col cols="6" v-if="buildorder.games?.length">
                   <div class="text-subtitle-2 font-weight-bold">
                     Helpful Links
                   </div>
@@ -169,6 +169,7 @@ const order = computed(() => {
                     >
                   </template>
                 </v-col>
+                <v-col cols="6" v-else />
                 <v-col cols="3" v-if="buildorder.viability">
                   <viability-slider readonly v-model="buildorder.viability"
                 /></v-col>

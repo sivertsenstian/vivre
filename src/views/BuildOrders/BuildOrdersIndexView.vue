@@ -91,12 +91,10 @@ const items = computed(() => {
                         player === race
                           ? (player = Race.Random)
                           : (player = race)
-                    "
-                  >
+                    ">
                     <img
                       :src="raceIcon[race]"
-                      :width="player === race ? '45px' : '35px'"
-                    />
+                      :width="player === race ? '45px' : '35px'" />
                   </v-btn>
                 </v-btn-toggle>
                 <span class="text-overline font-weight-bold mx-3">VS</span>
@@ -116,12 +114,10 @@ const items = computed(() => {
                         opponent === race
                           ? (opponent = Race.Random)
                           : (opponent = race)
-                    "
-                  >
+                    ">
                     <img
                       :src="raceIcon[race]"
-                      :width="opponent === race ? '45px' : '35px'"
-                    />
+                      :width="opponent === race ? '45px' : '35px'" />
                   </v-btn>
                 </v-btn-toggle>
               </v-col>
@@ -134,8 +130,7 @@ const items = computed(() => {
                   hide-details
                   single-line
                   clearable
-                  size="x-small"
-                ></v-text-field>
+                  size="x-small"></v-text-field>
               </v-col>
             </v-row>
             <v-data-table
@@ -176,10 +171,27 @@ const items = computed(() => {
                   key: 'version',
                 },
                 { title: 'Author', value: 'author', key: 'author' },
-                { title: 'Created', value: 'created', key: 'created' },
+                {
+                  title: 'Created',
+                  value: 'created',
+                  key: 'created',
+                  sortRaw: (a, b) => {
+                    const am = (
+                      a?.created.toDate
+                        ? moment(a.created.toDate())
+                        : moment(a.created)
+                    ).valueOf();
+
+                    const bm = (
+                      b?.created.toDate
+                        ? moment(b.created.toDate())
+                        : moment(b.created)
+                    ).valueOf();
+                    return am - bm;
+                  },
+                },
               ]"
-              :sort-by="[{ key: 'stars', order: 'desc' }]"
-            >
+              :sort-by="[{ key: 'stars', order: 'desc' }]">
               <template v-slot:top>
                 <div
                   title="reset filters"
@@ -190,8 +202,7 @@ const items = computed(() => {
                       player = Race.Random;
                       opponent = Race.Random;
                     }
-                  "
-                >
+                  ">
                   <v-icon size="small" icon="mdi-filter" color="primary" />
                   <span class="ml-1" style="vertical-align: bottom"
                     >data is filtered</span
@@ -205,8 +216,7 @@ const items = computed(() => {
                   <img
                     style="vertical-align: middle"
                     width="25px"
-                    :src="raceIcon[value]"
-                  />
+                    :src="raceIcon[value]" />
                   {{ raceName[value] }}
                 </div>
               </template>
@@ -216,8 +226,7 @@ const items = computed(() => {
                   <img
                     style="vertical-align: middle"
                     width="25px"
-                    :src="raceIcon[value]"
-                  />
+                    :src="raceIcon[value]" />
                   {{ raceName[value] }}
                 </div>
               </template>
@@ -228,8 +237,7 @@ const items = computed(() => {
                   label
                   size="small"
                   :color="getRating(value)"
-                  append-icon="mdi-star"
-                >
+                  append-icon="mdi-star">
                   {{ value }}
                 </v-chip>
               </template>
@@ -247,8 +255,7 @@ const items = computed(() => {
                       : value === builds.difficulties[1]
                         ? 'orange'
                         : 'red'
-                  "
-                >
+                  ">
                   <v-icon icon="mdi-weight-lifter" />
                 </v-chip>
               </template>
@@ -262,8 +269,7 @@ const items = computed(() => {
                   <v-chip
                     v-for="tag in _take(value, 2)"
                     :text="String(tag)"
-                    size="small"
-                  >
+                    size="small">
                   </v-chip>
                   <v-chip
                     v-if="value?.length > 2"
@@ -273,8 +279,7 @@ const items = computed(() => {
                         .join(', ')
                     "
                     :text="`+${value.length - 2} more`"
-                    size="small"
-                  >
+                    size="small">
                   </v-chip>
                 </v-chip-group>
               </template>
@@ -289,8 +294,7 @@ const items = computed(() => {
 
               <template v-slot:loading>
                 <v-skeleton-loader
-                  :type="`table-row@${itemsPerPage}`"
-                ></v-skeleton-loader>
+                  :type="`table-row@${itemsPerPage}`"></v-skeleton-loader>
               </template>
             </v-data-table> </v-col
         ></v-row>
@@ -328,8 +332,7 @@ If you have any feedback - don't hesitate to contact me @Longjacket in the w3c o
               type="info"
               variant="tonal"
               style="white-space: pre-wrap; border: 1px solid"
-              border-color="primary"
-            ></v-alert>
+              border-color="primary"></v-alert>
           </v-col>
         </v-row>
       </v-sheet>
