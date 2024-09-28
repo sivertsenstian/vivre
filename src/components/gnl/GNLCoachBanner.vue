@@ -33,6 +33,7 @@ const coachGnlBanner: any = {
 };
 
 interface Props {
+  prefix?: string;
   coach: any;
 }
 const props = defineProps<Props>();
@@ -55,7 +56,8 @@ const open = (battleTag: string) =>
       </template>
       <template v-slot:title>
         <div class="ml-1 text-left text-h5">
-          {{ coach.battleTag }}
+          <span v-if="prefix" class="mr-1">{{ prefix }}</span
+          >{{ coach.battleTag.split("#")[0] }}
         </div>
       </template>
     </v-list-item>
@@ -79,10 +81,10 @@ const open = (battleTag: string) =>
 
     <v-card-item>
       <v-card-title class="text-left d-flex align-center"
-        ><span>Ask me about:</span>
+        ><span style="vertical-align: middle">Coaches:</span>
         <img
           :src="raceIcon[race]"
-          width="35px"
+          width="30px"
           class="ml-1"
           v-for="race in coach.races" />
       </v-card-title>
@@ -92,8 +94,8 @@ const open = (battleTag: string) =>
       <v-card-title class="d-flex align-center"
         ><i
           v-if="coach.quotes?.length"
-          class="text-subtitle-2"
-          style="opacity: 0.7"
+          class="text-subtitle-2 text-wrap"
+          style="opacity: 0.7; font-size: 12px !important"
           >{{ _sample(coach.quotes) }}</i
         >
       </v-card-title>

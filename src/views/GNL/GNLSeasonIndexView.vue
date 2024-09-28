@@ -10,6 +10,409 @@ const isDark = computed(() => theme.global.current.value.dark);
 const router = useRouter();
 const store = useGNLStore();
 
+const testPlayers = [
+  {
+    battleTag: "PxiaoLeiA#3755",
+    race: Race.Human,
+  },
+  {
+    battleTag: "JINlaohu#3583",
+    race: Race.Undead,
+  },
+  {
+    battleTag: "ThePretender#21867",
+    race: Race.Orc,
+  },
+  {
+    battleTag: "OOoooooD#21437",
+    race: Race.Human,
+  },
+  {
+    battleTag: "xiaoshuangsh#1847",
+    race: Race.Undead,
+  },
+  {
+    battleTag: "kaneyu1234#1962",
+    race: Race.NightElf,
+  },
+  {
+    battleTag: "Андромед#21688",
+    race: Race.NightElf,
+  },
+  {
+    battleTag: "xiangyuxmds#2611",
+    race: Race.NightElf,
+  },
+  {
+    battleTag: "Primera#21505",
+    race: Race.Undead,
+  },
+  {
+    battleTag: "PARALLAX#12547",
+    race: Race.Human,
+  },
+  {
+    battleTag: "blue#17652",
+    race: Race.NightElf,
+  },
+  {
+    battleTag: "RobotNinja#2136641",
+    race: Race.NightElf,
+  },
+  {
+    battleTag: "하늘#34992",
+    race: Race.NightElf,
+  },
+  {
+    battleTag: "Luchex#11919",
+    race: Race.Human,
+  },
+  {
+    battleTag: "MyNameIsJeff#22660",
+    race: Race.Random,
+  },
+  {
+    battleTag: "alienufo#21441",
+    race: Race.Human,
+  },
+  {
+    battleTag: "ShadowZS#21866",
+    race: Race.Orc,
+  },
+  {
+    battleTag: "yupu#11767",
+    race: Race.NightElf,
+  },
+  {
+    battleTag: "Theviro#11559",
+    race: Race.Undead,
+  },
+  {
+    battleTag: "NootNoot#11255",
+    race: Race.Orc,
+  },
+  {
+    battleTag: "JustDoiTpLs#2907",
+    race: Race.Orc,
+  },
+  {
+    battleTag: "MoldMerchant#2430",
+    race: Race.Orc,
+  },
+  {
+    battleTag: "Warsong#21562",
+    race: Race.Orc,
+  },
+  {
+    battleTag: "whiteboyz#11129",
+    race: Race.Undead,
+  },
+  {
+    battleTag: "Cola#12908",
+    race: Race.Orc,
+  },
+  {
+    battleTag: "WnDXi#1611",
+    race: Race.Orc,
+  },
+  {
+    battleTag: "Vain#1516",
+    race: Race.NightElf,
+  },
+  {
+    battleTag: "NICKT#6757",
+    race: Race.Orc,
+  },
+  {
+    battleTag: "pelado#11589",
+    race: Race.NightElf,
+  },
+  {
+    battleTag: "Fanfycn#3476",
+    race: Race.Undead,
+  },
+  {
+    battleTag: "Brekkie#21685",
+    race: Race.NightElf,
+  },
+  {
+    battleTag: "SatiiNi#21864",
+    race: Race.Human,
+  },
+  {
+    battleTag: "mynamejh#31958",
+    race: Race.NightElf,
+  },
+  {
+    battleTag: "Zimin#21871",
+    race: Race.Random,
+  },
+  {
+    battleTag: "JCVD#2439",
+    race: Race.Undead,
+  },
+  {
+    battleTag: "Rob#24463",
+    race: Race.NightElf,
+  },
+  {
+    battleTag: "FunnyName#21744",
+    race: Race.Human,
+  },
+  {
+    battleTag: "NewbeFrankie#3650",
+    race: Race.Random,
+  },
+  {
+    battleTag: "figo#11826",
+    race: Race.Human,
+  },
+  {
+    battleTag: "SuperNinja#1588214",
+    race: Race.Orc,
+  },
+  {
+    battleTag: "henji#4482",
+    race: Race.NightElf,
+  },
+  {
+    battleTag: "bynx#3763",
+    race: Race.Human,
+  },
+  {
+    battleTag: "KenT#2740",
+    race: Race.NightElf,
+  },
+  {
+    battleTag: "sCiMiTar#22984",
+    race: Race.Random,
+  },
+  {
+    battleTag: "any123#11262",
+    race: Race.NightElf,
+  },
+  {
+    battleTag: "Ronaldinho#21402",
+    race: Race.Orc,
+  },
+  {
+    battleTag: "SimYaël#2351",
+    race: Race.Orc,
+  },
+  {
+    battleTag: "LaRusso#11213",
+    race: Race.NightElf,
+  },
+  {
+    battleTag: "yuanbisheng#1216",
+    race: Race.Orc,
+  },
+  {
+    battleTag: "metil#11530",
+    race: Race.Orc,
+  },
+  {
+    battleTag: "Drex#21756",
+    race: Race.Orc,
+  },
+  {
+    battleTag: "vicsha#3691",
+    race: Race.Human,
+  },
+  {
+    battleTag: "KBSC24#2379",
+    race: Race.Orc,
+  },
+  {
+    battleTag: "okku#2255",
+    race: Race.Undead,
+  },
+  {
+    battleTag: "Apm50#1700",
+    race: Race.Human,
+  },
+  {
+    battleTag: "Iamrayzhang#3409",
+    race: Race.Orc,
+  },
+  {
+    battleTag: "daRe#2479",
+    race: Race.Orc,
+  },
+  {
+    battleTag: "小怪兽#31882",
+    race: Race.Orc,
+  },
+  {
+    battleTag: "laoxu#11417",
+    race: Race.Random,
+  },
+  {
+    battleTag: "Adenor#1539",
+    race: Race.Random,
+  },
+  {
+    battleTag: "SimYaël#2351",
+    race: Race.Human,
+  },
+  {
+    battleTag: "zhoupps#3268",
+    race: Race.Human,
+  },
+  {
+    battleTag: "yeshkinkot#21567",
+    race: Race.Human,
+  },
+  {
+    battleTag: "Ayur#2760",
+    race: Race.Random,
+  },
+  {
+    battleTag: "Reyenir#2169",
+    race: Race.Random,
+  },
+  {
+    battleTag: "Gyubh#1124",
+    race: Race.Random,
+  },
+  {
+    battleTag: "Necromanccer#2867",
+    race: Race.Human,
+  },
+  {
+    battleTag: "Tosh#2920",
+    race: Race.Undead,
+  },
+  {
+    battleTag: "Longjacket#2840",
+    race: Race.Human,
+  },
+  {
+    battleTag: "Kato#1245",
+    race: Race.NightElf,
+  },
+  {
+    battleTag: "Cola#12908",
+    race: Race.Human,
+  },
+  {
+    battleTag: "Kov#11865",
+    race: Race.NightElf,
+  },
+  {
+    battleTag: "PaiPai#11577",
+    race: Race.NightElf,
+  },
+  {
+    battleTag: "r1CHASSNlGGa#1759",
+    race: Race.Random,
+  },
+  {
+    battleTag: "Dibuji#2477",
+    race: Race.Orc,
+  },
+  {
+    battleTag: "Leshka#21750",
+    race: Race.Orc,
+  },
+  {
+    battleTag: "CrAzYMiCrO#2465",
+    race: Race.Human,
+  },
+  {
+    battleTag: "Qsoldier#3208",
+    race: Race.Human,
+  },
+  {
+    battleTag: "아샬라노레#31927",
+    race: Race.Human,
+  },
+  {
+    battleTag: "little#12277",
+    race: Race.Human,
+  },
+  {
+    battleTag: "Pbmatch#21881",
+    race: Race.NightElf,
+  },
+  {
+    battleTag: "NeonGhost#23343",
+    race: Race.Human,
+  },
+  {
+    battleTag: "uNiQuE#2654",
+    race: Race.Undead,
+  },
+  {
+    battleTag: "jeaboy#2314",
+    race: Race.Orc,
+  },
+  {
+    battleTag: "SlimShady#22935",
+    race: Race.Orc,
+  },
+  {
+    battleTag: "ShadowZS#21866",
+    race: Race.Random,
+  },
+  {
+    battleTag: "appleofagony#2677",
+    race: Race.Random,
+  },
+  {
+    battleTag: "Gaben#22392",
+    race: Race.Human,
+  },
+  {
+    battleTag: "saibotzinho#1319",
+    race: Race.NightElf,
+  },
+  {
+    battleTag: "Life#12460",
+    race: Race.Orc,
+  },
+  {
+    battleTag: "Sphinx#22547",
+    race: Race.NightElf,
+  },
+  {
+    battleTag: "Tanthalas#3421",
+    race: Race.Orc,
+  },
+  {
+    battleTag: "LLVR#2808",
+    race: Race.Human,
+  },
+  {
+    battleTag: "Pow#11520",
+    race: Race.Human,
+  },
+  {
+    battleTag: "DoNotWinMe#1357",
+    race: Race.Human,
+  },
+  {
+    battleTag: "Isendel#1786",
+    race: Race.Human,
+  },
+  {
+    battleTag: "pharaON#22353",
+    race: Race.Undead,
+  },
+  {
+    battleTag: "Fozzy0503#2578",
+    race: Race.Human,
+  },
+  {
+    battleTag: "fResHLiViT#2218",
+    race: Race.Human,
+  },
+  {
+    battleTag: "gigahertz#21517",
+    race: Race.Random,
+  },
+];
+
 const current = {
   id: uuidv4(),
   created: moment().toDate(),
@@ -21,140 +424,7 @@ const current = {
     {
       id: "chinesepaladin",
       name: "Chinese Paldin",
-      coaches: [
-        {
-          battleTag: "Barren#1153",
-          race: Race.Undead,
-          races: [Race.Undead],
-          roles: ["Coach", "Lawyer"],
-          quotes: [],
-        },
-        {
-          battleTag: "EmilyHuttson#1378",
-          race: Race.Random,
-          races: [Race.Human, Race.Orc, Race.NightElf, Race.Undead],
-          roles: ["Coach", "Bajo Jajo"],
-          quotes: [],
-        },
-        {
-          battleTag: "jolin#31419",
-          race: Race.NightElf,
-          races: [Race.NightElf],
-          roles: ["Coach", "Jabba"],
-          quotes: [],
-        },
-      ],
-      players: [
-        { battleTag: "RaZeR#23389", race: Race.Undead },
-        { battleTag: "sd1528681#2302", race: Race.NightElf },
-        { battleTag: "ET3#31514", race: Race.Human },
-        { battleTag: "vscan#3284", race: Race.Orc },
-      ],
-    },
-    {
-      id: "rageandape",
-      name: "Rage & Ape: Attorneys at War",
-      coaches: [
-        {
-          battleTag: "floss2xdaily#1987",
-          race: Race.Human,
-          races: [Race.Human],
-          roles: ["Coach"],
-          quotes: [],
-        },
-        {
-          battleTag: "ToD#2792",
-          race: Race.Human,
-          races: [Race.Human],
-          roles: ["Caster", "Coach"],
-          quotes: [],
-        },
-      ],
-      players: [
-        { battleTag: "K0rbinian#21728", race: Race.Human },
-        { battleTag: "sd1528681#2302", race: Race.NightElf },
-        { battleTag: "ET3#31514", race: Race.Human },
-        { battleTag: "vscan#3284", race: Race.Orc },
-      ],
-    },
-    {
-      id: "apelords",
-      name: "Apelords",
-      coaches: [
-        {
-          battleTag: "SaulApeMan#2163",
-          race: Race.Random,
-          races: [Race.Human, Race.Undead, Race.Orc, Race.NightElf],
-          roles: ["Caster", "Coach", "Ape"],
-          quotes: ["Makrura for you!", "Ladies and Gentlemen, welcome to GNL!"],
-        },
-        {
-          battleTag: "spycreed#2536",
-          race: Race.Undead,
-          races: [Race.Undead],
-          roles: ["Coach"],
-        },
-      ],
-      players: [
-        { battleTag: "Longjacket#2840", race: Race.Human },
-        { battleTag: "RaZeR#23389", race: Race.Undead },
-        { battleTag: "hengyi#31966", race: Race.Human },
-        { battleTag: "hengyi#31966", race: Race.Human },
-      ],
-    },
-    {
-      id: "thebananapickers",
-      name: "The Banana Pickers",
-      coaches: [
-        {
-          battleTag: "gotquail#1103",
-          race: Race.Human,
-          races: [Race.Human],
-          roles: ["Coach"],
-          quotes: [],
-        },
-        {
-          battleTag: "kennyg6050#1543",
-          race: Race.Undead,
-          races: [Race.Undead],
-          roles: ["Coach"],
-          quotes: [],
-        },
-      ],
-      players: [
-        { battleTag: "Longjacket#2840", race: Race.Human },
-        { battleTag: "SneakyTurtle#2326919", race: Race.NightElf },
-        { battleTag: "siyanleo#1295", race: Race.Orc },
-        { battleTag: "FVB#1736", race: Race.Orc },
-      ],
-    },
-    {
-      id: "gigglinggoblins",
-      name: "Giggling Goblins",
-      coaches: [
-        {
-          battleTag: "NorthDrakkar#1745",
-          race: Race.Undead,
-          races: [Race.Undead],
-          roles: ["Coach"],
-        },
-        {
-          battleTag: "Ember#21963",
-          race: Race.Undead,
-          races: [Race.Undead],
-          roles: ["Coach"],
-        },
-      ],
-      players: [
-        { battleTag: "siyanleo#1295", race: Race.Orc },
-        { battleTag: "jung#31458", race: Race.Human },
-        { battleTag: "K0rbinian#21728", race: Race.Human },
-        { battleTag: "sd1528681#2302", race: Race.NightElf },
-      ],
-    },
-    {
-      id: "gnlbears",
-      name: "GNL Bears",
+      prefix: "",
       coaches: [
         {
           battleTag: "Wontu#1218",
@@ -169,12 +439,130 @@ const current = {
           roles: ["Coach"],
         },
       ],
-      players: [
-        { battleTag: "ET3#31514", race: Race.Human },
-        { battleTag: "vscan#3284", race: Race.Orc },
-        { battleTag: "Longjacket#2840", race: Race.Human },
-        { battleTag: "SneakyTurtle#2326919", race: Race.NightElf },
+      players: _take(_skip(testPlayers, 67), 33),
+    },
+    {
+      id: "rageandape",
+      name: "Rage & Ape: Attorneys at War",
+      prefix: "",
+      coaches: [
+        {
+          battleTag: "floss2xdaily#1987",
+          race: Race.Human,
+          races: [Race.Human],
+          roles: ["Coach"],
+          quotes: [],
+        },
+        {
+          battleTag: "ToD#2792",
+          race: Race.Human,
+          races: [Race.Human],
+          roles: ["Caster", "Coach", "French"],
+          quotes: [],
+        },
       ],
+      players: _take(_skip(testPlayers, 25), 33),
+    },
+    {
+      id: "apelords",
+      name: "Apelords",
+      prefix: "Mr.",
+      coaches: [
+        {
+          battleTag: "SaulApeMan#2163",
+          race: Race.Random,
+          races: [Race.Human, Race.Undead, Race.Orc, Race.NightElf],
+          roles: ["Caster", "Coach", "Ape"],
+          quotes: [
+            "Makrura for you!",
+            "Ladies and Gentlemen, welcome to GNL!",
+            "Have you seen the size of my EXCEL SHEETS?",
+          ],
+        },
+        {
+          battleTag: "spycreed#2536",
+          race: Race.Undead,
+          races: [Race.Undead],
+          roles: ["Coach", "Gabagool"],
+          quotes: ["Dont snipe Mr. Harstem!", "It's-a Me, Spycreed!"],
+        },
+      ],
+      players: _take(testPlayers, 33),
+    },
+    {
+      id: "mannertime",
+      name: "Manner Time",
+      prefix: "",
+      coaches: [
+        {
+          battleTag: "gotQuail#1103",
+          race: Race.Human,
+          races: [Race.Human],
+          roles: ["Coach"],
+          quotes: [],
+        },
+        {
+          battleTag: "kennyg6050#1543",
+          race: Race.Undead,
+          races: [Race.Undead],
+          roles: ["Coach"],
+          quotes: [],
+        },
+      ],
+      players: _take(_skip(testPlayers, 33), 33),
+    },
+    {
+      id: "gigglinggoblins",
+      name: "Giggling Goblins",
+      prefix: "",
+      coaches: [
+        {
+          battleTag: "NorthDrakkar#1745",
+          race: Race.Undead,
+          races: [Race.Undead],
+          roles: ["Coach", "Bajo Jajo Apprentice"],
+        },
+        {
+          battleTag: "Ember#21963",
+          race: Race.Undead,
+          races: [Race.Undead],
+          roles: ["Coach"],
+        },
+      ],
+      players: _take(_skip(testPlayers, 66), 33),
+    },
+    {
+      id: "gnlbears",
+      name: "GNL Bears",
+      prefix: "",
+      coaches: [
+        {
+          battleTag: "Barren#1153",
+          race: Race.Undead,
+          races: [Race.Undead],
+          roles: ["Coach", "Lawyer"],
+          quotes: [],
+        },
+        {
+          battleTag: "EmilyHuttson#1378",
+          race: Race.Random,
+          races: [Race.Human, Race.Orc, Race.NightElf, Race.Undead],
+          roles: ["Coach", "Bajo Jajo Master"],
+          quotes: [],
+        },
+        {
+          battleTag: "jolin#31419",
+          race: Race.NightElf,
+          races: [Race.NightElf],
+          roles: ["Coach", "Jabba"],
+          quotes: [
+            "Who here?",
+            "<Donut.jpg>",
+            "Jabba will teach u chinese paladin",
+          ],
+        },
+      ],
+      players: _take(_skip(testPlayers, 49), 33),
     },
   ],
 };
@@ -201,6 +589,8 @@ import _round from "lodash/round";
 import MarkdownViewer from "@/components/MarkdownViewer.vue";
 import _range from "lodash/range";
 import _isEmpty from "lodash/isEmpty";
+import _take from "lodash/take";
+import _skip from "lodash/drop";
 
 ChartJS.register(
   LineController,
@@ -232,20 +622,22 @@ const options = {
 // End
 
 const points = computed(() => {
-  if (_isEmpty(store.allData)) {
+  if (_isEmpty(store.data?.teams)) {
     return [];
   }
-  return store.allData.map((t: any) => {
-    return t.data.reduce((s: number, p: any) => {
-      const d = p.season[p.race];
-      return s + ((d?.wins ?? 0) * 3 + (d?.loss ?? 0));
-    }, 0);
+  return store.data.teams.map((t: any) => {
+    return (
+      t.players?.reduce((s: number, p: any) => {
+        const d = p.data;
+        return s + ((d?.wins ?? 0) * 3 + (d?.loss ?? 0));
+      }, 0) ?? 0
+    );
   });
 });
 
 const leader = computed(() => {
   const i = points.value.indexOf(Math.max(...points.value));
-  return store.allData?.[i];
+  return store.data?.teams?.[i];
 });
 
 // Text
@@ -278,7 +670,7 @@ const model = defineModel<string>({
         <v-row>
           <v-col cols="12" class="text-center"
             ><div class="text-h2">
-              <span>GNL Season {{ store.gnlData?.season }}</span>
+              <span>GNL Season {{ store.data?.season }}</span>
               <span class="text-grey mx-2">//</span>
               <span class="text-secondary">Overview</span>
             </div>
@@ -324,7 +716,7 @@ const model = defineModel<string>({
         <v-row>
           <v-col cols="12" class="text-center"
             ><div class="text-h2">
-              <span>GNL Season {{ store.gnlData?.season }}</span>
+              <span>GNL Season {{ store.data?.season }}</span>
               <span class="text-grey mx-2">//</span>
               <span class="text-secondary">Overview</span>
             </div>
@@ -340,7 +732,7 @@ const model = defineModel<string>({
         <v-row class="text-center">
           <v-col cols="8">
             <v-row>
-              <v-col v-for="team in store.gnlData.teams" cols="4">
+              <v-col v-for="team in store.data?.teams ?? []" cols="4">
                 <v-card
                   :class="`team ${leader?.id === team.id ? 'gold' : ''}`"
                   @click="() => router.push(`/gnl/${team.id}`)">
@@ -372,9 +764,9 @@ const model = defineModel<string>({
             <Bar
               height="250px"
               :data="{
-                labels: _isEmpty(store.allData)
+                labels: _isEmpty(store.data.teams)
                   ? []
-                  : store.allData?.map((t: any) => t.name),
+                  : store.data.teams?.map((t: any) => t.name),
                 datasets: [
                   {
                     label: 'points',

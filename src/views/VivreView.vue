@@ -21,7 +21,6 @@ import r_banner from "@/assets/take_a_look_at_banner_random.png";
 import ud_banner from "@/assets/take_a_look_at_banner_undead.png";
 import ne_banner from "@/assets/take_a_look_at_banner_nightelf.png";
 import oc_banner from "@/assets/take_a_look_at_banner_orc.png";
-import GNLPlayerBanner from "@/components/gnl/GNLPlayerBanner.vue";
 
 const raceBanner: any = {
   [Race.Human]: hu_banner,
@@ -128,16 +127,6 @@ setInterval(() => {
                   </v-col>
                 </v-col>
                 <v-col cols="5">
-                  <GNLPlayerBanner
-                    :dates="{
-                      daysSinceStart: 3,
-                      today: moment().startOf('day'),
-                    }"
-                    :rank="0"
-                    :team-points="100"
-                    :player="stats.player"
-                    :data="stats.player.week"
-                    :current="stats.player.week.mmr.current" />
                   <WeeklyGoalChart
                     :played="Number(stats.player.week.total)"
                     :goal="Number(settings.data.goal)" />
