@@ -145,4 +145,6 @@ export interface IBuildOrderState {
 export interface IGNLAccount {
   battleTag: string;
   race: Race;
+  data?: any;
+  points?: number;
 }
