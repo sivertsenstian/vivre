@@ -21,7 +21,7 @@ import gnl_team_chinesepaladin from "@assets/gnl/teams/chinesepaladin.jpg";
 import gnl_team_missing from "@/assets/creeproutes/missing.png";
 import _isEmpty from "lodash/isEmpty";
 
-const gnlBanners = {
+const gnlBanners: { [key: string]: string } = {
   ["chinesepaladin"]: gnl_team_chinesepaladin,
   ["rageandape"]: gnl_team_rageandape,
   ["apelords"]: gnl_team_apelords,
@@ -45,7 +45,7 @@ const getData = async (account: IGNLAccount, start: Moment, end: Moment) => {
     result = getRaceStatistics(
       account.battleTag,
       seasonActual.filter((m) => isRace(account.battleTag, m, account.race)),
-    );
+    ) as any;
   } catch (error) {
     console.log(error);
   }
@@ -93,40 +93,21 @@ export const useGNLStore = defineStore("gnl", () => {
   });
 
   // Do it live!
-  const refresh = async () => {
-    const result: any = {};
-    await Promise.all(
-      players.value.map(async (account: IGNLAccount): Promise<void> => {
-        result[account.battleTag] = await getData(
-          account.battleTag,
-          dates.value.start,
-          dates.value.end,
-        );
-      }),
-    );
-
-    data.value = result;
-    timer.value = setTimeout(refresh, 10000);
-  };
-
-  const initialize = (d: any, t: any) => {
-    start.value = moment(d.start, "DD.MM.YYYY");
-    end.value = moment(d.end, "DD.MM.YYYY");
-
-    clearTimeout(timer.value);
-    data.value = {};
-
-    coaches.value = t.coaches;
-    players.value = t.players;
-
-    void refresh();
-  };
-
-  const clear = () => {
-    data.value = {};
-    coaches.value = [];
-    players.value = [];
-  };
+  // const refresh = async () => {
+  //   const result: any = {};
+  //   await Promise.all(
+  //     players.value.map(async (account: IGNLAccount): Promise<void> => {
+  //       result[account.battleTag] = await getData(
+  //         account.battleTag,
+  //         dates.value.start,
+  //         dates.value.end,
+  //       );
+  //     }),
+  //   );
+  //
+  //   data.value = result;
+  //   timer.value = setTimeout(refresh, 10000);
+  // };
 
   const all = async (d: any) => {
     start.value = moment(d.start, "DD.MM.YYYY");
@@ -136,7 +117,7 @@ export const useGNLStore = defineStore("gnl", () => {
       current.value === undefined
         ? d.teams
         : d.teams.filter(
-            (t) => t.id.toLowerCase() === current.value.toLowerCase(),
+            (t: any) => t.id.toLowerCase() === current.value?.toLowerCase(),
           );
 
     if (_isEmpty(data.value.teams)) {
@@ -162,8 +143,6 @@ export const useGNLStore = defineStore("gnl", () => {
   };
 
   return {
-    initialize,
-    clear,
     all,
     data,
     dates,

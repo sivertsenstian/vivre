@@ -19,7 +19,7 @@ const store = useGNLStore();
 store.current = String(route.params.team).toLowerCase();
 
 const current = computed(
-  () => store.data.teams?.find((t) => t.id === store.current) ?? {},
+  () => store.data.teams?.find((t: any) => t.id === store.current) ?? {},
 );
 
 onBeforeRouteLeave(() => {
@@ -28,7 +28,7 @@ onBeforeRouteLeave(() => {
 
 const points = computed(() => {
   try {
-    return current.value.players.map((p) => {
+    return current.value.players.map((p: IGNLAccount) => {
       const d = p.data ?? {};
       return {
         battleTag: p.battleTag,
@@ -41,19 +41,23 @@ const points = computed(() => {
 });
 
 const teamPoints = computed(() => {
-  return points.value.reduce((s, p) => (s += p?.points ?? 0), 0);
+  return points.value.reduce((s: number, p: any) => (s += p?.points ?? 0), 0);
 });
 
 const players = computed(() => {
   try {
     return current.value.players
-      .map((p) => {
+      .map((p: IGNLAccount) => {
         const d = p.data ?? {};
         return { battleTag: p.battleTag, points: d.wins * 3 + d.loss, data: d };
       })
-      .sort((a, b) => b.points - a.points)
-      .map((p) => {
-        return current.value.players.find((x) => x.battleTag === p.battleTag);
+      .sort(
+        (a: IGNLAccount, b: IGNLAccount) => (b.points ?? 0) - (a.points ?? 0),
+      )
+      .map((p: IGNLAccount) => {
+        return current.value.players.find(
+          (x: IGNLAccount) => x.battleTag === p.battleTag,
+        );
       });
   } catch {
     return [];
@@ -63,8 +67,8 @@ const players = computed(() => {
 const matches = computed(() => {
   try {
     return current.value.players
-      .map((p) => p.data.matches)
-      .reduce((s, m) => [...s, ...m], []);
+      .map((p: any) => p.data.matches)
+      .reduce((s: any, m: any) => [...s, ...m], []);
   } catch {
     return [];
   }
@@ -85,6 +89,7 @@ import {
 } from "chart.js";
 import "chartjs-adapter-moment";
 import ChartDataLabels from "chartjs-plugin-datalabels";
+import type { IGNLAccount } from "@/utilities/types";
 
 ChartJS.register(
   LineController,
@@ -225,8 +230,8 @@ const options = {
                   style="overflow: visible"
                   :data="{
                     labels: points
-                      .filter((p) => p.points > 0)
-                      .map((p) => p.battleTag.split('#')[0]),
+                      .filter((p: IGNLAccount) => (p.points ?? 0) > 0)
+                      .map((p: IGNLAccount) => p.battleTag.split('#')[0]),
                     datasets: [
                       {
                         label: 'points',
@@ -235,8 +240,8 @@ const options = {
                         borderWidth: 2,
                         barPercentage: 0.8,
                         data: points
-                          .filter((p) => p.points > 0)
-                          .map((p) => p.points),
+                          .filter((p: IGNLAccount) => (p.points ?? 0) > 0)
+                          .map((p: IGNLAccount) => p.points),
                         datalabels: {
                           clip: true,
                           clamp: true,
