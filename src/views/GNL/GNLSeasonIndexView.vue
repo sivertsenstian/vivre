@@ -541,14 +541,14 @@ const current = {
           race: Race.Undead,
           races: [Race.Undead],
           roles: ["Coach", "Lawyer"],
-          quotes: [],
+          quotes: ["Focus Pocus!", "Hotpot"],
         },
         {
           battleTag: "EmilyHuttson#1378",
           race: Race.Random,
           races: [Race.Human, Race.Orc, Race.NightElf, Race.Undead],
           roles: ["Coach", "Bajo Jajo Master"],
-          quotes: [],
+          quotes: ["Have you tried Pitlord first?"],
         },
         {
           battleTag: "jolin#31419",
@@ -721,7 +721,7 @@ const model = defineModel<string>({
               <span class="text-secondary">Overview</span>
             </div>
             <v-btn
-              v-if="true"
+              v-if="false"
               color="success"
               @click="() => store.save(current)"
               >SAVE</v-btn

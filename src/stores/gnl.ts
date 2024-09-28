@@ -78,7 +78,7 @@ export const useGNLStore = defineStore("gnl", () => {
 
   const db = useFirestore();
   const { promise } = useDocument<any>(
-    doc(db, "gnl", "6d1d3718-ed65-4e38-b556-503f02ecf089"),
+    doc(db, "gnl", "59fbace0-5b6d-4494-ac83-54ddf3664d7a"),
   );
 
   promise.value.then((d) => {
