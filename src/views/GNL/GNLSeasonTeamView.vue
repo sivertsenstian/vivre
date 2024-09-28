@@ -1,31 +1,12 @@
 <script setup lang="ts">
 import { useTheme } from "vuetify";
 import { computed, ref } from "vue";
-import { useGNLStore } from "@/stores/gnl";
+import { teamGnlBanner, useGNLStore } from "@/stores/gnl";
 import ActivityTable from "@/components/ActivityTable.vue";
 import GNLPlayerBanner from "@/components/gnl/GNLPlayerBanner.vue";
 import GNLCoachBanner from "@/components/gnl/GNLCoachBanner.vue";
 import _isEmpty from "lodash/isEmpty";
-import {
-  onBeforeRouteLeave,
-  onBeforeRouteUpdate,
-  useRoute,
-  useRouter,
-} from "vue-router";
-import { useDocument, useFirestore } from "vuefire";
-import { doc } from "firebase/firestore";
-import gnl_team_apelords from "@assets/gnl/teams/apelords.jpg";
-import gnl_team_bananapickers from "@assets/gnl/teams/banana.jpg";
-import gnl_team_gigglinggoblins from "@assets/gnl/teams/goblins.jpg";
-import gnl_team_gnlbears from "@assets/gnl/teams/bears.jpg";
-import gnl_team_missing from "@/assets/creeproutes/missing.png";
-
-const teamGnlBanner: any = {
-  ["apelords"]: gnl_team_apelords,
-  ["thebananapickers"]: gnl_team_bananapickers,
-  ["gigglinggoblins"]: gnl_team_gigglinggoblins,
-  ["gnlbears"]: gnl_team_gnlbears,
-};
+import { onBeforeRouteLeave, useRoute, useRouter } from "vue-router";
 
 const theme = useTheme();
 const isDark = computed(() => theme.global.current.value.dark);
@@ -35,44 +16,24 @@ const router = useRouter();
 
 const store = useGNLStore();
 
-const db = useFirestore();
-const { data, promise } = useDocument<any>(
-  doc(db, "gnl", "90807d36-a989-4c90-9363-9d064db121ca"),
+store.current = String(route.params.team).toLowerCase();
+
+const current = computed(
+  () => store.data.teams?.find((t) => t.id === store.current) ?? {},
 );
 
-const current = ref<any>({});
-
-promise.value.then((data) => {
-  const team = data.teams.find(
-    (t: any) => t.id.toLowerCase() === String(route.params.team).toLowerCase(),
-  );
-
-  if (team) {
-    current.value = team;
-    store.initialize(data, team);
-  }
-});
-
-onBeforeRouteUpdate((to) => {
-  const team = data.value?.teams.find(
-    (t: any) => t.id.toLowerCase() === String(to.params.team).toLowerCase(),
-  );
-
-  if (team) {
-    current.value = team;
-    store.initialize(data, team);
-  }
-});
-
 onBeforeRouteLeave(() => {
-  store.clear();
+  store.current = undefined;
 });
 
 const points = computed(() => {
   try {
-    return store.players.map((p) => {
-      const d = store.data[p.battleTag].season[p.race];
-      return { battleTag: p.battleTag, points: d.wins * 3 + d.loss };
+    return current.value.players.map((p) => {
+      const d = p.data ?? {};
+      return {
+        battleTag: p.battleTag,
+        points: (d.wins ?? 0) * 3 + (d.loss ?? 0),
+      };
     });
   } catch {
     return [];
@@ -80,19 +41,19 @@ const points = computed(() => {
 });
 
 const teamPoints = computed(() => {
-  return points.value.reduce((s, p) => (s += p.points), 0);
+  return points.value.reduce((s, p) => (s += p?.points ?? 0), 0);
 });
 
 const players = computed(() => {
   try {
-    return store.players
+    return current.value.players
       .map((p) => {
-        const d = store.data[p.battleTag].season[p.race];
-        return { battleTag: p.battleTag, points: d.wins * 3 + d.loss };
+        const d = p.data ?? {};
+        return { battleTag: p.battleTag, points: d.wins * 3 + d.loss, data: d };
       })
       .sort((a, b) => b.points - a.points)
       .map((p) => {
-        return store.players.find((x) => x.battleTag === p.battleTag);
+        return current.value.players.find((x) => x.battleTag === p.battleTag);
       });
   } catch {
     return [];
@@ -101,8 +62,8 @@ const players = computed(() => {
 
 const matches = computed(() => {
   try {
-    return store.players
-      .map((p) => store.data[p.battleTag].season[p.race].matches)
+    return current.value.players
+      .map((p) => p.data.matches)
       .reduce((s, m) => [...s, ...m], []);
   } catch {
     return [];
@@ -144,6 +105,7 @@ const options = {
     x: {
       grid: { display: false },
       type: "category",
+      display: false,
     },
     y: {
       grid: { display: false },
@@ -162,10 +124,10 @@ const options = {
         elevation="10"
         style="min-height: 90vh"
         transition="fade-transition"
-        v-if="_isEmpty(store.data)">
+        v-if="_isEmpty(current)">
         <v-row>
           <v-col cols="12" class="text-center">
-            <div class="text-h2">GNL Season {{ data?.season }}</div>
+            <div class="text-h2">GNL Season {{ store.data?.season }}</div>
             <v-progress-linear indeterminate />
           </v-col>
         </v-row>
@@ -222,7 +184,7 @@ const options = {
         <v-row>
           <v-col cols="12" class="text-center"
             ><div class="text-h2">
-              <span>GNL Season {{ data?.season }}</span>
+              <span>GNL Season {{ store.data?.season }}</span>
               <span class="text-grey mx-2">//</span>
               <span class="text-secondary">{{ current?.name }}</span>
             </div>
@@ -234,7 +196,7 @@ const options = {
             <v-card>
               <v-img
                 height="380"
-                :src="teamGnlBanner?.[current.id] ?? gnl_team_missing"
+                :src="teamGnlBanner(current.id)"
                 class="align-end"
                 gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
                 cover>
@@ -262,15 +224,19 @@ const options = {
                   height="315px"
                   style="overflow: visible"
                   :data="{
-                    labels: points.map((p) => p.battleTag),
+                    labels: points
+                      .filter((p) => p.points > 0)
+                      .map((p) => p.battleTag.split('#')[0]),
                     datasets: [
                       {
                         label: 'points',
-                        backgroundColor: 'goldenrod',
-                        borderColor: 'darkgoldenrod',
-                        borderWidth: 0,
+                        backgroundColor: 'rgba(218, 165, 32, 0.3)',
+                        borderColor: 'goldenrod',
+                        borderWidth: 2,
                         barPercentage: 0.8,
-                        data: points.map((p) => p.points),
+                        data: points
+                          .filter((p) => p.points > 0)
+                          .map((p) => p.points),
                         datalabels: {
                           clip: true,
                           clamp: true,
@@ -305,8 +271,8 @@ const options = {
           </v-col>
         </v-row>
         <v-row class="justify-center">
-          <v-col cols="3" v-for="coach in store.coaches">
-            <GNLCoachBanner :coach="coach" />
+          <v-col cols="3" v-for="coach in current.coaches">
+            <GNLCoachBanner :prefix="current.prefix" :coach="coach" />
           </v-col>
         </v-row>
         <v-row>
@@ -316,17 +282,13 @@ const options = {
           </v-col>
         </v-row>
         <v-row class="justify-center">
-          <v-col cols="3" v-for="(player, rank) in players">
+          <v-col cols="3" v-for="(player, rank) in players" :key="rank">
             <GNLPlayerBanner
-              v-if="player"
               :dates="store.dates"
               :rank="rank"
               :team-points="teamPoints"
-              :player="player"
-              :data="store.data[player.battleTag].season[player.race]"
-              :current="
-                store.data[player.battleTag].season[player.race].mmr.current
-              " />
+              :prefix="current.prefix"
+              :player="player" />
           </v-col>
         </v-row>
       </v-sheet>

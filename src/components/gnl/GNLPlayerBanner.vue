@@ -1,18 +1,15 @@
 ﻿<script setup lang="ts">
 import { Race, raceIcon } from "@/stores/races";
-import hu_banner from "@/assets/take_a_look_at_banner_michael.png";
-import oc_banner from "@/assets/take_a_look_at_banner_orc.png";
-import ud_banner from "@/assets/take_a_look_at_banner_undead.png";
-import ne_banner from "@/assets/take_a_look_at_banner_nightelf.png";
-import r_banner from "@/assets/take_a_look_at_banner_random.png";
-import gnl_banner_hu from "@assets/gnl_banner_hu.png";
-import gnl_banner_ne from "@assets/gnl_banner_ne.png";
-import gnl_banner_ud from "@assets/gnl_banner_ud.png";
-import gnl_banner_oc from "@assets/gnl_banner_oc.png";
+import gnl_banner_hu from "@assets/gnl/gnl_banner_hu.jpg";
+import gnl_banner_ne from "@assets/gnl/gnl_banner_ne.jpg";
+import gnl_banner_ud from "@assets/gnl/gnl_banner_ud.jpg";
+import gnl_banner_oc from "@assets/gnl/gnl_banner_oc.jpg";
+import gnl_banner_rnd from "@assets/gnl/gnl_banner_rnd.jpg";
 import _range from "lodash/range";
 import moment from "moment/moment";
 import { getloss, getplayer, getwins } from "@/utilities/matchcalculator";
 import _fill from "lodash/fill";
+import _reverse from "lodash/reverse";
 import w3cicon from "@/assets/w3c.png";
 import w3ciconDark from "@/assets/w3c_dark.png";
 
@@ -21,6 +18,7 @@ const raceGnlBanner: any = {
   [Race.NightElf]: gnl_banner_ne,
   [Race.Undead]: gnl_banner_ud,
   [Race.Orc]: gnl_banner_oc,
+  [Race.Random]: gnl_banner_rnd,
 };
 
 const raceGnlColor: any = {
@@ -47,6 +45,8 @@ import "chartjs-adapter-moment";
 import ChartDataLabels from "chartjs-plugin-datalabels";
 import { computed } from "vue";
 import _round from "lodash/round";
+import _groupBy from "lodash/groupBy";
+import _first from "lodash/first";
 
 ChartJS.register(
   LineController,
@@ -111,49 +111,64 @@ const options = {
 // End
 
 interface Props {
+  prefix?: string;
   player: any;
   dates: any;
   teamPoints: number;
   rank: number;
-  current: number;
   highlight?: boolean;
-  data: any;
 }
 const props = defineProps<Props>();
 
 const mmr = computed(() => {
-  return props.data.matches.reverse()?.reduce(
-    (r: number[], m: any) => {
+  const getPlayer = getplayer(props.player.battleTag);
+  if (props.player.data?.matches.length) {
+    const g = _groupBy(props.player.data?.matches, (m) => {
       const d = moment(m.endTime).dayOfYear();
-      const day =
-        props.dates.daysSinceStart - (props.dates.today.dayOfYear() - d);
-      const p = getplayer(props.player.battleTag)(m);
-      const mmr = p.players[0].currentMmr;
+      return (
+        props.dates.daysSinceStart - (props.dates.today.dayOfYear() - d) - 1
+      );
+    });
 
-      for (let i = day; i < r.length; i++) {
-        r[i] = mmr;
-      }
-
-      return r;
-    },
-    _fill(
+    const initial = getPlayer(_first(g[Object.keys(g)[0]]))?.players[0].oldMmr;
+    const v = _fill(
       _range(
         props.dates.today.dayOfYear() - props.dates.daysSinceStart,
         props.dates.today.dayOfYear(),
       ),
-      0,
+      initial,
+    );
+
+    for (let i = 0; i < v.length; i++) {
+      let m = _first(g[i]);
+      if (m !== undefined) {
+        const p = getPlayer(m);
+        v[i] = p.players[0].currentMmr;
+      } else if (i > 0) {
+        v[i] = v[i - 1];
+      }
+    }
+
+    return v;
+  }
+
+  return _fill(
+    _range(
+      props.dates.today.dayOfYear() - props.dates.daysSinceStart,
+      props.dates.today.dayOfYear(),
     ),
+    0,
   );
 });
 
 const wins = computed(() => {
-  return props.data.matches
+  return props.player.data?.matches
     .filter((m: any) => getwins(props.player.battleTag, m))
     ?.reduce(
       (r: number[], m: any) => {
         const d = moment(m.endTime).dayOfYear();
         const day =
-          props.dates.daysSinceStart - (props.dates.today.dayOfYear() - d);
+          props.dates.daysSinceStart - (props.dates.today.dayOfYear() - d) - 1;
 
         r[day]++;
         return r;
@@ -170,13 +185,13 @@ const wins = computed(() => {
 });
 
 const loss = computed(() => {
-  return props.data.matches
-    .filter((m: any) => getloss(props.player.battleTag, m))
+  return props.player.data?.matches
+    ?.filter((m: any) => getloss(props.player.battleTag, m))
     ?.reduce(
       (r: number[], m: any) => {
         const d = moment(m.endTime).dayOfYear();
         const day =
-          props.dates.daysSinceStart - (props.dates.today.dayOfYear() - d);
+          props.dates.daysSinceStart - (props.dates.today.dayOfYear() - d) - 1;
 
         r[day]++;
         return r;
@@ -199,11 +214,15 @@ const open = (battleTag: string) =>
   );
 
 const avg = computed(() =>
-  Math.ceil(props.data.total / props.dates.daysSinceStart),
+  props.player.data?.total
+    ? Math.ceil(props.player.data.total / props.dates.daysSinceStart)
+    : "-",
 );
 
 const goal = 400;
-const points = computed(() => props.data.wins * 3 + props.data.loss);
+const points = computed(
+  () => props.player.data?.wins * 3 + props.player.data?.loss,
+);
 </script>
 
 <template>
@@ -222,7 +241,8 @@ const points = computed(() => props.data.wins * 3 + props.data.loss);
       </template>
       <template v-slot:title>
         <div class="ml-1 text-left text-h5">
-          {{ player.battleTag }}
+          <span class="mr-1" v-if="prefix">{{ prefix }}</span
+          >{{ player.battleTag.split("#")[0] }}
         </div>
       </template>
     </v-list-item>
@@ -230,8 +250,8 @@ const points = computed(() => props.data.wins * 3 + props.data.loss);
     <v-img height="250" :src="raceGnlBanner[player.race]" cover></v-img>
 
     <Bar
-      v-if="data.matches.length"
-      style="position: absolute; bottom: 219px"
+      v-if="player.data?.matches.length"
+      style="position: absolute; bottom: 218px"
       :data="{
         labels: _range(0, dates.daysSinceStart)
           .map((n) => {
@@ -253,6 +273,7 @@ const points = computed(() => props.data.wins * 3 + props.data.loss);
             label: 'won',
             yAxisID: 'gamesAxis',
             backgroundColor: '#66BB6A',
+            maxBarThickness: 15,
             data: wins,
             datalabels: {
               display: false,
@@ -262,6 +283,7 @@ const points = computed(() => props.data.wins * 3 + props.data.loss);
             label: 'lost',
             yAxisID: 'gamesAxis',
             backgroundColor: '#EF5350',
+            maxBarThickness: 15,
             data: loss,
             datalabels: {
               display: false,
@@ -278,18 +300,21 @@ const points = computed(() => props.data.wins * 3 + props.data.loss);
             rank + 1
           }}</span></span
         >
-        <span>{{ data.mmr.current }} MMR</span></v-card-title
+        <span>{{ player.data?.mmr?.current ?? "-" }} MMR</span></v-card-title
       >
       <v-card-subtitle class="d-flex justify-space-between" style="opacity: 1">
         <span style="opacity: 0.7" class="me-1"
           >Avg. games: {{ avg }} per day
         </span>
         <v-rating
+          readonly
           half-increments
-          :title="`Team points contribution: ${_round(((data.wins * 3 + data.loss) / teamPoints) * 100)}%`"
+          :title="`Team points contribution: ${_round(((player.data?.wins * 3 + player.data?.loss) / teamPoints) * 100)}%`"
           :length="5"
           :size="20"
-          :model-value="((data.wins * 3 + data.loss) / goal) * 5"
+          :model-value="
+            ((player.data?.wins * 3 + player.data?.loss) / goal) * 5
+          "
           color="#b8860b"
           active-color="#daa520"
           empty-icon="mdi-circle-outline"
@@ -303,34 +328,43 @@ const points = computed(() => props.data.wins * 3 + props.data.loss);
         <span
           class="text-h3 fontweight-bold"
           style="color: goldenrod; vertical-align: middle"
-          >{{ data.wins * 3 + data.loss }}</span
-        >
+          ><v-progress-circular indeterminate v-if="isNaN(points)" />
+          <span v-else>{{ points }}</span>
+        </span>
       </v-card-title>
       <v-card-subtitle>
-        <v-icon size="x-small" icon="mdi-medal" style="color: goldenrod" />
         <span
           class="text-subtitle-2"
           style="vertical-align: middle; color: goldenrod"
-          >points</span
-        >
+          v-if="isNaN(points)">
+          calculating...
+        </span>
+        <span v-else>
+          <v-icon size="x-small" icon="mdi-medal" style="color: goldenrod" />
+          <span
+            class="text-subtitle-2"
+            style="vertical-align: middle; color: goldenrod"
+            >points</span
+          >
+        </span>
       </v-card-subtitle>
     </v-card-item>
 
     <v-card-item class="py-0">
       <v-card-title class="d-flex justify-space-between">
         <span>
+          <v-icon icon="mdi-sword" color="green" size="small" />
           <span
             class="text-h5 text-green fontweight-bold mr-1"
             style="vertical-align: middle"
-            >{{ data.wins }}</span
+            >{{ player.data?.wins ?? "-" }}</span
           >
-          <v-icon icon="mdi-sword" color="green" size="small" />
         </span>
         <span>
           <span
             class="text-h5 text-red fontweight-bold mr-1"
             style="vertical-align: middle"
-            >{{ data.loss }}</span
+            >{{ player.data?.loss ?? "-" }}</span
           >
           <v-icon icon="mdi-skull-outline" color="red" size="small" />
         </span>

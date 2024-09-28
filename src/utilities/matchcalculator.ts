@@ -228,7 +228,7 @@ export const getAllSeasonGames = async (
   let prev = all.length;
   let failsafe = 0;
 
-  while (!finished && failsafe < 10) {
+  while (!finished && failsafe < 30) {
     const { data: response } = await axios.get(
       url(tag, all.length, 100, season),
     );

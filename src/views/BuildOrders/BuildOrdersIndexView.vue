@@ -350,4 +350,40 @@ If you have any feedback - don't hesitate to contact me @Longjacket in the w3c o
   height: 250px;
   overflow-y: auto;
 }
+
+@media screen and (max-width: 600px) {
+  .v-data-table thead {
+    border: none;
+    clip: rect(0 0 0 0);
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    padding: 0;
+    position: absolute;
+    width: 1px;
+  }
+
+  .v-data-table td {
+    border-bottom: thin solid
+      rgba(var(--v-border-color), var(--v-border-opacity));
+    display: block;
+    text-align: right;
+    line-height: 48px;
+  }
+
+  .v-data-table td::before {
+    content: attr(data-label);
+    float: left;
+    font-weight: bold;
+  }
+
+  .v-data-table td:last-child {
+    border-bottom: 0;
+  }
+
+  .v-data-table tr:not(:first-child) > td:first-child {
+    border-top: medium solid
+      rgba(var(--v-border-color), var(--v-border-opacity));
+  }
+}
 </style>

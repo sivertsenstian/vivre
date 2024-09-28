@@ -1,9 +1,5 @@
 import { defineStore } from "pinia";
-import type {
-  IGNLAccount,
-  IGNLStatistics,
-  IStatistics,
-} from "@/utilities/types";
+import type { IGNLAccount, IGNLStatistics } from "@/utilities/types";
 import moment from "moment";
 import type { Moment } from "moment";
 import {
@@ -15,41 +11,41 @@ import {
 import { Race } from "@/stores/races";
 import { computed, ref } from "vue";
 import { doc, setDoc } from "firebase/firestore";
-import { useFirestore } from "vuefire";
+import { useDocument, useFirestore } from "vuefire";
+import gnl_team_rageandape from "@assets/gnl/teams/rage_and_ape.jpg";
+import gnl_team_apelords from "@assets/gnl/teams/apelords.jpg";
+import gnl_team_mannertime from "@assets/gnl/teams/mannertime.png";
+import gnl_team_gigglinggoblins from "@assets/gnl/teams/goblins.jpg";
+import gnl_team_gnlbears from "@assets/gnl/teams/bears.jpg";
+import gnl_team_chinesepaladin from "@assets/gnl/teams/chinesepaladin.jpg";
+import gnl_team_missing from "@/assets/creeproutes/missing.png";
+import _isEmpty from "lodash/isEmpty";
 
-const getData = async (tag: string, start: Moment, end: Moment) => {
+const gnlBanners = {
+  ["chinesepaladin"]: gnl_team_chinesepaladin,
+  ["rageandape"]: gnl_team_rageandape,
+  ["apelords"]: gnl_team_apelords,
+  ["mannertime"]: gnl_team_mannertime,
+  ["gigglinggoblins"]: gnl_team_gigglinggoblins,
+  ["gnlbears"]: gnl_team_gnlbears,
+};
+export const teamGnlBanner: any = (id: string) =>
+  gnlBanners?.[id] ?? gnl_team_missing;
+
+const getData = async (account: IGNLAccount, start: Moment, end: Moment) => {
   let result: IGNLStatistics = {} as any;
   let seasonActual = [];
 
   try {
-    let all = await getSeasonGamesBetween(tag, 19, start, end);
+    let all = await getSeasonGamesBetween(account.battleTag, 19, start, end);
 
-    // Filter out freewins/loss and bugs
+    // Filter out free wins/loss and bugs
     seasonActual = all.filter((m) => m.durationInSeconds > 240);
 
-    const info = getInfo(tag, seasonActual);
-    const season = {
-      [Race.Human]: seasonActual.filter((m) => isRace(tag, m, Race.Human)),
-      [Race.Orc]: seasonActual.filter((m) => isRace(tag, m, Race.Orc)),
-      [Race.Undead]: seasonActual.filter((m) => isRace(tag, m, Race.Undead)),
-      [Race.NightElf]: seasonActual.filter((m) =>
-        isRace(tag, m, Race.NightElf),
-      ),
-      [Race.Random]: seasonActual.filter((m) => isRace(tag, m, Race.Random)),
-    };
-
-    result = {
-      battleTag: info.battleTag,
-      race: info.race,
-      season: {
-        summary: getRaceStatistics(tag, seasonActual),
-        [Race.Random]: getRaceStatistics(tag, season[Race.Random]),
-        [Race.Human]: getRaceStatistics(tag, season[Race.Human]),
-        [Race.Orc]: getRaceStatistics(tag, season[Race.Orc]),
-        [Race.Undead]: getRaceStatistics(tag, season[Race.Undead]),
-        [Race.NightElf]: getRaceStatistics(tag, season[Race.NightElf]),
-      },
-    };
+    result = getRaceStatistics(
+      account.battleTag,
+      seasonActual.filter((m) => isRace(account.battleTag, m, account.race)),
+    );
   } catch (error) {
     console.log(error);
   }
@@ -58,15 +54,15 @@ const getData = async (tag: string, start: Moment, end: Moment) => {
 };
 
 export const useGNLStore = defineStore("gnl", () => {
-  const coaches = ref<IGNLAccount[]>([]);
-  const players = ref<IGNLAccount[]>([]);
   const timer = ref<number>();
 
-  const allData = ref<any>({} as any);
   const data = ref<any>({} as any);
 
   const start = ref<Moment>(moment());
   const end = ref<Moment>(moment());
+
+  const initialized = ref<boolean>(false);
+  const current = ref<string>();
 
   const dates = computed(() => ({
     start: start.value.startOf("day"),
@@ -79,6 +75,22 @@ export const useGNLStore = defineStore("gnl", () => {
       end.value.startOf("day").diff(start.value.startOf("day"), "days"),
     ),
   }));
+
+  const db = useFirestore();
+  const { promise } = useDocument<any>(
+    doc(db, "gnl", "59fbace0-5b6d-4494-ac83-54ddf3664d7a"),
+  );
+
+  promise.value.then((d) => {
+    start.value = moment(d.start, "DD.MM.YYYY");
+    end.value = moment(d.end, "DD.MM.YYYY");
+    data.value = d;
+
+    initialized.value = true;
+
+    //TODO: Fix
+    void all(d);
+  });
 
   // Do it live!
   const refresh = async () => {
@@ -120,27 +132,24 @@ export const useGNLStore = defineStore("gnl", () => {
     start.value = moment(d.start, "DD.MM.YYYY");
     end.value = moment(d.end, "DD.MM.YYYY");
 
-    let result = [];
-    for (let i = 0; i < d.teams.length; i++) {
-      const team = d.teams[i];
-      const data = await Promise.all(
-        team.players.map(
-          async (account: IGNLAccount): Promise<IGNLStatistics> => {
-            return await getData(
-              account.battleTag,
-              dates.value.start,
-              dates.value.end,
-            );
-          },
-        ),
-      );
+    const teams =
+      current.value === undefined
+        ? d.teams
+        : d.teams.filter(
+            (t) => t.id.toLowerCase() === current.value.toLowerCase(),
+          );
 
-      result.push({
-        ...team,
-        data: data,
-      });
+    if (_isEmpty(data.value.teams)) {
+      data.value.teams = teams;
     }
-    allData.value = result;
+
+    for (let i = 0; i < teams.length; i++) {
+      const team = teams[i];
+      for (let p = 0; p < team.players.length; p++) {
+        const player = team.players[p];
+        player.data = await getData(player, dates.value.start, dates.value.end);
+      }
+    }
   };
 
   const save = async (item: any) => {
@@ -156,11 +165,11 @@ export const useGNLStore = defineStore("gnl", () => {
     initialize,
     clear,
     all,
-    allData,
     data,
     dates,
-    coaches,
-    players,
     save,
+    current,
+
+    initialized,
   };
 });
