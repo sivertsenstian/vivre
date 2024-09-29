@@ -72,7 +72,7 @@ function toggleTheme() {
           title="Build Orders"
           router
           to="/buildorders"></v-list-item>
-        <v-list-group v-if="false">
+        <v-list-group>
           <template v-slot:activator="{ props }">
             <v-list-item
               color="green"
@@ -84,16 +84,28 @@ function toggleTheme() {
           </template>
           <v-list-item
             prepend-icon="mdi-shield-crown-outline"
+            title="Lucky Strike"
+            color="green-lighten-3"
+            router
+            to="/gnl/luckystrike"></v-list-item>
+          <v-list-item
+            prepend-icon="mdi-shield-crown-outline"
+            title="Rage & Ape"
+            color="green-lighten-3"
+            router
+            to="/gnl/rageandape"></v-list-item>
+          <v-list-item
+            prepend-icon="mdi-shield-crown-outline"
             title="Apelords"
             color="green-lighten-3"
             router
             to="/gnl/apelords"></v-list-item>
           <v-list-item
             prepend-icon="mdi-shield-crown-outline"
-            title="The Banana Pickers"
+            title="Manner Time"
             color="green-lighten-3"
             router
-            to="/gnl/thebananapickers"></v-list-item>
+            to="/gnl/mannertime"></v-list-item>
           <v-list-item
             prepend-icon="mdi-shield-crown-outline"
             title="Giggling Goblins"
@@ -134,7 +146,7 @@ function toggleTheme() {
           overflow: 'hidden',
           background: 'url(' + (isDark ? bgDarkUrl : bgLightUrl) + ')',
         }">
-        <RouterView />
+        <RouterView :key="$route.fullPath" />
       </div>
     </v-main>
   </v-app>

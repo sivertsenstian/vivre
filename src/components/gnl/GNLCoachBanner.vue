@@ -9,6 +9,9 @@ import gnl_coach_spycreed from "@assets/gnl/coaches/spycreed.jpg";
 import gnl_coach_tod from "@assets/gnl/coaches/tod.jpg";
 import gnl_coach_jabba from "@assets/gnl/coaches/jabba.jpg";
 import gnl_coach_northdrakkar from "@assets/gnl/coaches/northdrakkar.jpg";
+import gnl_coach_floss from "@assets/gnl/coaches/floss.png";
+import gnl_coach_wontu from "@assets/gnl/coaches/wontu.jpg";
+import gnl_coach_ember from "@assets/gnl/coaches/ember.jpg";
 
 import gnl_coach_missing from "@/assets/creeproutes/missing.png";
 
@@ -26,9 +29,9 @@ const coachGnlBanner: any = {
 
   ["kennyg6050#1543"]: gnl_coach_missing,
   ["EmilyHuttson#1378"]: gnl_coach_missing,
-  ["floss2xdaily#1987"]: gnl_coach_missing,
-  ["Ember#21963"]: gnl_coach_missing,
-  ["Wontu#1218"]: gnl_coach_missing,
+  ["floss2xdaily#1987"]: gnl_coach_floss,
+  ["Ember#21963"]: gnl_coach_ember,
+  ["Wontu#1218"]: gnl_coach_wontu,
   ["Lucker#11299"]: gnl_coach_missing,
 };
 
@@ -81,7 +84,7 @@ const open = (battleTag: string) =>
 
     <v-card-item>
       <v-card-title class="text-left d-flex align-center"
-        ><span style="vertical-align: middle">Coaches:</span>
+        ><span style="vertical-align: middle">Expertise:</span>
         <img
           :src="raceIcon[race]"
           width="30px"

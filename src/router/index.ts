@@ -44,7 +44,7 @@ const router = createRouter({
           component: RoadTo3000,
         },
       ],
-   },
+    },
     {
       path: "/buildorders",
       children: [
@@ -72,7 +72,8 @@ const router = createRouter({
           component: GNLSeasonTeamView,
         },
       ],
-    },{
+    },
+    {
       path: "/settings",
       name: "settings",
       component: SettingsView,
