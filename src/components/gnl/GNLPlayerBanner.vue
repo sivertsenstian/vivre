@@ -26,6 +26,7 @@ const raceGnlColor: any = {
   [Race.NightElf]: "#6a5693",
   [Race.Undead]: "#5198ba",
   [Race.Orc]: "#7b1414",
+  [Race.Random]: "#59524A",
 };
 
 // Chart stuff
