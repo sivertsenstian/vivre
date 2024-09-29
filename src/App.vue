@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useTheme } from "vuetify";
-import { RouterView } from "vue-router";
+import { RouterView, useRoute } from "vue-router";
 import bgLightUrl from "@/assets/bg_light.jpg";
 import bgDarkUrl from "@/assets/bg_dark.jpg";
 import logo from "@/assets/logo.png";
@@ -14,6 +14,8 @@ const isDark = computed(() => theme.global.current.value.dark);
 function toggleTheme() {
   theme.global.name.value = theme.global.current.value.dark ? "light" : "dark";
 }
+
+const route = useRoute();
 </script>
 
 <template>
@@ -146,7 +148,7 @@ function toggleTheme() {
           overflow: 'hidden',
           background: 'url(' + (isDark ? bgDarkUrl : bgLightUrl) + ')',
         }">
-        <RouterView :key="$route.fullPath" />
+        <RouterView :key="route.fullPath" />
       </div>
     </v-main>
   </v-app>

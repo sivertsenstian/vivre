@@ -264,7 +264,6 @@ const points = computed(
             borderColor: 'lime',
             pointStyle: mmr.length === 1 ? 'rect' : false,
             backgroundColor: 'lime',
-            fill: true,
             data: mmr,
             datalabels: {
               display: false,
