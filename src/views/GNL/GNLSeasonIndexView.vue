@@ -980,13 +980,13 @@ onMounted(() => {
     <v-container fluid style="opacity: 1">
       <v-sheet
         v-if="_isEmpty(store.data)"
-        class="pa-12"
+        class="pa-md-12 pa-3"
         elevation="10"
         transition="fade-transition"
         style="min-height: 90vh">
         <v-row>
           <v-col cols="12" class="text-center"
-            ><div class="text-h2">
+            ><div class="text-md-h2 text-h5">
               <span>GNL Season {{ store.data?.season }}</span>
               <span class="text-grey mx-2">//</span>
               <span class="text-secondary">Overview</span>
@@ -996,14 +996,14 @@ onMounted(() => {
         </v-row>
 
         <v-row class="text-center">
-          <v-col cols="8">
+          <v-col cols="12" md="8">
             <v-row>
-              <v-col cols="4" v-for="_ in _range(0, 6)">
+              <v-col cols="6" md="4" v-for="_ in _range(0, 6)">
                 <v-skeleton-loader type="image" />
               </v-col>
             </v-row>
           </v-col>
-          <v-col cols="4">
+          <v-col cols="12" md="4">
             <v-skeleton-loader type="table" />
           </v-col>
         </v-row>
@@ -1026,13 +1026,13 @@ onMounted(() => {
 
       <v-sheet
         v-else
-        class="pa-12"
+        class="pa-md-12 pa-3"
         elevation="10"
         transition="fade-transition"
         style="min-height: 90vh">
         <v-row>
           <v-col cols="12" class="text-center"
-            ><div class="text-h2">
+            ><div class="text-md-h2 text-h5">
               <span>GNL Season {{ store.data?.season }}</span>
               <span class="text-grey mx-2">//</span>
               <span class="text-secondary">Overview</span>
@@ -1047,9 +1047,9 @@ onMounted(() => {
           </v-col>
         </v-row>
         <v-row class="text-center">
-          <v-col cols="8">
+          <v-col cols="12" md="8">
             <v-row>
-              <v-col v-for="team in store.data?.teams ?? []" cols="4">
+              <v-col v-for="team in store.data?.teams ?? []" cols="6" md="4">
                 <v-card
                   :class="`team ${leader?.id === team.id ? 'gold' : ''}`"
                   @click="() => router.push(`/gnl/${team.id}`)">
@@ -1077,7 +1077,7 @@ onMounted(() => {
               </v-col>
             </v-row>
           </v-col>
-          <v-col cols="4">
+          <v-col cols="12" md="4">
             <Bar
               height="250px"
               :data="{
@@ -1113,7 +1113,7 @@ onMounted(() => {
         </v-row>
         <v-row>
           <v-col cols="12" class="text-center">
-            <div class="text-h3">
+            <div class="text-md-h3 text-h5">
               Welcome to the <span class="text-green-accent-4">un</span>Official
               GNL site
             </div>
@@ -1196,7 +1196,7 @@ onMounted(() => {
             cols="12"
             class="text-center"
             v-if="store.dates.daysSinceStart >= 0">
-            <div class="text-h4 font-weight-bold">
+            <div class="text-md-h4 text-h5 font-weight-bold">
               <span
                 >{{
                   store.dates.durationInDays - store.dates.daysSinceStart
@@ -1208,7 +1208,7 @@ onMounted(() => {
             </div>
           </v-col>
           <v-col cols="12" class="text-center" v-else>
-            <div class="text-h4 font-weight-bold">
+            <div class="text-md-h4 text-h5 font-weight-bold">
               <span
                 >{{ Math.abs(store.dates.daysSinceStart) }} days until we
                 roll</span

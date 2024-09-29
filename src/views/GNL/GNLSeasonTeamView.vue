@@ -177,7 +177,7 @@ onMounted(() => {
       </v-sheet>
 
       <v-sheet
-        class="pa-12"
+        class="pa-md-12 pa-3"
         elevation="10"
         style="min-height: 90vh"
         transition="fade-transition"
@@ -192,7 +192,7 @@ onMounted(() => {
 
         <v-row>
           <v-col cols="12" class="text-center"
-            ><div class="text-h2">
+            ><div class="text-md-h2 text-h5">
               <span>GNL Season {{ store.data?.season }}</span>
               <span class="text-grey mx-2">//</span>
               <span class="text-secondary">{{ current?.name }}</span>
@@ -201,7 +201,7 @@ onMounted(() => {
           </v-col>
         </v-row>
         <v-row>
-          <v-col cols="4">
+          <v-col cols="12" md="4">
             <v-card>
               <v-img
                 height="380"
@@ -215,7 +215,7 @@ onMounted(() => {
               </v-img>
             </v-card>
           </v-col>
-          <v-col cols="4">
+          <v-col cols="12" md="4">
             <v-row>
               <v-col cols="12">
                 <div class="text-h5">
@@ -261,7 +261,7 @@ onMounted(() => {
               </v-col>
             </v-row>
           </v-col>
-          <v-col cols="4">
+          <v-col cols="12" md="4">
             <div class="text-h5">Team Ladder Activity</div>
             <ActivityTable :matches="matches" :dark="isDark" />
           </v-col>
@@ -274,24 +274,24 @@ onMounted(() => {
         </v-row>
 
         <v-row>
-          <v-col offset="4" cols="4" class="text-center">
+          <v-col cols="12" md="4" offset-md="4" class="text-center">
             <div class="text-h4">Coaches</div>
             <hr />
           </v-col>
         </v-row>
         <v-row class="justify-center">
-          <v-col cols="3" v-for="coach in current.coaches">
+          <v-col cols="12" md="3" v-for="coach in current.coaches">
             <GNLCoachBanner :prefix="current.prefix" :coach="coach" />
           </v-col>
         </v-row>
         <v-row>
-          <v-col offset="4" cols="4" class="text-center">
+          <v-col cols="12" md="4" offset-md="4" class="text-center">
             <div class="text-h4">Players</div>
             <hr />
           </v-col>
         </v-row>
         <v-row class="justify-center">
-          <v-col cols="3" v-for="(player, rank) in players" :key="rank">
+          <v-col cols="12" md="3" v-for="(player, rank) in players" :key="rank">
             <GNLPlayerBanner
               :dates="store.dates"
               :rank="rank"
