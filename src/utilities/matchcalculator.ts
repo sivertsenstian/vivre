@@ -275,7 +275,8 @@ export const getSeasonGamesBetween = async (
   }
 
   return all.filter(
-    (m) => moment(m.endTime).isAfter(from) && moment(m.endTime).isBefore(to),
+    (m) =>
+      moment(m.endTime).isAfter(from) && moment(m.endTime).isSameOrBefore(to),
   );
 };
 

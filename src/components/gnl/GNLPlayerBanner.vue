@@ -47,6 +47,7 @@ import { computed } from "vue";
 import _round from "lodash/round";
 import _groupBy from "lodash/groupBy";
 import _first from "lodash/first";
+import _last from "lodash/last";
 
 ChartJS.register(
   LineController,
@@ -124,13 +125,11 @@ const mmr = computed(() => {
   const getPlayer = getplayer(props.player.battleTag);
   if (props.player.data?.matches.length) {
     const g = _groupBy(props.player.data?.matches, (m) => {
-      const d = moment(m.endTime).dayOfYear();
-      return (
-        props.dates.daysSinceStart - (props.dates.today.dayOfYear() - d) - 1
-      );
+      const d = moment(m.endTime).dayOfYear() - 1;
+      return props.dates.daysSinceStart - (props.dates.today.dayOfYear() - d);
     });
 
-    const initial = getPlayer(_first(g[Object.keys(g)[0]]))?.players[0].oldMmr;
+    const initial = getPlayer(_last(g[Object.keys(g)[0]]))?.players[0].oldMmr;
     const v = _fill(
       _range(
         props.dates.today.dayOfYear() - props.dates.daysSinceStart,
@@ -166,9 +165,9 @@ const wins = computed(() => {
     .filter((m: any) => getwins(props.player.battleTag, m))
     ?.reduce(
       (r: number[], m: any) => {
-        const d = moment(m.endTime).dayOfYear();
+        const d = moment(m.endTime).dayOfYear() - 1;
         const day =
-          props.dates.daysSinceStart - (props.dates.today.dayOfYear() - d) - 1;
+          props.dates.daysSinceStart - (props.dates.today.dayOfYear() - d);
 
         r[day]++;
         return r;
@@ -189,9 +188,9 @@ const loss = computed(() => {
     ?.filter((m: any) => getloss(props.player.battleTag, m))
     ?.reduce(
       (r: number[], m: any) => {
-        const d = moment(m.endTime).dayOfYear();
+        const d = moment(m.endTime).dayOfYear() - 1;
         const day =
-          props.dates.daysSinceStart - (props.dates.today.dayOfYear() - d) - 1;
+          props.dates.daysSinceStart - (props.dates.today.dayOfYear() - d);
 
         r[day]++;
         return r;
@@ -219,7 +218,7 @@ const avg = computed(() =>
     : "-",
 );
 
-const goal = 400;
+const goal = 500;
 const points = computed(
   () => props.player.data?.wins * 3 + props.player.data?.loss,
 );
@@ -251,7 +250,7 @@ const points = computed(
 
     <Bar
       v-if="player.data?.matches.length"
-      style="position: absolute; bottom: 218px"
+      style="position: absolute; bottom: 217px"
       :data="{
         labels: _range(0, dates.daysSinceStart)
           .map((n) => {
@@ -263,7 +262,9 @@ const points = computed(
             type: 'line' as any,
             yAxisID: 'mmrAxis',
             borderColor: 'lime',
-            pointStyle: false,
+            pointStyle: mmr.length === 1 ? 'rect' : false,
+            backgroundColor: 'lime',
+            fill: true,
             data: mmr,
             datalabels: {
               display: false,
@@ -340,12 +341,20 @@ const points = computed(
           calculating...
         </span>
         <span v-else>
-          <v-icon size="x-small" icon="mdi-medal" style="color: goldenrod" />
           <span
+            v-if="points === 0"
             class="text-subtitle-2"
-            style="vertical-align: middle; color: goldenrod"
-            >points</span
-          >
+            style="vertical-align: middle; color: goldenrod">
+            Play 1v1 on the w3c ladder to earn points!
+          </span>
+          <span v-else>
+            <v-icon size="x-small" icon="mdi-medal" style="color: goldenrod" />
+            <span
+              class="text-subtitle-2"
+              style="vertical-align: middle; color: goldenrod"
+              >points</span
+            >
+          </span>
         </span>
       </v-card-subtitle>
     </v-card-item>

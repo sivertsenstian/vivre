@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useTheme } from "vuetify";
-import { computed } from "vue";
+import { computed, onMounted } from "vue";
 import { teamGnlBanner, useGNLStore } from "@/stores/gnl";
 import { Race } from "@/stores/races";
 
@@ -10,420 +10,17 @@ const isDark = computed(() => theme.global.current.value.dark);
 const router = useRouter();
 const store = useGNLStore();
 
-const testPlayers = [
-  {
-    battleTag: "PxiaoLeiA#3755",
-    race: Race.Human,
-  },
-  {
-    battleTag: "JINlaohu#3583",
-    race: Race.Undead,
-  },
-  {
-    battleTag: "ThePretender#21867",
-    race: Race.Orc,
-  },
-  {
-    battleTag: "OOoooooD#21437",
-    race: Race.Human,
-  },
-  {
-    battleTag: "xiaoshuangsh#1847",
-    race: Race.Undead,
-  },
-  {
-    battleTag: "kaneyu1234#1962",
-    race: Race.NightElf,
-  },
-  {
-    battleTag: "Андромед#21688",
-    race: Race.NightElf,
-  },
-  {
-    battleTag: "xiangyuxmds#2611",
-    race: Race.NightElf,
-  },
-  {
-    battleTag: "Primera#21505",
-    race: Race.Undead,
-  },
-  {
-    battleTag: "PARALLAX#12547",
-    race: Race.Human,
-  },
-  {
-    battleTag: "blue#17652",
-    race: Race.NightElf,
-  },
-  {
-    battleTag: "RobotNinja#2136641",
-    race: Race.NightElf,
-  },
-  {
-    battleTag: "하늘#34992",
-    race: Race.NightElf,
-  },
-  {
-    battleTag: "Luchex#11919",
-    race: Race.Human,
-  },
-  {
-    battleTag: "MyNameIsJeff#22660",
-    race: Race.Random,
-  },
-  {
-    battleTag: "alienufo#21441",
-    race: Race.Human,
-  },
-  {
-    battleTag: "ShadowZS#21866",
-    race: Race.Orc,
-  },
-  {
-    battleTag: "yupu#11767",
-    race: Race.NightElf,
-  },
-  {
-    battleTag: "Theviro#11559",
-    race: Race.Undead,
-  },
-  {
-    battleTag: "NootNoot#11255",
-    race: Race.Orc,
-  },
-  {
-    battleTag: "JustDoiTpLs#2907",
-    race: Race.Orc,
-  },
-  {
-    battleTag: "MoldMerchant#2430",
-    race: Race.Orc,
-  },
-  {
-    battleTag: "Warsong#21562",
-    race: Race.Orc,
-  },
-  {
-    battleTag: "whiteboyz#11129",
-    race: Race.Undead,
-  },
-  {
-    battleTag: "Cola#12908",
-    race: Race.Orc,
-  },
-  {
-    battleTag: "WnDXi#1611",
-    race: Race.Orc,
-  },
-  {
-    battleTag: "Vain#1516",
-    race: Race.NightElf,
-  },
-  {
-    battleTag: "NICKT#6757",
-    race: Race.Orc,
-  },
-  {
-    battleTag: "pelado#11589",
-    race: Race.NightElf,
-  },
-  {
-    battleTag: "Fanfycn#3476",
-    race: Race.Undead,
-  },
-  {
-    battleTag: "Brekkie#21685",
-    race: Race.NightElf,
-  },
-  {
-    battleTag: "SatiiNi#21864",
-    race: Race.Human,
-  },
-  {
-    battleTag: "mynamejh#31958",
-    race: Race.NightElf,
-  },
-  {
-    battleTag: "Zimin#21871",
-    race: Race.Random,
-  },
-  {
-    battleTag: "JCVD#2439",
-    race: Race.Undead,
-  },
-  {
-    battleTag: "Rob#24463",
-    race: Race.NightElf,
-  },
-  {
-    battleTag: "FunnyName#21744",
-    race: Race.Human,
-  },
-  {
-    battleTag: "NewbeFrankie#3650",
-    race: Race.Random,
-  },
-  {
-    battleTag: "figo#11826",
-    race: Race.Human,
-  },
-  {
-    battleTag: "SuperNinja#1588214",
-    race: Race.Orc,
-  },
-  {
-    battleTag: "henji#4482",
-    race: Race.NightElf,
-  },
-  {
-    battleTag: "bynx#3763",
-    race: Race.Human,
-  },
-  {
-    battleTag: "KenT#2740",
-    race: Race.NightElf,
-  },
-  {
-    battleTag: "sCiMiTar#22984",
-    race: Race.Random,
-  },
-  {
-    battleTag: "any123#11262",
-    race: Race.NightElf,
-  },
-  {
-    battleTag: "Ronaldinho#21402",
-    race: Race.Orc,
-  },
-  {
-    battleTag: "SimYaël#2351",
-    race: Race.Orc,
-  },
-  {
-    battleTag: "LaRusso#11213",
-    race: Race.NightElf,
-  },
-  {
-    battleTag: "yuanbisheng#1216",
-    race: Race.Orc,
-  },
-  {
-    battleTag: "metil#11530",
-    race: Race.Orc,
-  },
-  {
-    battleTag: "Drex#21756",
-    race: Race.Orc,
-  },
-  {
-    battleTag: "vicsha#3691",
-    race: Race.Human,
-  },
-  {
-    battleTag: "KBSC24#2379",
-    race: Race.Orc,
-  },
-  {
-    battleTag: "okku#2255",
-    race: Race.Undead,
-  },
-  {
-    battleTag: "Apm50#1700",
-    race: Race.Human,
-  },
-  {
-    battleTag: "Iamrayzhang#3409",
-    race: Race.Orc,
-  },
-  {
-    battleTag: "daRe#2479",
-    race: Race.Orc,
-  },
-  {
-    battleTag: "小怪兽#31882",
-    race: Race.Orc,
-  },
-  {
-    battleTag: "laoxu#11417",
-    race: Race.Random,
-  },
-  {
-    battleTag: "Adenor#1539",
-    race: Race.Random,
-  },
-  {
-    battleTag: "SimYaël#2351",
-    race: Race.Human,
-  },
-  {
-    battleTag: "zhoupps#3268",
-    race: Race.Human,
-  },
-  {
-    battleTag: "yeshkinkot#21567",
-    race: Race.Human,
-  },
-  {
-    battleTag: "Ayur#2760",
-    race: Race.Random,
-  },
-  {
-    battleTag: "Reyenir#2169",
-    race: Race.Random,
-  },
-  {
-    battleTag: "Gyubh#1124",
-    race: Race.Random,
-  },
-  {
-    battleTag: "Necromanccer#2867",
-    race: Race.Human,
-  },
-  {
-    battleTag: "Tosh#2920",
-    race: Race.Undead,
-  },
-  {
-    battleTag: "Longjacket#2840",
-    race: Race.Human,
-  },
-  {
-    battleTag: "Kato#1245",
-    race: Race.NightElf,
-  },
-  {
-    battleTag: "Cola#12908",
-    race: Race.Human,
-  },
-  {
-    battleTag: "Kov#11865",
-    race: Race.NightElf,
-  },
-  {
-    battleTag: "PaiPai#11577",
-    race: Race.NightElf,
-  },
-  {
-    battleTag: "r1CHASSNlGGa#1759",
-    race: Race.Random,
-  },
-  {
-    battleTag: "Dibuji#2477",
-    race: Race.Orc,
-  },
-  {
-    battleTag: "Leshka#21750",
-    race: Race.Orc,
-  },
-  {
-    battleTag: "CrAzYMiCrO#2465",
-    race: Race.Human,
-  },
-  {
-    battleTag: "Qsoldier#3208",
-    race: Race.Human,
-  },
-  {
-    battleTag: "아샬라노레#31927",
-    race: Race.Human,
-  },
-  {
-    battleTag: "little#12277",
-    race: Race.Human,
-  },
-  {
-    battleTag: "Pbmatch#21881",
-    race: Race.NightElf,
-  },
-  {
-    battleTag: "NeonGhost#23343",
-    race: Race.Human,
-  },
-  {
-    battleTag: "uNiQuE#2654",
-    race: Race.Undead,
-  },
-  {
-    battleTag: "jeaboy#2314",
-    race: Race.Orc,
-  },
-  {
-    battleTag: "SlimShady#22935",
-    race: Race.Orc,
-  },
-  {
-    battleTag: "ShadowZS#21866",
-    race: Race.Random,
-  },
-  {
-    battleTag: "appleofagony#2677",
-    race: Race.Random,
-  },
-  {
-    battleTag: "Gaben#22392",
-    race: Race.Human,
-  },
-  {
-    battleTag: "saibotzinho#1319",
-    race: Race.NightElf,
-  },
-  {
-    battleTag: "Life#12460",
-    race: Race.Orc,
-  },
-  {
-    battleTag: "Sphinx#22547",
-    race: Race.NightElf,
-  },
-  {
-    battleTag: "Tanthalas#3421",
-    race: Race.Orc,
-  },
-  {
-    battleTag: "LLVR#2808",
-    race: Race.Human,
-  },
-  {
-    battleTag: "Pow#11520",
-    race: Race.Human,
-  },
-  {
-    battleTag: "DoNotWinMe#1357",
-    race: Race.Human,
-  },
-  {
-    battleTag: "Isendel#1786",
-    race: Race.Human,
-  },
-  {
-    battleTag: "pharaON#22353",
-    race: Race.Undead,
-  },
-  {
-    battleTag: "Fozzy0503#2578",
-    race: Race.Human,
-  },
-  {
-    battleTag: "fResHLiViT#2218",
-    race: Race.Human,
-  },
-  {
-    battleTag: "gigahertz#21517",
-    race: Race.Random,
-  },
-];
-
 const current = {
   id: uuidv4(),
   created: moment().toDate(),
   updated: moment().toDate(),
   season: 15,
-  start: "01.09.2024",
-  end: "01.10.2024",
+  start: "29.09.2024",
+  end: "10.11.2024",
   teams: [
     {
-      id: "chinesepaladin",
-      name: "Chinese Paldin",
+      id: "luckystrike",
+      name: "Lucky Strike",
       prefix: "",
       coaches: [
         {
@@ -431,15 +28,134 @@ const current = {
           race: Race.NightElf,
           races: [Race.NightElf],
           roles: ["Coach"],
+          quotes: ["I love Pit Lord and I hope I can make you love him too"],
         },
         {
           battleTag: "Lucker#11299",
           race: Race.Orc,
           races: [Race.Orc],
           roles: ["Coach"],
+          quotes: ["Arriba, Arriba! Andale, Andale!"],
         },
       ],
-      players: _take(_skip(testPlayers, 67), 33),
+      players: [
+        {
+          battleTag: "Tarmok#2559",
+          race: 2,
+        },
+        {
+          battleTag: "elravel#2772",
+          race: 2,
+        },
+        {
+          battleTag: "GwaiLo#1580",
+          race: 1,
+        },
+        {
+          battleTag: "ThaGrinchy31#1490",
+          race: 4,
+        },
+        {
+          battleTag: "lucker#11299",
+          race: 2,
+        },
+        {
+          battleTag: "АлексићВлада#2613",
+          race: 1,
+        },
+        {
+          battleTag: "Slyfer619#11514",
+          race: 2,
+        },
+        {
+          battleTag: "Wensleydale#11446",
+          race: 1,
+        },
+        {
+          battleTag: "Adventurer#144222263",
+          race: 4,
+        },
+        {
+          battleTag: "possa4ever#2888",
+          race: 2,
+        },
+        {
+          battleTag: "Shinobuakko#2904",
+          race: 4,
+        },
+        {
+          battleTag: "Mou#1245",
+          race: 1,
+        },
+        {
+          battleTag: "FEWA418#1895",
+          race: 8,
+        },
+        {
+          battleTag: "Blavon#21745",
+          race: 0,
+        },
+        {
+          battleTag: "TwinBlaDe",
+          race: 4,
+        },
+        {
+          battleTag: "Gone1#2163",
+          race: 1,
+        },
+        {
+          battleTag: "Erimav#2482",
+          race: 0,
+        },
+        {
+          battleTag: "CountDracula#21854",
+          race: 8,
+        },
+        {
+          battleTag: "Hisuich#2529",
+          race: 0,
+        },
+        {
+          battleTag: "zelderan#1884",
+          race: 2,
+        },
+        {
+          battleTag: "Icesoldier#11528",
+          race: 1,
+        },
+        {
+          battleTag: "Beijing#21618",
+          race: 0,
+        },
+        {
+          battleTag: "GIGA#2164",
+          race: 2,
+        },
+        {
+          battleTag: "ZnooW#21246",
+          race: 2,
+        },
+        {
+          battleTag: "drakeasdlfxk#1972",
+          race: 4,
+        },
+        {
+          battleTag: "implosion#31477",
+          race: 4,
+        },
+        {
+          battleTag: "Death#2934",
+          race: 2,
+        },
+        {
+          battleTag: "SPXQuywiX#1201",
+          race: 0,
+        },
+        {
+          battleTag: "Wifowmaker#2408",
+          race: 2,
+        },
+      ],
     },
     {
       id: "rageandape",
@@ -450,8 +166,11 @@ const current = {
           battleTag: "floss2xdaily#1987",
           race: Race.Human,
           races: [Race.Human],
-          roles: ["Coach"],
-          quotes: [],
+          roles: ["Coach", "Assistant Rigger"],
+          quotes: [
+            "Being bad never felt so good",
+            "Hardstuck 1300, why do YOU think I'm a coach? 💰",
+          ],
         },
         {
           battleTag: "ToD#2792",
@@ -461,7 +180,128 @@ const current = {
           quotes: [],
         },
       ],
-      players: _take(_skip(testPlayers, 25), 33),
+      players: [
+        {
+          battleTag: "xardas#2606",
+          race: 1,
+        },
+        {
+          battleTag: "Foxy#23492",
+          race: 2,
+        },
+        {
+          battleTag: "Longjacket#2840",
+          race: 1,
+        },
+        {
+          battleTag: "mrmikemtl#1698",
+          race: 0,
+        },
+        {
+          battleTag: "PainTheRisen#1700",
+          race: 4,
+        },
+        {
+          battleTag: "TemplarFenix#1572",
+          race: 8,
+        },
+        {
+          battleTag: "Turkeltown#11257",
+          race: 1,
+        },
+        {
+          battleTag: "Cloning5#2785",
+          race: 8,
+        },
+        {
+          battleTag: "Savior#11574",
+          race: 1,
+        },
+        {
+          battleTag: "BaronVonSG#1774",
+          race: 0,
+        },
+        {
+          battleTag: "SaygeTV#1613",
+          race: 4,
+        },
+        {
+          battleTag: "joeymeister#21958",
+          race: 2,
+        },
+        {
+          battleTag: "mo2l#2314",
+          race: 4,
+        },
+        {
+          battleTag: "lykossnight #2433",
+          race: 4,
+        },
+        {
+          battleTag: "BuzzKill#11639",
+          race: 4,
+        },
+        {
+          battleTag: "Guns#21685",
+          race: 2,
+        },
+        {
+          battleTag: "dson#21234",
+          race: 4,
+        },
+        {
+          battleTag: "KageMan#1160",
+          race: 1,
+        },
+        {
+          battleTag: "Gortrist#1439",
+          race: 8,
+        },
+        {
+          battleTag: "Gengar#11321",
+          race: 2,
+        },
+        {
+          battleTag: "Floss2xdaily",
+          race: 1,
+        },
+        {
+          battleTag: "Remote#21761",
+          race: 0,
+        },
+        {
+          battleTag: "TLebbet#2684",
+          race: 2,
+        },
+        {
+          battleTag: "Barlenn#11791",
+          race: 8,
+        },
+        {
+          battleTag: "Genji#26575",
+          race: 8,
+        },
+        {
+          battleTag: "noizer#2444",
+          race: 2,
+        },
+        {
+          battleTag: "gypsy#11161",
+          race: 1,
+        },
+        {
+          battleTag: "Eisen#11506",
+          race: 2,
+        },
+        {
+          battleTag: "AoD#2933",
+          race: 8,
+        },
+        {
+          battleTag: "Madoka12#1159",
+          race: 8,
+        },
+      ],
     },
     {
       id: "apelords",
@@ -487,7 +327,124 @@ const current = {
           quotes: ["Dont snipe Mr. Harstem!", "It's-a Me, Spycreed!"],
         },
       ],
-      players: _take(testPlayers, 33),
+      players: [
+        {
+          battleTag: "veS#1614",
+          race: 8,
+        },
+        {
+          battleTag: "ThreeWayKay#2610",
+          race: 1,
+        },
+        {
+          battleTag: "Mushman#11671",
+          race: 1,
+        },
+        {
+          battleTag: "Exiled#21153",
+          race: 8,
+        },
+        {
+          battleTag: "EvGamer#2120",
+          race: 1,
+        },
+        {
+          battleTag: "StrsNStripes#1943",
+          race: 8,
+        },
+        {
+          battleTag: "Jinvvar#2488",
+          race: 2,
+        },
+        {
+          battleTag: "DwieTwarze#2534",
+          race: 4,
+        },
+        {
+          battleTag: "LuZiFus#2669",
+          race: 8,
+        },
+        {
+          battleTag: "Nerlsz#2780",
+          race: 0,
+        },
+        {
+          battleTag: "DGraves#11954",
+          race: 8,
+        },
+        {
+          battleTag: "Bandelero#11787",
+          race: 4,
+        },
+        {
+          battleTag: "pvpdactyl#2341",
+          race: 2,
+        },
+        {
+          battleTag: "Wiking#21750",
+          race: 1,
+        },
+        {
+          battleTag: "ArtWarcraft#21663",
+          race: 2,
+        },
+        {
+          battleTag: "Zsidóármány#2125",
+          race: 4,
+        },
+        {
+          battleTag: "lowHIGHlow#2352",
+          race: 2,
+        },
+        {
+          battleTag: "ArchEnemy#11829",
+          race: 8,
+        },
+        {
+          battleTag: "Cenotaph#11854",
+          race: 4,
+        },
+        {
+          battleTag: "Freakwenzy#2840",
+          race: 1,
+        },
+        {
+          battleTag: "Dirge#21649",
+          race: 8,
+        },
+        {
+          battleTag: "smallSun#21670",
+          race: 1,
+        },
+        {
+          battleTag: "F4CKHEAD#2498",
+          race: 4,
+        },
+        {
+          battleTag: "Spray4fun#2803",
+          race: 2,
+        },
+        {
+          battleTag: "Mataratzi#2446",
+          race: 4,
+        },
+        {
+          battleTag: "Griffin#1965",
+          race: 8,
+        },
+        {
+          battleTag: "Supa#2123",
+          race: 2,
+        },
+        {
+          battleTag: "Sokół#21328",
+          race: 1,
+        },
+        {
+          battleTag: "be4r#21991",
+          race: 1,
+        },
+      ],
     },
     {
       id: "mannertime",
@@ -509,7 +466,128 @@ const current = {
           quotes: [],
         },
       ],
-      players: _take(_skip(testPlayers, 33), 33),
+      players: [
+        {
+          battleTag: "RaZeR#23389",
+          race: 8,
+        },
+        {
+          battleTag: "Naujanas#2161",
+          race: 2,
+        },
+        {
+          battleTag: "HighKnight#11952",
+          race: 1,
+        },
+        {
+          battleTag: "Curunir#21273",
+          race: 1,
+        },
+        {
+          battleTag: "thodoris254#1264",
+          race: 1,
+        },
+        {
+          battleTag: "SoftIceCream#11120",
+          race: 1,
+        },
+        {
+          battleTag: "Manadog#1752",
+          race: 2,
+        },
+        {
+          battleTag: "Champloo#1425",
+          race: 4,
+        },
+        {
+          battleTag: "thehitpack",
+          race: 8,
+        },
+        {
+          battleTag: "leviathan#14753",
+          race: 2,
+        },
+        {
+          battleTag: "BobSacamano#21950",
+          race: 4,
+        },
+        {
+          battleTag: "Adaminh0#2932",
+          race: 4,
+        },
+        {
+          battleTag: "GamingDC#1471",
+          race: 1,
+        },
+        {
+          battleTag: "Superrman#2941",
+          race: 8,
+        },
+        {
+          battleTag: "Wizzer#11863",
+          race: 1,
+        },
+        {
+          battleTag: "GonzoTramer#2346",
+          race: 8,
+        },
+        {
+          battleTag: "Kvydi#2153",
+          race: 8,
+        },
+        {
+          battleTag: "Adenor#1539",
+          race: 0,
+        },
+        {
+          battleTag: "ItzAlex#21692",
+          race: 4,
+        },
+        {
+          battleTag: "LongXi#2909",
+          race: 1,
+        },
+        {
+          battleTag: "Apezap#1478",
+          race: 2,
+        },
+        {
+          battleTag: "SacredAngels#2893",
+          race: 2,
+        },
+        {
+          battleTag: "pischner#2950",
+          race: 4,
+        },
+        {
+          battleTag: "Logic#1436",
+          race: 1,
+        },
+        {
+          battleTag: "Glarer#21552",
+          race: 8,
+        },
+        {
+          battleTag: "Sp4rta#2973",
+          race: 8,
+        },
+        {
+          battleTag: "KWat#1193",
+          race: 2,
+        },
+        {
+          battleTag: "Zanatas#11745",
+          race: 8,
+        },
+        {
+          battleTag: "fourthAge#1445",
+          race: 2,
+        },
+        {
+          battleTag: "Bandlez#1752",
+          race: 2,
+        },
+      ],
     },
     {
       id: "gigglinggoblins",
@@ -520,7 +598,8 @@ const current = {
           battleTag: "NorthDrakkar#1745",
           race: Race.Undead,
           races: [Race.Undead],
-          roles: ["Coach", "Bajo Jajo Apprentice"],
+          roles: ["Coach", "Buglover #1", "120 Fanboy"],
+          quotes: ["Look! I found a cryptlord first game!"],
         },
         {
           battleTag: "Ember#21963",
@@ -529,7 +608,124 @@ const current = {
           roles: ["Coach"],
         },
       ],
-      players: _take(_skip(testPlayers, 66), 33),
+      players: [
+        {
+          battleTag: "Killrog#21773",
+          race: 1,
+        },
+        {
+          battleTag: "Skywalker#2206",
+          race: 0,
+        },
+        {
+          battleTag: "Winwake#2314",
+          race: 2,
+        },
+        {
+          battleTag: "MasaCom#3609",
+          race: 4,
+        },
+        {
+          battleTag: "Waylander#2826",
+          race: 0,
+        },
+        {
+          battleTag: "Dekker#2290",
+          race: 8,
+        },
+        {
+          battleTag: "Leshka#21750",
+          race: 4,
+        },
+        {
+          battleTag: "shiNe#1396",
+          race: 1,
+        },
+        {
+          battleTag: "JAIMECAKE#2602",
+          race: 2,
+        },
+        {
+          battleTag: "cava#21665",
+          race: 1,
+        },
+        {
+          battleTag: "hellomotto#2918",
+          race: 8,
+        },
+        {
+          battleTag: "Hermeus#21468",
+          race: 4,
+        },
+        {
+          battleTag: "Sevenofnine#11332",
+          race: 4,
+        },
+        {
+          battleTag: "Zinithin#1702",
+          race: 8,
+        },
+        {
+          battleTag: "MrBakteria#21657",
+          race: 1,
+        },
+        {
+          battleTag: "StarscreamR#2663",
+          race: 2,
+        },
+        {
+          battleTag: "coremix#2488",
+          race: 2,
+        },
+        {
+          battleTag: "Tacoshell#1753",
+          race: 2,
+        },
+        {
+          battleTag: "WeaponX#21501",
+          race: 1,
+        },
+        {
+          battleTag: "Sway#1849",
+          race: 4,
+        },
+        {
+          battleTag: "gregzor#21270",
+          race: 8,
+        },
+        {
+          battleTag: "Steph#1351",
+          race: 0,
+        },
+        {
+          battleTag: "Loneshark#11407",
+          race: 4,
+        },
+        {
+          battleTag: "FlexFalcon#2318",
+          race: 1,
+        },
+        {
+          battleTag: "CryptoManiac#21499",
+          race: 8,
+        },
+        {
+          battleTag: "Agape#2173",
+          race: 4,
+        },
+        {
+          battleTag: "LinYuRong101#1714",
+          race: 1,
+        },
+        {
+          battleTag: "Jeppe#22909",
+          race: 2,
+        },
+        {
+          battleTag: "Munsoon#2468",
+          race: 2,
+        },
+      ],
     },
     {
       id: "gnlbears",
@@ -562,7 +758,124 @@ const current = {
           ],
         },
       ],
-      players: _take(_skip(testPlayers, 49), 33),
+      players: [
+        {
+          battleTag: "SOULKEEPA#21303",
+          race: 2,
+        },
+        {
+          battleTag: "biskuit#21557",
+          race: 2,
+        },
+        {
+          battleTag: "ImaPanda#2127",
+          race: 4,
+        },
+        {
+          battleTag: "RobotNinja#2136641",
+          race: 1,
+        },
+        {
+          battleTag: "Starscream#11331",
+          race: 8,
+        },
+        {
+          battleTag: "cedde#2548",
+          race: 4,
+        },
+        {
+          battleTag: "noMADic#11242",
+          race: 1,
+        },
+        {
+          battleTag: "Dargrum#2289",
+          race: 4,
+        },
+        {
+          battleTag: "AllSupTTV#2359",
+          race: 4,
+        },
+        {
+          battleTag: "EASHIBBY#2644",
+          race: 0,
+        },
+        {
+          battleTag: "Crimson#1347",
+          race: 4,
+        },
+        {
+          battleTag: "RickeHult#2698",
+          race: 8,
+        },
+        {
+          battleTag: "Winters#1833",
+          race: 4,
+        },
+        {
+          battleTag: "AlexMejor#2851",
+          race: 8,
+        },
+        {
+          battleTag: "Reufury#6989",
+          race: 2,
+        },
+        {
+          battleTag: "Kaccel#2863",
+          race: 1,
+        },
+        {
+          battleTag: "Vallok#21620",
+          race: 8,
+        },
+        {
+          battleTag: "ArcMessenger#1214",
+          race: 8,
+        },
+        {
+          battleTag: "Ignotus5#1918",
+          race: 1,
+        },
+        {
+          battleTag: "Cheeseboy#1846",
+          race: 4,
+        },
+        {
+          battleTag: "aeiouandxyz#1744",
+          race: 1,
+        },
+        {
+          battleTag: "NotSure#11563",
+          race: 1,
+        },
+        {
+          battleTag: "P07470#11292",
+          race: 2,
+        },
+        {
+          battleTag: "LavaOgre#18463",
+          race: 2,
+        },
+        {
+          battleTag: "irritated#21154",
+          race: 1,
+        },
+        {
+          battleTag: "Disproved#21742",
+          race: 8,
+        },
+        {
+          battleTag: "Qraut#2653",
+          race: 2,
+        },
+        {
+          battleTag: "eworm#21209",
+          race: 8,
+        },
+        {
+          battleTag: "Shlumples#1394",
+          race: 0,
+        },
+      ],
     },
   ],
 };
@@ -637,7 +950,7 @@ const points = computed(() => {
 
 const leader = computed(() => {
   const i = points.value.indexOf(Math.max(...points.value));
-  return store.data?.teams?.[i];
+  return i > 0 ? store.data?.teams?.[i] : {};
 });
 
 // Text
@@ -656,13 +969,17 @@ const model = defineModel<string>({
   Why delay? Go search for a ladder game right now and find out!
   `,
 });
+
+onMounted(() => {
+  store.initialize();
+});
 </script>
 
 <template>
   <main style="height: 100vh; overflow-y: auto">
     <v-container fluid style="opacity: 1">
       <v-sheet
-        v-if="!store.initialized"
+        v-if="_isEmpty(store.data)"
         class="pa-12"
         elevation="10"
         transition="fade-transition"
@@ -746,7 +1063,7 @@ const model = defineModel<string>({
                       <span
                         :style="{
                           verticalAlign: 'middle',
-                          color: leader?.id === team.id ? 'yellow' : 'inherit',
+                          color: leader?.id === team.id ? 'yellow' : 'white',
                         }">
                         <v-icon
                           v-if="leader?.id === team.id"
@@ -797,7 +1114,8 @@ const model = defineModel<string>({
         <v-row>
           <v-col cols="12" class="text-center">
             <div class="text-h3">
-              Welcome to the <span class="text-grey">un</span>Official GNL site
+              Welcome to the <span class="text-green-accent-4">un</span>Official
+              GNL site
             </div>
           </v-col>
           <v-col cols="12" class="text-center">
@@ -864,7 +1182,7 @@ const model = defineModel<string>({
           </v-col>
           <v-icon
             v-if="
-              store.dates.daysSinceStart / store.dates.durationInDays > 0.05 &&
+              store.dates.daysSinceStart / store.dates.durationInDays > 0.01 &&
               store.dates.daysSinceStart / store.dates.durationInDays < 0.9
             "
             icon="mdi-run-fast"
@@ -872,7 +1190,7 @@ const model = defineModel<string>({
             size="x-large"
             :style="`width: 0; heigth: 0; position: relative; 
             top: -50px;
-              left: calc(${(store.dates.daysSinceStart / store.dates.durationInDays) * 100}%)
+              left: calc(${((store.dates.daysSinceStart + 1) / store.dates.durationInDays) * 100}%)
               `" />
           <v-col
             cols="12"

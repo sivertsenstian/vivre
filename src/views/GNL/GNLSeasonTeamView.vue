@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useTheme } from "vuetify";
-import { computed, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import { teamGnlBanner, useGNLStore } from "@/stores/gnl";
 import ActivityTable from "@/components/ActivityTable.vue";
 import GNLPlayerBanner from "@/components/gnl/GNLPlayerBanner.vue";
@@ -119,6 +119,10 @@ const options = {
   },
 } as any;
 // End
+
+onMounted(() => {
+  store.initialize();
+});
 </script>
 
 <template>
