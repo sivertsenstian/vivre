@@ -21,6 +21,7 @@ import _isEmpty from "lodash/isEmpty";
 import _first from "lodash/first";
 import _merge from "lodash/merge";
 import { useStorage } from "@vueuse/core";
+import _isNil from "lodash/isNil";
 
 const gnlBanners: { [key: string]: string } = {
   ["luckystrike"]: gnl_team_luckystrike,
@@ -36,13 +37,17 @@ export const teamGnlBanner: any = (id: string) =>
 const getData = async (account: IGNLAccount, start: Moment, end: Moment) => {
   let result: IGNLStatistics = {} as any;
   let seasonActual = [];
-  let all = [];
 
   try {
-    const recent = _first(account.data?.matches);
-    const actualStart = recent === undefined ? start : moment(recent.endTime);
+    const recent: any = _first(account.data?.matches);
+    const actualStart = _isNil(recent) ? start : moment(recent.endTime);
 
-    all = await getSeasonGamesBetween(account.battleTag, 19, actualStart, end);
+    const all = await getSeasonGamesBetween(
+      account.battleTag,
+      19,
+      actualStart,
+      end,
+    );
 
     // Filter out free wins/loss and bugs
     seasonActual = all.filter((m) => m.durationInSeconds > 240);
