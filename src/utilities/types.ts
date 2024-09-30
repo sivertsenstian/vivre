@@ -147,4 +147,7 @@ export interface IGNLAccount {
   race: Race;
   data?: any;
   points?: number;
+  achievementPoints?: number;
+  totalPoints?: number;
+  achievements?: any[];
 }

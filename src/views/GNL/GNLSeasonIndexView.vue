@@ -924,6 +924,7 @@ const options = {
     x: {
       grid: { display: false },
       type: "category",
+      stacked: true,
     },
     y: {
       grid: { display: false },
@@ -939,12 +940,20 @@ const points = computed(() => {
     return [];
   }
   return store.data.teams.map((t: any) => {
-    return (
-      t.players?.reduce((s: number, p: any) => {
-        const d = p.data;
-        return s + ((d?.wins ?? 0) * 3 + (d?.loss ?? 0));
-      }, 0) ?? 0
-    );
+    return t.players?.reduce((s: number, p: any) => {
+      return s + (p.totalPoints ?? 0);
+    }, 0);
+  });
+});
+
+const games = computed(() => {
+  if (_isEmpty(store.data?.teams)) {
+    return [];
+  }
+  return store.data.teams.map((t: any) => {
+    return t.players?.reduce((s: number, p: any) => {
+      return s + (p.data?.total ?? 0);
+    }, 0);
   });
 });
 
@@ -1092,6 +1101,22 @@ onMounted(() => {
                     borderWidth: 2,
                     barPercentage: 0.5,
                     data: points,
+                    datalabels: {
+                      clip: true,
+                      clamp: true,
+                      anchor: 'end',
+                      align: 'end',
+                      offset: 0,
+                      color: 'goldenrod',
+                    },
+                  },
+                  {
+                    label: 'games',
+                    backgroundColor: 'rgba(218, 165, 32, 0.3)',
+                    borderColor: 'goldenrod',
+                    borderWidth: 2,
+                    barPercentage: 0.5,
+                    data: games,
                     datalabels: {
                       clip: true,
                       clamp: true,

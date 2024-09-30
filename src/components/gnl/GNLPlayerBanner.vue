@@ -49,6 +49,9 @@ import _round from "lodash/round";
 import _groupBy from "lodash/groupBy";
 import _first from "lodash/first";
 import _last from "lodash/last";
+import { ladderGoal } from "@/stores/gnl";
+import _take from "lodash/take";
+import _skip from "lodash/drop";
 
 ChartJS.register(
   LineController,
@@ -218,17 +221,12 @@ const avg = computed(() =>
     ? Math.ceil(props.player.data.total / props.dates.daysSinceStart)
     : "-",
 );
-
-const goal = 500;
-const points = computed(
-  () => props.player.data?.wins * 3 + props.player.data?.loss,
-);
 </script>
 
 <template>
   <v-card
     color="surface"
-    :class="`text-center pa-0 card-shine-effect ${points >= goal ? 'goal' : ''}`"
+    :class="`text-center pa-0 card-shine-effect ${player.points >= ladderGoal ? 'goal' : ''}`"
     :elevation="10">
     <v-list-item
       class="px-3"
@@ -243,6 +241,66 @@ const points = computed(
         <div class="ml-1 text-left text-h5">
           <span class="mr-1" v-if="prefix">{{ prefix }}</span
           >{{ player.battleTag.split("#")[0] }}
+        </div>
+      </template>
+      <template v-if="player.data?.matches.length" v-slot:append>
+        <div
+          style="
+            position: absolute;
+            right: 10px;
+            top: 5px;
+            overflow: visible;
+            z-index: 99999999999999;
+          ">
+          <ul style="list-style-type: none">
+            <li
+              class="mb-1"
+              v-for="achievement in _take<any>(player.achievements, 7)">
+              <v-tooltip
+                :text="`${achievement.description} // ${achievement.points} Additional Points!`"
+                content-class="custom-tooltip"
+                open-on-click>
+                <template v-slot:activator="{ props }">
+                  <v-btn
+                    v-bind="props"
+                    size="x-small"
+                    variant="elevated"
+                    style="color: goldenrod; border: 1px solid goldenrod"
+                    color="dark"
+                    :icon="achievement.icon" />
+                </template>
+              </v-tooltip>
+            </li>
+          </ul>
+        </div>
+        <div
+          style="
+            position: absolute;
+            right: 50px;
+            top: 5px;
+            overflow: visible;
+            z-index: 99999999999999;
+          ">
+          <ul style="list-style-type: none">
+            <li
+              class="mb-1"
+              v-for="achievement in _skip<any>(player.achievements, 7)">
+              <v-tooltip
+                :text="`${achievement.description} // ${achievement.points} Additional Points!`"
+                content-class="custom-tooltip"
+                open-on-click>
+                <template v-slot:activator="{ props }">
+                  <v-btn
+                    v-bind="props"
+                    size="x-small"
+                    variant="elevated"
+                    style="color: goldenrod; border: 1px solid goldenrod"
+                    color="dark"
+                    :icon="achievement.icon" />
+                </template>
+              </v-tooltip>
+            </li>
+          </ul>
         </div>
       </template>
     </v-list-item>
@@ -314,13 +372,15 @@ const points = computed(
           :length="5"
           :size="20"
           :model-value="
-            ((player.data?.wins * 3 + player.data?.loss) / goal) * 5
+            ((player.data?.wins * 3 + player.data?.loss) / ladderGoal) * 5
           "
           color="#b8860b"
           active-color="#daa520"
           empty-icon="mdi-circle-outline"
           half-icon="mdi-circle-half-full"
-          :full-icon="points < goal ? 'mdi-circle' : 'mdi-medal'" />
+          :full-icon="
+            player.points < ladderGoal ? 'mdi-circle' : 'mdi-medal'
+          " />
       </v-card-subtitle>
     </v-card-item>
 
@@ -329,20 +389,24 @@ const points = computed(
         <span
           class="text-h3 fontweight-bold"
           style="color: goldenrod; vertical-align: middle"
-          ><v-progress-circular indeterminate v-if="isNaN(points)" />
-          <span v-else>{{ points }}</span>
+          ><v-progress-circular indeterminate v-if="isNaN(player.points)" />
+          <span
+            v-else
+            :title="`${player.points} points from ladder, ${player.achievementPoints} points from achievements`"
+            >{{ player.totalPoints }}
+          </span>
         </span>
       </v-card-title>
       <v-card-subtitle>
         <span
           class="text-subtitle-2"
           style="vertical-align: middle; color: goldenrod"
-          v-if="isNaN(points)">
+          v-if="isNaN(player.points)">
           calculating...
         </span>
         <span v-else>
           <span
-            v-if="points === 0"
+            v-if="player.points === 0"
             class="text-subtitle-2"
             style="vertical-align: middle; color: goldenrod">
             Play 1v1 on the w3c ladder to earn points!
@@ -450,5 +514,13 @@ const points = computed(
     200%0,
     0 0;
   transition-duration: 1.5s;
+}
+
+:global(.custom-tooltip) {
+  opacity: 1 !important;
+  background-color: rgb(var(--v-theme-surface)) !important;
+  color: goldenrod !important;
+  font-weight: bold !important;
+  border: 2px solid darkgoldenrod !important;
 }
 </style>
