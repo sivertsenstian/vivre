@@ -12,6 +12,7 @@ import gnl_coach_northdrakkar from "@assets/gnl/coaches/northdrakkar.jpg";
 import gnl_coach_floss from "@assets/gnl/coaches/floss.png";
 import gnl_coach_wontu from "@assets/gnl/coaches/wontu.jpg";
 import gnl_coach_ember from "@assets/gnl/coaches/ember.jpg";
+import gnl_coach_cas from "@assets/gnl/coaches/cas.jpg";
 
 import gnl_coach_missing from "@/assets/creeproutes/missing.png";
 
@@ -28,7 +29,7 @@ const coachGnlBanner: any = {
   ["NorthDrakkar#1745"]: gnl_coach_northdrakkar,
 
   ["kennyg6050#1543"]: gnl_coach_missing,
-  ["EmilyHuttson#1378"]: gnl_coach_missing,
+  ["EmilyHuttson#1378"]: gnl_coach_cas,
   ["floss2xdaily#1987"]: gnl_coach_floss,
   ["Ember#21963"]: gnl_coach_ember,
   ["Wontu#1218"]: gnl_coach_wontu,
