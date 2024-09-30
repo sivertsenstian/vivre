@@ -49,12 +49,7 @@ import _round from "lodash/round";
 import _groupBy from "lodash/groupBy";
 import _first from "lodash/first";
 import _last from "lodash/last";
-import {
-  calculateAchievementPoints,
-  calculateLadderPoints,
-  calculatePlayerAchievements,
-  ladderGoal,
-} from "@/stores/gnl";
+import { ladderGoal } from "@/stores/gnl";
 import _take from "lodash/take";
 import _skip from "lodash/drop";
 
@@ -226,20 +221,12 @@ const avg = computed(() =>
     ? Math.ceil(props.player.data.total / props.dates.daysSinceStart)
     : "-",
 );
-
-const points = computed(() => calculateLadderPoints(props.player.data));
-
-const achievements = computed(() => calculatePlayerAchievements(props.player));
-
-const achievementPoints = computed(() =>
-  calculateAchievementPoints(achievements.value),
-);
 </script>
 
 <template>
   <v-card
     color="surface"
-    :class="`text-center pa-0 card-shine-effect ${points >= ladderGoal ? 'goal' : ''}`"
+    :class="`text-center pa-0 card-shine-effect ${player.points >= ladderGoal ? 'goal' : ''}`"
     :elevation="10">
     <v-list-item
       class="px-3"
@@ -266,7 +253,9 @@ const achievementPoints = computed(() =>
             z-index: 99999999999999;
           ">
           <ul style="list-style-type: none">
-            <li class="mb-1" v-for="achievement in _take(achievements, 7)">
+            <li
+              class="mb-1"
+              v-for="achievement in _take(player.achievements, 7)">
               <v-tooltip
                 :text="`${achievement.description} // ${achievement.points} Additional Points!`"
                 content-class="custom-tooltip"
@@ -293,7 +282,9 @@ const achievementPoints = computed(() =>
             z-index: 99999999999999;
           ">
           <ul style="list-style-type: none">
-            <li class="mb-1" v-for="achievement in _skip(achievements, 7)">
+            <li
+              class="mb-1"
+              v-for="achievement in _skip(player.achievements, 7)">
               <v-tooltip
                 :text="`${achievement.description} // ${achievement.points} Additional Points!`"
                 content-class="custom-tooltip"
@@ -387,7 +378,9 @@ const achievementPoints = computed(() =>
           active-color="#daa520"
           empty-icon="mdi-circle-outline"
           half-icon="mdi-circle-half-full"
-          :full-icon="points < ladderGoal ? 'mdi-circle' : 'mdi-medal'" />
+          :full-icon="
+            player.points < ladderGoal ? 'mdi-circle' : 'mdi-medal'
+          " />
       </v-card-subtitle>
     </v-card-item>
 
@@ -396,11 +389,11 @@ const achievementPoints = computed(() =>
         <span
           class="text-h3 fontweight-bold"
           style="color: goldenrod; vertical-align: middle"
-          ><v-progress-circular indeterminate v-if="isNaN(points)" />
+          ><v-progress-circular indeterminate v-if="isNaN(player.points)" />
           <span
             v-else
-            :title="`${points} points from ladder, ${achievementPoints} points from achievements`"
-            >{{ points + achievementPoints }}
+            :title="`${player.points} points from ladder, ${player.achievementPoints} points from achievements`"
+            >{{ player.totalPoints }}
           </span>
         </span>
       </v-card-title>
@@ -408,12 +401,12 @@ const achievementPoints = computed(() =>
         <span
           class="text-subtitle-2"
           style="vertical-align: middle; color: goldenrod"
-          v-if="isNaN(points)">
+          v-if="isNaN(player.points)">
           calculating...
         </span>
         <span v-else>
           <span
-            v-if="points === 0"
+            v-if="player.points === 0"
             class="text-subtitle-2"
             style="vertical-align: middle; color: goldenrod">
             Play 1v1 on the w3c ladder to earn points!

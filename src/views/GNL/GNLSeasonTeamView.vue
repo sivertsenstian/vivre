@@ -1,13 +1,7 @@
 <script setup lang="ts">
 import { useTheme } from "vuetify";
 import { computed, onMounted, ref } from "vue";
-import {
-  calculateAchievementPoints,
-  calculateLadderPoints,
-  calculatePlayerAchievements,
-  teamGnlBanner,
-  useGNLStore,
-} from "@/stores/gnl";
+import { teamGnlBanner, useGNLStore } from "@/stores/gnl";
 import ActivityTable from "@/components/ActivityTable.vue";
 import GNLPlayerBanner from "@/components/gnl/GNLPlayerBanner.vue";
 import GNLCoachBanner from "@/components/gnl/GNLCoachBanner.vue";
@@ -32,24 +26,11 @@ onBeforeRouteLeave(() => {
   store.current = undefined;
 });
 
-const points = computed(() => {
-  try {
-    return current.value.players.map((p: IGNLAccount) => {
-      const d = p.data ?? {};
-      return {
-        battleTag: p.battleTag,
-        points:
-          calculateLadderPoints(d) +
-          calculateAchievementPoints(calculatePlayerAchievements(p)),
-      };
-    });
-  } catch {
-    return [];
-  }
-});
-
 const teamPoints = computed(() => {
-  return points.value.reduce((s: number, p: any) => (s += p?.points ?? 0), 0);
+  return current.value.players.reduce(
+    (s: number, p: any) => (s += p?.totalPoints ?? 0),
+    0,
+  );
 });
 
 const teamMatches = computed(() => {
@@ -58,25 +39,10 @@ const teamMatches = computed(() => {
 
 const players = computed(() => {
   try {
-    return current.value.players
-      .map((p: IGNLAccount) => {
-        const d = p.data ?? {};
-        return {
-          battleTag: p.battleTag,
-          points:
-            calculateLadderPoints(d) +
-            calculateAchievementPoints(calculatePlayerAchievements(p)),
-          data: d,
-        };
-      })
-      .sort(
-        (a: IGNLAccount, b: IGNLAccount) => (b.points ?? 0) - (a.points ?? 0),
-      )
-      .map((p: IGNLAccount) => {
-        return current.value.players.find(
-          (x: IGNLAccount) => x.battleTag === p.battleTag,
-        );
-      });
+    return current.value.players.sort(
+      (a: IGNLAccount, b: IGNLAccount) =>
+        (b.totalPoints ?? 0) - (a.totalPoints ?? 0),
+    );
   } catch {
     return [];
   }
@@ -265,8 +231,8 @@ onMounted(() => {
                   height="315px"
                   style="overflow: visible"
                   :data="{
-                    labels: points
-                      .filter((p: IGNLAccount) => (p.points ?? 0) > 0)
+                    labels: current.players
+                      .filter((p: IGNLAccount) => (p.totalPoints ?? 0) > 0)
                       .map((p: IGNLAccount) => p.battleTag.split('#')[0]),
                     datasets: [
                       {
@@ -275,9 +241,9 @@ onMounted(() => {
                         borderColor: 'goldenrod',
                         borderWidth: 2,
                         barPercentage: 0.8,
-                        data: points
-                          .filter((p: IGNLAccount) => (p.points ?? 0) > 0)
-                          .map((p: IGNLAccount) => p.points),
+                        data: current.players
+                          .filter((p: IGNLAccount) => (p.totalPoints ?? 0) > 0)
+                          .map((p: IGNLAccount) => p.totalPoints),
                         datalabels: {
                           clip: true,
                           clamp: true,

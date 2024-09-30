@@ -1,13 +1,7 @@
 <script setup lang="ts">
 import { useTheme } from "vuetify";
 import { computed, onMounted } from "vue";
-import {
-  calculateAchievementPoints,
-  calculateLadderPoints,
-  calculatePlayerAchievements,
-  teamGnlBanner,
-  useGNLStore,
-} from "@/stores/gnl";
+import { teamGnlBanner, useGNLStore } from "@/stores/gnl";
 import { Race } from "@/stores/races";
 
 const theme = useTheme();
@@ -930,6 +924,7 @@ const options = {
     x: {
       grid: { display: false },
       type: "category",
+      stacked: true,
     },
     y: {
       grid: { display: false },
@@ -945,16 +940,20 @@ const points = computed(() => {
     return [];
   }
   return store.data.teams.map((t: any) => {
-    return (
-      t.players?.reduce((s: number, p: any) => {
-        const d = p.data;
-        return (
-          s +
-          calculateLadderPoints(d) +
-          calculateAchievementPoints(calculatePlayerAchievements(p))
-        );
-      }, 0) ?? 0
-    );
+    return t.players?.reduce((s: number, p: any) => {
+      return s + (p.totalPoints ?? 0);
+    }, 0);
+  });
+});
+
+const games = computed(() => {
+  if (_isEmpty(store.data?.teams)) {
+    return [];
+  }
+  return store.data.teams.map((t: any) => {
+    return t.players?.reduce((s: number, p: any) => {
+      return s + (p.data?.total ?? 0);
+    }, 0);
   });
 });
 
@@ -1102,6 +1101,22 @@ onMounted(() => {
                     borderWidth: 2,
                     barPercentage: 0.5,
                     data: points,
+                    datalabels: {
+                      clip: true,
+                      clamp: true,
+                      anchor: 'end',
+                      align: 'end',
+                      offset: 0,
+                      color: 'goldenrod',
+                    },
+                  },
+                  {
+                    label: 'games',
+                    backgroundColor: 'rgba(218, 165, 32, 0.3)',
+                    borderColor: 'goldenrod',
+                    borderWidth: 2,
+                    barPercentage: 0.5,
+                    data: games,
                     datalabels: {
                       clip: true,
                       clamp: true,

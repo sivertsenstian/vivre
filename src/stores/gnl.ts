@@ -361,6 +361,12 @@ export const useGNLStore = defineStore("gnl", () => {
       for (let p = 0; p < team.players.length; p++) {
         const player = team.players[p];
         player.data = await getData(player, dates.value.start, dates.value.end);
+        player.points = calculateLadderPoints(player.data);
+        player.achievements = calculatePlayerAchievements(player);
+        player.achievementPoints = calculateAchievementPoints(
+          player.achievements,
+        );
+        player.totalPoints = player.points + player.achievementPoints;
       }
     }
 
