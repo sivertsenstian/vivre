@@ -3,8 +3,11 @@ import type { IGNLAccount, IGNLStatistics } from "@/utilities/types";
 import moment from "moment";
 import type { Moment } from "moment";
 import {
+  getloss,
+  getplayer,
   getRaceStatistics,
   getSeasonGamesBetween,
+  getwins,
   isRace,
 } from "@/utilities/matchcalculator";
 import { computed, ref } from "vue";
@@ -22,6 +25,9 @@ import _first from "lodash/first";
 import _merge from "lodash/merge";
 import { useStorage } from "@vueuse/core";
 import _isNil from "lodash/isNil";
+import _groupBy from "lodash/groupBy";
+import _map from "lodash/map";
+import _last from "lodash/last";
 
 const gnlBanners: { [key: string]: string } = {
   ["luckystrike"]: gnl_team_luckystrike,
@@ -31,8 +37,232 @@ const gnlBanners: { [key: string]: string } = {
   ["gigglinggoblins"]: gnl_team_gigglinggoblins,
   ["gnlbears"]: gnl_team_gnlbears,
 };
+
+export const ladderGoal = 500;
+
+const achievements = {
+  // 100
+  you_have_so_much: {
+    points: 100,
+    icon: "mdi-cash-100",
+    description:
+      "Because you have a lot, you should have more! - Reach this seasons ladder goal!",
+  },
+
+  // 50
+  i_am_a_gamer: {
+    points: 50,
+    icon: "mdi-nintendo-game-boy",
+    description: "I AM A GAMER - Play at least 25 games in a single day",
+  },
+
+  // 25
+  feels_bad_man: {
+    points: 25,
+    icon: "mdi-coffin",
+    description: "FeelsBadMan - Lose 5 games in a row",
+  },
+  multi_kill: {
+    points: 25,
+    icon: "mdi-pac-man",
+    description: "Multi Kill - Win 6 games in a row",
+  },
+  out_rat: {
+    points: 25,
+    icon: "mdi-rodent",
+    description: "OUT RAT - Win a game that lasted over 30 minutes",
+  },
+  ambulance: {
+    points: 25,
+    icon: "mdi-ambulance",
+    description:
+      "Call an ambulance, but not for me! - Increased MMR by at least 50 points in one day",
+  },
+  life_support: {
+    points: 25,
+    icon: "mdi-iv-bag",
+    description:
+      "Life Support - Decreased MMR by at least 50 points in one day",
+  },
+
+  // 10
+  double_kill: {
+    points: 10,
+    icon: "mdi-sword-cross",
+    description: "Double Kill - Win 2 games in a row",
+  },
+  copium: {
+    points: 10,
+    icon: "mdi-pill-multiple",
+    description: "Copium - Lose a game that lasted over 30 minutes",
+  },
+  speed_demon: {
+    points: 10,
+    icon: "mdi-clock-fast",
+    description: "Speed Demon - Win a game in less than 5 minutes",
+  },
+  lag_king: {
+    points: 10,
+    icon: "mdi-power-plug-off-outline",
+    description: "Lag King - Win a game with an average of at least 150ms",
+  },
+  king_of_my_castle: {
+    points: 10,
+    icon: "mdi-castle",
+    description:
+      "King of My Castle - Win a game with an average of maximum 15ms",
+  },
+
+  // 5
+  alone: {
+    points: 5,
+    icon: "mdi-triforce",
+    description: "It's Dangerous To Go Alone, Take This! - Play a ladder game",
+  },
+};
+
 export const teamGnlBanner: any = (id: string) =>
   gnlBanners?.[id] ?? gnl_team_missing;
+
+export const calculateLadderPoints = (data?: { wins: number; loss: number }) =>
+  (data?.wins ?? 0) * 3 + (data?.loss ?? 0);
+
+export const calculateAchievementPoints = (achievements: any[]) => {
+  if (!_isEmpty(achievements)) {
+    return achievements.reduce((s, a) => (s += a.points), 0);
+  }
+  return 0;
+};
+
+export const calculatePlayerAchievements = (account: IGNLAccount): any[] => {
+  const result = [];
+
+  const matches = account.data?.matches ?? [];
+  const wins = matches.filter((m) => getwins(account.battleTag, m));
+  const losses = matches.filter((m) => getloss(account.battleTag, m));
+  const performance = account.data?.performance ?? [];
+
+  // Number of wins/loss
+  let consecutiveLoss = 0;
+  let consecutiveWins = 0;
+  let w = 0;
+  let l = 0;
+  for (let i = 0; i < performance.length; i++) {
+    if (i > 0) {
+      if (performance[i]) {
+        w++;
+      } else {
+        l++;
+      }
+
+      consecutiveWins = Math.max(consecutiveWins, w);
+      consecutiveLoss = Math.max(consecutiveLoss, l);
+
+      if (performance[i] !== performance[i - 1]) {
+        w = 0;
+        l = 0;
+      }
+    } else {
+      if (performance[i]) {
+        w++;
+      } else {
+        l++;
+      }
+    }
+  }
+
+  // Time based
+  const shortestWin = wins.reduce((r, m) => {
+    return r > m.durationInSeconds ? m.durationInSeconds : r;
+  }, 0);
+  const longestWin = wins.reduce((r, m) => {
+    return r < m.durationInSeconds ? m.durationInSeconds : r;
+  }, 0);
+  const longestLoss = losses.reduce((r, m) => {
+    return r < m.durationInSeconds ? m.durationInSeconds : r;
+  }, 0);
+
+  // lag based
+  const laggiestWin = wins.reduce((r, m) => {
+    const ping = m.serverInfo.playerServerInfos.find(
+      (p) => p.battleTag.toLowerCase() === account.battleTag.toLowerCase(),
+    ).averagePing;
+    return r < ping ? ping : r;
+  }, 0);
+  const lowLatencyWin = losses.reduce((r, m) => {
+    const ping = m.serverInfo.playerServerInfos.find(
+      (p) => p.battleTag.toLowerCase() === account.battleTag.toLowerCase(),
+    ).averagePing;
+    return r > ping ? ping : r;
+  }, 0);
+
+  // mmr based
+  const gp = getplayer(account.battleTag);
+  const matchesPerDay = _groupBy(matches, (m) => moment(m.endTime).dayOfYear());
+  const gain = _map(matchesPerDay, (v) =>
+    v.reduce((r, s) => r + gp(s).players[0].mmrGain, 0),
+  );
+  const grindCounter = _map(matchesPerDay, (v) => v.length);
+
+  const mmrGainInADay = Math.max(...gain, 0);
+  const mmrLossInADay = Math.min(...gain, 0);
+
+  const maxMatchesPerDay = Math.max(...grindCounter, 0);
+
+  if (matches.length > 0) {
+    result.push(achievements["alone"]);
+  }
+
+  if (consecutiveWins >= 2) {
+    result.push(achievements["double_kill"]);
+  }
+
+  if (longestLoss > 60 * 30) {
+    result.push(achievements["copium"]);
+  }
+
+  if (shortestWin > 0 && shortestWin < 60 * 5) {
+    result.push(achievements["speed_demon"]);
+  }
+
+  if (laggiestWin > 0 && laggiestWin >= 150) {
+    result.push(achievements["lag_king"]);
+  }
+
+  if (lowLatencyWin > 0 && lowLatencyWin <= 15) {
+    result.push(achievements["king_of_my_castle"]);
+  }
+
+  if (consecutiveLoss >= 5) {
+    result.push(achievements["feels_bad_man"]);
+  }
+
+  if (consecutiveWins >= 6) {
+    result.push(achievements["multi_kill"]);
+  }
+
+  if (longestWin > 60 * 30) {
+    result.push(achievements["out_rat"]);
+  }
+
+  if (mmrGainInADay >= 50) {
+    result.push(achievements["ambulance"]);
+  }
+
+  if (mmrLossInADay <= -50) {
+    result.push(achievements["life_support"]);
+  }
+
+  if (maxMatchesPerDay >= 25) {
+    result.push(achievements["i_am_a_gamer"]);
+  }
+
+  if (calculateLadderPoints(account.data) >= ladderGoal) {
+    result.push(achievements["you_have_so_much"]);
+  }
+
+  return result.reverse();
+};
 
 const getData = async (account: IGNLAccount, start: Moment, end: Moment) => {
   let result: IGNLStatistics = {} as any;
@@ -50,7 +280,7 @@ const getData = async (account: IGNLAccount, start: Moment, end: Moment) => {
     );
 
     // Filter out free wins/loss and bugs
-    seasonActual = all.filter((m) => m.durationInSeconds > 240);
+    seasonActual = all.filter((m) => m.durationInSeconds > 4 * 60);
 
     if (recent === undefined) {
       result = getRaceStatistics(

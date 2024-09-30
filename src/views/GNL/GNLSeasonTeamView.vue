@@ -1,7 +1,13 @@
 <script setup lang="ts">
 import { useTheme } from "vuetify";
 import { computed, onMounted, ref } from "vue";
-import { teamGnlBanner, useGNLStore } from "@/stores/gnl";
+import {
+  calculateAchievementPoints,
+  calculateLadderPoints,
+  calculatePlayerAchievements,
+  teamGnlBanner,
+  useGNLStore,
+} from "@/stores/gnl";
 import ActivityTable from "@/components/ActivityTable.vue";
 import GNLPlayerBanner from "@/components/gnl/GNLPlayerBanner.vue";
 import GNLCoachBanner from "@/components/gnl/GNLCoachBanner.vue";
@@ -32,7 +38,9 @@ const points = computed(() => {
       const d = p.data ?? {};
       return {
         battleTag: p.battleTag,
-        points: (d.wins ?? 0) * 3 + (d.loss ?? 0),
+        points:
+          calculateLadderPoints(d) +
+          calculateAchievementPoints(calculatePlayerAchievements(p)),
       };
     });
   } catch {
@@ -49,7 +57,13 @@ const players = computed(() => {
     return current.value.players
       .map((p: IGNLAccount) => {
         const d = p.data ?? {};
-        return { battleTag: p.battleTag, points: d.wins * 3 + d.loss, data: d };
+        return {
+          battleTag: p.battleTag,
+          points:
+            calculateLadderPoints(d) +
+            calculateAchievementPoints(calculatePlayerAchievements(p)),
+          data: d,
+        };
       })
       .sort(
         (a: IGNLAccount, b: IGNLAccount) => (b.points ?? 0) - (a.points ?? 0),

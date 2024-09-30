@@ -1,7 +1,13 @@
 <script setup lang="ts">
 import { useTheme } from "vuetify";
 import { computed, onMounted } from "vue";
-import { teamGnlBanner, useGNLStore } from "@/stores/gnl";
+import {
+  calculateAchievementPoints,
+  calculateLadderPoints,
+  calculatePlayerAchievements,
+  teamGnlBanner,
+  useGNLStore,
+} from "@/stores/gnl";
 import { Race } from "@/stores/races";
 
 const theme = useTheme();
@@ -942,7 +948,11 @@ const points = computed(() => {
     return (
       t.players?.reduce((s: number, p: any) => {
         const d = p.data;
-        return s + ((d?.wins ?? 0) * 3 + (d?.loss ?? 0));
+        return (
+          s +
+          calculateLadderPoints(d) +
+          calculateAchievementPoints(calculatePlayerAchievements(p))
+        );
       }, 0) ?? 0
     );
   });
