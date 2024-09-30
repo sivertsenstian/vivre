@@ -52,6 +52,10 @@ const teamPoints = computed(() => {
   return points.value.reduce((s: number, p: any) => (s += p?.points ?? 0), 0);
 });
 
+const teamMatches = computed(() => {
+  return current.value.players.reduce((r, p) => r + (p.data?.total ?? 0), 0);
+});
+
 const players = computed(() => {
   try {
     return current.value.players
@@ -231,12 +235,26 @@ onMounted(() => {
           </v-col>
           <v-col cols="12" md="4">
             <v-row>
-              <v-col cols="12">
-                <div class="text-h5">
+              <v-col cols="12" md="6" class="text-center">
+                <div class="text-h5 text-no-wrap">
                   Team Points:
                   <span class="font-weight-bold" style="color: goldenrod">
                     <span style="vertical-align: middle">{{ teamPoints }}</span>
                     <v-icon size="x-small" class="ml-1" icon="mdi-medal"
+                  /></span>
+                </div>
+              </v-col>
+              <v-col cols="12" md="6" class="text-center">
+                <div class="text-h5 text-no-wrap">
+                  Matches:
+                  <span class="font-weight-bold" style="color: goldenrod">
+                    <span style="vertical-align: middle">{{
+                      teamMatches
+                    }}</span>
+                    <v-icon
+                      size="x-small"
+                      class="ml-1"
+                      icon="mdi-shield-sword-outline"
                   /></span>
                 </div>
               </v-col>
@@ -276,7 +294,7 @@ onMounted(() => {
             </v-row>
           </v-col>
           <v-col cols="12" md="4">
-            <div class="text-h5">Team Ladder Activity</div>
+            <div class="text-h5">Ladder Activity</div>
             <ActivityTable :matches="matches" :dark="isDark" />
           </v-col>
         </v-row>
