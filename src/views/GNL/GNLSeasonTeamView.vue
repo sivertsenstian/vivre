@@ -34,7 +34,10 @@ const teamPoints = computed(() => {
 });
 
 const teamMatches = computed(() => {
-  return current.value.players.reduce((r, p) => r + (p.data?.total ?? 0), 0);
+  return current.value.players.reduce(
+    (r: number, p: IGNLAccount) => r + (p.data?.total ?? 0),
+    0,
+  );
 });
 
 const players = computed(() => {

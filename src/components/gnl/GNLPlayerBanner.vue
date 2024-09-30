@@ -255,7 +255,7 @@ const avg = computed(() =>
           <ul style="list-style-type: none">
             <li
               class="mb-1"
-              v-for="achievement in _take(player.achievements, 7)">
+              v-for="achievement in _take<any>(player.achievements, 7)">
               <v-tooltip
                 :text="`${achievement.description} // ${achievement.points} Additional Points!`"
                 content-class="custom-tooltip"
@@ -284,7 +284,7 @@ const avg = computed(() =>
           <ul style="list-style-type: none">
             <li
               class="mb-1"
-              v-for="achievement in _skip(player.achievements, 7)">
+              v-for="achievement in _skip<any>(player.achievements, 7)">
               <v-tooltip
                 :text="`${achievement.description} // ${achievement.points} Additional Points!`"
                 content-class="custom-tooltip"

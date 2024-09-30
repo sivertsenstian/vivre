@@ -138,8 +138,8 @@ export const calculatePlayerAchievements = (account: IGNLAccount): any[] => {
   const result = [];
 
   const matches = account.data?.matches ?? [];
-  const wins = matches.filter((m) => getwins(account.battleTag, m));
-  const losses = matches.filter((m) => getloss(account.battleTag, m));
+  const wins = matches.filter((m: any) => getwins(account.battleTag, m));
+  const losses = matches.filter((m: any) => getloss(account.battleTag, m));
   const performance = account.data?.performance ?? [];
 
   // Number of wins/loss
@@ -172,37 +172,39 @@ export const calculatePlayerAchievements = (account: IGNLAccount): any[] => {
   }
 
   // Time based
-  const shortestWin = wins.reduce((r, m) => {
+  const shortestWin = wins.reduce((r: number, m: any) => {
     return r > m.durationInSeconds ? m.durationInSeconds : r;
   }, 0);
-  const longestWin = wins.reduce((r, m) => {
+  const longestWin = wins.reduce((r: number, m: any) => {
     return r < m.durationInSeconds ? m.durationInSeconds : r;
   }, 0);
-  const longestLoss = losses.reduce((r, m) => {
+  const longestLoss = losses.reduce((r: number, m: any) => {
     return r < m.durationInSeconds ? m.durationInSeconds : r;
   }, 0);
 
   // lag based
-  const laggiestWin = wins.reduce((r, m) => {
+  const laggiestWin = wins.reduce((r: number, m: any) => {
     const ping = m.serverInfo.playerServerInfos.find(
-      (p) => p.battleTag.toLowerCase() === account.battleTag.toLowerCase(),
+      (p: any) => p.battleTag.toLowerCase() === account.battleTag.toLowerCase(),
     ).averagePing;
     return r < ping ? ping : r;
   }, 0);
-  const lowLatencyWin = losses.reduce((r, m) => {
+  const lowLatencyWin = losses.reduce((r: number, m: any) => {
     const ping = m.serverInfo.playerServerInfos.find(
-      (p) => p.battleTag.toLowerCase() === account.battleTag.toLowerCase(),
+      (p: any) => p.battleTag.toLowerCase() === account.battleTag.toLowerCase(),
     ).averagePing;
     return r > ping ? ping : r;
   }, 0);
 
   // mmr based
   const gp = getplayer(account.battleTag);
-  const matchesPerDay = _groupBy(matches, (m) => moment(m.endTime).dayOfYear());
-  const gain = _map(matchesPerDay, (v) =>
-    v.reduce((r, s) => r + gp(s).players[0].mmrGain, 0),
+  const matchesPerDay = _groupBy(matches, (m: any) =>
+    moment(m.endTime).dayOfYear(),
   );
-  const grindCounter = _map(matchesPerDay, (v) => v.length);
+  const gain = _map(matchesPerDay, (v: any[]) =>
+    v.reduce((r: number, s: any) => r + gp(s).players[0].mmrGain, 0),
+  );
+  const grindCounter = _map(matchesPerDay, (v: any[]) => v.length);
 
   const mmrGainInADay = Math.max(...gain, 0);
   const mmrLossInADay = Math.min(...gain, 0);
