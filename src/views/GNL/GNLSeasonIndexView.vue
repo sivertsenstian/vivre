@@ -1142,7 +1142,7 @@ onMounted(() => {
             cols="12"
             class="text-center text-h6 text-uppercase d-flex align-center"
             ><span class="text-h4 text-green-accent-3 ml-auto mr-2">{{
-              games.reduce((r, s) => r + s, 0)
+              games.reduce((r: number, s: number) => r + s, 0)
             }}</span>
             <span class="mr-auto">GNL Ladder Games Played So Far!</span></v-col
           ></v-row
