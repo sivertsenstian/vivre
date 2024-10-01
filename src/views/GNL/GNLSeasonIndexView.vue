@@ -1136,6 +1136,18 @@ onMounted(() => {
             <v-divider />
           </v-col>
         </v-row>
+
+        <v-row
+          ><v-col
+            cols="12"
+            class="text-center text-h6 text-uppercase d-flex align-center"
+            ><span class="text-h4 text-green-accent-3 ml-auto mr-2">{{
+              games.reduce((r, s) => r + s, 0)
+            }}</span>
+            <span class="mr-auto">GNL Ladder Games Played So Far!</span></v-col
+          ></v-row
+        >
+
         <v-row>
           <v-col cols="12" class="text-center">
             <div class="text-md-h3 text-h5">
@@ -1156,7 +1168,6 @@ onMounted(() => {
             </section>
           </v-col>
         </v-row>
-
         <v-row>
           <v-col cols="12" class="d-flex align-center">
             <v-icon icon="mdi-run" size="x-large" />
