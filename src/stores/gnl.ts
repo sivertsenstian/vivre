@@ -28,6 +28,7 @@ import _isNil from "lodash/isNil";
 import _groupBy from "lodash/groupBy";
 import _map from "lodash/map";
 import _last from "lodash/last";
+import _sortBy from "lodash/sortBy";
 
 const gnlBanners: { [key: string]: string } = {
   ["luckystrike"]: gnl_team_luckystrike,
@@ -41,12 +42,20 @@ const gnlBanners: { [key: string]: string } = {
 export const ladderGoal = 500;
 
 const achievements = {
-  // 100
+  // 500
   you_have_so_much: {
-    points: 100,
+    points: 500,
     icon: "mdi-cash-100",
     description:
       "Because you have a lot, you should have more! - Reach this seasons ladder goal!",
+  },
+
+  // 100
+  might_cannot_be_matched: {
+    points: 100,
+    icon: "mdi-bug",
+    description:
+      "My Might Cannot Be Matched - Play at least 50 games in a single day",
   },
 
   // 50
@@ -259,6 +268,10 @@ export const calculatePlayerAchievements = (account: IGNLAccount): any[] => {
     result.push(achievements["i_am_a_gamer"]);
   }
 
+  if (maxMatchesPerDay >= 50) {
+    result.push(achievements["might_cannot_be_matched"]);
+  }
+
   if (calculateLadderPoints(account.data) >= ladderGoal) {
     result.push(achievements["you_have_so_much"]);
   }
@@ -268,10 +281,9 @@ export const calculatePlayerAchievements = (account: IGNLAccount): any[] => {
 
 const getData = async (account: IGNLAccount, start: Moment, end: Moment) => {
   let result: IGNLStatistics = {} as any;
-  let seasonActual = [];
 
   try {
-    const recent: any = _first(account.data?.matches);
+    const recent: any = _last(_sortBy(account.data?.matches, "endTime"));
     const actualStart = _isNil(recent) ? start : moment(recent.endTime);
 
     const all = await getSeasonGamesBetween(
@@ -282,7 +294,7 @@ const getData = async (account: IGNLAccount, start: Moment, end: Moment) => {
     );
 
     // Filter out free wins/loss and bugs
-    seasonActual = all.filter((m) => m.durationInSeconds > 4 * 60);
+    const seasonActual = all.filter((m) => m.durationInSeconds > 4 * 60);
 
     if (recent === undefined) {
       result = getRaceStatistics(
