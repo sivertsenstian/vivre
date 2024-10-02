@@ -146,7 +146,7 @@ export const calculateAchievementPoints = (achievements: any[]) => {
 export const calculatePlayerAchievements = (account: IGNLAccount): any[] => {
   const result = [];
 
-  const matches = account.data?.matches ?? [];
+  const matches = _sortBy(account.data?.matches ?? [], "endTime");
   const wins = matches.filter((m: any) => getwins(account.battleTag, m));
   const losses = matches.filter((m: any) => getloss(account.battleTag, m));
   const performance = account.data?.performance ?? [];
@@ -157,25 +157,24 @@ export const calculatePlayerAchievements = (account: IGNLAccount): any[] => {
   let w = 0;
   let l = 0;
   for (let i = 0; i < performance.length; i++) {
-    if (i > 0) {
-      if (performance[i]) {
-        w++;
-      } else {
-        l++;
-      }
+    if (performance[i]) {
+      w++;
+    } else {
+      l++;
+    }
 
+    if (i > 0) {
       consecutiveWins = Math.max(consecutiveWins, w);
       consecutiveLoss = Math.max(consecutiveLoss, l);
 
       if (performance[i] !== performance[i - 1]) {
         w = 0;
         l = 0;
-      }
-    } else {
-      if (performance[i]) {
-        w++;
-      } else {
-        l++;
+        if (performance[i]) {
+          w++;
+        } else {
+          l++;
+        }
       }
     }
   }

@@ -8,6 +8,7 @@ import _groupBy from "lodash/groupBy";
 import axios from "axios";
 import moment from "moment";
 import type { Moment } from "moment";
+import _sortBy from "lodash/sortBy";
 
 export const getPercentage = (data: any, race: Race) => {
   return _round(
@@ -116,10 +117,8 @@ const getPerformance = (tag: string, matches: any[]) => {
   );
 };
 
-export const getRaceStatistics = (
-  tag: string,
-  matches: any[],
-): IRaceStatistics => {
+export const getRaceStatistics = (tag: string, m: any[]): IRaceStatistics => {
+  const matches = _sortBy(m, "endTime").reverse();
   const wins = matches.filter((m) => getwins(tag, m));
   const loss = matches.filter((m) => getloss(tag, m));
   const info = getInfo(tag, matches);
