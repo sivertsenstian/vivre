@@ -93,6 +93,11 @@ const achievements = {
     description:
       "Life Support - Decreased MMR by at least 50 points in one day",
   },
+  speed_demon: {
+    points: 25,
+    icon: "mdi-clock-fast",
+    description: "Speed Demon - Win a game in less than 4 minutes",
+  },
 
   // 10
   double_kill: {
@@ -104,11 +109,6 @@ const achievements = {
     points: 10,
     icon: "mdi-pill-multiple",
     description: "Copium - Lose a game that lasted over 30 minutes",
-  },
-  speed_demon: {
-    points: 10,
-    icon: "mdi-clock-fast",
-    description: "Speed Demon - Win a game in less than 5 minutes",
   },
   lag_king: {
     points: 10,
@@ -182,7 +182,7 @@ export const calculatePlayerAchievements = (account: IGNLAccount): any[] => {
   // Time based
   const shortestWin = wins.reduce((r: number, m: any) => {
     return r > m.durationInSeconds ? m.durationInSeconds : r;
-  }, 0);
+  }, 5 * 60);
   const longestWin = wins.reduce((r: number, m: any) => {
     return r < m.durationInSeconds ? m.durationInSeconds : r;
   }, 0);
@@ -231,7 +231,7 @@ export const calculatePlayerAchievements = (account: IGNLAccount): any[] => {
     result.push(achievements["copium"]);
   }
 
-  if (shortestWin > 0 && shortestWin < 60 * 5) {
+  if (shortestWin > 0 && shortestWin < 60 * 4) {
     result.push(achievements["speed_demon"]);
   }
 
@@ -293,7 +293,7 @@ const getData = async (account: IGNLAccount, start: Moment, end: Moment) => {
     );
 
     // Filter out free wins/loss and bugs
-    const seasonActual = all.filter((m) => m.durationInSeconds > 4 * 60);
+    const seasonActual = all.filter((m) => m.durationInSeconds > 2 * 60);
 
     if (recent === undefined) {
       result = getRaceStatistics(
