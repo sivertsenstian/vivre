@@ -613,9 +613,9 @@ export const creeproutes: any = {
       Tidehunters: {
         img: cr_ud_vs_ud_7,
         games: [
-          "66b9fff60ebc9196a21c8cef",
-          "66b74f0e0ebc9196a2831c84",
-          "66b641130ebc9196a24c8fa7",
+          "66b36b770ebc9196a2b52115",
+          "66abb5ab82a9ebbac52e8392",
+          "66ae021582a9ebbac5ac7b4f",
         ],
       },
       "Twisted Meadows": { img: cr_missing, games: [] },
