@@ -21,14 +21,13 @@ import gnl_team_gnlbears from "@assets/gnl/teams/bears.jpg";
 import gnl_team_luckystrike from "@assets/gnl/teams/luckystrike.jpg";
 import gnl_team_missing from "@/assets/creeproutes/missing.png";
 import _isEmpty from "lodash/isEmpty";
-import _first from "lodash/first";
-import _merge from "lodash/merge";
-import { useStorage } from "@vueuse/core";
 import _isNil from "lodash/isNil";
 import _groupBy from "lodash/groupBy";
 import _map from "lodash/map";
 import _last from "lodash/last";
 import _sortBy from "lodash/sortBy";
+import axios from "axios";
+import { currentUrl } from "@/utilities/api";
 
 const gnlBanners: { [key: string]: string } = {
   ["luckystrike"]: gnl_team_luckystrike,
@@ -315,12 +314,43 @@ const getData = async (account: IGNLAccount, start: Moment, end: Moment) => {
   return result;
 };
 
+const getOngoing = async (tag: string) => {
+  try {
+    const { data: onGoingResponse } = await axios.get(currentUrl(tag));
+    if (!_isNil(onGoingResponse?.id) && onGoingResponse?.gameMode === 1) {
+      const player = onGoingResponse.teams?.find((t: any) =>
+        t.players.some(
+          (p: any) => p.battleTag.toLowerCase() === tag.toLowerCase(),
+        ),
+      )?.players?.[0];
+      const opponent = onGoingResponse.teams?.find((t: any) =>
+        t.players.some(
+          (p: any) => p.battleTag.toLowerCase() != tag.toLowerCase(),
+        ),
+      )?.players?.[0];
+
+      return {
+        id: onGoingResponse.id,
+        start: moment(onGoingResponse.startTime) as any,
+        active: true,
+        player,
+        opponent,
+        map: onGoingResponse.mapName,
+        server: onGoingResponse.serverInfo,
+      };
+    }
+  } catch (error) {
+    return console.log(error);
+  }
+  return undefined;
+};
+
 export const useGNLStore = defineStore("gnl", () => {
   const timer = ref<number>();
 
   const data = ref<any>({} as any);
 
-  // const data = useStorage("wc3/gnl", {} as any);
+  const ongoing = ref<any>({} as any);
 
   const start = ref<Moment>(moment());
   const end = ref<Moment>(moment());
@@ -374,6 +404,11 @@ export const useGNLStore = defineStore("gnl", () => {
       for (let p = 0; p < team.players.length; p++) {
         const player = team.players[p];
         player.data = await getData(player, dates.value.start, dates.value.end);
+        if (current.value !== undefined) {
+          getOngoing(player.battleTag).then((r: any) => (player.ongoing = r));
+        } else {
+          player.ongoing = undefined;
+        }
         player.points = calculateLadderPoints(player.data);
         player.achievements = calculatePlayerAchievements(player);
         player.achievementPoints = calculateAchievementPoints(
