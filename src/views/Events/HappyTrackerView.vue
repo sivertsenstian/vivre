@@ -23,7 +23,7 @@ import _round from "lodash/round";
 import ConfettiExplosion from "vue-confetti-explosion";
 
 const events = useEventsStore();
-const start = moment("10.07.2024", "DD.MM.YYYY").startOf("day");
+const start = moment("07.10.2024", "DD.MM.YYYY").startOf("day");
 const today = moment().add(1, "day").startOf("day");
 const days = today.diff(start, "days");
 
@@ -297,14 +297,12 @@ const isActive = computed(() => {
       v-model="isActive"
       close-on-content-click
       v-if="events.loaded >= 3"
-      style="z-index: 99999; font-family: Britannic !important"
-    >
+      style="z-index: 99999; font-family: Britannic !important">
       <v-card
         :elevation="20"
         style="border: 3px solid goldenrod"
         rounded="xl"
-        class="pa-5 text-center"
-      >
+        class="pa-5 text-center">
         <img
           :src="confetti"
           width="100%"
@@ -316,12 +314,10 @@ const isActive = computed(() => {
             object-fit: cover;
             object-position: center center;
             opacity: 0.7;
-          "
-        />
+          " />
         <v-card-title
           class="text-h2"
-          style="color: goldenrod; font-family: Britannic"
-        >
+          style="color: goldenrod; font-family: Britannic">
           He did it!
           <hr style="color: goldenrod" class="mt-2" />
         </v-card-title>
@@ -330,15 +326,13 @@ const isActive = computed(() => {
             :duration="2000"
             :particelCount="400"
             :stageHeight="1000"
-            v-if="explode"
-          />
+            v-if="explode" />
           <ConfettiExplosion
             :duration="2000"
             :particelCount="400"
             :stageHeight="1000"
             v-if="!explode"
-            style="float: right"
-          />
+            style="float: right" />
           <img :src="trophy" width="300px" class="rounded-xl" />
           <div
             style="
@@ -348,13 +342,11 @@ const isActive = computed(() => {
               left: 20px;
               bottom: 135px;
               scale: 0.7;
-            "
-          >
+            ">
             <Banner
               :race="events.data[events.highest].race"
               :current="scores.highest.currentMmr"
-              :label="scores.highest.battleTag"
-            />
+              :label="scores.highest.battleTag" />
           </div>
         </v-card-item>
         <span
@@ -386,8 +378,7 @@ const isActive = computed(() => {
               object-fit: cover;
               object-position: center center;
               opacity: 0.8;
-            "
-          >
+            ">
             <source :src="happa1" type="video/mp4" />
           </video>
           <video
@@ -401,8 +392,7 @@ const isActive = computed(() => {
               object-fit: cover;
               object-position: center center;
               opacity: 0.8;
-            "
-          >
+            ">
             <source :src="happa2" type="video/mp4" />
           </video>
           <video
@@ -416,8 +406,7 @@ const isActive = computed(() => {
               object-fit: cover;
               object-position: center center;
               opacity: 0.8;
-            "
-          >
+            ">
             <source :src="happa3" type="video/mp4" />
           </video>
         </v-card-item>
@@ -445,8 +434,7 @@ const isActive = computed(() => {
                     :rotate="360"
                     :size="25"
                     :width="12.5"
-                    :color="events.ongoing.active ? 'green' : 'gray'"
-                  >
+                    :color="events.ongoing.active ? 'green' : 'gray'">
                   </v-progress-circular>
                   <span
                     v-if="!events.ongoing.active"
@@ -462,8 +450,7 @@ const isActive = computed(() => {
                     <ConfettiExplosion
                       :particelCount="300"
                       :stageWidth="2000"
-                      :stageHeight="2000"
-                    />
+                      :stageHeight="2000" />
                   </span>
                 </div>
               </v-col>
@@ -486,19 +473,14 @@ const isActive = computed(() => {
                           >
                           <span
                             class="text-subtitle-1"
-                            style="vertical-align: middle"
-                          >
-                            Games played since ban was lifted on
+                            style="vertical-align: middle">
+                            Games played since season started on
                             {{ start.format("dddd, MMMM Do") }}
                           </span>
                         </section>
                       </v-col>
-                      <v-col cols="12" md="6">
-                        <div class="text-subtitle-2">Before Ban</div>
-                        <ResultChart percentage :result="events.games.before" />
-                      </v-col>
-                      <v-col cols="12" md="6">
-                        <div class="text-subtitle-2">After Ban</div>
+                      <v-col cols="12">
+                        <div class="text-subtitle-2">Ladder Results</div>
                         <ResultChart percentage :result="events.games.after" />
                       </v-col>
                     </v-row>
@@ -508,12 +490,10 @@ const isActive = computed(() => {
                       <v-card
                         class="ml-md-auto mr-md-2"
                         width="150px"
-                        weight="120px"
-                      >
+                        weight="120px">
                         <v-card-text>
                           <p
-                            class="text-md-h2 text-h5 text--primary text-center font-weight-regular text-no-wrap"
-                          >
+                            class="text-md-h2 text-h5 text--primary text-center font-weight-regular text-no-wrap">
                             {{ dayz % 365 }}
                           </p>
                         </v-card-text>
@@ -526,8 +506,7 @@ const isActive = computed(() => {
                       <v-card class="mx-md-2" width="150px" weight="120px">
                         <v-card-text>
                           <p
-                            class="text-md-h2 text-h5 text--primary text-center font-weight-regular text-no-wrap"
-                          >
+                            class="text-md-h2 text-h5 text--primary text-center font-weight-regular text-no-wrap">
                             {{ hours % 24 }}
                           </p>
                         </v-card-text>
@@ -540,8 +519,7 @@ const isActive = computed(() => {
                       <v-card class="mx-md-2" width="150px" weight="120px">
                         <v-card-text>
                           <p
-                            class="text-md-h2 text-h5 text--primary text-center font-weight-regular text-no-wrap"
-                          >
+                            class="text-md-h2 text-h5 text--primary text-center font-weight-regular text-no-wrap">
                             {{ minutes % 60 }}
                           </p>
                         </v-card-text>
@@ -554,12 +532,10 @@ const isActive = computed(() => {
                       <v-card
                         class="mr-md-auto ml-md-2"
                         width="150px"
-                        weight="120px"
-                      >
+                        weight="120px">
                         <v-card-text>
                           <p
-                            class="text-md-h2 text-h5 text--primary text-center font-weight-regular text-no-wrap"
-                          >
+                            class="text-md-h2 text-h5 text--primary text-center font-weight-regular text-no-wrap">
                             {{ seconds % 60 }}
                           </p>
                         </v-card-text>
@@ -579,26 +555,22 @@ const isActive = computed(() => {
                       fixed-tabs
                       v-model="recentTab"
                       slider-color="#daa520"
-                      class="mb-2"
-                    >
+                      class="mb-2">
                       <v-tab
                         class="text-none"
                         text="Recent games"
-                        value="recent"
-                      ></v-tab>
+                        value="recent"></v-tab>
                       <v-tab
                         class="text-none"
                         text="MMR Records"
-                        value="record"
-                      ></v-tab>
+                        value="record"></v-tab>
                     </v-tabs>
 
                     <v-window v-model="recentTab">
                       <v-window-item value="recent">
                         <RecentGames
                           :matches="_take(events.matches, 5)"
-                          :accounts="events.accounts"
-                        />
+                          :accounts="events.accounts" />
                       </v-window-item>
                       <v-window-item value="record">
                         <RecordGames :matches="_take(records, 5)" />
@@ -626,8 +598,7 @@ const isActive = computed(() => {
                               size="x-small"
                               color="orange"
                               icon="mdi-link"
-                              variant="text"
-                            />
+                              variant="text" />
                           </v-col>
                           <v-col cols="12">
                             <span
@@ -639,12 +610,10 @@ const isActive = computed(() => {
                               class="mx-2"
                               style="vertical-align: middle"
                               width="60px"
-                              :src="raceIcon[events.ongoing.opponent.race]"
-                            />
+                              :src="raceIcon[events.ongoing.opponent.race]" />
                             <span
                               class="text-h5"
-                              style="vertical-align: text-top"
-                            >
+                              style="vertical-align: text-top">
                               {{ events.ongoing.opponent?.name }} ({{
                                 events.ongoing.opponent?.oldMmr
                               }})</span
@@ -657,20 +626,17 @@ const isActive = computed(() => {
                             v-if="
                               events.ongoing.history.expected.win ||
                               events.ongoing.history.expected.loss
-                            "
-                          >
+                            ">
                             <span class="text-subtitle-2"
                               >Predicted MMR Change:
                               <span
                                 v-if="events.ongoing.history.expected.win"
-                                class="text-green-lighten-2 mr-1"
-                              >
+                                class="text-green-lighten-2 mr-1">
                                 +{{ events.ongoing.history.expected.win }}</span
                               >/
                               <span
                                 v-if="events.ongoing.history.expected.loss"
-                                class="text-red-lighten-2"
-                              >
+                                class="text-red-lighten-2">
                                 {{ events.ongoing.history.expected.loss }}</span
                               >
                             </span>
@@ -690,16 +656,15 @@ const isActive = computed(() => {
                               First Game This Season vs Opponent!
                             </span>
                             <template
-                              v-for="(result, i) in events.ongoing.history.last"
-                            >
+                              v-for="(result, i) in events.ongoing.history
+                                .last">
                               <v-chip
                                 v-if="result"
                                 size="x-small"
                                 variant="tonal"
                                 color="green"
                                 label
-                                class="rounded-0"
-                              >
+                                class="rounded-0">
                                 <v-icon icon="mdi-shield-sword-outline" />
                               </v-chip>
                               <v-chip
@@ -708,20 +673,17 @@ const isActive = computed(() => {
                                 variant="tonal"
                                 color="red"
                                 label
-                                class="rounded-0"
-                              >
+                                class="rounded-0">
                                 <v-icon icon="mdi-shield-sword-outline" />
                               </v-chip>
                             </template>
                           </div>
                           <div
-                            class="text-caption text-green font-weight-bold mt-3 text-right"
-                          >
+                            class="text-caption text-green font-weight-bold mt-3 text-right">
                             Gained {{ events.ongoing.history.mmr.gain }} MMR
                           </div>
                           <div
-                            class="text-caption text-red font-weight-bold text-right"
-                          >
+                            class="text-caption text-red font-weight-bold text-right">
                             Lost {{ events.ongoing.history.mmr.loss }} MMR
                           </div>
                         </v-col>
@@ -739,8 +701,7 @@ const isActive = computed(() => {
                             (m: any) => moment(m.endTime).isAfter(start),
                           ) ?? events.matches
                         "
-                        :dark="isDark"
-                      />
+                        :dark="isDark" />
                     </v-col>
                   </v-col>
                 </v-row>
@@ -752,13 +713,11 @@ const isActive = computed(() => {
                   :race="events.data[account].race"
                   :current="events.data[account].season.summary.mmr.current"
                   :label="account"
-                  :highlight="account === events.highest"
-                />
+                  :highlight="account === events.highest" />
                 <v-row
                   v-if="events.data[account].day.total"
                   class="text-center mt-1"
-                  style="position: relative"
-                >
+                  style="position: relative">
                   <v-col cols="12" class="py-0">
                     <span
                       >{{ events.data[account].day.total }} games played
@@ -778,8 +737,7 @@ const isActive = computed(() => {
                         :class="{
                           'text-green': events.data[account].day.mmr.diff > 0,
                           'text-red': events.data[account].day.mmr.diff < 0,
-                        }"
-                      >
+                        }">
                         <span v-if="events.data[account].day.mmr.diff > 0"
                           >+</span
                         >
@@ -796,8 +754,7 @@ const isActive = computed(() => {
                 cols="12"
                 md="4"
                 style="height: 300px"
-                v-for="account in events.accounts"
-              >
+                v-for="account in events.accounts">
                 <Bar
                   :data="{
                     labels: _range(0, days)
@@ -843,6 +800,7 @@ const isActive = computed(() => {
                         label: 'won',
                         yAxisID: 'gamesAxis',
                         backgroundColor: '#66BB6A',
+                        maxBarThickness: 15,
                         data: events.data[account].season[Race.Undead].matches
                           .filter((m: any) => moment(m.endTime).isAfter(start))
                           .filter((m: any) => getwins(account, m))
@@ -871,6 +829,7 @@ const isActive = computed(() => {
                         label: 'lost',
                         yAxisID: 'gamesAxis',
                         backgroundColor: '#EF5350',
+                        maxBarThickness: 15,
                         data: events.data[account].season[Race.Undead].matches
                           .filter((m: any) => moment(m.endTime).isAfter(start))
                           .filter((m: any) => getloss(account, m))
@@ -930,9 +889,8 @@ const isActive = computed(() => {
                       },
                     ],
                   }"
-                  :options="options"
-                />
-                <span class="unbanned">UNBANNED</span>
+                  :options="options" />
+                <span class="unbanned">SEASON START</span>
               </v-col>
             </v-row>
 
@@ -948,8 +906,7 @@ const isActive = computed(() => {
                     size="x-small"
                     color="orange"
                     icon="mdi-link"
-                    variant="text"
-                  />
+                    variant="text" />
                 </div>
                 <div class="title mb-2">
                   {{ moment(win.endTime).format("dddd, MMMM Do, HH:mm:ss") }}
@@ -957,15 +914,13 @@ const isActive = computed(() => {
                 <img
                   style="vertical-align: middle"
                   width="50px"
-                  :src="raceIcon[win.teams[1].players[0].race]"
-                />
+                  :src="raceIcon[win.teams[1].players[0].race]" />
                 <div class="title">
                   <a
                     :href="`https://www.w3champions.com/player/${encodeURIComponent(
                       win.teams[1].players[0].battleTag,
                     )}`"
-                    target="_blank"
-                  >
+                    target="_blank">
                     <strong> {{ win.teams[1].players[0].battleTag }}</strong>
                   </a>
                 </div>
@@ -988,8 +943,7 @@ const isActive = computed(() => {
                     size="x-small"
                     color="orange"
                     icon="mdi-link"
-                    variant="text"
-                  />
+                    variant="text" />
                 </div>
                 <div class="title mb-2">
                   {{ moment(loss.endTime).format("dddd, MMMM Do, HH:mm:ss") }}
@@ -997,15 +951,13 @@ const isActive = computed(() => {
                 <img
                   style="vertical-align: middle"
                   width="50px"
-                  :src="raceIcon[loss.teams[0].players[0].race]"
-                />
+                  :src="raceIcon[loss.teams[0].players[0].race]" />
                 <div class="title">
                   <a
                     :href="`https://www.w3champions.com/player/${encodeURIComponent(
                       loss.teams[0].players[0].battleTag,
                     )}`"
-                    target="_blank"
-                  >
+                    target="_blank">
                     <strong> {{ loss.teams[0].players[0].battleTag }}</strong>
                   </a>
                 </div>
@@ -1025,15 +977,13 @@ const isActive = computed(() => {
                 <img
                   style="vertical-align: middle"
                   width="50px"
-                  :src="raceIcon[donater.games[0].teams[1].players[0].race]"
-                />
+                  :src="raceIcon[donater.games[0].teams[1].players[0].race]" />
                 <div class="title">
                   <a
                     :href="`https://www.w3champions.com/player/${encodeURIComponent(
                       donater.opponent,
                     )}`"
-                    target="_blank"
-                  >
+                    target="_blank">
                     <strong> {{ donater.opponent }}</strong>
                   </a>
                 </div>
@@ -1051,15 +1001,13 @@ const isActive = computed(() => {
                 <img
                   style="vertical-align: middle"
                   width="50px"
-                  :src="raceIcon[stealer.games[0].teams[0].players[0].race]"
-                />
+                  :src="raceIcon[stealer.games[0].teams[0].players[0].race]" />
                 <div class="title">
                   <a
                     :href="`https://www.w3champions.com/player/${encodeURIComponent(
                       stealer.opponent,
                     )}`"
-                    target="_blank"
-                  >
+                    target="_blank">
                     <strong> {{ stealer.opponent }}</strong>
                   </a>
                 </div>
@@ -1081,8 +1029,7 @@ const isActive = computed(() => {
                         <img
                           style="vertical-align: middle"
                           width="40px"
-                          :src="raceIcon[game.teams[0].players[0].race]"
-                        />
+                          :src="raceIcon[game.teams[0].players[0].race]" />
                       </template>
 
                       <v-list-item-title class="ml-2">
@@ -1090,8 +1037,7 @@ const isActive = computed(() => {
                           :href="`https://www.w3champions.com/player/${encodeURIComponent(
                             game.teams[0].players[0].battleTag,
                           )}`"
-                          target="_blank"
-                        >
+                          target="_blank">
                           <strong>
                             {{ game.teams[0].players[0].battleTag }}
                           </strong>
@@ -1136,8 +1082,7 @@ const isActive = computed(() => {
                           size="x-small"
                           color="orange"
                           icon="mdi-link"
-                          variant="text"
-                        />
+                          variant="text" />
                       </v-list-item-title>
                     </v-list-item>
                   </v-list>
@@ -1148,18 +1093,15 @@ const isActive = computed(() => {
                   fixed-tabs
                   v-model="raceTab"
                   slider-color="#daa520"
-                  class="mb-2"
-                >
+                  class="mb-2">
                   <v-tab
                     class="text-none"
                     text="Race stats vs everyone"
-                    value="all"
-                  ></v-tab>
+                    value="all"></v-tab>
                   <v-tab
                     class="text-none"
                     text="vs. pro players (>2500 MMR)"
-                    value="pro"
-                  ></v-tab>
+                    value="pro"></v-tab>
                 </v-tabs>
 
                 <v-window v-model="raceTab">
@@ -1168,32 +1110,27 @@ const isActive = computed(() => {
                       <v-list-item :prepend-avatar="raceIcon[Race.Human]">
                         <ResultChart
                           percentage
-                          :result="events.race[Race.Human]"
-                        />
+                          :result="events.race[Race.Human]" />
                       </v-list-item>
                       <v-list-item :prepend-avatar="raceIcon[Race.Orc]">
                         <ResultChart
                           percentage
-                          :result="events.race[Race.Orc]"
-                        />
+                          :result="events.race[Race.Orc]" />
                       </v-list-item>
                       <v-list-item :prepend-avatar="raceIcon[Race.NightElf]">
                         <ResultChart
                           percentage
-                          :result="events.race[Race.NightElf]"
-                        />
+                          :result="events.race[Race.NightElf]" />
                       </v-list-item>
                       <v-list-item :prepend-avatar="raceIcon[Race.Undead]">
                         <ResultChart
                           percentage
-                          :result="events.race[Race.Undead]"
-                        />
+                          :result="events.race[Race.Undead]" />
                       </v-list-item>
                       <v-list-item :prepend-avatar="raceIcon[Race.Random]">
                         <ResultChart
                           percentage
-                          :result="events.race[Race.Random]"
-                        />
+                          :result="events.race[Race.Random]" />
                       </v-list-item>
                     </v-list>
                   </v-window-item>
@@ -1203,32 +1140,27 @@ const isActive = computed(() => {
                       <v-list-item :prepend-avatar="raceIcon[Race.Human]">
                         <ResultChart
                           percentage
-                          :result="events.race.pro[Race.Human]"
-                        />
+                          :result="events.race.pro[Race.Human]" />
                       </v-list-item>
                       <v-list-item :prepend-avatar="raceIcon[Race.Orc]">
                         <ResultChart
                           percentage
-                          :result="events.race.pro[Race.Orc]"
-                        />
+                          :result="events.race.pro[Race.Orc]" />
                       </v-list-item>
                       <v-list-item :prepend-avatar="raceIcon[Race.NightElf]">
                         <ResultChart
                           percentage
-                          :result="events.race.pro[Race.NightElf]"
-                        />
+                          :result="events.race.pro[Race.NightElf]" />
                       </v-list-item>
                       <v-list-item :prepend-avatar="raceIcon[Race.Undead]">
                         <ResultChart
                           percentage
-                          :result="events.race.pro[Race.Undead]"
-                        />
+                          :result="events.race.pro[Race.Undead]" />
                       </v-list-item>
                       <v-list-item :prepend-avatar="raceIcon[Race.Random]">
                         <ResultChart
                           percentage
-                          :result="events.race.pro[Race.Random]"
-                        />
+                          :result="events.race.pro[Race.Random]" />
                       </v-list-item>
                     </v-list>
                   </v-window-item>
@@ -1255,8 +1187,7 @@ const isActive = computed(() => {
                         class="ml-1"
                         height="25px"
                         style="vertical-align: middle; cursor: pointer"
-                        :src="isDark ? w3ciconDark : w3cicon"
-                      />
+                        :src="isDark ? w3ciconDark : w3cicon" />
                     </span>
                   </v-col>
                   <v-col cols="12">
@@ -1278,8 +1209,7 @@ const isActive = computed(() => {
                   "
                   class="ml-3 makrura"
                   style="vertical-align: middle"
-                  :src="makrura"
-                />
+                  :src="makrura" />
               </v-col>
             </v-row>
           </v-sheet>
@@ -1316,7 +1246,7 @@ const isActive = computed(() => {
 
 .unbanned {
   font-weight: bolder;
-  color: red;
+  color: forestgreen;
   position: relative;
   height: 0;
   left: 70px;

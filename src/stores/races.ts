@@ -102,7 +102,6 @@ import cr_hu_vs_hu_6 from "@/assets/creeproutes/human/human/SG.jpg";
 import cr_hu_vs_hu_7 from "@/assets/creeproutes/human/human/TH.jpg";
 import cr_hu_vs_hu_8 from "@/assets/creeproutes/human/human/ST.jpg";
 import cr_hu_vs_hu_9 from "@/assets/creeproutes/human/human/LT.jpg";
-import cr_hu_vs_hu_10 from "@/assets/creeproutes/human/human/TM.jpg";
 
 import cr_hu_vs_ne_1 from "@/assets/creeproutes/human/nightelf/AL.jpg";
 import cr_hu_vs_ne_2 from "@/assets/creeproutes/human/nightelf/CH.jpg";
@@ -201,29 +200,26 @@ export const creeproutes: any = {
     [Race.Random]: {
       "Autumn Leaves v2": { img: cr_hu_vs_r_1, games: [] },
       "Echo Isles v2": { img: cr_missing, games: [] },
-      "Gloom Stalker": { img: cr_missing, games: [] },
       "Concealed Hill": { img: cr_hu_vs_r_2, games: [] },
       Hammerfall: { img: cr_hu_vs_r_3, games: [] },
       "Last Refuge": { img: cr_hu_vs_r_4, games: [] },
       "Northern Isles": { img: cr_hu_vs_r_5, games: [] },
       "Shallow Grave": { img: cr_hu_vs_r_6, games: [] },
       Springtime: { img: cr_hu_vs_r_8, games: [] },
-      "Shattered Exile v2": { img: cr_missing, games: [] },
       "Lost Temple LV": { img: cr_hu_vs_r_9, games: [] },
       Tidehunters: { img: cr_hu_vs_r_7, games: [] },
-      "Twisted Meadows": { img: cr_missing, games: [] },
+      "War Hail": { img: cr_missing, games: [] },
+      "Secret Valley": { img: cr_missing, games: [] },
     },
     [Race.Human]: {
       "Autumn Leaves v2": { img: cr_hu_vs_hu_1, games: [] },
       "Echo Isles v2": { img: cr_missing, games: [] },
-      "Gloom Stalker": { img: cr_missing, games: [] },
       "Concealed Hill": { img: cr_hu_vs_hu_2, games: [] },
       Hammerfall: { img: cr_hu_vs_hu_3, games: [] },
       "Last Refuge": { img: cr_hu_vs_hu_4, games: [] },
       "Northern Isles": { img: cr_hu_vs_hu_5, games: [] },
       "Shallow Grave": { img: cr_hu_vs_hu_6, games: [] },
       Springtime: { img: cr_hu_vs_hu_8, games: ["66e58c470ebc9196a2b19213"] },
-      "Shattered Exile v2": { img: cr_missing, games: [] },
       "Lost Temple LV": {
         img: cr_hu_vs_hu_9,
         games: [
@@ -233,19 +229,12 @@ export const creeproutes: any = {
         ],
       },
       Tidehunters: { img: cr_hu_vs_hu_7, games: [] },
-      "Twisted Meadows": {
-        img: cr_hu_vs_hu_10,
-        games: [
-          "66e2edbf0ebc9196a2085301",
-          "66cc6fcd0ebc9196a26200f2",
-          "66cb2dd70ebc9196a209063e",
-        ],
-      },
+      "War Hail": { img: cr_missing, games: [] },
+      "Secret Valley": { img: cr_missing, games: [] },
     },
     [Race.Orc]: {
       "Autumn Leaves v2": { img: cr_hu_vs_oc_1, games: [] },
       "Echo Isles v2": { img: cr_missing, games: [] },
-      "Gloom Stalker": { img: cr_missing, games: [] },
       "Concealed Hill": { img: cr_hu_vs_oc_2, games: [] },
       Hammerfall: { img: cr_hu_vs_oc_3, games: [] },
       "Last Refuge": { img: cr_hu_vs_oc_4, games: [] },
@@ -255,7 +244,6 @@ export const creeproutes: any = {
         img: cr_hu_vs_oc_8,
         games: ["66c4e2820ebc9196a2a0b5f1", "66b740930ebc9196a27fb261"],
       },
-      "Shattered Exile v2": { img: cr_missing, games: [] },
       "Lost Temple LV": {
         img: cr_hu_vs_oc_9,
         games: [
@@ -265,12 +253,12 @@ export const creeproutes: any = {
         ],
       },
       Tidehunters: { img: cr_hu_vs_oc_7, games: [] },
-      "Twisted Meadows": { img: cr_missing, games: [] },
+      "War Hail": { img: cr_missing, games: [] },
+      "Secret Valley": { img: cr_missing, games: [] },
     },
     [Race.NightElf]: {
       "Autumn Leaves v2": { img: cr_hu_vs_ne_1, games: [] },
       "Echo Isles v2": { img: cr_missing, games: [] },
-      "Gloom Stalker": { img: cr_missing, games: [] },
       "Concealed Hill": { img: cr_hu_vs_ne_2, games: [] },
       Hammerfall: {
         img: cr_hu_vs_ne_3,
@@ -294,7 +282,6 @@ export const creeproutes: any = {
           "66e042810ebc9196a25fc9b0",
         ],
       },
-      "Shattered Exile v2": { img: cr_missing, games: [] },
       "Lost Temple LV": {
         img: cr_hu_vs_ne_9,
         games: ["66a35ba182a9ebbac547e377"],
@@ -303,19 +290,18 @@ export const creeproutes: any = {
         img: cr_hu_vs_ne_7,
         games: ["66c1d0ad0ebc9196a2e7bce5", "66a4b6c282a9ebbac59b06a1"],
       },
-      "Twisted Meadows": { img: cr_missing, games: [] },
+      "War Hail": { img: cr_missing, games: [] },
+      "Secret Valley": { img: cr_missing, games: [] },
     },
     [Race.Undead]: {
       "Autumn Leaves v2": { img: cr_hu_vs_ud_1, games: [] },
       "Echo Isles v2": { img: cr_missing, games: [] },
-      "Gloom Stalker": { img: cr_missing, games: [] },
       "Concealed Hill": { img: cr_hu_vs_ud_2, games: [] },
       Hammerfall: { img: cr_hu_vs_ud_3, games: [] },
       "Last Refuge": { img: cr_hu_vs_ud_4, games: [] },
       "Northern Isles": { img: cr_hu_vs_ud_5, games: [] },
       "Shallow Grave": { img: cr_hu_vs_ud_6, games: [] },
       Springtime: { img: cr_hu_vs_ud_8, games: ["66d85de90ebc9196a23fe29d"] },
-      "Shattered Exile v2": { img: cr_missing, games: [] },
       "Lost Temple LV": {
         img: cr_hu_vs_ud_9,
         games: [
@@ -325,7 +311,8 @@ export const creeproutes: any = {
         ],
       },
       Tidehunters: { img: cr_hu_vs_ud_7, games: [] },
-      "Twisted Meadows": { img: cr_missing, games: [] },
+      "War Hail": { img: cr_missing, games: [] },
+      "Secret Valley": { img: cr_missing, games: [] },
     },
   },
 
@@ -333,17 +320,16 @@ export const creeproutes: any = {
     [Race.Random]: {
       "Autumn Leaves v2": { img: cr_ud_vs_r_1, games: [] },
       "Echo Isles v2": { img: cr_missing, games: [] },
-      "Gloom Stalker": { img: cr_missing, games: [] },
       "Concealed Hill": { img: cr_ud_vs_r_2, games: [] },
       Hammerfall: { img: cr_ud_vs_r_3, games: [] },
       "Last Refuge": { img: cr_ud_vs_r_4, games: [] },
       "Northern Isles": { img: cr_ud_vs_r_5, games: [] },
       "Shallow Grave": { img: cr_ud_vs_r_6, games: [] },
       Springtime: { img: cr_ud_vs_r_8, games: [] },
-      "Shattered Exile v2": { img: cr_missing, games: [] },
       "Lost Temple LV": { img: cr_ud_vs_r_9, games: [] },
       Tidehunters: { img: cr_ud_vs_r_7, games: [] },
-      "Twisted Meadows": { img: cr_missing, games: [] },
+      "War Hail": { img: cr_missing, games: [] },
+      "Secret Valley": { img: cr_missing, games: [] },
     },
     [Race.Human]: {
       "Autumn Leaves v2": {
@@ -355,7 +341,6 @@ export const creeproutes: any = {
         ],
       },
       "Echo Isles v2": { img: cr_missing, games: [] },
-      "Gloom Stalker": { img: cr_missing, games: [] },
       "Concealed Hill": {
         img: cr_ud_vs_hu_2,
         games: [
@@ -400,7 +385,6 @@ export const creeproutes: any = {
         img: cr_ud_vs_hu_8,
         games: ["66bb70ba0ebc9196a26fab32", "66b7383c0ebc9196a27dade8"],
       },
-      "Shattered Exile v2": { img: cr_missing, games: [] },
       "Lost Temple LV": {
         img: cr_ud_vs_hu_9,
         games: [
@@ -417,7 +401,8 @@ export const creeproutes: any = {
           "66b379b90ebc9196a2b8e755",
         ],
       },
-      "Twisted Meadows": { img: cr_missing, games: [] },
+      "War Hail": { img: cr_missing, games: [] },
+      "Secret Valley": { img: cr_missing, games: [] },
     },
     [Race.Orc]: {
       "Autumn Leaves v2": {
@@ -429,7 +414,6 @@ export const creeproutes: any = {
         ],
       },
       "Echo Isles v2": { img: cr_missing, games: [] },
-      "Gloom Stalker": { img: cr_missing, games: [] },
       "Concealed Hill": {
         img: cr_ud_vs_oc_2,
         games: [
@@ -478,7 +462,6 @@ export const creeproutes: any = {
           "66acf5de82a9ebbac57121cb",
         ],
       },
-      "Shattered Exile v2": { img: cr_missing, games: [] },
       "Lost Temple LV": {
         img: cr_ud_vs_oc_9,
         games: [
@@ -495,7 +478,8 @@ export const creeproutes: any = {
           "66b641130ebc9196a24c8fa7",
         ],
       },
-      "Twisted Meadows": { img: cr_missing, games: [] },
+      "War Hail": { img: cr_missing, games: [] },
+      "Secret Valley": { img: cr_missing, games: [] },
     },
     [Race.NightElf]: {
       "Autumn Leaves v2": {
@@ -507,7 +491,6 @@ export const creeproutes: any = {
         ],
       },
       "Echo Isles v2": { img: cr_missing, games: [] },
-      "Gloom Stalker": { img: cr_missing, games: [] },
       "Concealed Hill": {
         img: cr_ud_vs_ne_2,
         games: [
@@ -549,7 +532,6 @@ export const creeproutes: any = {
         ],
       },
       Springtime: { img: cr_ud_vs_ne_8, games: [] },
-      "Shattered Exile v2": { img: cr_missing, games: [] },
       "Lost Temple LV": { img: cr_missing, games: [] },
       Tidehunters: {
         img: cr_ud_vs_ne_7,
@@ -559,7 +541,8 @@ export const creeproutes: any = {
           "66b36f070ebc9196a2b61523",
         ],
       },
-      "Twisted Meadows": { img: cr_missing, games: [] },
+      "War Hail": { img: cr_missing, games: [] },
+      "Secret Valley": { img: cr_missing, games: [] },
     },
     [Race.Undead]: {
       "Autumn Leaves v2": {
@@ -571,7 +554,6 @@ export const creeproutes: any = {
         ],
       },
       "Echo Isles v2": { img: cr_missing, games: [] },
-      "Gloom Stalker": { img: cr_missing, games: [] },
       "Concealed Hill": {
         img: cr_ud_vs_ud_2,
         games: [
@@ -605,7 +587,6 @@ export const creeproutes: any = {
         img: cr_ud_vs_ud_8,
         games: ["66bc99a70ebc9196a2b25dfa", "668ead2782a9ebbac5a79713"],
       },
-      "Shattered Exile v2": { img: cr_missing, games: [] },
       "Lost Temple LV": {
         img: cr_ud_vs_ud_9,
         games: ["6682a49f82a9ebbac530112e"],
@@ -618,7 +599,8 @@ export const creeproutes: any = {
           "66ae021582a9ebbac5ac7b4f",
         ],
       },
-      "Twisted Meadows": { img: cr_missing, games: [] },
+      "War Hail": { img: cr_missing, games: [] },
+      "Secret Valley": { img: cr_missing, games: [] },
     },
   },
 };

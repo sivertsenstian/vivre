@@ -9,8 +9,6 @@ import _range from "lodash/range";
 import moment from "moment/moment";
 import { getloss, getplayer, getwins } from "@/utilities/matchcalculator";
 import _fill from "lodash/fill";
-import _reverse from "lodash/reverse";
-import w3cicon from "@/assets/w3c.png";
 import w3ciconDark from "@/assets/w3c_dark.png";
 
 const raceGnlBanner: any = {
@@ -239,11 +237,19 @@ const avg = computed(() =>
       </template>
       <template v-slot:title>
         <div class="ml-1 text-left text-h5">
-          <span class="mr-1" v-if="prefix">{{ prefix }}</span
-          >{{ player.battleTag.split("#")[0] }}
+          <span class="mr-1" v-if="prefix">{{ prefix }}</span>
+          {{ player.battleTag.split("#")[0] }}
+          <v-icon
+            v-if="player.ongoing"
+            class="elementToFadeInAndOut"
+            style="vertical-align: center"
+            size="x-small"
+            icon="mdi-circle"
+            title="Currently in a ladder game!"
+            color="green" />
         </div>
       </template>
-      <template v-if="player.data?.matches.length" v-slot:append>
+      <template v-if="player.data?.matches?.length" v-slot:append>
         <div
           style="
             position: absolute;
@@ -522,5 +528,23 @@ const avg = computed(() =>
   color: goldenrod !important;
   font-weight: bold !important;
   border: 2px solid darkgoldenrod !important;
+}
+
+.elementToFadeInAndOut {
+  -webkit-animation: fadeinout 3s linear infinite;
+  animation: fadeinout 3s linear infinite;
+  opacity: 0;
+}
+
+@-webkit-keyframes fadeinout {
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeinout {
+  50% {
+    opacity: 1;
+  }
 }
 </style>

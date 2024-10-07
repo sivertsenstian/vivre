@@ -146,6 +146,7 @@ export interface IGNLAccount {
   battleTag: string;
   race: Race;
   data?: any;
+  ongoing?: any;
   points?: number;
   achievementPoints?: number;
   totalPoints?: number;

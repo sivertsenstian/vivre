@@ -9,7 +9,7 @@ import happa3 from "@/assets/events/happa3.mp4";
 import w3cicon from "@/assets/w3c.png";
 import w3ciconDark from "@/assets/w3c_dark.png";
 import Banner from "@/components/Banner.vue";
-import { useEventsStore } from "@/stores/events";
+import { useHappyStore } from "@/stores/happy";
 import moment from "moment";
 import _range from "lodash/range";
 import _fill from "lodash/fill";
@@ -21,7 +21,7 @@ import _minBy from "lodash/minBy";
 import _round from "lodash/round";
 import ConfettiExplosion from "vue-confetti-explosion";
 
-const events = useEventsStore();
+const events = useHappyStore();
 const start = moment("10.07.2024", "DD.MM.YYYY").startOf("day");
 const end = moment("21.08.2024", "DD.MM.YYYY").startOf("day");
 const today = moment().add(1, "day").startOf("day");
@@ -117,6 +117,18 @@ const finished = computed(() =>
   ),
 );
 
+const wins = computed(() => {
+  return finished.value.filter((m) =>
+    events.accounts.some((a) => getwins(a, m)),
+  );
+});
+
+const losses = computed(() => {
+  return finished.value.filter((m) =>
+    events.accounts.some((a) => getloss(a, m)),
+  );
+});
+
 const win = computed(() => {
   const wins: any[] = finished.value.filter((m) => getwins("Cacxa26#2948", m));
   return _maxBy(wins, (m) => m.teams[0].players[0].mmrGain);
@@ -183,26 +195,6 @@ const open = (path: string) => window.open(path, "_blank");
 
 const theme = useTheme();
 const isDark = computed(() => theme.global.current.value.dark);
-
-// Counter
-const tab = ref("SaulPredictionMan");
-
-const dayz = ref(0);
-const hours = ref(0);
-const minutes = ref(0);
-const seconds = ref(0);
-
-setInterval(() => {
-  if (events.prediction[tab.value].days.date) {
-    const currentDate = moment();
-    const p =
-      (events.prediction[tab.value].days.date as any) - (currentDate as any);
-    seconds.value = parseInt((p / 1000) as any);
-    minutes.value = parseInt((seconds.value / 60) as any);
-    hours.value = parseInt((minutes.value / 60) as any);
-    dayz.value = parseInt((hours.value / 24) as any);
-  }
-}, 1000);
 
 // MMR
 const scores = computed(() => {
@@ -275,8 +267,7 @@ setInterval(() => {
                   :elevation="20"
                   style="border: 3px solid goldenrod"
                   rounded="xl"
-                  class="pa-5 text-center"
-                >
+                  class="pa-5 text-center">
                   <img
                     :src="confetti"
                     width="100%"
@@ -288,12 +279,10 @@ setInterval(() => {
                       object-fit: cover;
                       object-position: center center;
                       opacity: 0.7;
-                    "
-                  />
+                    " />
                   <v-card-title
                     class="text-h2"
-                    style="color: goldenrod; font-family: Britannic"
-                  >
+                    style="color: goldenrod; font-family: Britannic">
                     He did it!
                     <hr style="color: goldenrod" class="mt-2" />
                   </v-card-title>
@@ -302,15 +291,13 @@ setInterval(() => {
                       :duration="2000"
                       :particelCount="400"
                       :stageHeight="1000"
-                      v-if="explode"
-                    />
+                      v-if="explode" />
                     <ConfettiExplosion
                       :duration="2000"
                       :particelCount="400"
                       :stageHeight="1000"
                       v-if="!explode"
-                      style="float: right"
-                    />
+                      style="float: right" />
                     <img :src="trophy" width="300px" class="rounded-xl" />
                     <div
                       style="
@@ -320,13 +307,11 @@ setInterval(() => {
                         left: 20px;
                         bottom: 135px;
                         scale: 0.7;
-                      "
-                    >
+                      ">
                       <Banner
                         :race="events.data[events.highest].race"
                         :current="scores.highest.currentMmr"
-                        :label="scores.highest.battleTag"
-                      />
+                        :label="scores.highest.battleTag" />
                     </div>
                   </v-card-item>
                   <span
@@ -348,8 +333,7 @@ setInterval(() => {
                   >
                   <v-card-item
                     class="d-flex justify-center"
-                    style="margin-top: -15px"
-                  >
+                    style="margin-top: -15px">
                     <video
                       autoplay
                       muted
@@ -361,8 +345,7 @@ setInterval(() => {
                         object-fit: cover;
                         object-position: center center;
                         opacity: 0.8;
-                      "
-                    >
+                      ">
                       <source :src="happa1" type="video/mp4" />
                     </video>
                     <video
@@ -376,8 +359,7 @@ setInterval(() => {
                         object-fit: cover;
                         object-position: center center;
                         opacity: 0.8;
-                      "
-                    >
+                      ">
                       <source :src="happa2" type="video/mp4" />
                     </video>
                     <video
@@ -391,8 +373,7 @@ setInterval(() => {
                         object-fit: cover;
                         object-position: center center;
                         opacity: 0.8;
-                      "
-                    >
+                      ">
                       <source :src="happa3" type="video/mp4" />
                     </video>
                   </v-card-item>
@@ -609,8 +590,7 @@ setInterval(() => {
                       },
                     ],
                   }"
-                  :options="options"
-                />
+                  :options="options" />
                 <span class="unbanned">UNBANNED</span>
               </v-col>
             </v-row>
@@ -652,19 +632,18 @@ setInterval(() => {
                   size="x-small"
                   color="orange"
                   icon="mdi-link"
-                  variant="text"
-                />
+                  variant="text" />
               </v-col>
 
               <v-col cols="6" class="text-center text-h5">
                 He played <strong>{{ finished.length }}</strong> games in total
                 to reach his goal. With
                 <span class="text-green font-weight-bold">{{
-                  events.games.after.wins
+                  wins.length
                 }}</span>
                 wins and
                 <span class="text-red font-weight-bold">{{
-                  events.games.after.loss
+                  losses.length
                 }}</span>
                 losses
               </v-col>
@@ -747,8 +726,7 @@ setInterval(() => {
                     size="x-small"
                     color="orange"
                     icon="mdi-link"
-                    variant="text"
-                  />
+                    variant="text" />
                 </div>
                 <div class="title mb-2">
                   {{ moment(win.endTime).format("dddd, MMMM Do, HH:mm:ss") }}
@@ -756,15 +734,13 @@ setInterval(() => {
                 <img
                   style="vertical-align: middle"
                   width="75px"
-                  :src="raceIcon[win.teams[1].players[0].race]"
-                />
+                  :src="raceIcon[win.teams[1].players[0].race]" />
                 <div class="title">
                   <a
                     :href="`https://www.w3champions.com/player/${encodeURIComponent(
                       win.teams[1].players[0].battleTag,
                     )}`"
-                    target="_blank"
-                  >
+                    target="_blank">
                     <strong> {{ win.teams[1].players[0].battleTag }}</strong>
                   </a>
                 </div>
@@ -784,15 +760,13 @@ setInterval(() => {
                 <img
                   style="vertical-align: middle"
                   width="75px"
-                  :src="raceIcon[donater.games[0].teams[1].players[0].race]"
-                />
+                  :src="raceIcon[donater.games[0].teams[1].players[0].race]" />
                 <div class="title">
                   <a
                     :href="`https://www.w3champions.com/player/${encodeURIComponent(
                       donater.opponent,
                     )}`"
-                    target="_blank"
-                  >
+                    target="_blank">
                     <strong> {{ donater.opponent }}</strong>
                   </a>
                 </div>
@@ -819,18 +793,15 @@ setInterval(() => {
                   fixed-tabs
                   v-model="raceTab"
                   slider-color="#daa520"
-                  class="mb-2"
-                >
+                  class="mb-2">
                   <v-tab
                     class="text-none"
                     text="Race stats vs everyone"
-                    value="all"
-                  ></v-tab>
+                    value="all"></v-tab>
                   <v-tab
                     class="text-none"
                     text="vs. pro players (>2500 MMR)"
-                    value="pro"
-                  ></v-tab>
+                    value="pro"></v-tab>
                 </v-tabs>
 
                 <v-window v-model="raceTab">
@@ -839,32 +810,27 @@ setInterval(() => {
                       <v-list-item :prepend-avatar="raceIcon[Race.Human]">
                         <ResultChart
                           percentage
-                          :result="events.race[Race.Human]"
-                        />
+                          :result="events.race[Race.Human]" />
                       </v-list-item>
                       <v-list-item :prepend-avatar="raceIcon[Race.Orc]">
                         <ResultChart
                           percentage
-                          :result="events.race[Race.Orc]"
-                        />
+                          :result="events.race[Race.Orc]" />
                       </v-list-item>
                       <v-list-item :prepend-avatar="raceIcon[Race.NightElf]">
                         <ResultChart
                           percentage
-                          :result="events.race[Race.NightElf]"
-                        />
+                          :result="events.race[Race.NightElf]" />
                       </v-list-item>
                       <v-list-item :prepend-avatar="raceIcon[Race.Undead]">
                         <ResultChart
                           percentage
-                          :result="events.race[Race.Undead]"
-                        />
+                          :result="events.race[Race.Undead]" />
                       </v-list-item>
                       <v-list-item :prepend-avatar="raceIcon[Race.Random]">
                         <ResultChart
                           percentage
-                          :result="events.race[Race.Random]"
-                        />
+                          :result="events.race[Race.Random]" />
                       </v-list-item>
                     </v-list>
                   </v-window-item>
@@ -874,32 +840,27 @@ setInterval(() => {
                       <v-list-item :prepend-avatar="raceIcon[Race.Human]">
                         <ResultChart
                           percentage
-                          :result="events.race.pro[Race.Human]"
-                        />
+                          :result="events.race.pro[Race.Human]" />
                       </v-list-item>
                       <v-list-item :prepend-avatar="raceIcon[Race.Orc]">
                         <ResultChart
                           percentage
-                          :result="events.race.pro[Race.Orc]"
-                        />
+                          :result="events.race.pro[Race.Orc]" />
                       </v-list-item>
                       <v-list-item :prepend-avatar="raceIcon[Race.NightElf]">
                         <ResultChart
                           percentage
-                          :result="events.race.pro[Race.NightElf]"
-                        />
+                          :result="events.race.pro[Race.NightElf]" />
                       </v-list-item>
                       <v-list-item :prepend-avatar="raceIcon[Race.Undead]">
                         <ResultChart
                           percentage
-                          :result="events.race.pro[Race.Undead]"
-                        />
+                          :result="events.race.pro[Race.Undead]" />
                       </v-list-item>
                       <v-list-item :prepend-avatar="raceIcon[Race.Random]">
                         <ResultChart
                           percentage
-                          :result="events.race.pro[Race.Random]"
-                        />
+                          :result="events.race.pro[Race.Random]" />
                       </v-list-item>
                     </v-list>
                   </v-window-item>
@@ -926,14 +887,13 @@ setInterval(() => {
                         class="ml-1"
                         height="25px"
                         style="vertical-align: middle; cursor: pointer"
-                        :src="isDark ? w3ciconDark : w3cicon"
-                      />
+                        :src="isDark ? w3ciconDark : w3cicon" />
                     </span>
                   </v-col>
                   <v-col cols="12">
                     <a href="https://www.twitch.tv/saulapeman" target="_blank">
-                      CLICK HERE - And follow this EXCITING journey
-                      <strong>LIVE</strong> with mr saul apeman</a
+                      It was covered
+                      <strong>LIVE</strong> by mr saul apeman</a
                     >
                   </v-col>
                 </v-row>
@@ -949,8 +909,7 @@ setInterval(() => {
                   "
                   class="ml-3 makrura"
                   style="vertical-align: middle"
-                  :src="makrura"
-                />
+                  :src="makrura" />
               </v-col>
             </v-row>
           </v-sheet>
