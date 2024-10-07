@@ -7,7 +7,7 @@ import { Race, raceIcon } from "@/stores/races";
 const settings = useSettingsStore();
 const stats = useStatsStore();
 
-const start = moment([2024, 5, 25]);
+const start = moment([2024, 10, 7]);
 const end = moment(start).add(15, "weeks");
 
 const today = moment();
@@ -30,7 +30,8 @@ const races = [Race.Human, Race.Orc, Race.NightElf, Race.Undead, Race.Random];
               <v-row>
                 <v-col>
                   <div class="text-h4 text-center">
-                    Season: 19 // {{ start.format("DD.MM.YY") }} to
+                    Season: {{ stats.latest }} //
+                    {{ start.format("DD.MM.YY") }} to
                     {{ end.format("DD.MM.YY") }}
                   </div>
                   <hr /> </v-col
@@ -53,8 +54,7 @@ const races = [Race.Human, Race.Orc, Race.NightElf, Race.Undead, Race.Random];
                 <v-col
                   cols="12"
                   v-if="stats.player.season.summary.total"
-                  class="text-center"
-                >
+                  class="text-center">
                   <span class="text-h5">Season Total</span>
                   <ResultChart :result="stats.player.season.summary" />
                 </v-col>
@@ -69,8 +69,7 @@ const races = [Race.Human, Race.Orc, Race.NightElf, Race.Undead, Race.Random];
                 <v-col
                   cols="12"
                   class="text-center"
-                  v-if="stats.player.season.summary.suspiciousGames"
-                >
+                  v-if="stats.player.season.summary.suspiciousGames">
                   <div class="text-h5">
                     {{ stats.player.season.summary.suspiciousGames.total }}
                     games decided in under 4 minutes:
@@ -110,8 +109,7 @@ const races = [Race.Human, Race.Orc, Race.NightElf, Race.Undead, Race.Random];
                       variant="solo"
                       item-title="battleTag"
                       item-value="battleTag"
-                      auto-select-first
-                    />
+                      auto-select-first />
                   </v-card>
                 </div>
               </v-col>
@@ -125,15 +123,13 @@ const races = [Race.Human, Race.Orc, Race.NightElf, Race.Undead, Race.Random];
               <v-row
                 style="overflow: visible"
                 v-if="stats.highscore && !stats.highscore.loading"
-                transition="fade-transition"
-              >
+                transition="fade-transition">
                 <v-col v-for="score in stats.highscore">
                   <Banner
                     :race="score.race"
                     :current="score.mmr"
                     :diff="score.diff"
-                    :label="`Season ${score.season}`"
-                  />
+                    :label="`Season ${score.season}`" />
                 </v-col>
               </v-row>
             </v-fade-transition>
@@ -148,8 +144,7 @@ const races = [Race.Human, Race.Orc, Race.NightElf, Race.Undead, Race.Random];
               :race="race"
               :current="stats.player.season?.[race]?.mmr.current"
               :diff="stats.player.season?.[race]?.mmr.diff"
-              :label="'This Season'"
-            />
+              :label="'This Season'" />
           </v-sheet>
         </v-col>
         <v-col cols="5" v-if="stats.player.season[race].total">
@@ -159,28 +154,25 @@ const races = [Race.Human, Race.Orc, Race.NightElf, Race.Undead, Race.Random];
                 <v-list lines="one" style="overflow: hidden">
                   <v-list-item :prepend-avatar="raceIcon[Race.Human]">
                     <ResultChart
-                      :result="stats.player.season?.[race].race[Race.Human]"
-                    />
+                      :result="stats.player.season?.[race].race[Race.Human]" />
                   </v-list-item>
                   <v-list-item :prepend-avatar="raceIcon[Race.Orc]">
                     <ResultChart
-                      :result="stats.player.season?.[race].race[Race.Orc]"
-                    />
+                      :result="stats.player.season?.[race].race[Race.Orc]" />
                   </v-list-item>
                   <v-list-item :prepend-avatar="raceIcon[Race.NightElf]">
                     <ResultChart
-                      :result="stats.player.season?.[race].race[Race.NightElf]"
-                    />
+                      :result="
+                        stats.player.season?.[race].race[Race.NightElf]
+                      " />
                   </v-list-item>
                   <v-list-item :prepend-avatar="raceIcon[Race.Undead]">
                     <ResultChart
-                      :result="stats.player.season?.[race].race[Race.Undead]"
-                    />
+                      :result="stats.player.season?.[race].race[Race.Undead]" />
                   </v-list-item>
                   <v-list-item :prepend-avatar="raceIcon[Race.Random]">
                     <ResultChart
-                      :result="stats.player.season?.[race].race[Race.Random]"
-                    />
+                      :result="stats.player.season?.[race].race[Race.Random]" />
                   </v-list-item>
                 </v-list>
               </v-col>
@@ -200,8 +192,7 @@ const races = [Race.Human, Race.Orc, Race.NightElf, Race.Undead, Race.Random];
                 <Performance
                   :visible="stats.player.season[race].total > 0"
                   :performance="stats.player.season[race].performance"
-                  :today="-1"
-                />
+                  :today="-1" />
               </v-col>
             </v-row>
           </v-sheet>

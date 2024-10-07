@@ -287,7 +287,7 @@ const getData = async (account: IGNLAccount, start: Moment, end: Moment) => {
 
     const all = await getSeasonGamesBetween(
       account.battleTag,
-      19,
+      [19, 20],
       actualStart,
       end,
     );

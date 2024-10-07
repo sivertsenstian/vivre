@@ -30,7 +30,7 @@ export const useStatsStore = defineStore("stats", () => {
 
   const searchResults = ref([]);
   const searching = ref(false);
-  const latest = 19;
+  const latest = 20;
 
   const search = (name: string) =>
     `https://website-backend.w3champions.com/api/players/global-search?search=${encodeURIComponent(
@@ -222,7 +222,7 @@ export const useStatsStore = defineStore("stats", () => {
       );
 
       // Find hero usage from last 100 games in the season
-      const season = await getAllSeasonGames(opponent.battleTag, 19, 100);
+      const season = await getAllSeasonGames(opponent.battleTag, latest, 100);
       const last = _take(
         season
           .filter((m) => m.durationInSeconds > 4 * 60)
@@ -381,5 +381,6 @@ export const useStatsStore = defineStore("stats", () => {
     searchResults,
     searching,
     highscore,
+    latest,
   };
 });

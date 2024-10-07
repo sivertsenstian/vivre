@@ -47,13 +47,13 @@ setInterval(() => {
   <main v-if="stats.player" style="height: 100vh; overflow-y: auto">
     <v-container fluid style="opacity: 0.9">
       <v-row>
-        <v-col cols="8">
+        <v-col cols="12" md="8">
           <v-col cols="12" v-if="!stats?.ongoing?.active">
             <v-sheet class="pa-8" elevation="5">
               <v-row>
-                <v-col cols="6">
+                <v-col cols="12" md="6">
                   <v-col cols="12" class="text-center">
-                    <div class="text-h5">
+                    <div class="text-md-h5 text-h6">
                       Daily fill ({{ Math.ceil(settings.data.goal / 7) }} per
                       day)
                     </div>
@@ -126,7 +126,7 @@ setInterval(() => {
                       :goal="Math.ceil(settings.data.goal / 7)" />
                   </v-col>
                 </v-col>
-                <v-col cols="5">
+                <v-col cols="12" md="5">
                   <WeeklyGoalChart
                     :played="Number(stats.player.week.total)"
                     :goal="Number(settings.data.goal)" />
@@ -235,7 +235,7 @@ setInterval(() => {
           <v-col cols="12" v-if="stats?.ongoing?.active">
             <v-sheet class="pa-4" :elevation="5">
               <v-row>
-                <v-col cols="8" class="text-center">
+                <v-col cols="12" md="8" class="text-center">
                   <v-col cols="12">
                     <span class="text-h6 font-weight-bold"
                       >Playing on '{{ stats.ongoing?.map }}' :
@@ -257,12 +257,12 @@ setInterval(() => {
                       }})</span
                     >
                   </v-col>
-                  <v-col cols="10" class="mx-auto">
+                  <v-col cols="12" md="10" class="mx-auto">
                     <ResultChart :result="stats.ongoing.history" />
                   </v-col>
                 </v-col>
 
-                <v-col cols="4">
+                <v-col cols="12" md="4">
                   <v-col
                     cols="12"
                     :class="{
@@ -322,7 +322,7 @@ setInterval(() => {
                 </v-col>
               </v-row>
               <v-row>
-                <v-col cols="8">
+                <v-col cols="12" md="8">
                   <v-row v-if="stats.ongoing.history.heroes.length">
                     <v-col cols="12">
                       <div class="text-h5">
@@ -349,7 +349,8 @@ setInterval(() => {
                   </v-row>
                 </v-col>
                 <v-col
-                  cols="4"
+                  cols="12"
+                  md="4"
                   class="d-flex align-center text-center"
                   v-if="
                     stats.ongoing.history.games.winDuration > 0 &&
@@ -388,7 +389,7 @@ setInterval(() => {
             </v-sheet>
           </v-col>
         </v-col>
-        <v-col cols="4">
+        <v-col cols="12" md="4" class="order-md-last order-first">
           <v-col cols="12">
             <v-sheet class="pa-5" :elevation="5">
               <div class="text-h6 text-center">
@@ -473,7 +474,7 @@ setInterval(() => {
                     </v-card-title>
                     <v-card-text>
                       <v-row>
-                        <v-col cols="6" class="pa-0">
+                        <v-col cols="12" md="6" class="pa-0">
                           <span class="ml-2 text-h6">
                             <span
                               :class="{
@@ -488,7 +489,7 @@ setInterval(() => {
                             Today
                           </span>
                         </v-col>
-                        <v-col cols="6" class="pa-0">
+                        <v-col cols="12" md="6" class="pa-0">
                           <span class="ml-2 text-h6">
                             <span
                               :class="{

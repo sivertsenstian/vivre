@@ -247,30 +247,37 @@ export const getAllSeasonGames = async (
 
 export const getSeasonGamesBetween = async (
   tag: string,
-  season: number,
+  seasons: number[],
   from: Moment,
   to: Moment,
   max: number = 0,
 ) => {
   let all: any[] = [];
-  let finished = false;
-  let prev = all.length;
-  let failsafe = 0;
 
-  while (!finished && failsafe < 10) {
-    const { data: response } = await axios.get(
-      url(tag, all.length, 100, season),
-    );
+  for (let s = 0; s < seasons.length; s++) {
+    const season = seasons[s];
+    let finished = false;
+    let prev = 0;
+    let failsafe = 0;
+    let seasonAll: any[] = [];
 
-    all = [...all, ...response.matches];
+    while (!finished && failsafe < 10) {
+      const { data: response } = await axios.get(
+        url(tag, seasonAll.length, 100, season),
+      );
 
-    finished =
-      all.length === response.count ||
-      all.length === prev ||
-      (max !== 0 && all.length > max) ||
-      moment(_last(all)?.endTime).isBefore(from);
-    prev = all.length;
-    failsafe++;
+      seasonAll = [...seasonAll, ...response.matches];
+
+      finished =
+        seasonAll.length === response.count ||
+        seasonAll.length === prev ||
+        (max !== 0 && seasonAll.length > max) ||
+        moment(_last(seasonAll)?.endTime).isBefore(from);
+      prev = seasonAll.length;
+      failsafe++;
+    }
+
+    all = [...all, ...seasonAll];
   }
 
   return all.filter(

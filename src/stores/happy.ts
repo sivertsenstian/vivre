@@ -8,6 +8,7 @@ import {
   getPercentage,
   getplayer,
   getRaceStatistics,
+  getSeasonGamesBetween,
   getTotal,
   getwins,
   isRace,
@@ -23,7 +24,7 @@ import _take from "lodash/take";
 import _groupBy from "lodash/groupBy";
 import _round from "lodash/round";
 
-export const useEventsStore = defineStore("events", () => {
+export const useHappyStore = defineStore("happy", () => {
   // Happy Live Event Data
   const accounts = ["AuroraHappy#2668", "Happy#2384", "Cacxa26#2948"];
   const data = ref<any>({} as any);
@@ -32,11 +33,10 @@ export const useEventsStore = defineStore("events", () => {
 
   const ongoing = ref<any>({});
 
-  const start = moment("07.10.2024", "DD.MM.YYYY").startOf("day");
-  const today = moment().startOf("day");
+  const start = moment("10.07.2024", "DD.MM.YYYY").startOf("day");
+  const today = moment("21.08.2024", "DD.MM.YYYY").startOf("day");
   const daysSinceStart = today.diff(start, "days");
   const rule = moment().startOf("isoWeek");
-  const latest = 20;
 
   const getData = async (tag: string) => {
     let result: IStatistics = {} as any;
@@ -45,7 +45,7 @@ export const useEventsStore = defineStore("events", () => {
     let dayActual = [];
 
     try {
-      let all = await getAllSeasonGames(tag, latest);
+      let all = await getSeasonGamesBetween(tag, [19], start, today);
 
       const race = all?.[0]?.teams.find((t: any) =>
         t.players.some(
@@ -182,7 +182,7 @@ export const useEventsStore = defineStore("events", () => {
 
     try {
       const { data: historyResponse } = await axios.get(
-        opponentHistoryUrl(player.battleTag, opponent.battleTag, latest),
+        opponentHistoryUrl(player.battleTag, opponent.battleTag, 19),
       );
 
       const matches = historyResponse?.matches ?? [];
