@@ -41,14 +41,6 @@ const model = defineModel<string>({
     <v-container fluid style="opacity: 0.9">
       <v-sheet class="pa-6" elevation="10" style="min-height: 90vh">
         <v-row>
-          <v-col cols="12" class="text-right ma-0 pa-0">
-            <a href="https://www.buymeacoffee.com/longjacket" target="_blank"
-              ><img
-                src="https://img.buymeacoffee.com/button-api/?text=Buy me a coffee&emoji=&slug=longjacket&button_colour=FFDD00&font_colour=000000&font_family=Cookie&outline_colour=000000&coffee_colour=ffffff"
-            /></a>
-          </v-col>
-        </v-row>
-        <v-row>
           <v-col cols="12" class="text-center ma-0 pa-0">
             <img :src="logo" alt="APE SCIENCE - WC3 RESEARCH FACILITY" />
             <div class="text-h5 font-weight-bold">
