@@ -462,7 +462,7 @@ const isActive = computed(() => {
             <v-row>
               <v-col cols="12">
                 <v-row>
-                  <v-col cols="12" md="6" class="d-flex align-center">
+                  <v-col cols="12" md="6" class="d-flex align-center mx-auto">
                     <v-row class="text-center">
                       <v-col cols="12">
                         <section>
@@ -479,73 +479,11 @@ const isActive = computed(() => {
                           </span>
                         </section>
                       </v-col>
-                      <v-col cols="12">
+                      <v-col cols="10" offset="1">
                         <div class="text-subtitle-2">Ladder Results</div>
                         <ResultChart percentage :result="events.games.after" />
                       </v-col>
                     </v-row>
-                  </v-col>
-                  <v-col cols="12" md="6" v-if="seconds >= 0">
-                    <v-col cols="12" class="d-flex">
-                      <v-card
-                        class="ml-md-auto mr-md-2"
-                        width="150px"
-                        weight="120px">
-                        <v-card-text>
-                          <p
-                            class="text-md-h2 text-h5 text--primary text-center font-weight-regular text-no-wrap">
-                            {{ dayz % 365 }}
-                          </p>
-                        </v-card-text>
-                        <v-card-actions>
-                          <v-btn block variant="text" color="green-accent-4">
-                            DAYS
-                          </v-btn>
-                        </v-card-actions>
-                      </v-card>
-                      <v-card class="mx-md-2" width="150px" weight="120px">
-                        <v-card-text>
-                          <p
-                            class="text-md-h2 text-h5 text--primary text-center font-weight-regular text-no-wrap">
-                            {{ hours % 24 }}
-                          </p>
-                        </v-card-text>
-                        <v-card-actions>
-                          <v-btn block variant="text" color="green-accent-4">
-                            HOURS
-                          </v-btn>
-                        </v-card-actions>
-                      </v-card>
-                      <v-card class="mx-md-2" width="150px" weight="120px">
-                        <v-card-text>
-                          <p
-                            class="text-md-h2 text-h5 text--primary text-center font-weight-regular text-no-wrap">
-                            {{ minutes % 60 }}
-                          </p>
-                        </v-card-text>
-                        <v-card-actions>
-                          <v-btn block variant="text" color="green-accent-4">
-                            MINUTES
-                          </v-btn>
-                        </v-card-actions>
-                      </v-card>
-                      <v-card
-                        class="mr-md-auto ml-md-2"
-                        width="150px"
-                        weight="120px">
-                        <v-card-text>
-                          <p
-                            class="text-md-h2 text-h5 text--primary text-center font-weight-regular text-no-wrap">
-                            {{ seconds % 60 }}
-                          </p>
-                        </v-card-text>
-                        <v-card-actions>
-                          <v-btn block variant="text" color="green-accent-4">
-                            SECONDS
-                          </v-btn>
-                        </v-card-actions>
-                      </v-card>
-                    </v-col>
                   </v-col>
                 </v-row>
 

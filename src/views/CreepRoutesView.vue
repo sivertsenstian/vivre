@@ -55,7 +55,8 @@ console.log({ creeproutes });
             <v-row>
               <v-col cols="12"> </v-col>
               <v-col
-                cols="11"
+                cols="12"
+                md="11"
                 class="mx-auto"
                 v-for="(_, map) in creeproutes[race][0]">
                 <v-row>
@@ -90,7 +91,7 @@ console.log({ creeproutes });
                       width="50px"
                       :src="raceIcon[Race.NightElf]"
                   /></v-col>
-                  <v-col cols="3">
+                  <v-col cols="12" md="3">
                     <v-row>
                       <v-col cols="12">
                         <img
@@ -115,7 +116,7 @@ console.log({ creeproutes });
                       </v-col>
                     </v-row>
                   </v-col>
-                  <v-col cols="3">
+                  <v-col cols="12" md="3">
                     <v-row>
                       <v-col cols="12">
                         <img
@@ -140,7 +141,7 @@ console.log({ creeproutes });
                       </v-col>
                     </v-row>
                   </v-col>
-                  <v-col cols="3">
+                  <v-col cols="12" md="3">
                     <v-row>
                       <v-col cols="12">
                         <img
@@ -167,7 +168,7 @@ console.log({ creeproutes });
                       </v-col>
                     </v-row>
                   </v-col>
-                  <v-col cols="3">
+                  <v-col cols="12" md="3">
                     <v-row>
                       <v-col cols="12">
                         <img
