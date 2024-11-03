@@ -6,6 +6,7 @@ import CreepRoutesView from "@/views/CreepRoutesView.vue";
 import SeasonView from "@/views/SeasonView.vue";
 import HappyTracker from "@/views/Events/HappyTrackerView.vue";
 import RoadTo3000 from "@/views/Events/HappyRoadTo3000SummaryView.vue";
+import TheGreatEscapeView from "@/views/Events/TheGreateEscapeView.vue";
 import BuildOrdersIndexView from "@/views/BuildOrders/BuildOrdersIndexView.vue";
 import NewBuildOrderView from "@/views/BuildOrders/NewBuildOrderView.vue";
 import ShowBuildOrderView from "@/views/BuildOrders/ShowBuildOrderView.vue";
@@ -42,6 +43,10 @@ const router = createRouter({
         {
           path: "road-to-3000",
           component: RoadTo3000,
+        },
+        {
+          path: "the-great-escape",
+          component: TheGreatEscapeView,
         },
       ],
     },

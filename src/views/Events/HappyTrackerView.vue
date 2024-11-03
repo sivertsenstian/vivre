@@ -507,8 +507,9 @@ const isActive = computed(() => {
                     <v-window v-model="recentTab">
                       <v-window-item value="recent">
                         <RecentGames
-                          :matches="_take(events.matches, 5)"
-                          :accounts="events.accounts" />
+                          :matches="events.matches"
+                          :accounts="events.accounts"
+                          :limit="5" />
                       </v-window-item>
                       <v-window-item value="record">
                         <RecordGames :matches="_take(records, 5)" />

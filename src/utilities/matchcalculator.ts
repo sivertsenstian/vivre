@@ -217,6 +217,15 @@ const url = (
     tag,
   )}&gateway=20&offset=${offset}&pageSize=${size}&gameMode=1&season=${season}`;
 
+export const getMostRecentGames: any = async (
+  tag: string,
+  season: number,
+  amount: number = 1,
+) => {
+  const { data: response } = await axios.get(url(tag, 0, amount, season));
+  return response.matches;
+};
+
 export const getAllSeasonGames = async (
   tag: string,
   season: number,
