@@ -67,6 +67,12 @@ const route = useRoute();
             color="green-lighten-3"
             router
             to="/events/road-to-3000"></v-list-item>
+          <v-list-item
+            prepend-icon="mdi-run"
+            title="The Great Escape"
+            color="green-lighten-3"
+            router
+            to="/events/the-great-escape" />
         </v-list-group>
         <v-list-item
           color="green"
