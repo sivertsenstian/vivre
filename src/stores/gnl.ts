@@ -118,7 +118,7 @@ const achievements = {
     points: 10,
     icon: "mdi-castle",
     description:
-      "King of My Castle - Win a game with an average of maximum 15ms",
+      "King of My Castle - Win a game with an average of maximum 25ms",
   },
 
   // 5
@@ -238,7 +238,7 @@ export const calculatePlayerAchievements = (account: IGNLAccount): any[] => {
     result.push(achievements["lag_king"]);
   }
 
-  if (lowLatencyWin > 0 && lowLatencyWin <= 15) {
+  if (lowLatencyWin > 0 && lowLatencyWin <= 25) {
     result.push(achievements["king_of_my_castle"]);
   }
 
