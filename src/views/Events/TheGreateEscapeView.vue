@@ -56,7 +56,7 @@ const recent = computed(() => {
                   v-if="
                     player.matches.length > 0 &&
                     !player.matches.some(
-                      (x: any) => moment().diff(moment(x.endTime), 'days') <= 7,
+                      (x: any) => moment().diff(moment(x.endTime), 'days') < 7,
                     )
                   "
                   class="text-red font-weight-bold text-center"
