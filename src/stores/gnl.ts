@@ -118,7 +118,7 @@ const achievements = {
     points: 10,
     icon: "mdi-castle",
     description:
-      "King of My Castle - Win a game with an average of maximum 25ms",
+      "King of My Castle - Win a game with an average of maximum 15ms",
   },
 
   // 5
@@ -200,7 +200,7 @@ export const calculatePlayerAchievements = (account: IGNLAccount): any[] => {
     const ping = m.serverInfo.playerServerInfos.find(
       (p: any) => p.battleTag.toLowerCase() === account.battleTag.toLowerCase(),
     ).averagePing;
-    return r > ping ? ping : r;
+    return r > ping || r === 0 ? ping : r;
   }, 0);
 
   // mmr based
@@ -238,7 +238,7 @@ export const calculatePlayerAchievements = (account: IGNLAccount): any[] => {
     result.push(achievements["lag_king"]);
   }
 
-  if (lowLatencyWin > 0 && lowLatencyWin <= 25) {
+  if (lowLatencyWin > 0 && lowLatencyWin <= 15) {
     result.push(achievements["king_of_my_castle"]);
   }
 
