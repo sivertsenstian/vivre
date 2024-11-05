@@ -314,7 +314,7 @@ const avg = computed(() =>
     <v-img height="250" :src="raceGnlBanner[player.race]" cover></v-img>
 
     <Bar
-      v-if="player.data?.matches.length"
+      v-if="player.data?.matches?.length"
       style="position: absolute; bottom: 217px"
       :data="{
         labels: _range(0, dates.daysSinceStart)
