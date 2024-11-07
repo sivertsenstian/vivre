@@ -1224,7 +1224,7 @@ onMounted(() => {
             icon="mdi-run-fast"
             color="warning"
             size="x-large"
-            :style="`width: 0; heigth: 0; position: relative; 
+            :style="`width: 0; heigth: 0; position: relative;
             top: -50px;
               left: calc(${((store.dates.daysSinceStart + 1) / store.dates.durationInDays) * 100}%)
               `" />
@@ -1234,10 +1234,7 @@ onMounted(() => {
             v-if="store.dates.daysSinceStart >= 0">
             <div class="text-md-h4 text-h5 font-weight-bold">
               <span
-                >{{
-                  store.dates.durationInDays - store.dates.daysSinceStart
-                }}
-                days left of the league</span
+                >{{ store.dates.daysRemaining }} days left of the league</span
               >
               <span class="px-2">-</span>
               <span>Let's Go!</span>

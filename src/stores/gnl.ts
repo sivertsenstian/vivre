@@ -350,8 +350,6 @@ export const useGNLStore = defineStore("gnl", () => {
 
   const data = ref<any>({} as any);
 
-  const ongoing = ref<any>({} as any);
-
   const start = ref<Moment>(moment());
   const end = ref<Moment>(moment());
 
@@ -364,6 +362,7 @@ export const useGNLStore = defineStore("gnl", () => {
     today: moment().endOf("day"),
     daysSinceStart: moment().startOf("day").diff(start.value, "days") + 1,
     durationInDays: Math.abs(end.value.diff(start.value, "days")),
+    daysRemaining: end.value.diff(moment().startOf("day"), "days"),
   }));
 
   const db = useFirestore();
@@ -373,8 +372,8 @@ export const useGNLStore = defineStore("gnl", () => {
   const initialize = async () => {
     const d = await promise.value;
     if (_isEmpty(data.value) || data.value.id !== d.id) {
-      start.value = moment(d.start, "DD.MM.YYYY");
-      end.value = moment(d.end, "DD.MM.YYYY");
+      start.value = moment(d.start, "DD.MM.YYYY").startOf("day");
+      end.value = moment(d.end, "DD.MM.YYYY").add(1, "day").startOf("day");
       data.value = d;
     }
 
