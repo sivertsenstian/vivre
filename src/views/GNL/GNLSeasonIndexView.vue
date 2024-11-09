@@ -1187,17 +1187,19 @@ onMounted(() => {
               striped
               style="border: 1px solid gray"
               :color="
-                store.dates.durationInDays - store.dates.daysSinceStart <= 0
+                store.dates.durationInDays - (store.dates.daysSinceStart - 1) <=
+                0
                   ? 'success'
                   : 'warning'
               "
-              :model-value="store.dates.daysSinceStart"
+              :model-value="store.dates.daysSinceStart - 1"
               :max="store.dates.durationInDays"
               :height="45">
               <strong v-if="store.dates.daysSinceStart >= 0"
                 >{{
                   _round(
-                    (store.dates.daysSinceStart / store.dates.durationInDays) *
+                    ((store.dates.daysSinceStart - 1) /
+                      store.dates.durationInDays) *
                       100,
                   )
                 }}%</strong
@@ -1219,15 +1221,17 @@ onMounted(() => {
           </v-col>
           <v-icon
             v-if="
-              store.dates.daysSinceStart / store.dates.durationInDays > 0.01 &&
-              store.dates.daysSinceStart / store.dates.durationInDays < 0.9
+              (store.dates.daysSinceStart - 1) / store.dates.durationInDays >
+                0.01 &&
+              (store.dates.daysSinceStart - 1) / store.dates.durationInDays <
+                0.9
             "
             icon="mdi-run-fast"
             color="warning"
             size="x-large"
             :style="`width: 0; heigth: 0; position: relative;
             top: -50px;
-              left: calc(${((store.dates.daysSinceStart + 1) / store.dates.durationInDays) * 100}%)
+              left: calc(${(store.dates.daysSinceStart / store.dates.durationInDays) * 100}%)
               `" />
           <v-col
             cols="12"
