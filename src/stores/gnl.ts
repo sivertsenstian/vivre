@@ -357,13 +357,14 @@ export const useGNLStore = defineStore("gnl", () => {
   const current = ref<string>();
 
   const dates = computed(() => ({
-    start: start.value.startOf("day"),
-    end: end.value.endOf("day"),
-    today: moment().endOf("day"),
-    daysSinceStart: moment().startOf("day").diff(start.value, "days") + 1,
+    start: start.value,
+    end: end.value,
+    today: moment().utc(true).endOf("day"),
+    daysSinceStart:
+      moment().utc(true).startOf("day").diff(start.value, "days") + 1,
     durationInDays: Math.abs(end.value.diff(start.value, "days")),
-    daysRemaining: end.value.diff(moment().startOf("day"), "days"),
-    timeRemaining: end.value.diff(moment(), "milliseconds"),
+    daysRemaining: end.value.diff(moment().utc(true).startOf("day"), "days"),
+    timeRemaining: end.value.diff(moment().utc(true), "milliseconds"),
   }));
 
   const db = useFirestore();
@@ -373,8 +374,8 @@ export const useGNLStore = defineStore("gnl", () => {
   const initialize = async () => {
     const d = await promise.value;
     if (_isEmpty(data.value) || data.value.id !== d.id) {
-      start.value = moment(d.start, "DD.MM.YYYY").startOf("day");
-      end.value = moment(d.end, "DD.MM.YYYY").add(1, "day").startOf("day");
+      start.value = moment(d.start, "DD.MM.YYYY").utc(true).startOf("day");
+      end.value = moment(d.end, "DD.MM.YYYY").utc(true).endOf("day");
       data.value = d;
     }
 
@@ -389,8 +390,8 @@ export const useGNLStore = defineStore("gnl", () => {
 
   const all = async () => {
     const d = data.value;
-    start.value = moment(d.start, "DD.MM.YYYY");
-    end.value = moment(d.end, "DD.MM.YYYY");
+    start.value = moment(d.start, "DD.MM.YYYY").utc(true).startOf("day");
+    end.value = moment(d.end, "DD.MM.YYYY").utc(true).endOf("day");
 
     const teams =
       current.value === undefined
