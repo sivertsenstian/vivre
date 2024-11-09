@@ -364,7 +364,7 @@ export const useGNLStore = defineStore("gnl", () => {
       moment().utc(true).startOf("day").diff(start.value, "days") + 1,
     durationInDays: Math.abs(end.value.diff(start.value, "days")),
     daysRemaining: end.value.diff(moment().utc(true).startOf("day"), "days"),
-    timeRemaining: end.value.diff(moment().utc(true), "milliseconds"),
+    timeRemaining: end.value.diff(moment(), "milliseconds"),
   }));
 
   const db = useFirestore();
