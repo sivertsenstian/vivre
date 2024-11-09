@@ -3,6 +3,7 @@ import { useTheme } from "vuetify";
 import { computed, onMounted } from "vue";
 import { teamGnlBanner, useGNLStore } from "@/stores/gnl";
 import { Race } from "@/stores/races";
+import VueCountdown from "@chenfengyuan/vue-countdown";
 
 const theme = useTheme();
 const isDark = computed(() => theme.global.current.value.dark);
@@ -1231,11 +1232,17 @@ onMounted(() => {
           <v-col
             cols="12"
             class="text-center"
-            v-if="store.dates.daysSinceStart >= 0">
+            v-if="store.dates.daysRemaining >= 0">
             <div class="text-md-h4 text-h5 font-weight-bold">
-              <span
-                >{{ store.dates.daysRemaining }} days left of the league</span
-              >
+              <span>
+                <vue-countdown
+                  :time="store.dates.timeRemaining"
+                  v-slot="{ days, hours, minutes, seconds }">
+                  {{ days }} day(s), {{ hours }} hour(s),
+                  {{ minutes }} minute(s), {{ seconds }} second(s) left of the
+                  league!
+                </vue-countdown>
+              </span>
               <span class="px-2">-</span>
               <span>Let's Go!</span>
             </div>
