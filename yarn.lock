@@ -251,6 +251,11 @@
     "@babel/helper-validator-identifier" "^7.24.7"
     to-fast-properties "^2.0.0"
 
+"@chenfengyuan/vue-countdown@2":
+  version "2.1.2"
+  resolved "https://registry.yarnpkg.com/@chenfengyuan/vue-countdown/-/vue-countdown-2.1.2.tgz#108d96b271e8db463604b6eedbefa83f2b668487"
+  integrity sha512-/XDKIQzDDBc+4hXb681B1+ySKrStCTZONspRp+TojMcMe1edpCpuk4E/QoNVYxyZ24d+pcwN1YqnfIDgc7haBA==
+
 "@codemirror/autocomplete@^6.0.0", "@codemirror/autocomplete@^6.3.2", "@codemirror/autocomplete@^6.7.1":
   version "6.18.0"
   resolved "https://registry.yarnpkg.com/@codemirror/autocomplete/-/autocomplete-6.18.0.tgz#5f39b05daca04c95e990b70024144df47b2aa635"
@@ -3329,6 +3334,11 @@ vue-confetti-explosion@^1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/vue-confetti-explosion/-/vue-confetti-explosion-1.0.2.tgz#84b873d400cf0301814bdd71329daa1ac741fd86"
   integrity sha512-80OboM3/6BItIoZ6DpNcZFqGpF607kjIVc5af56oKgtFmt5yWehvJeoYhkzYlqxrqdBe0Ko4Ie3bWrmLau+dJw==
+
+vue-countdown@^1.0.4:
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/vue-countdown/-/vue-countdown-1.0.4.tgz#cb2baa4a99644ba6ebb33a9b688cd4138fcddc11"
+  integrity sha512-2aT5FNOZI7yqDRkFz7GwxIoNVF+pZALtX98d1jPo4bqdrs5pEda9DoOdtS3ZzDVrIY6EEoqUUbT4p/nDxwWgHw==
 
 vue-demi@>=0.14.10, vue-demi@^0.14.10, vue-demi@latest:
   version "0.14.10"
