@@ -157,16 +157,16 @@ export const useStatsStore = defineStore("stats", () => {
             ...getRaceStatistics(tag.value, seasonActual),
             suspiciousGames: {
               total:
-                seasonActual.filter((m) => m?.durationInSeconds <= 240)
+                seasonActual.filter((m) => m?.durationInSeconds <= 120)
                   ?.length ?? 0,
               wins:
                 seasonActual
                   .filter((m) => getwins(tag.value, m))
-                  .filter((m) => m?.durationInSeconds <= 240)?.length ?? 0,
+                  .filter((m) => m?.durationInSeconds <= 120)?.length ?? 0,
               loss:
                 seasonActual
                   .filter((m) => getloss(tag.value, m))
-                  .filter((m) => m?.durationInSeconds <= 240)?.length ?? 0,
+                  .filter((m) => m?.durationInSeconds <= 120)?.length ?? 0,
             },
           },
           [Race.Random]: getRaceStatistics(tag.value, season[Race.Random]),

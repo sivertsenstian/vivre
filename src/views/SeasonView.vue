@@ -72,7 +72,7 @@ const races = [Race.Human, Race.Orc, Race.NightElf, Race.Undead, Race.Random];
                   v-if="stats.player.season.summary.suspiciousGames">
                   <div class="text-h5">
                     {{ stats.player.season.summary.suspiciousGames.total }}
-                    games decided in under 4 minutes:
+                    games decided in under 2 minutes:
                     <span class="text-green">
                       {{ stats.player.season.summary.suspiciousGames.wins }}
                       win(s)
