@@ -1145,8 +1145,13 @@ onMounted(() => {
             ><span class="text-h4 text-green-accent-3 ml-auto mr-2">{{
               games.reduce((r: any, s: any) => r + s, 0)
             }}</span>
-            <span class="mr-auto">GNL Ladder Games Played So Far!</span></v-col
-          ></v-row
+            <span v-if="store.dates.timeRemaining > 0" class="mr-auto"
+              >GNL Ladder Games Played So Far!</span
+            >
+            <span v-else class="mr-auto"
+              >GNL Ladder Games Were Played This Season!</span
+            >
+          </v-col></v-row
         >
 
         <v-row>
@@ -1170,7 +1175,10 @@ onMounted(() => {
           </v-col>
         </v-row>
         <v-row>
-          <v-col cols="12" class="d-flex align-center">
+          <v-col
+            cols="12"
+            class="d-flex align-center"
+            v-if="store.dates.timeRemaining > 0">
             <v-icon icon="mdi-run" size="x-large" />
             <span
               class="font-weight-bold"
@@ -1236,7 +1244,7 @@ onMounted(() => {
           <v-col
             cols="12"
             class="text-center"
-            v-if="store.dates.daysRemaining >= 0">
+            v-if="store.dates.timeRemaining > 0">
             <div class="text-md-h4 text-h5 font-weight-bold">
               <span>
                 <vue-countdown
@@ -1251,7 +1259,20 @@ onMounted(() => {
               <span>Let's Go!</span>
             </div>
           </v-col>
-          <v-col cols="12" class="text-center" v-else>
+          <v-col
+            cols="12"
+            class="text-center"
+            v-if="store.dates.timeRemaining <= 0">
+            <div
+              class="text-md-h3 text-h4 font-weight-bold"
+              style="color: goldenrod">
+              <div>GNL Season 15 is now finished!</div>
+              <div>
+                Thanks for participating - check back soon for a season summary!
+              </div>
+            </div>
+          </v-col>
+          <v-col cols="12" class="text-center" v-if="false">
             <div class="text-md-h4 text-h5 font-weight-bold">
               <span
                 >{{ Math.abs(store.dates.daysSinceStart) }} days until we
