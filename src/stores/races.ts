@@ -42,14 +42,14 @@ export const raceUpkeep: any = {
 
 import alchemist from "@/assets/heroes/alchemist.png";
 import archmage from "@/assets/heroes/archmage.png";
-import avatarofflame from "@/assets/heroes/alchemist.png";
+import avatarofflame from "@/assets/heroes/avatarofflame.png";
 import bansheeranger from "@/assets/heroes/bansheeranger.png";
 import beastmaster from "@/assets/heroes/beastmaster.png";
 import blademaster from "@/assets/heroes/blademaster.png";
 import cryptlord from "@/assets/heroes/cryptlord.png";
 import deathknight from "@/assets/heroes/deathknight.png";
 import demonhunter from "@/assets/heroes/demonhunter.png";
-import dreadlord from "@/assets/heroes/alchemist.png";
+import dreadlord from "@/assets/heroes/dreadlord.png";
 import farseer from "@/assets/heroes/farseer.png";
 import keeperofthegrove from "@/assets/heroes/keeperofthegrove.png";
 import lich from "@/assets/heroes/lich.png";
