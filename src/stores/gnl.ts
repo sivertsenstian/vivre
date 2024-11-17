@@ -9,6 +9,7 @@ import {
   getSeasonGamesBetween,
   getwins,
   isRace,
+  iswin,
 } from "@/utilities/matchcalculator";
 import { computed, ref } from "vue";
 import { doc, setDoc } from "firebase/firestore";
@@ -28,6 +29,7 @@ import _last from "lodash/last";
 import _sortBy from "lodash/sortBy";
 import axios from "axios";
 import { currentUrl } from "@/utilities/api";
+import { Race } from "@/stores/races";
 
 const gnlBanners: { [key: string]: string } = {
   ["luckystrike"]: gnl_team_luckystrike,
@@ -40,9 +42,10 @@ const gnlBanners: { [key: string]: string } = {
 
 export const ladderGoal = 500;
 
-const achievements = {
+export const achievements = {
   // 500
   you_have_so_much: {
+    id: "you_have_so_much",
     points: 500,
     icon: "mdi-cash-100",
     description:
@@ -51,6 +54,7 @@ const achievements = {
 
   // 100
   might_cannot_be_matched: {
+    id: "might_cannot_be_matched",
     points: 100,
     icon: "mdi-bug",
     description:
@@ -59,6 +63,7 @@ const achievements = {
 
   // 50
   i_am_a_gamer: {
+    id: "i_am_a_gamer",
     points: 50,
     icon: "mdi-nintendo-game-boy",
     description: "I AM A GAMER - Play at least 25 games in a single day",
@@ -66,33 +71,39 @@ const achievements = {
 
   // 25
   feels_bad_man: {
+    id: "feels_bad_man",
     points: 25,
     icon: "mdi-coffin",
     description: "FeelsBadMan - Lose 5 games in a row",
   },
   multi_kill: {
+    id: "multi_kill",
     points: 25,
     icon: "mdi-pac-man",
     description: "Multi Kill - Win 6 games in a row",
   },
   out_rat: {
+    id: "out_rat",
     points: 25,
     icon: "mdi-rodent",
     description: "OUT RAT - Win a game that lasted over 30 minutes",
   },
   ambulance: {
+    id: "ambulance",
     points: 25,
     icon: "mdi-ambulance",
     description:
       "Call an ambulance, but not for me! - Increased MMR by at least 50 points in one day",
   },
   life_support: {
+    id: "life_support",
     points: 25,
     icon: "mdi-iv-bag",
     description:
       "Life Support - Decreased MMR by at least 50 points in one day",
   },
   speed_demon: {
+    id: "speed_demon",
     points: 25,
     icon: "mdi-clock-fast",
     description: "Speed Demon - Win a game in less than 4 minutes",
@@ -100,21 +111,25 @@ const achievements = {
 
   // 10
   double_kill: {
+    id: "double_kill",
     points: 10,
     icon: "mdi-sword-cross",
     description: "Double Kill - Win 2 games in a row",
   },
   copium: {
+    id: "copium",
     points: 10,
     icon: "mdi-pill-multiple",
     description: "Copium - Lose a game that lasted over 30 minutes",
   },
   lag_king: {
+    id: "lag_king",
     points: 10,
     icon: "mdi-power-plug-off-outline",
     description: "Lag King - Win a game with an average of at least 150ms",
   },
   king_of_my_castle: {
+    id: "king_of_my_castle",
     points: 10,
     icon: "mdi-castle",
     description:
@@ -123,6 +138,7 @@ const achievements = {
 
   // 5
   alone: {
+    id: "alone",
     points: 5,
     icon: "mdi-triforce",
     description: "It's Dangerous To Go Alone, Take This! - Play a ladder game",
@@ -140,6 +156,77 @@ export const calculateAchievementPoints = (achievements: any[]) => {
     return achievements.reduce((s, a) => (s += a.points), 0);
   }
   return 0;
+};
+
+const calculateStreak = (player: any) => {
+  if (player === null) {
+    return 0;
+  }
+
+  let v1 = 0;
+  let v2 = 0;
+
+  for (let i = 0; i < player.data.matches.length; i++) {
+    if (iswin(player.data.matches[i], player.battleTag)) {
+      v2++;
+    } else {
+      v1 = v1 > v2 ? v1 : v2;
+      v2 = 0;
+    }
+  }
+
+  player.winStreak = v1;
+  return v1;
+};
+
+const calculateDailyMMR = (player: any) => {
+  if (player === null) {
+    return 0;
+  }
+
+  let mmr1 = 0;
+  let mmr2 = 0;
+  let v1 = 0;
+  let v2 = 0;
+
+  for (let i = 0; i < player.data.matches.length; i++) {
+    if (iswin(player.data.matches[i], player.battleTag)) {
+      v2++;
+      mmr2 += player.data.matches[i].teams[0].players[0].mmrGain;
+    } else {
+      v1 = v1 > v2 ? v1 : v2;
+      mmr1 = v1 > v2 ? mmr1 : mmr2;
+      v2 = 0;
+      mmr2 = 0;
+    }
+  }
+
+  player.mostMMRInADay = mmr1;
+  return mmr1;
+};
+
+const calculateGamesOnDay = (player: any, date: Moment, key: string) => {
+  if (player === null) {
+    return 0;
+  }
+
+  const count = player.data.matches.filter(
+    (m: any) => moment(m.endTime).dayOfYear() === date.dayOfYear(),
+  ).length;
+
+  player[key] = count;
+  return count;
+};
+
+export const countAchievements = (
+  total: { [key: string]: number },
+  achievements: { id: string }[],
+) => {
+  if (!_isEmpty(achievements)) {
+    achievements.forEach((achievement) => {
+      total[achievement.id] = (total?.[achievement.id] ?? 0) + 1;
+    });
+  }
 };
 
 export const calculatePlayerAchievements = (account: IGNLAccount): any[] => {
@@ -356,6 +443,11 @@ export const useGNLStore = defineStore("gnl", () => {
   const initialized = ref<boolean>(false);
   const current = ref<string>();
 
+  const achievementStats = ref<{ [key: string]: number }>({});
+  const playerStats = ref<{ [key: string]: any }>({});
+  const numberOfPlayers = ref<number>(0);
+  const orbs = ref<any[]>([]);
+
   const dates = computed(() => ({
     start: start.value,
     end: end.value,
@@ -400,8 +492,25 @@ export const useGNLStore = defineStore("gnl", () => {
             (t: any) => t.id.toLowerCase() === current.value?.toLowerCase(),
           );
 
+    let achievementCount = {};
+
+    let mostGames: any = null,
+      mostMMR: any = null,
+      mostMMRInADay: any = null,
+      winStreak: any = null,
+      mostAchievements: any = null,
+      mostGamesFirstDay: any = null,
+      mostGamesSingleDay: any = null,
+      mostGamesLastDay: any = null,
+      bestNightElf: any = null,
+      bestHuman: any = null,
+      bestOrc: any = null,
+      bestUndead: any = null,
+      bestRandom: any = null;
+
     for (let i = 0; i < teams.length; i++) {
       const team = teams[i];
+      team.achievements = {};
       for (let p = 0; p < team.players.length; p++) {
         const player = team.players[p];
         player.data = await getData(player, dates.value.start, dates.value.end);
@@ -410,16 +519,122 @@ export const useGNLStore = defineStore("gnl", () => {
         } else {
           player.ongoing = undefined;
         }
+        player.team = team.id;
         player.points = calculateLadderPoints(player.data);
         player.achievements = calculatePlayerAchievements(player);
         player.achievementPoints = calculateAchievementPoints(
           player.achievements,
         );
         player.totalPoints = player.points + player.achievementPoints;
+
+        if (current.value === undefined) {
+          player.prefix = team.prefix;
+          // stats
+          countAchievements(team.achievements, player.achievements);
+          countAchievements(achievementCount, player.achievements);
+          numberOfPlayers.value++;
+          if (player.points >= 500) {
+            orbs.value.push(player);
+          }
+
+          // Fun
+          mostGames =
+            player.data.total > (mostGames?.data.total ?? 0)
+              ? player
+              : mostGames;
+          mostMMR =
+            player.data.mmr.diff > (mostMMR?.data.mmr.diff ?? 0)
+              ? player
+              : mostMMR;
+          mostAchievements =
+            player.achievements.length >
+            (mostAchievements?.achievements.length ?? 0)
+              ? player
+              : mostAchievements;
+
+          winStreak =
+            calculateStreak(player) > (winStreak?.winStreak ?? 0)
+              ? player
+              : winStreak;
+
+          mostMMRInADay =
+            calculateDailyMMR(player) > (mostMMRInADay?.mostMMRInADay ?? 0)
+              ? player
+              : mostMMRInADay;
+
+          mostGamesFirstDay =
+            calculateGamesOnDay(player, dates.value.start, "gamesFirstDay") >
+            (mostGamesFirstDay?.gamesFirstDay ?? 0)
+              ? player
+              : mostGamesFirstDay;
+
+          mostGamesLastDay =
+            calculateGamesOnDay(player, dates.value.end, "gamesLastDay") >
+            (mostGamesLastDay?.gamesLastDay ?? 0)
+              ? player
+              : mostGamesLastDay;
+
+          if (
+            player.achievements.some(
+              (a: any) => a.id === "might_cannot_be_matched",
+            )
+          ) {
+            mostGamesSingleDay = player;
+          }
+
+          bestNightElf =
+            player.race === Race.NightElf &&
+            player.totalPoints > (bestNightElf?.totalPoints ?? 0)
+              ? player
+              : bestNightElf;
+
+          bestHuman =
+            player.race === Race.Human &&
+            player.totalPoints > (bestHuman?.totalPoints ?? 0)
+              ? player
+              : bestHuman;
+
+          bestOrc =
+            player.race === Race.Orc &&
+            player.totalPoints > (bestOrc?.totalPoints ?? 0)
+              ? player
+              : bestOrc;
+
+          bestUndead =
+            player.race === Race.Undead &&
+            player.totalPoints > (bestUndead?.totalPoints ?? 0)
+              ? player
+              : bestUndead;
+
+          bestRandom =
+            player.race === Race.Random &&
+            player.totalPoints > (bestRandom?.totalPoints ?? 0)
+              ? player
+              : bestRandom;
+        }
       }
     }
 
-    await refresh();
+    if (current.value === undefined) {
+      achievementStats.value = achievementCount;
+      initialized.value = true;
+
+      playerStats.value = {
+        mostGames,
+        mostMMR,
+        winStreak,
+        mostMMRInADay,
+        mostAchievements,
+        mostGamesFirstDay,
+        mostGamesLastDay,
+        mostGamesSingleDay,
+        bestNightElf,
+        bestHuman,
+        bestOrc,
+        bestUndead,
+        bestRandom,
+      };
+    }
   };
 
   const save = async (item: any) => {
@@ -436,6 +651,11 @@ export const useGNLStore = defineStore("gnl", () => {
     dates,
     save,
     current,
+
+    achievementStats,
+    playerStats,
+    numberOfPlayers,
+    orbs,
 
     initialized,
     initialize,

@@ -279,7 +279,7 @@ export const useStatsStore = defineStore("stats", () => {
         games: {
           winDuration,
           lossDuration,
-          isLamer: winDuration > 25 || lossDuration > 25,
+          isLamer: winDuration >= 25 || lossDuration >= 25,
         },
       };
       return result;
