@@ -574,11 +574,7 @@ export const useGNLStore = defineStore("gnl", () => {
               ? player
               : mostGamesLastDay;
 
-          if (
-            player.achievements.some(
-              (a: any) => a.id === "might_cannot_be_matched",
-            )
-          ) {
+          if (player.battleTag === "NorthDrakkar#1745") {
             mostGamesSingleDay = player;
           }
 
