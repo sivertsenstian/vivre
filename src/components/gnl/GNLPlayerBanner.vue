@@ -47,7 +47,7 @@ import _round from "lodash/round";
 import _groupBy from "lodash/groupBy";
 import _first from "lodash/first";
 import _last from "lodash/last";
-import { ladderGoal } from "@/stores/gnl";
+import { ladderGoal, teamGnlBanner } from "@/stores/gnl";
 import _take from "lodash/take";
 import _skip from "lodash/drop";
 
@@ -115,6 +115,7 @@ const options = {
 
 interface Props {
   prefix?: string;
+  team?: string;
   player: any;
   dates: any;
   teamPoints: number;
@@ -398,8 +399,17 @@ const avg = computed(() =>
           ><v-progress-circular indeterminate v-if="isNaN(player.points)" />
           <span
             v-else
-            :title="`${player.points} points from ladder, ${player.achievementPoints} points from achievements`"
-            >{{ player.totalPoints }}
+            :title="`${player.points} points from ladder, ${player.achievementPoints} points from achievements`">
+            <img
+              v-if="team"
+              style="
+                vertical-align: middle;
+                border-radius: 100px;
+                margin-left: -50px;
+              "
+              width="40px"
+              :src="teamGnlBanner(team)" />
+            {{ player.totalPoints }}
           </span>
         </span>
       </v-card-title>

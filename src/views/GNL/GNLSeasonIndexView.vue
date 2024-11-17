@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { useTheme } from "vuetify";
 import { computed, onMounted } from "vue";
-import { teamGnlBanner, useGNLStore } from "@/stores/gnl";
+import { achievements, teamGnlBanner, useGNLStore } from "@/stores/gnl";
 import { Race } from "@/stores/races";
 import VueCountdown from "@chenfengyuan/vue-countdown";
+
+import podium from "@/assets/gnl/15/podium.png";
 
 const theme = useTheme();
 const isDark = computed(() => theme.global.current.value.dark);
@@ -905,6 +907,8 @@ import _range from "lodash/range";
 import _isEmpty from "lodash/isEmpty";
 import _take from "lodash/take";
 import _skip from "lodash/drop";
+import GNLCoachBanner from "@/components/gnl/GNLCoachBanner.vue";
+import GNLPlayerBanner from "@/components/gnl/GNLPlayerBanner.vue";
 
 ChartJS.register(
   LineController,
@@ -930,7 +934,7 @@ const options = {
     y: {
       grid: { display: false },
       min: 0,
-      suggestedMax: 1000,
+      suggestedMax: 12000,
     },
   },
 } as any;
@@ -963,20 +967,39 @@ const leader = computed(() => {
   return i > 0 ? store.data?.teams?.[i] : {};
 });
 
+const winnerId = "gigglinggoblins";
+const winner = computed(() => {
+  return store.data?.teams?.find((t: any) => t.id === winnerId);
+});
+
 // Text
+// const model = defineModel<string>({
+//   default: `
+//   # Information about the page
+//   This page is a support tool to help motivate all the GNL participants and teams to practice on the [w3c ladder](https://w3champions.com/) in between official GNL games.
+//   If you are on a team, you can contribute to make sure that **your** team wins the GNL Ladder race!
+//
+//   Every win on the ladder awards **3** points, and every loss awards **1** point for the team that you represent. __Regardless of MMR__
+//
+//   This overview page shows the current total ladder points for each team, with the current leader - and the individual team pages show both information
+//   about coaches and players! You can access the team pages in the menu on the left or by clicking the team icon above!
+//
+//   Can you help your team win the ladder race? Are you the one to claim ladder RANK #1 on your team?
+//   Why delay? Go search for a ladder game right now and find out!
+//   `,
+// });
+
 const model = defineModel<string>({
   default: `
-  # Information about the page
-  This page is a support tool to help motivate all the GNL participants and teams to practice on the [w3c ladder](https://w3champions.com/) in between official GNL games.
-  If you are on a team, you can contribute to make sure that **your** team wins the GNL Ladder race!
+  Giggling goblins took this seasons LADDER win with an astonishing **9689** POINTS and **2832** ladder games.
+  beating the second place with over 900 games and almost 3000 points!
 
-  Every win on the ladder awards **3** points, and every loss awards **1** point for the team that you represent. __Regardless of MMR__
+  Led by the almighty undead coaches NORTHDRAKKAR and EMBER they were the only team to secure MULTIPLE 5 orb winners, and the cryptlord chad himself was the only won to get the insane
+  ladder achievement of _50_ games in a single 24hr period! His might can most definetly **NOT** be matched!
 
-  This overview page shows the current total ladder points for each team, with the current leader - and the individual team pages show both information
-  about coaches and players! You can access the team pages in the menu on the left or by clicking the team icon above!
+  They are also the only team to have _EVERYONE_ contribute to ladder points - and the top 2 players are record holders with an 8 games/day average over a 5 week period! Insane!
 
-  Can you help your team win the ladder race? Are you the one to claim ladder RANK #1 on your team?
-  Why delay? Go search for a ladder game right now and find out!
+  **CONGRATULATIONS AGAIN!**
   `,
 });
 
@@ -1155,25 +1178,386 @@ onMounted(() => {
         >
 
         <v-row>
+          <v-col cols="12" class="text-center text-h4" style="color: goldenrod">
+            Season 15 Summary
+            <hr color="goldenrod" />
+          </v-col>
+
           <v-col cols="12" class="text-center">
-            <div class="text-md-h3 text-h5">
-              Welcome to the <span class="text-green-accent-4">un</span>Official
-              GNL site
-            </div>
+            <h1>
+              Congratulations to the
+              <span style="color: goldenrod; font-weight: bolder">WINNER</span>
+              Giggling Goblins!
+            </h1>
+            <img :src="podium" height="80%" style="opacity: 0.85" />
+          </v-col>
+
+          <v-col cols="12">
+            <v-row class="justify-center">
+              <v-col cols="12" md="3" v-for="coach in winner.coaches">
+                <GNLCoachBanner :prefix="''" :coach="coach" />
+              </v-col>
+            </v-row>
           </v-col>
           <v-col cols="12" class="text-center">
-            <section>
-              Visit the
-              <a
-                target="_blank"
-                href="https://warcraft-gym.com/gnl/schedule-week-1/"
-                >OFFICIAL</a
-              >
-              site for match schedules, standings and leaderboards for the team
-              matches!
-            </section>
+            <markdown-viewer v-model="model" />
           </v-col>
+
+          <v-row v-if="store.initialized">
+            <v-col cols="12">
+              <v-col cols="12" class="text-center">
+                <div class="text-h4">
+                  The <i>{{ store.orbs.length }}</i> players to achieve the GNL
+                  SEASON 15 Ladder goal of 500 points from ladder.
+                </div>
+                <div class="text-h5">
+                  5 ORBS to find them, and in the basement bind them!
+                </div>
+              </v-col>
+              <v-col cols="12">
+                <v-row class="justify-center">
+                  <v-col
+                    cols="12"
+                    md="3"
+                    v-for="(player, rank) in store.orbs.sort(
+                      (a, b) => b.totalPoints - a.totalPoints,
+                    )">
+                    <GNLPlayerBanner
+                      :team="player.team"
+                      :dates="store.dates"
+                      :rank="rank"
+                      :team-points="100"
+                      :prefix="player.prefix"
+                      :player="player" />
+                  </v-col>
+                </v-row>
+              </v-col>
+            </v-col>
+
+            <v-col cols="12" class="mt-5">
+              <div class="text-h4 text-center">
+                Some FUN records and stats from the players involved
+              </div>
+              <hr />
+            </v-col>
+
+            <v-col cols="12">
+              <v-row class="justify-center mb-15 mt-5">
+                <v-col cols="12" class="text-h4 text-center"
+                  >Best Of Each Race</v-col
+                >
+                <hr />
+                <v-col cols="12" md="">
+                  <GNLPlayerBanner
+                    :dates="store.dates"
+                    :rank="0"
+                    :team-points="100"
+                    :team="store.playerStats['bestNightElf'].team"
+                    :prefix="store.playerStats['bestNightElf'].prefix"
+                    :player="store.playerStats['bestNightElf']" />
+                </v-col>
+                <v-col cols="12" md="">
+                  <GNLPlayerBanner
+                    :dates="store.dates"
+                    :rank="1"
+                    :team-points="100"
+                    :team="store.playerStats['bestHuman'].team"
+                    :prefix="store.playerStats['bestHuman'].prefix"
+                    :player="store.playerStats['bestHuman']" />
+                </v-col>
+                <v-col cols="12" md="">
+                  <GNLPlayerBanner
+                    :dates="store.dates"
+                    :rank="2"
+                    :team-points="100"
+                    :team="store.playerStats['bestUndead'].team"
+                    :prefix="store.playerStats['bestUndead'].prefix"
+                    :player="store.playerStats['bestUndead']" />
+                </v-col>
+                <v-col cols="12" md="">
+                  <GNLPlayerBanner
+                    :dates="store.dates"
+                    :rank="3"
+                    :team-points="100"
+                    :team="store.playerStats['bestOrc'].team"
+                    :prefix="store.playerStats['bestOrc'].prefix"
+                    :player="store.playerStats['bestOrc']" />
+                </v-col>
+                <v-col cols="12" md="">
+                  <GNLPlayerBanner
+                    :dates="store.dates"
+                    :rank="4"
+                    :team-points="100"
+                    :team="store.playerStats['bestRandom'].team"
+                    :prefix="store.playerStats['bestRandom'].prefix"
+                    :player="store.playerStats['bestRandom']" />
+                </v-col>
+              </v-row>
+              <v-row class="justify-center mb-5">
+                <v-col cols="6" class="text-center">
+                  <v-col cols="12" class="text-h4"
+                    >Most Games Played (<span class="text-orange">{{
+                      store.playerStats["mostGames"].data.total
+                    }}</span
+                    >)</v-col
+                  >
+                  <hr />
+                  <v-col cols="6" offset="3" class="">
+                    <GNLPlayerBanner
+                      :dates="store.dates"
+                      :rank="0"
+                      :team-points="100"
+                      :team="store.playerStats['mostGames'].team"
+                      :prefix="store.playerStats['mostGames'].prefix"
+                      :player="store.playerStats['mostGames']" />
+                  </v-col>
+                </v-col>
+
+                <v-col cols="6" class="text-center">
+                  <v-col cols="12" class="text-h4"
+                    >Most MMR Gained (<span class="text-green"
+                      >+{{ store.playerStats["mostMMR"].data.mmr.diff }}</span
+                    >)</v-col
+                  >
+                  <hr />
+                  <v-col cols="6" offset="3" class="">
+                    <GNLPlayerBanner
+                      :dates="store.dates"
+                      :rank="0"
+                      :team-points="100"
+                      :team="store.playerStats['mostMMR'].team"
+                      :prefix="store.playerStats['mostMMR'].prefix"
+                      :player="store.playerStats['mostMMR']" />
+                  </v-col>
+                </v-col>
+              </v-row>
+
+              <v-row class="justify-center mb-5">
+                <v-col cols="6" class="text-center">
+                  <v-col cols="12" class="text-h4"
+                    >Longest Win Streak (<span class="text-orange"
+                      >{{ store.playerStats["winStreak"].winStreak }}!!</span
+                    >)</v-col
+                  >
+                  <hr />
+                  <v-col cols="6" offset="3" class="">
+                    <GNLPlayerBanner
+                      :dates="store.dates"
+                      :rank="0"
+                      :team-points="100"
+                      :team="store.playerStats['winStreak'].team"
+                      :prefix="store.playerStats['winStreak'].prefix"
+                      :player="store.playerStats['winStreak']" />
+                  </v-col>
+                </v-col>
+
+                <v-col cols="6" class="text-center">
+                  <v-col cols="12" class="text-h4"
+                    >Most Achievements (<span class="text-orange">{{
+                      store.playerStats["mostAchievements"].achievements.length
+                    }}</span
+                    >)</v-col
+                  >
+                  <hr />
+                  <v-col cols="6" offset="3" class="">
+                    <GNLPlayerBanner
+                      :dates="store.dates"
+                      :rank="0"
+                      :team-points="100"
+                      :team="store.playerStats['mostAchievements'].team"
+                      :prefix="store.playerStats['mostAchievements'].prefix"
+                      :player="store.playerStats['mostAchievements']" />
+                  </v-col>
+                </v-col>
+              </v-row>
+
+              <v-row class="justify-center mb-5">
+                <v-col cols="6" class="text-center">
+                  <v-col cols="12" class="text-h4"
+                    >Most Games On The First Day(<span class="text-orange">{{
+                      store.playerStats["mostGamesFirstDay"].gamesFirstDay
+                    }}</span
+                    >)</v-col
+                  >
+                  <hr />
+                  <v-col cols="6" offset="3" class="">
+                    <GNLPlayerBanner
+                      :dates="store.dates"
+                      :rank="0"
+                      :team-points="100"
+                      :team="store.playerStats['mostGamesFirstDay'].team"
+                      :prefix="store.playerStats['mostGamesFirstDay'].prefix"
+                      :player="store.playerStats['mostGamesFirstDay']" />
+                  </v-col>
+                </v-col>
+
+                <v-col cols="6" class="text-center">
+                  <v-col cols="12" class="text-h4"
+                    >Most Games On The Last Day (<span class="text-orange">{{
+                      store.playerStats["mostGamesLastDay"].gamesLastDay
+                    }}</span
+                    >)</v-col
+                  >
+                  <hr />
+                  <v-col cols="6" offset="3" class="">
+                    <GNLPlayerBanner
+                      :dates="store.dates"
+                      :rank="0"
+                      :team-points="100"
+                      :team="store.playerStats['mostGamesLastDay'].team"
+                      :prefix="store.playerStats['mostGamesLastDay'].prefix"
+                      :player="store.playerStats['mostGamesLastDay']" />
+                  </v-col>
+                </v-col>
+              </v-row>
+
+              <v-row class="justify-center mb-5">
+                <v-col cols="6" class="text-center">
+                  <v-col cols="12" class="text-h4"
+                    >Most Games In A Single Day(<span class="text-orange"
+                      >53</span
+                    >)</v-col
+                  >
+                  <hr />
+                  <v-col cols="6" offset="3" class="">
+                    <GNLPlayerBanner
+                      :dates="store.dates"
+                      :rank="0"
+                      :team-points="100"
+                      :team="store.playerStats['mostGamesSingleDay'].team"
+                      :prefix="store.playerStats['mostGamesSingleDay'].prefix"
+                      :player="store.playerStats['mostGamesSingleDay']" />
+                  </v-col>
+                </v-col>
+
+                <v-col cols="6" class="text-center">
+                  <v-col cols="12" class="text-h4"
+                    >Most MMR Gained In A Single Day (<span class="text-green"
+                      >+{{
+                        store.playerStats["mostMMRInADay"].mostMMRInADay
+                      }}</span
+                    >)</v-col
+                  >
+                  <hr />
+                  <v-col cols="6" offset="3" class="">
+                    <GNLPlayerBanner
+                      :dates="store.dates"
+                      :rank="0"
+                      :team-points="100"
+                      :team="store.playerStats['mostMMRInADay'].team"
+                      :prefix="store.playerStats['mostMMRInADay'].prefix"
+                      :player="store.playerStats['mostMMRInADay']" />
+                  </v-col>
+                </v-col>
+              </v-row>
+            </v-col>
+
+            <v-col cols="12" class="mt-10">
+              <div class="text-h4 text-center">Achievements</div>
+              <hr />
+            </v-col>
+            <v-col cols="12 text-center">
+              <div>
+                We had
+                <span style="color: goldenrod; font-weight: bolder">{{
+                  Object.keys(achievements).length
+                }}</span>
+                achievements that each player could achieve. All of them were
+                achieved - but some were more rare than others!
+              </div>
+              <div>
+                We had {{ store.numberOfPlayers }} players registered - below is
+                an overview of the achievements for all players.
+              </div>
+              <div>
+                The season ladder goal for GNL Season 15 was to get 500 ladder
+                points / 100 per ORB
+              </div>
+              <v-table>
+                <thead>
+                  <tr>
+                    <th></th>
+                    <th>Achievement</th>
+                    <th>Awarded Points</th>
+                    <th>Number of players</th>
+                    <th>% of players to achieve this</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="achievement in achievements">
+                    <td class="text-center">
+                      <v-btn
+                        size="x-small"
+                        variant="elevated"
+                        style="color: goldenrod; border: 1px solid goldenrod"
+                        color="dark"
+                        :icon="achievement.icon" />
+                    </td>
+                    <td class="text-left font-weight-bold">
+                      {{ achievement.description }}
+                    </td>
+                    <td class="text-center font-weight-bold">
+                      {{ achievement.points }}
+                    </td>
+                    <td class="text-center font-weight-bold">
+                      {{ store.achievementStats[achievement.id] }}
+                    </td>
+                    <td class="text-center font-weight-bold">
+                      <span
+                        v-if="store.achievementStats?.[achievement.id]"
+                        :class="{
+                          'text-green-lighten-4':
+                            store.achievementStats?.[achievement.id] < 150,
+                          'text-green-lighten-3':
+                            store.achievementStats?.[achievement.id] < 125,
+                          'text-green-lighten-2':
+                            store.achievementStats?.[achievement.id] < 100,
+                          'text-yellow-lighten-1':
+                            store.achievementStats?.[achievement.id] < 50,
+                          'text-orange':
+                            store.achievementStats?.[achievement.id] < 10,
+                        }">
+                        {{
+                          _round(
+                            (store.achievementStats[achievement.id] /
+                              store.numberOfPlayers) *
+                              100,
+                            2,
+                          )
+                        }}
+                        %
+                      </span>
+                    </td>
+                  </tr>
+                </tbody>
+              </v-table>
+            </v-col>
+
+            <v-col cols="12" class="mt-10">
+              <div class="text-h4 text-center">Feedback</div>
+              <hr />
+            </v-col>
+          </v-row>
+          <v-row v-else>
+            <v-col cols="12" class="text-center">
+              <v-progress-circular
+                indeterminate
+                color="secondary"></v-progress-circular>
+              <div class="text-secondary font-weight-bold">
+                Calculating season summary...
+              </div>
+            </v-col>
+            <v-col cols="12">
+              <v-skeleton-loader type="card"></v-skeleton-loader>
+            </v-col>
+          </v-row>
+          <v-col cols="12" class="text-center text-h6">
+            If you found this page useful/fun and have some
+            <strong>FEEDBACK</strong> for next season, don't hesitate to give me
+            a message on the w3champions or wc3 gym discord - @Longjacket</v-col
+          >
         </v-row>
+
         <v-row>
           <v-col
             cols="12"
@@ -1259,19 +1643,6 @@ onMounted(() => {
               <span>Let's Go!</span>
             </div>
           </v-col>
-          <v-col
-            cols="12"
-            class="text-center"
-            v-if="store.dates.timeRemaining <= 0">
-            <div
-              class="text-md-h3 text-h4 font-weight-bold"
-              style="color: goldenrod">
-              <div>GNL Season 15 is now finished!</div>
-              <div>
-                Thanks for participating - check back soon for a season summary!
-              </div>
-            </div>
-          </v-col>
           <v-col cols="12" class="text-center" v-if="false">
             <div class="text-md-h4 text-h5 font-weight-bold">
               <span
@@ -1281,11 +1652,6 @@ onMounted(() => {
               <span class="px-2">-</span>
               <span>HYPE!</span>
             </div>
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col cols="12">
-            <markdown-viewer v-model="model" />
           </v-col>
         </v-row>
       </v-sheet>
