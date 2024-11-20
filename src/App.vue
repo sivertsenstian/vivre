@@ -128,6 +128,12 @@ const route = useRoute();
             to="/gnl/gnlbears"></v-list-item>
         </v-list-group>
         <v-list-item
+          color="red"
+          prepend-icon="mdi-earth"
+          title="Makrura"
+          router
+          to="/makrura"></v-list-item>
+        <v-list-item
           color="green"
           prepend-icon="mdi-information"
           title="Settings"
