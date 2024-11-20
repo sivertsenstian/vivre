@@ -508,6 +508,8 @@ export const useGNLStore = defineStore("gnl", () => {
       bestUndead: any = null,
       bestRandom: any = null;
 
+    let ladderGoals: any[] = [];
+
     for (let i = 0; i < teams.length; i++) {
       const team = teams[i];
       team.achievements = {};
@@ -533,8 +535,9 @@ export const useGNLStore = defineStore("gnl", () => {
           countAchievements(team.achievements, player.achievements);
           countAchievements(achievementCount, player.achievements);
           numberOfPlayers.value++;
+
           if (player.points >= 500) {
-            orbs.value.push(player);
+            ladderGoals.push(player);
           }
 
           // Fun
@@ -630,6 +633,8 @@ export const useGNLStore = defineStore("gnl", () => {
         bestUndead,
         bestRandom,
       };
+
+      orbs.value = ladderGoals;
     }
   };
 
