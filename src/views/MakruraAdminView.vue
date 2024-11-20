@@ -248,7 +248,9 @@ const rules = [
         <v-form>
           <v-row
             ><v-col cols="8">
-              <div class="text-h5 font-weight-bold">Edit Build Order</div>
+              <div class="text-h5 font-weight-bold">
+                Makrura World Wide - Administrator
+              </div>
             </v-col>
           </v-row>
           <v-row>
