@@ -39,8 +39,8 @@ const rules = [
     return (
       !value ||
       !value.length ||
-      value[0].size < 250000 ||
-      "Size of proof should be less than 250 KB!"
+      value[0].size < 500000 ||
+      "Size of proof should be less than 500 KB!"
     );
   },
 ];

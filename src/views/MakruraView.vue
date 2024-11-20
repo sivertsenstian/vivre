@@ -124,7 +124,7 @@ onMounted(() => {
             <h5><strong>Location</strong>: {title}</h5>
             <hr />
             <div style="margin-top: 5px; text-align: center;">
-              <img src={image} width="150px" height="auto" style="border: 2px solid goldenrod;"/>
+              <img src={image} width="250px" height="auto" style="border: 2px solid goldenrod;"/>
             </div>
           </div>
           `,
@@ -149,7 +149,7 @@ onMounted(() => {
             <h5><strong>On Holiday</strong>: {title}</h5>
             <hr />
             <div style="margin-top: 5px; text-align: center;">
-              <img src={image} width="150px" height="auto" style="border: 2px solid goldenrod;"/>
+              <img src={image} width="250px" height="auto" style="border: 2px solid goldenrod;"/>
             </div>
           </div>
           `,
