@@ -1,6 +1,8 @@
 import { createRouter, createWebHashHistory } from "vue-router";
 import VivreView from "@/views/VivreView.vue";
 import SettingsView from "@/views/SettingsView.vue";
+import MakruraView from "@/views/MakruraView.vue";
+import MakruraAdminView from "@/views/MakruraAdminView.vue";
 import AboutView from "@/views/AboutView.vue";
 import CreepRoutesView from "@/views/CreepRoutesView.vue";
 import SeasonView from "@/views/SeasonView.vue";
@@ -75,6 +77,16 @@ const router = createRouter({
         {
           path: ":team",
           component: GNLSeasonTeamView,
+        },
+      ],
+    },
+    {
+      path: "/makrura",
+      children: [
+        { path: "", name: "makrura", component: MakruraView },
+        {
+          path: "admin",
+          component: MakruraAdminView,
         },
       ],
     },
