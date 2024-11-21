@@ -65,6 +65,10 @@ export const useStatsStore = defineStore("stats", () => {
     count: 0,
     matches: [],
   });
+  const monthly = ref<{ count: number; matches: any[] }>({
+    count: 0,
+    matches: [],
+  });
   const season = ref<{ count: number; matches: any[] }>({
     count: 0,
     matches: [],
@@ -73,7 +77,8 @@ export const useStatsStore = defineStore("stats", () => {
   const highscore = ref<any>({});
 
   const today = moment().startOf("day");
-  const rule = moment().startOf("isoWeek");
+  const weekRule = moment().startOf("isoWeek");
+  const monthRule = moment().startOf("month");
 
   const player = ref<IStatistics>();
 
@@ -109,6 +114,7 @@ export const useStatsStore = defineStore("stats", () => {
   const getMatches = async () => {
     let result: IStatistics = {} as any;
     let seasonActual = [];
+    let monthActual = [];
     let weekActual = [];
     let dayActual = [];
 
@@ -122,8 +128,11 @@ export const useStatsStore = defineStore("stats", () => {
       )?.players?.[0]?.race;
 
       seasonActual = all;
+      monthActual = all
+        .filter((m: any) => moment(m.endTime).isAfter(monthRule))
+        .filter((m: any) => isRace(tag.value, m, race));
       weekActual = all
-        .filter((m: any) => moment(m.endTime).isAfter(rule))
+        .filter((m: any) => moment(m.endTime).isAfter(weekRule))
         .filter((m: any) => isRace(tag.value, m, race));
       dayActual = all
         .filter((m: any) => moment(m.endTime).isAfter(today))
@@ -152,6 +161,7 @@ export const useStatsStore = defineStore("stats", () => {
         race: info.race,
         day: getRaceStatistics(tag.value, dayActual),
         week: getRaceStatistics(tag.value, weekActual),
+        month: getRaceStatistics(tag.value, monthActual),
         season: {
           summary: {
             ...getRaceStatistics(tag.value, seasonActual),
@@ -182,7 +192,10 @@ export const useStatsStore = defineStore("stats", () => {
       player.value = result;
       daily.value = { matches: dayActual, count: dayActual.length };
       weekly.value = { matches: weekActual, count: weekActual.length };
+      monthly.value = { matches: monthActual, count: monthActual.length };
       season.value = { matches: seasonActual, count: seasonActual.length };
+
+      console.log({ result });
     }
   };
 

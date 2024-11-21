@@ -21,6 +21,8 @@ import r_banner from "@/assets/take_a_look_at_banner_random.png";
 import ud_banner from "@/assets/take_a_look_at_banner_undead.png";
 import ne_banner from "@/assets/take_a_look_at_banner_nightelf.png";
 import oc_banner from "@/assets/take_a_look_at_banner_orc.png";
+import GNLPlayerBanner from "@/components/gnl/GNLPlayerBanner.vue";
+import { calculateLadderPoints } from "@/stores/gnl.ts";
 
 const raceBanner: any = {
   [Race.Human]: hu_banner,
@@ -228,6 +230,49 @@ setInterval(() => {
                     </v-col>
                   </v-row>
                 </v-col>
+              </v-row>
+            </v-sheet>
+          </v-col>
+
+          <v-col cols="12">
+            <v-sheet class="pa-4" :elevation="5">
+              <v-row>
+                <v-col cols="12" md="8" class="text-center"> Here? </v-col>
+              </v-row>
+              <v-row>
+                <v-col cols="4">
+                  <GNLPlayerBanner
+                    :player="{
+                      ...stats.player,
+                      data: stats.player.month,
+                      achievements: stats.player.month.achievements,
+                      achievementPoints: stats.player.month.achievementPoints,
+                      points: stats.player.month.points,
+                      totalPoints: stats.player.month.totalPoints,
+                    }"
+                    :dates="{
+                      start: moment().utc().startOf('month'),
+                      end: moment.utc().endOf('month'),
+                      today: moment().utc(true).endOf('day'),
+                      daysSinceStart: Math.abs(
+                        moment()
+                          .utc(true)
+                          .endOf('day')
+                          .diff(moment().utc().startOf('month'), 'days'),
+                      ),
+                      durationInDays: Math.abs(
+                        moment
+                          .utc()
+                          .endOf('month')
+                          .diff(moment.utc().startOf('month'), 'days'),
+                      ),
+                    }"
+                    :team-points="100"
+                    :rank="0" />
+                </v-col>
+
+                <v-col cols="4"> ADD Challenger </v-col>
+                <v-col cols="4"> ADD Challenger </v-col>
               </v-row>
             </v-sheet>
           </v-col>

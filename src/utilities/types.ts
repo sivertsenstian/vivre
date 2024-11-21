@@ -1,5 +1,10 @@
 ﻿import { Race } from "@/stores/races";
 import type { Moment } from "moment";
+import {
+  calculateAchievementPoints,
+  calculateLadderPoints,
+  calculatePlayerAchievements,
+} from "@/stores/gnl.ts";
 
 export interface IVSRaceStatistics {
   total: number;
@@ -23,6 +28,10 @@ export interface IRaceStatistics {
   loss: number;
   percentage: number;
   performance: boolean[];
+  points: number;
+  achievements: any[];
+  achievementPoints: number;
+  totalPoints: number;
   mmr: {
     initial: number;
     current: number;
@@ -48,6 +57,7 @@ export interface IStatistics {
   race: Race;
   day: IRaceStatistics;
   week: IRaceStatistics;
+  month: IRaceStatistics;
   season: {
     summary: IRaceStatisticsSummary;
     [Race.Random]: IRaceStatistics;
