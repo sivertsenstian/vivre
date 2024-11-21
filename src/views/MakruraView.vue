@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { onMounted, useTemplateRef, watch } from "vue";
+import { computed, onMounted, useTemplateRef, watch } from "vue";
+import { countries as allCountries, getCountryData } from "countries-list";
 import makrura from "@/assets/makrura.png";
 import holiday_makrura from "@/assets/makrura_holiday.png";
 import missing_makrura from "@/assets/makrura_missing.png";
@@ -13,6 +14,7 @@ import am5geodata_worldLow from "@amcharts/amcharts5-geodata/worldLow";
 import am5themes_Animated from "@amcharts/amcharts5/themes/Animated";
 import { useMakruraStore } from "@/stores/makrura.ts";
 import router from "@/router";
+import _round from "lodash/round";
 
 const store = useMakruraStore();
 
@@ -22,6 +24,38 @@ let root: any = null;
 let polygonSeries: any = null;
 let chart: any = null;
 let pointSeries: any = null;
+
+const stats = computed(() => {
+  const owned = store.items.filter(
+    (m: any) => store.isvalid(m) && !m.visit,
+  ).length;
+  const onHoliday = store.items.filter(
+    (m: any) => store.isvalid(m) && m.visit,
+  ).length;
+
+  const continents = store.items
+    .filter(store.isvalid)
+    .reduce((r: any, v: any) => {
+      const c = getCountryData(v.country);
+      r = {
+        ...r,
+        [c.continent]: (r?.[c.continent] ?? 0) + 1,
+      } as any;
+      return r;
+    }, {} as any);
+
+  const all = Object.keys(allCountries)?.length ?? 0;
+
+  return {
+    continents,
+    countries: owned,
+    totalCountries: all,
+    countryCoverage: _round((owned / all) * 100, 2),
+    owners: owned,
+    onHoliday: onHoliday,
+    total: owned + onHoliday,
+  };
+});
 
 onMounted(() => {
   if (chartdiv.value) {
@@ -220,7 +254,7 @@ const draw = () => {
 
 <template>
   <main style="height: 100vh; overflow-y: auto">
-    <v-container fluid style="opacity: 0.9">
+    <v-container fluid style="opacity: 1">
       <v-sheet class="pa-8" elevation="5" style="min-height: 90vh">
         <v-row
           ><v-col cols="12" class="mt-5">
@@ -249,6 +283,71 @@ const draw = () => {
             <div class="makrura-globe" ref="makrura-globe"></div>
           </v-col>
         </v-row>
+        <v-row v-if="stats.total" class="legend">
+          <v-col cols="12" md="3">
+            <v-sheet
+              elevation="5"
+              style="border: 2px solid darkgoldenrod; border-radius: 10px">
+              <v-table>
+                <thead>
+                  <tr>
+                    <td colspan="1" class="text-h5 font-weight-bold">
+                      Stats
+                      <hr color="goldenrod" />
+                    </td>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="font-weight-bold">Countries:</td>
+                    <td class="font-weight-bold">
+                      <span style="color: goldenrod" class="font-weight-bold">{{
+                        stats.countries
+                      }}</span>
+                      / {{ stats.totalCountries }} ({{
+                        stats.countryCoverage
+                      }}%)
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="font-weight-bold">Continents:</td>
+                    <td class="font-weight-bold text-no-wrap">
+                      <span v-for="(v, k, i) in stats.continents">
+                        <span style="color: goldenrod" class="font-weight-bold">
+                          {{ k }}:
+                        </span>
+                        <span class="font-weight-bold"> {{ v }}</span>
+                        <span
+                          class="font-weight-bold"
+                          v-if="i !== Object.keys(stats.continents).length - 1">
+                          //
+                        </span>
+                      </span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="font-weight-bold">Makrura Owners:</td>
+                    <td class="font-weight-bold" style="color: goldenrod">
+                      {{ stats.owners }}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="font-weight-bold">Makruras On Holiday:</td>
+                    <td class="font-weight-bold" style="color: goldenrod">
+                      {{ stats.onHoliday }}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="font-weight-bold">Total Makruras:</td>
+                    <td class="font-weight-bold" style="color: goldenrod">
+                      {{ stats.total }}
+                    </td>
+                  </tr>
+                </tbody>
+              </v-table>
+            </v-sheet>
+          </v-col>
+        </v-row>
       </v-sheet>
     </v-container>
   </main>
@@ -257,7 +356,16 @@ const draw = () => {
 <style scoped>
 .makrura-globe {
   margin: auto;
-  width: 70vw;
-  height: 70vh;
+  width: 90vw;
+  height: 80vh;
+}
+
+@media (min-width: 960px) {
+  .legend {
+    position: relative;
+    bottom: 310px;
+    left: -30px;
+    height: 0;
+  }
 }
 </style>
