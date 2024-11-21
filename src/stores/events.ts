@@ -35,12 +35,14 @@ export const useEventsStore = defineStore("events", () => {
   const start = moment("07.10.2024", "DD.MM.YYYY").startOf("day");
   const today = moment().startOf("day");
   const daysSinceStart = today.diff(start, "days");
-  const rule = moment().startOf("isoWeek");
+  const weekRule = moment().startOf("isoWeek");
+  const monthRule = moment().startOf("month");
   const latest = 20;
 
   const getData = async (tag: string) => {
     let result: IStatistics = {} as any;
     let seasonActual = [];
+    let monthActual = [];
     let weekActual = [];
     let dayActual = [];
 
@@ -55,7 +57,10 @@ export const useEventsStore = defineStore("events", () => {
 
       seasonActual = all;
       weekActual = all
-        .filter((m: any) => moment(m.endTime).isAfter(rule))
+        .filter((m: any) => moment(m.endTime).isAfter(weekRule))
+        .filter((m: any) => isRace(tag, m, race));
+      monthActual = all
+        .filter((m: any) => moment(m.endTime).isAfter(monthRule))
         .filter((m: any) => isRace(tag, m, race));
       dayActual = all
         .filter((m: any) => moment(m.endTime).isAfter(today))
@@ -78,6 +83,7 @@ export const useEventsStore = defineStore("events", () => {
         race: info.race,
         day: getRaceStatistics(tag, dayActual),
         week: getRaceStatistics(tag, weekActual),
+        month: getRaceStatistics(tag, monthActual),
         season: {
           summary: {
             ...getRaceStatistics(tag, seasonActual),

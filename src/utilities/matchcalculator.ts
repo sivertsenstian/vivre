@@ -223,8 +223,6 @@ export const getRaceStatistics = (tag: string, m: any[]): IRaceStatistics => {
   result.achievementPoints = calculateAchievementPoints(result.achievements);
   result.totalPoints = result.points + result.achievementPoints;
 
-  console.log({ result });
-
   return result;
 };
 

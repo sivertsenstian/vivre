@@ -1,14 +1,17 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import NumberAnimation from "vue-number-animation";
 import moment from "moment";
 import _round from "lodash/round";
+import _capitalize from "lodash/capitalize";
+import _fromPairs from "lodash/fromPairs";
 import _has from "lodash/has";
 import ConfettiExplosion from "vue-confetti-explosion";
 import ResultChart from "@/components/ResultChart.vue";
 import WeeklyGoalChart from "@/components/WeeklyGoalChart.vue";
 import WeeklyResultChart from "@/components/WeeklyResultChart.vue";
 import Performance from "@/components/Performance.vue";
+import VersusBanner from "@/components/versus/VersusBanner.vue";
 import { useSettingsStore } from "@/stores/settings";
 import { useStatsStore } from "@/stores/stats";
 import { Race, creeproutes, raceIcon, heroIcon } from "@/stores/races";
@@ -21,8 +24,10 @@ import r_banner from "@/assets/take_a_look_at_banner_random.png";
 import ud_banner from "@/assets/take_a_look_at_banner_undead.png";
 import ne_banner from "@/assets/take_a_look_at_banner_nightelf.png";
 import oc_banner from "@/assets/take_a_look_at_banner_orc.png";
-import GNLPlayerBanner from "@/components/gnl/GNLPlayerBanner.vue";
-import { calculateLadderPoints } from "@/stores/gnl.ts";
+import VersusChallenger from "@/components/versus/VersusChallenger.vue";
+import _isNil from "lodash/isNil";
+import type { IStatistics } from "@/utilities/types.ts";
+import _sortBy from "lodash/sortBy";
 
 const raceBanner: any = {
   [Race.Human]: hu_banner,
@@ -43,6 +48,49 @@ setInterval(() => {
     .utc(moment().diff(stats?.ongoing?.start))
     .format("mm:ss");
 }, 1000);
+
+const getPoints = (v: IStatistics) => {
+  if (_isNil(v)) {
+    return 0;
+  }
+
+  if (settings.data.mode === "week") {
+    return v.week.totalPoints;
+  } else if (settings.data.mode === "month") {
+    return v.month.totalPoints;
+  } else if (settings.data.mode === "season") {
+    return v.season.summary.totalPoints;
+  }
+
+  return 0;
+};
+
+const rank = computed(() => {
+  let points: any[] = [];
+  let rank: Record<string, number> = {};
+
+  if (!_isNil(stats.player?.battleTag)) {
+    points.push({
+      id: stats.player.battleTag,
+      points: getPoints(stats.player),
+    });
+    for (const challenger of settings.data.challengers.filter(
+      (v) => !_isNil(v),
+    )) {
+      points.push({
+        id: challenger,
+        points: getPoints(stats.challengers[challenger]),
+      });
+    }
+    return _fromPairs(
+      _sortBy(points, "points")
+        .reverse()
+        .map((p, i) => [p.id, i]),
+    );
+  }
+
+  return rank;
+});
 </script>
 
 <template>
@@ -157,7 +205,7 @@ setInterval(() => {
                 </v-col>
               </v-row>
               <v-row>
-                <v-col cols="12" v-if="stats.player.week.total">
+                <v-col cols="12" v-if="settings.data.mmr">
                   <div class="text-h6">Weekly MMR Breakdown</div>
                   <hr />
                   <v-row class="mt-2">
@@ -230,49 +278,101 @@ setInterval(() => {
                     </v-col>
                   </v-row>
                 </v-col>
+                <v-row class="mt-2">
+                  <v-col cols="3">
+                    <div class="text-h6">Settings</div>
+                    <hr color="darkgoldenrod" />
+                  </v-col>
+                  <v-col cols="9" />
+                  <v-col cols="3">
+                    <v-text-field
+                      variant="underlined"
+                      hide-details
+                      density="compact"
+                      label="Weekly Ladder Goal (total number of games)"
+                      v-model.trim="settings.data.goal"
+                      clearable />
+                  </v-col>
+                  <v-col cols="3">
+                    <v-text-field
+                      variant="underlined"
+                      hide-details
+                      density="compact"
+                      label="MMR Ladder Goal"
+                      v-model.trim="settings.data.mmr"
+                      clearable />
+                  </v-col>
+                  <v-col cols="5" class="text-right">
+                    <v-radio-group inline v-model="settings.data.mode">
+                      <v-radio
+                        v-for="mode in settings.modes"
+                        :label="_capitalize(mode)"
+                        :value="mode"
+                        density="comfortable" />
+                    </v-radio-group>
+                  </v-col>
+                </v-row>
               </v-row>
             </v-sheet>
           </v-col>
 
-          <v-col cols="12">
+          <v-col cols="12" v-if="settings.data.battleTag">
             <v-sheet class="pa-4" :elevation="5">
               <v-row>
-                <v-col cols="12" md="8" class="text-center"> Here? </v-col>
+                <v-col cols="3">
+                  <div class="text-h6">Progression</div>
+                  <hr color="darkgoldenrod" />
+                </v-col>
+                <v-col cols="9" class="text-center">
+                  <span style="vertical-align: middle; font-weight: bold">
+                    Earn
+                    <span style="color: goldenrod; font-weight: bold"
+                      >points</span
+                    >
+                    and
+                    <span style="color: darkgoldenrod; font-weight: bold"
+                      >achievements</span
+                    >
+                    by playing ladder and add
+                    <i class="font-weight-bold">challengers</i> to compare
+                    yourself with your friends!
+                  </span>
+                </v-col>
               </v-row>
               <v-row>
                 <v-col cols="4">
-                  <GNLPlayerBanner
-                    :player="{
-                      ...stats.player,
-                      data: stats.player.month,
-                      achievements: stats.player.month.achievements,
-                      achievementPoints: stats.player.month.achievementPoints,
-                      points: stats.player.month.points,
-                      totalPoints: stats.player.month.totalPoints,
-                    }"
-                    :dates="{
-                      start: moment().utc().startOf('month'),
-                      end: moment.utc().endOf('month'),
-                      today: moment().utc(true).endOf('day'),
-                      daysSinceStart: Math.abs(
-                        moment()
-                          .utc(true)
-                          .endOf('day')
-                          .diff(moment().utc().startOf('month'), 'days'),
-                      ),
-                      durationInDays: Math.abs(
-                        moment
-                          .utc()
-                          .endOf('month')
-                          .diff(moment.utc().startOf('month'), 'days'),
-                      ),
-                    }"
-                    :team-points="100"
-                    :rank="0" />
+                  <versus-banner
+                    :player="stats.player"
+                    :mode="settings.data.mode"
+                    :season-end="settings.end"
+                    :rank="rank[stats.player.battleTag]" />
                 </v-col>
-
-                <v-col cols="4"> ADD Challenger </v-col>
-                <v-col cols="4"> ADD Challenger </v-col>
+                <v-col
+                  cols="4"
+                  v-for="(challenger, i) in settings.data.challengers">
+                  <versus-banner
+                    v-if="
+                      !_isNil(challenger) &&
+                      !_isNil(stats.challengers[challenger]?.battleTag)
+                    "
+                    :on-remove="
+                      () => {
+                        settings.data.challengers[i] = null;
+                      }
+                    "
+                    :challenger="challenger"
+                    :player="stats.challengers[challenger]"
+                    :mode="settings.data.mode"
+                    :season-end="settings.end"
+                    :rank="rank[challenger]" />
+                  <versus-challenger
+                    v-else
+                    :loading="
+                      !_isNil(challenger) &&
+                      _isNil(stats.challengers[challenger]?.battleTag)
+                    "
+                    v-model="settings.data.challengers[i]" />
+                </v-col>
               </v-row>
             </v-sheet>
           </v-col>

@@ -14,3 +14,8 @@ export const opponentHistoryUrl = (
 
 export const getMatchUrl = (id: string) =>
   `https://website-backend.w3champions.com/api/matches/${id}`;
+
+export const search = (name: string) =>
+  `https://website-backend.w3champions.com/api/players/global-search?search=${encodeURIComponent(
+    name,
+  )}&pageSize=20`;
