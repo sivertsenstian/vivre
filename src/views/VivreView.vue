@@ -389,6 +389,7 @@ const goal = computed(() => {
                 <v-col cols="12" md="5">
                   <WeeklyGoalChart
                     :played="Number(data.total)"
+                    :mode="settings.data.mode"
                     :goal="goal.total" />
                 </v-col>
               </v-row>

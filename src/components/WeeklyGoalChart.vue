@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { Doughnut } from "vue-chartjs";
 import { Chart as ChartJS, ArcElement } from "chart.js";
+import _capitalize from "lodash/capitalize";
 
 ChartJS.register(ArcElement);
 
-const props = defineProps({ played: Number, goal: Number });
+const props = defineProps({ played: Number, goal: Number, mode: String });
 
 const options = {
   radius: "80%",
@@ -53,7 +54,7 @@ const options = {
       style="position: relative; bottom: 180px; height: 0">
       <v-row class="text-center">
         <v-col cols="12" class="pa-0">
-          <span>Weekly Goal</span>
+          <span>{{ _capitalize(mode) }}ly Goal</span>
         </v-col>
         <v-col cols="12" class="pa-0">
           <span
