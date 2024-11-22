@@ -1,6 +1,5 @@
 import { createRouter, createWebHashHistory } from "vue-router";
 import VivreView from "@/views/VivreView.vue";
-import SettingsView from "@/views/SettingsView.vue";
 import MakruraView from "@/views/MakruraView.vue";
 import MakruraAdminView from "@/views/MakruraAdminView.vue";
 import AboutView from "@/views/AboutView.vue";
@@ -89,11 +88,6 @@ const router = createRouter({
           component: MakruraAdminView,
         },
       ],
-    },
-    {
-      path: "/settings",
-      name: "settings",
-      component: SettingsView,
     },
     {
       path: "/about",

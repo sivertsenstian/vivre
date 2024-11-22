@@ -4,7 +4,7 @@ import { computed } from "vue";
 import _round from "lodash/round";
 
 interface Props {
-  result: { wins: number; loss: number; total: number };
+  result?: { wins?: number; loss?: number; total?: number };
   percentage?: boolean;
 }
 defineProps<Props>();
@@ -15,13 +15,12 @@ const isDark = computed(() => theme.global.current.value.dark);
 </script>
 
 <template>
-  <div v-if="result.total">
+  <div v-if="result?.total && result?.wins && result?.loss">
     <v-progress-linear
       color="green-lighten-1"
       :model-value="(result.wins / result.total) * 100"
       :height="height"
-      :style="{ top: height / 2 + 'px', border: '1px solid green' }"
-    >
+      :style="{ top: height / 2 + 'px', border: '1px solid green' }">
       <template v-slot:default="{ value }">
         <span
           v-if="result.wins"
@@ -44,16 +43,14 @@ const isDark = computed(() => theme.global.current.value.dark);
         top: -height / 2 + 'px',
         border: `1px solid ${isDark ? 'black' : 'white'}`,
       }"
-      reverse
-    >
+      reverse>
       <span
         v-if="result.loss"
         class="text-white text-caption font-weight-bold"
         :style="{
           marginLeft: (result.wins / result.total) * 100 + '%',
           color: 'lime',
-        }"
-      >
+        }">
         {{ result.loss }}L</span
       >
     </v-progress-linear>

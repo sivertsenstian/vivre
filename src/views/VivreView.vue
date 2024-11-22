@@ -1,14 +1,17 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import NumberAnimation from "vue-number-animation";
-import moment from "moment";
+import moment, { type Moment } from "moment";
 import _round from "lodash/round";
+import _capitalize from "lodash/capitalize";
+import _fromPairs from "lodash/fromPairs";
 import _has from "lodash/has";
 import ConfettiExplosion from "vue-confetti-explosion";
 import ResultChart from "@/components/ResultChart.vue";
 import WeeklyGoalChart from "@/components/WeeklyGoalChart.vue";
 import WeeklyResultChart from "@/components/WeeklyResultChart.vue";
 import Performance from "@/components/Performance.vue";
+import VersusBanner from "@/components/versus/VersusBanner.vue";
 import { useSettingsStore } from "@/stores/settings";
 import { useStatsStore } from "@/stores/stats";
 import { Race, creeproutes, raceIcon, heroIcon } from "@/stores/races";
@@ -21,6 +24,10 @@ import r_banner from "@/assets/take_a_look_at_banner_random.png";
 import ud_banner from "@/assets/take_a_look_at_banner_undead.png";
 import ne_banner from "@/assets/take_a_look_at_banner_nightelf.png";
 import oc_banner from "@/assets/take_a_look_at_banner_orc.png";
+import VersusChallenger from "@/components/versus/VersusChallenger.vue";
+import _isNil from "lodash/isNil";
+import type { IRaceStatistics, IStatistics } from "@/utilities/types.ts";
+import _sortBy from "lodash/sortBy";
 
 const raceBanner: any = {
   [Race.Human]: hu_banner,
@@ -41,6 +48,102 @@ setInterval(() => {
     .utc(moment().diff(stats?.ongoing?.start))
     .format("mm:ss");
 }, 1000);
+
+const data = computed<Partial<IRaceStatistics>>(() => {
+  if (!_isNil(stats.player)) {
+    if (settings.data.mode === "week") {
+      return stats.player.week;
+    } else if (settings.data.mode === "month") {
+      return stats.player.month;
+    } else if (settings.data.mode === "season") {
+      return stats.player.season.summary;
+    }
+  }
+  return { wins: 0, loss: 0, total: 0 };
+});
+
+const getPoints = (v: IStatistics) => {
+  if (_isNil(v)) {
+    return 0;
+  }
+
+  if (settings.data.mode === "week") {
+    return v.week.totalPoints;
+  } else if (settings.data.mode === "month") {
+    return v.month.totalPoints;
+  } else if (settings.data.mode === "season") {
+    return v.season.summary.totalPoints;
+  }
+
+  return 0;
+};
+
+const rank = computed(() => {
+  let points: any[] = [];
+  let rank: Record<string, number> = {};
+
+  if (!_isNil(stats.player?.battleTag)) {
+    points.push({
+      id: stats.player.battleTag,
+      points: getPoints(stats.player),
+    });
+    for (const challenger of settings.data.challengers.filter(
+      (v) => !_isNil(v),
+    )) {
+      points.push({
+        id: challenger,
+        points: getPoints(stats.challengers[challenger]),
+      });
+    }
+    return _fromPairs(
+      _sortBy(points, "points")
+        .reverse()
+        .map((p, i) => [p.id, i]),
+    );
+  }
+
+  return rank;
+});
+
+const getNumberOfWeeksInMonth = (momentDate: Moment) => {
+  const monthStartWeekNumber = momentDate.startOf("month").week();
+
+  const distinctWeeks = {
+    [monthStartWeekNumber]: true,
+  };
+
+  let startOfMonth = momentDate.clone().startOf("month");
+  let endOfMonth = momentDate.clone().endOf("month");
+
+  //  this is an 'inclusive' range -> iterates through all days of a month
+  for (
+    let day = startOfMonth.clone();
+    !day.isAfter(endOfMonth);
+    day.add(1, "days")
+  ) {
+    distinctWeeks[day.week()] = true;
+  }
+
+  return Object.keys(distinctWeeks).length;
+};
+
+const goal = computed(() => {
+  let total = 0;
+  let perDay = 0;
+
+  const setGoalPerDay = settings.data.goal;
+
+  if (!_isNil(stats.player)) {
+    if (settings.data.mode === "week") {
+      total = settings.data.goal * 7;
+    } else if (settings.data.mode === "month") {
+      total = setGoalPerDay * moment().daysInMonth();
+    } else if (settings.data.mode === "season") {
+      total = settings.duration * setGoalPerDay;
+    }
+  }
+  return { total: Math.ceil(total), perDayOfWeek: Math.ceil(total / 7) };
+});
 </script>
 
 <template>
@@ -48,190 +151,6 @@ setInterval(() => {
     <v-container fluid style="opacity: 0.9">
       <v-row>
         <v-col cols="12" md="8">
-          <v-col cols="12" v-if="!stats?.ongoing?.active">
-            <v-sheet class="pa-8" elevation="5">
-              <v-row>
-                <v-col cols="12" md="6">
-                  <v-col cols="12" class="text-center">
-                    <div class="text-md-h5 text-h6">
-                      Daily fill ({{ Math.ceil(settings.data.goal / 7) }} per
-                      day)
-                    </div>
-                    <ConfettiExplosion
-                      :particelCount="300"
-                      :stageWidth="2000"
-                      :stageHeight="2000"
-                      v-if="
-                        settings.data.goal > 0 &&
-                        stats.player.day.total > 0 &&
-                        stats.player.day.total ===
-                          Math.ceil(settings.data.goal / 7)
-                      " />
-                    <hr />
-                  </v-col>
-                  <v-col cols="12">
-                    <v-progress-linear
-                      :class="{
-                        'disable-animation': true,
-                        'text-white':
-                          stats.player.day.total >=
-                          Math.ceil(settings.data.goal / 7),
-                        'text-gray':
-                          stats.player.day.total <
-                          Math.ceil(settings.data.goal / 7),
-                      }"
-                      striped
-                      style="border: 1px solid gray"
-                      :color="
-                        stats.player.day.total >=
-                        Math.ceil(settings.data.goal / 7)
-                          ? 'success'
-                          : 'warning'
-                      "
-                      :model-value="stats.player.day.total"
-                      :max="Math.ceil(settings.data.goal / 7)"
-                      :height="50">
-                      <template v-slot:default="{ value }">
-                        <span class="text-gray text-h6"
-                          >{{
-                            _round(
-                              (stats.player.day.total /
-                                Math.ceil(settings.data.goal / 7)) *
-                                100,
-                            )
-                          }}
-                          %</span
-                        >
-                      </template>
-                    </v-progress-linear>
-                  </v-col>
-                  <v-col
-                    cols="12"
-                    class="text-center mt-5"
-                    v-if="
-                      stats.player.day.total < Math.ceil(settings.data.goal / 7)
-                    ">
-                    <div class="text-h6">
-                      Only
-                      {{
-                        Math.ceil(settings.data.goal / 7) -
-                        stats.player.day.total
-                      }}
-                      game(s) left - Go ladder!
-                    </div>
-                  </v-col>
-                  <v-col cols="12">
-                    <WeeklyResultChart
-                      :weekly="stats.weekly"
-                      :goal="Math.ceil(settings.data.goal / 7)" />
-                  </v-col>
-                </v-col>
-                <v-col cols="12" md="5">
-                  <WeeklyGoalChart
-                    :played="Number(stats.player.week.total)"
-                    :goal="Number(settings.data.goal)" />
-                </v-col>
-              </v-row>
-              <v-row>
-                <v-col cols="12" v-if="stats.player.week.total">
-                  <span class="title"
-                    >This Week ({{ stats.player.week.total }}):</span
-                  >
-                  <ResultChart :result="stats.player.week" />
-                </v-col>
-                <v-col cols="12" class="text-center" v-else>
-                  <span class="text-h6"
-                    >No games played yet this week - There is no time like the
-                    present!</span
-                  >
-                </v-col>
-              </v-row>
-              <v-row>
-                <v-col cols="12" v-if="stats.player.day.total">
-                  <span class="title"
-                    >Today ({{ stats.player.day.total }}):</span
-                  >
-                  <ResultChart :result="stats.player.day" />
-                </v-col>
-              </v-row>
-              <v-row>
-                <v-col cols="12" v-if="stats.player.week.total">
-                  <div class="text-h6">Weekly MMR Breakdown</div>
-                  <hr />
-                  <v-row class="mt-2">
-                    <v-col cols="12">
-                      <section>
-                        Calculated by taking average mmr gained over this weeks
-                        {{ stats.player.week.mmr.averages.count }} games played
-                        ({{ stats.player.week.mmr.averages.win }} gained,
-                        {{ stats.player.week.mmr.averages.loss }} lost).
-                      </section>
-                      <section>
-                        This means that you are currently
-                        {{
-                          Math.sign(stats.player.week.mmr.averages.gain) > 0
-                            ? "gaining"
-                            : "losing"
-                        }}
-                        <strong
-                          >{{
-                            Math.abs(stats.player.week.mmr.averages.gain)
-                          }}MMR</strong
-                        >
-                        per game (on average)
-                      </section>
-                      <v-sheet
-                        v-if="stats.player.week.mmr.averages.gain > 0"
-                        class="mt-1 text-green">
-                        <section class="font-weight-bold">
-                          On your current path it will take you
-                          {{
-                            numberOfGames(
-                              100,
-                              stats.player.week.mmr.averages.gain,
-                            )
-                          }}
-                          games to increase your MMR by 100 points
-                        </section>
-                        <section
-                          class="mt-1 font-weight-bold"
-                          v-if="
-                            settings.data?.mmr &&
-                            settings.data.mmr > stats.player.week.mmr.current
-                          ">
-                          And it will take you
-                          {{
-                            numberOfGames(
-                              settings.data.mmr - stats.player.week.mmr.current,
-                              stats.player.week.mmr.averages.gain,
-                            )
-                          }}
-                          games to reach your current MMR goal of
-                          {{ settings.data.mmr }} MMR.
-                        </section>
-                      </v-sheet>
-                      <div
-                        v-if="stats.player.week.mmr.averages.gain < 0"
-                        class="mt-1 text-red text-subtitle">
-                        <section>
-                          On your current path - you will have decreased your
-                          MMR by 100 points after
-                          {{
-                            numberOfGames(
-                              100,
-                              stats.player.week.mmr.averages.gain,
-                            )
-                          }}
-                          games.
-                        </section>
-                      </div>
-                    </v-col>
-                  </v-row>
-                </v-col>
-              </v-row>
-            </v-sheet>
-          </v-col>
-
           <v-col cols="12" v-if="stats?.ongoing?.active">
             <v-sheet class="pa-4" :elevation="5">
               <v-row>
@@ -388,6 +307,283 @@ setInterval(() => {
               </v-row>
             </v-sheet>
           </v-col>
+
+          <v-col cols="12" v-if="!stats?.ongoing?.active">
+            <v-sheet class="pa-8" elevation="5">
+              <v-row>
+                <v-col cols="12" md="6">
+                  <v-col cols="12" class="text-center">
+                    <div class="text-md-h5 text-h6">
+                      Daily fill ({{ Math.ceil(settings.data.goal / 7) }} per
+                      day)
+                    </div>
+                    <ConfettiExplosion
+                      :particelCount="300"
+                      :stageWidth="2000"
+                      :stageHeight="2000"
+                      v-if="
+                        settings.data.goal > 0 &&
+                        stats.player.day.total > 0 &&
+                        stats.player.day.total ===
+                          Math.ceil(settings.data.goal / 7)
+                      " />
+                    <hr />
+                  </v-col>
+                  <v-col cols="12">
+                    <v-progress-linear
+                      :class="{
+                        'disable-animation': true,
+                        'text-white':
+                          stats.player.day.total >=
+                          Math.ceil(settings.data.goal / 7),
+                        'text-gray':
+                          stats.player.day.total <
+                          Math.ceil(settings.data.goal / 7),
+                      }"
+                      striped
+                      style="border: 1px solid gray"
+                      :color="
+                        stats.player.day.total >=
+                        Math.ceil(settings.data.goal / 7)
+                          ? 'success'
+                          : 'warning'
+                      "
+                      :model-value="stats.player.day.total"
+                      :max="Math.ceil(settings.data.goal / 7)"
+                      :height="50">
+                      <template v-slot:default="{ value }">
+                        <span class="text-gray text-h6"
+                          >{{
+                            _round(
+                              (stats.player.day.total /
+                                Math.ceil(settings.data.goal / 7)) *
+                                100,
+                            )
+                          }}
+                          %</span
+                        >
+                      </template>
+                    </v-progress-linear>
+                  </v-col>
+                  <v-col
+                    cols="12"
+                    class="text-center mt-5"
+                    v-if="
+                      stats.player.day.total < Math.ceil(settings.data.goal / 7)
+                    ">
+                    <div class="text-h6">
+                      Only
+                      {{
+                        Math.ceil(settings.data.goal / 7) -
+                        stats.player.day.total
+                      }}
+                      game(s) left today - Go ladder!
+                    </div>
+                  </v-col>
+                  <v-col cols="12">
+                    <WeeklyResultChart
+                      :weekly="data"
+                      :goal="goal.perDayOfWeek" />
+                  </v-col>
+                </v-col>
+                <v-col cols="12" md="5">
+                  <WeeklyGoalChart
+                    :played="Number(data.total)"
+                    :goal="goal.total" />
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col cols="12" v-if="data.total">
+                  <span class="title"
+                    >This {{ _capitalize(settings.data.mode) }} ({{
+                      data.total
+                    }}):</span
+                  >
+                  <ResultChart :result="data" />
+                </v-col>
+                <v-col cols="12" class="text-center" v-else>
+                  <span class="text-h6"
+                    >No games played yet this
+                    {{ _capitalize(settings.data.mode) }} - There is no time
+                    like the present!</span
+                  >
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col cols="12" v-if="stats.player.day.total">
+                  <span class="title"
+                    >Today ({{ stats.player.day.total }}):</span
+                  >
+                  <ResultChart :result="stats.player.day" />
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col cols="12" v-if="settings.data.mmr && data.mmr">
+                  <div class="text-h6">
+                    {{ _capitalize(settings.data.mode) }}ly MMR Breakdown
+                  </div>
+                  <hr />
+                  <v-row class="mt-2">
+                    <v-col cols="12">
+                      <section>
+                        Calculated by taking average mmr gained over this
+                        {{ settings.data.mode }}s
+                        {{ data.mmr.averages.count }} game(s) played ({{
+                          data.mmr.averages.win
+                        }}
+                        gained, {{ data.mmr.averages.loss }} lost).
+                      </section>
+                      <section>
+                        This means that you are currently
+                        {{
+                          Math.sign(data.mmr.averages.gain) > 0
+                            ? "gaining"
+                            : "losing"
+                        }}
+                        <strong
+                          >{{ Math.abs(data.mmr.averages.gain) }}MMR</strong
+                        >
+                        per game (on average)
+                      </section>
+                      <v-sheet
+                        v-if="data.mmr.averages.gain > 0"
+                        class="mt-1 text-green">
+                        <section class="font-weight-bold">
+                          On your current path it will take you
+                          {{ numberOfGames(100, data.mmr.averages.gain) }}
+                          games to increase your MMR by 100 points
+                        </section>
+                        <section
+                          class="mt-1 font-weight-bold"
+                          v-if="
+                            settings.data?.mmr &&
+                            settings.data.mmr > data.mmr.current
+                          ">
+                          And it will take you
+                          {{
+                            numberOfGames(
+                              settings.data.mmr - data.mmr.current,
+                              data.mmr.averages.gain,
+                            )
+                          }}
+                          games to reach your current MMR goal of
+                          {{ settings.data.mmr }} MMR.
+                        </section>
+                      </v-sheet>
+                      <div
+                        v-if="stats.player.week.mmr.averages.gain < 0"
+                        class="mt-1 text-red text-subtitle">
+                        <section>
+                          On your current path - you will have decreased your
+                          MMR by 100 points after
+                          {{
+                            numberOfGames(
+                              100,
+                              stats.player.week.mmr.averages.gain,
+                            )
+                          }}
+                          games.
+                        </section>
+                      </div>
+                    </v-col>
+                  </v-row>
+                </v-col>
+              </v-row>
+            </v-sheet>
+          </v-col>
+
+          <v-col cols="12" v-if="settings.data.battleTag">
+            <v-sheet class="pa-4" :elevation="5">
+              <v-row>
+                <v-col cols="12" md="3">
+                  <div class="text-h6">Settings</div>
+                  <hr color="darkgoldenrod" />
+                </v-col>
+                <v-col cols="12" md="9" />
+                <v-col cols="12" md="4">
+                  <v-text-field
+                    variant="underlined"
+                    hide-details
+                    density="compact"
+                    label="Your Ladder Goal: Daily Number Of Games"
+                    v-model.trim="settings.data.goal"
+                    clearable />
+                </v-col>
+                <v-col cols="12" md="4">
+                  <v-text-field
+                    variant="underlined"
+                    hide-details
+                    density="compact"
+                    label="Your Ladder Goal: MMR"
+                    v-model.trim="settings.data.mmr"
+                    clearable />
+                </v-col>
+                <v-col cols="12" md="4" class="text-center">
+                  <v-radio-group inline v-model="settings.data.mode">
+                    <v-radio
+                      v-for="mode in settings.modes"
+                      :label="_capitalize(mode)"
+                      :value="mode"
+                      density="comfortable" />
+                  </v-radio-group>
+                </v-col>
+              </v-row>
+
+              <v-row>
+                <v-col cols="12" class="text-center">
+                  <span style="vertical-align: middle; font-weight: bold">
+                    Earn
+                    <span style="color: goldenrod; font-weight: bold"
+                      >points</span
+                    >
+                    and
+                    <span style="color: darkgoldenrod; font-weight: bold"
+                      >achievements</span
+                    >
+                    by playing ladder and add
+                    <i class="font-weight-bold">challengers</i> to compare
+                    yourself with your friends!
+                  </span>
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col cols="12" md="4">
+                  <versus-banner
+                    :player="stats.player"
+                    :mode="settings.data.mode"
+                    :season-end="settings.end"
+                    :rank="rank[stats.player.battleTag]" />
+                </v-col>
+                <v-col
+                  cols="12"
+                  md="4"
+                  v-for="(challenger, i) in settings.data.challengers">
+                  <versus-banner
+                    v-if="
+                      !_isNil(challenger) &&
+                      !_isNil(stats.challengers[challenger]?.battleTag)
+                    "
+                    :on-remove="
+                      () => {
+                        settings.data.challengers[i] = null;
+                      }
+                    "
+                    :challenger="challenger"
+                    :player="stats.challengers[challenger]"
+                    :mode="settings.data.mode"
+                    :season-end="settings.end"
+                    :rank="rank[challenger]" />
+                  <versus-challenger
+                    v-else
+                    :loading="
+                      !_isNil(challenger) &&
+                      _isNil(stats.challengers[challenger]?.battleTag)
+                    "
+                    v-model="settings.data.challengers[i]" />
+                </v-col>
+              </v-row>
+            </v-sheet>
+          </v-col>
         </v-col>
         <v-col cols="12" md="4" class="order-md-last order-first">
           <v-col cols="12">
@@ -435,7 +631,9 @@ setInterval(() => {
                             :src="raceIcon[stats.player.race]" />
                         </span>
                         <span
-                          v-if="stats.player.week.mmr.current > 100"
+                          v-if="
+                            !_isNil(data.mmr?.current) && data.mmr.current > 100
+                          "
                           class="text-h5 text-white"
                           style="
                             opacity: 0.87;
@@ -446,11 +644,8 @@ setInterval(() => {
                             width: 0;
                           ">
                           <NumberAnimation
-                            :from="
-                              stats.player.week.mmr.current +
-                              stats.player.day.mmr.diff
-                            "
-                            :to="stats.player.week.mmr.current"
+                            :from="data.mmr.current + stats.player.day.mmr.diff"
+                            :to="data.mmr.current"
                             :format="_round"
                             :duration="1"
                             autoplay
@@ -493,14 +688,13 @@ setInterval(() => {
                           <span class="ml-2 text-h6">
                             <span
                               :class="{
-                                'text-green': stats.player?.week?.mmr.diff > 0,
-                                'text-red': stats.player?.week?.mmr.diff < 0,
+                                'text-green': (data?.mmr?.diff ?? 0) > 0,
+                                'text-red': (data?.mmr?.diff ?? 0) < 0,
                               }">
-                              <span v-if="stats.player?.week?.mmr.diff > 0"
-                                >+</span
-                              >{{ stats.player?.week?.mmr.diff }}
+                              <span v-if="(data?.mmr?.diff ?? 0) > 0">+</span
+                              >{{ data?.mmr?.diff }}
                             </span>
-                            This week</span
+                            This {{ settings.data.mode }}</span
                           >
                         </v-col>
                       </v-row>
@@ -517,23 +711,19 @@ setInterval(() => {
                 <v-col cols="12">
                   <v-list lines="one" style="overflow: hidden">
                     <v-list-item :prepend-avatar="raceIcon[Race.Human]">
-                      <ResultChart
-                        :result="stats.player.week.race[Race.Human]" />
+                      <ResultChart :result="data.race?.[Race.Human]" />
                     </v-list-item>
                     <v-list-item :prepend-avatar="raceIcon[Race.Orc]">
-                      <ResultChart :result="stats.player.week.race[Race.Orc]" />
+                      <ResultChart :result="data.race?.[Race.Orc]" />
                     </v-list-item>
                     <v-list-item :prepend-avatar="raceIcon[Race.NightElf]">
-                      <ResultChart
-                        :result="stats.player.week.race[Race.NightElf]" />
+                      <ResultChart :result="data.race?.[Race.NightElf]" />
                     </v-list-item>
                     <v-list-item :prepend-avatar="raceIcon[Race.Undead]">
-                      <ResultChart
-                        :result="stats.player.week.race[Race.Undead]" />
+                      <ResultChart :result="data.race?.[Race.Undead]" />
                     </v-list-item>
                     <v-list-item :prepend-avatar="raceIcon[Race.Random]">
-                      <ResultChart
-                        :result="stats.player.week.race[Race.Random]" />
+                      <ResultChart :result="data.race?.[Race.Random]" />
                     </v-list-item>
                   </v-list>
                 </v-col>
@@ -550,8 +740,8 @@ setInterval(() => {
                 </v-col>
                 <v-col cols="12">
                   <Performance
-                    :visible="stats.player.week.total > 0"
-                    :performance="stats.player.week.performance"
+                    :visible="Number(data.total) > 0"
+                    :performance="data.performance ?? []"
                     :today="stats.player.day.total" />
                 </v-col>
               </v-row>
