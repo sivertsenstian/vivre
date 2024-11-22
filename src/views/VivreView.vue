@@ -142,7 +142,11 @@ const goal = computed(() => {
       total = settings.duration * setGoalPerDay;
     }
   }
-  return { total: Math.ceil(total), perDayOfWeek: Math.ceil(total / 7) };
+  return {
+    total: Math.ceil(total),
+    perDay: setGoalPerDay,
+    perDayOfWeek: Math.ceil(total / 7),
+  };
 });
 </script>
 
@@ -314,8 +318,7 @@ const goal = computed(() => {
                 <v-col cols="12" md="6">
                   <v-col cols="12" class="text-center">
                     <div class="text-md-h5 text-h6">
-                      Daily fill ({{ Math.ceil(settings.data.goal / 7) }} per
-                      day)
+                      Daily fill ({{ goal.perDayOfWeek }} per day)
                     </div>
                     <ConfettiExplosion
                       :particelCount="300"
@@ -324,8 +327,7 @@ const goal = computed(() => {
                       v-if="
                         settings.data.goal > 0 &&
                         stats.player.day.total > 0 &&
-                        stats.player.day.total ===
-                          Math.ceil(settings.data.goal / 7)
+                        stats.player.day.total === goal.perDay
                       " />
                     <hr />
                   </v-col>
@@ -333,32 +335,23 @@ const goal = computed(() => {
                     <v-progress-linear
                       :class="{
                         'disable-animation': true,
-                        'text-white':
-                          stats.player.day.total >=
-                          Math.ceil(settings.data.goal / 7),
-                        'text-gray':
-                          stats.player.day.total <
-                          Math.ceil(settings.data.goal / 7),
+                        'text-white': stats.player.day.total >= goal.perDay,
+                        'text-gray': stats.player.day.total < goal.perDay,
                       }"
                       striped
                       style="border: 1px solid gray"
                       :color="
-                        stats.player.day.total >=
-                        Math.ceil(settings.data.goal / 7)
+                        stats.player.day.total >= goal.perDay
                           ? 'success'
                           : 'warning'
                       "
                       :model-value="stats.player.day.total"
-                      :max="Math.ceil(settings.data.goal / 7)"
+                      :max="goal.perDay"
                       :height="50">
                       <template v-slot:default="{ value }">
                         <span class="text-gray text-h6"
                           >{{
-                            _round(
-                              (stats.player.day.total /
-                                Math.ceil(settings.data.goal / 7)) *
-                                100,
-                            )
+                            _round((stats.player.day.total / goal.perDay) * 100)
                           }}
                           %</span
                         >
@@ -368,15 +361,10 @@ const goal = computed(() => {
                   <v-col
                     cols="12"
                     class="text-center mt-5"
-                    v-if="
-                      stats.player.day.total < Math.ceil(settings.data.goal / 7)
-                    ">
+                    v-if="stats.player.day.total < goal.perDay">
                     <div class="text-h6">
                       Only
-                      {{
-                        Math.ceil(settings.data.goal / 7) -
-                        stats.player.day.total
-                      }}
+                      {{ goal.perDay - stats.player.day.total }}
                       game(s) left today - Go ladder!
                     </div>
                   </v-col>
