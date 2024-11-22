@@ -318,7 +318,7 @@ const goal = computed(() => {
                 <v-col cols="12" md="6">
                   <v-col cols="12" class="text-center">
                     <div class="text-md-h5 text-h6">
-                      Daily fill ({{ goal.perDayOfWeek }} per day)
+                      Daily fill ({{ goal.perDay }} per day)
                     </div>
                     <ConfettiExplosion
                       :particelCount="300"
