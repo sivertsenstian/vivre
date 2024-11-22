@@ -1,10 +1,10 @@
 ﻿<script setup lang="ts">
 import { Race, raceIcon } from "@/stores/races";
-import gnl_banner_hu from "@assets/gnl/gnl_banner_hu.png";
-import gnl_banner_ne from "@assets/gnl/gnl_banner_ne.png";
-import gnl_banner_ud from "@assets/gnl/gnl_banner_ud.png";
-import gnl_banner_oc from "@assets/gnl/gnl_banner_oc.png";
-import gnl_banner_rnd from "@assets/gnl/gnl_banner_rnd.png";
+import gnl_banner_hu from "@assets/gnl/gnl_banner_hu.jpg";
+import gnl_banner_ne from "@assets/gnl/gnl_banner_ne.jpg";
+import gnl_banner_ud from "@assets/gnl/gnl_banner_ud.jpg";
+import gnl_banner_oc from "@assets/gnl/gnl_banner_oc.jpg";
+import gnl_banner_rnd from "@assets/gnl/gnl_banner_rnd.jpg";
 import _range from "lodash/range";
 import moment from "moment/moment";
 import { getloss, getplayer, getwins } from "@/utilities/matchcalculator";

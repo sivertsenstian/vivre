@@ -1,25 +1,25 @@
 ﻿<script setup lang="ts">
 import { Race, raceIcon } from "@/stores/races";
-import gnl_banner_hu from "@assets/gnl/gnl_banner_hu.png";
-import gnl_banner_ne from "@assets/gnl/gnl_banner_ne.png";
-import gnl_banner_ud from "@assets/gnl/gnl_banner_ud.png";
-import gnl_banner_oc from "@assets/gnl/gnl_banner_oc.png";
-import gnl_banner_rnd from "@assets/gnl/gnl_banner_rnd.png";
+import banner_hu from "@assets/versus/banner_hu.png";
+import banner_ne from "@assets/versus/banner_ne.png";
+import banner_ud from "@assets/versus/banner_ud.png";
+import banner_oc from "@assets/versus/banner_oc.png";
+import banner_rnd from "@assets/versus/banner_rnd.png";
 import _range from "lodash/range";
 import moment from "moment/moment";
 import { getloss, getplayer, getwins } from "@/utilities/matchcalculator";
 import _fill from "lodash/fill";
 import w3ciconDark from "@/assets/w3c_dark.png";
 
-const raceGnlBanner: any = {
-  [Race.Human]: gnl_banner_hu,
-  [Race.NightElf]: gnl_banner_ne,
-  [Race.Undead]: gnl_banner_ud,
-  [Race.Orc]: gnl_banner_oc,
-  [Race.Random]: gnl_banner_rnd,
+const raceBanner: any = {
+  [Race.Human]: banner_hu,
+  [Race.NightElf]: banner_ne,
+  [Race.Undead]: banner_ud,
+  [Race.Orc]: banner_oc,
+  [Race.Random]: banner_rnd,
 };
 
-const raceGnlColor: any = {
+const raceColor: any = {
   [Race.Human]: "#e8b453",
   [Race.NightElf]: "#6a5693",
   [Race.Undead]: "#5198ba",
@@ -49,8 +49,6 @@ import _last from "lodash/last";
 import _take from "lodash/take";
 import _skip from "lodash/drop";
 import type { Moment } from "moment";
-import { ladderGoal } from "@/stores/gnl.ts";
-import _isNil from "lodash/isNil";
 
 ChartJS.register(
   LineController,
@@ -250,9 +248,7 @@ const avg = computed(() =>
     color="surface"
     class="text-center pa-0 card-shine-effect"
     :elevation="10">
-    <v-list-item
-      class="px-3"
-      :style="`background: ${raceGnlColor[player.race]}`">
+    <v-list-item class="px-3" :style="`background: ${raceColor[player.race]}`">
       <template v-slot:prepend>
         <img
           style="vertical-align: middle"
@@ -344,7 +340,7 @@ const avg = computed(() =>
       </template>
     </v-list-item>
 
-    <v-img height="250" :src="raceGnlBanner[player.race]" cover></v-img>
+    <v-img height="250" :src="raceBanner[player.race]" cover></v-img>
 
     <Bar
       v-if="data?.matches?.length"

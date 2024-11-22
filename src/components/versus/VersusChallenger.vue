@@ -1,30 +1,11 @@
 ﻿<script setup lang="ts">
 import { Race, raceIcon } from "@/stores/races";
-import gnl_banner_hu from "@assets/gnl/gnl_banner_hu.png";
-import gnl_banner_ne from "@assets/gnl/gnl_banner_ne.png";
-import gnl_banner_ud from "@assets/gnl/gnl_banner_ud.png";
-import gnl_banner_oc from "@assets/gnl/gnl_banner_oc.png";
-import gnl_banner_rnd from "@assets/gnl/gnl_banner_rnd.png";
+import banner_challenger from "@assets/versus/banner_challenger.png";
 import axios from "axios";
 import { ref } from "vue";
 import { search } from "@/utilities/api.ts";
-import type { Moment } from "moment/moment";
 
-const raceGnlBanner: any = {
-  [Race.Human]: gnl_banner_hu,
-  [Race.NightElf]: gnl_banner_ne,
-  [Race.Undead]: gnl_banner_ud,
-  [Race.Orc]: gnl_banner_oc,
-  [Race.Random]: gnl_banner_rnd,
-};
-
-const raceGnlColor: any = {
-  [Race.Human]: "#e8b453",
-  [Race.NightElf]: "#6a5693",
-  [Race.Undead]: "#5198ba",
-  [Race.Orc]: "#7b1414",
-  [Race.Random]: "#59524A",
-};
+const raceColor: any = "#daa520";
 const model = defineModel<string | null>();
 
 interface Props {
@@ -57,9 +38,7 @@ const getBattleTag = async (input: string) => {
     color="surface"
     class="text-center pa-0 card-shine-effect"
     :elevation="10">
-    <v-list-item
-      class="px-3"
-      :style="`background: ${raceGnlColor[Race.Random]}`">
+    <v-list-item class="px-3" :style="`background: ${raceColor}`">
       <template v-slot:prepend>
         <img
           style="vertical-align: middle"
@@ -71,7 +50,7 @@ const getBattleTag = async (input: string) => {
       </template>
     </v-list-item>
 
-    <v-img height="250" :src="raceGnlBanner[Race.Random]" cover></v-img>
+    <v-img height="250" :src="banner_challenger" cover></v-img>
 
     <v-card-item class="py-0">
       <v-card-title>
