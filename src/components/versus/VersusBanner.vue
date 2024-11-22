@@ -400,17 +400,6 @@ const avg = computed(() =>
         <span style="opacity: 0.7" class="me-1"
           >Avg. games: {{ avg }} per day
         </span>
-        <v-rating
-          readonly
-          half-increments
-          :length="5"
-          :size="20"
-          :model-value="((data?.wins * 3 + data?.loss) / 1000) * 5"
-          color="#b8860b"
-          active-color="#daa520"
-          empty-icon="mdi-circle-outline"
-          half-icon="mdi-circle-half-full"
-          :full-icon="'mdi-circle'" />
       </v-card-subtitle>
     </v-card-item>
 
