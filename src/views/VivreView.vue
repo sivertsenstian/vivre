@@ -460,17 +460,12 @@ const goal = computed(() => {
                         </section>
                       </v-sheet>
                       <div
-                        v-if="stats.player.week.mmr.averages.gain < 0"
+                        v-if="data.mmr.averages.gain < 0"
                         class="mt-1 text-red text-subtitle">
                         <section>
                           On your current path - you will have decreased your
                           MMR by 100 points after
-                          {{
-                            numberOfGames(
-                              100,
-                              stats.player.week.mmr.averages.gain,
-                            )
-                          }}
+                          {{ numberOfGames(100, data.mmr.averages.gain) }}
                           games.
                         </section>
                       </div>
