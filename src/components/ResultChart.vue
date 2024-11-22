@@ -2,6 +2,7 @@
 import { useTheme } from "vuetify";
 import { computed } from "vue";
 import _round from "lodash/round";
+import _isNil from "lodash/isNil";
 
 interface Props {
   result?: { wins?: number; loss?: number; total?: number };
@@ -15,7 +16,10 @@ const isDark = computed(() => theme.global.current.value.dark);
 </script>
 
 <template>
-  <div v-if="result?.total && result?.wins && result?.loss">
+  <div
+    v-if="
+      !_isNil(result?.total) && !_isNil(result?.wins) && !_isNil(result?.loss)
+    ">
     <v-progress-linear
       color="green-lighten-1"
       :model-value="(result.wins / result.total) * 100"
