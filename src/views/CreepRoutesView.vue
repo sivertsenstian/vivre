@@ -11,12 +11,8 @@ const creepRouteRace: any = {
 };
 
 const open = (path: string) => window.open(path, "_blank");
-
 const raceTab = useStorage("vivre/raceCreepRoutes", Race.Human);
-
 const races = [Race.Human, Race.Orc, Race.NightElf, Race.Undead];
-
-console.log({ creeproutes });
 </script>
 
 <template>

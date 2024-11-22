@@ -9,6 +9,11 @@ import axios from "axios";
 import moment from "moment";
 import type { Moment } from "moment";
 import _sortBy from "lodash/sortBy";
+import {
+  calculateAchievementPoints,
+  calculateLadderPoints,
+  calculatePlayerAchievements,
+} from "@/stores/gnl.ts";
 
 export const getPercentage = (data: any, race: Race) => {
   return _round(
@@ -159,6 +164,12 @@ export const getRaceStatistics = (tag: string, m: any[]): IRaceStatistics => {
     loss: loss?.length ?? 0,
     percentage: (wins?.length ?? 0) / (wins?.length + loss?.length),
     performance: getPerformance(tag, matches),
+
+    points: 0,
+    totalPoints: 0,
+    achievements: [],
+    achievementPoints: 0,
+
     mmr: {
       initial: info?.initialMmr ?? 0,
       current: info?.currentMmr ?? 0,
@@ -203,6 +214,14 @@ export const getRaceStatistics = (tag: string, m: any[]): IRaceStatistics => {
       },
     },
   };
+
+  result.points = calculateLadderPoints(result);
+  result.achievements = calculatePlayerAchievements({
+    battleTag: tag,
+    data: result,
+  } as any);
+  result.achievementPoints = calculateAchievementPoints(result.achievements);
+  result.totalPoints = result.points + result.achievementPoints;
 
   return result;
 };

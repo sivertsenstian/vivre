@@ -135,12 +135,6 @@ const route = useRoute();
           to="/makrura"></v-list-item>
         <v-list-item
           color="green"
-          prepend-icon="mdi-information"
-          title="Settings"
-          router
-          to="/settings"></v-list-item>
-        <v-list-item
-          color="green"
           prepend-icon="mdi-handshake-outline"
           title="About"
           router

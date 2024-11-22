@@ -28,9 +28,11 @@ const options = {
               backgroundColor:
                 (props.played ?? 0) >= (props.goal ?? 0)
                   ? ['#66BB6A']
-                  : ['rgb(251,140, 0)', 'gray'],
+                  : ['rgb(218,165, 32)', 'rgb(33,33,33)'],
               borderColor:
-                (props.played ?? 0) >= (props.goal ?? 0) ? '#66BB6A' : 'gray',
+                (props.played ?? 0) >= (props.goal ?? 0)
+                  ? '#66BB6A'
+                  : 'rgb(33,33,33)',
               data:
                 (props.played ?? 0) >= (props.goal ?? 0)
                   ? [Number(props.played)]
@@ -44,13 +46,11 @@ const options = {
             },
           ],
         }"
-        :options="options"
-      />
+        :options="options" />
     </v-col>
     <h2
       class="text-h5 weight-black mx-auto"
-      style="position: relative; bottom: 180px; height: 0"
-    >
+      style="position: relative; bottom: 180px; height: 0">
       <v-row class="text-center">
         <v-col cols="12" class="pa-0">
           <span>Weekly Goal</span>
@@ -58,12 +58,10 @@ const options = {
         <v-col cols="12" class="pa-0">
           <span
             :class="{
-              'text-orange':
-                Number(props.played ?? 0) < Number(props.goal ?? 0),
+              'text-gold': Number(props.played ?? 0) < Number(props.goal ?? 0),
               'text-green':
                 Number(props.played ?? 0) >= Number(props.goal ?? 0),
-            }"
-          >
+            }">
             {{ props.played }}</span
           >
           <span class="text-grey"> / {{ props.goal }}</span>
@@ -73,4 +71,8 @@ const options = {
   </v-row>
 </template>
 
-<style scoped></style>
+<style scoped>
+.text-gold {
+  color: goldenrod;
+}
+</style>
