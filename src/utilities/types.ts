@@ -1,10 +1,4 @@
 ﻿import { Race } from "@/stores/races";
-import type { Moment } from "moment";
-import {
-  calculateAchievementPoints,
-  calculateLadderPoints,
-  calculatePlayerAchievements,
-} from "@/stores/gnl.ts";
 
 export interface IVSRaceStatistics {
   total: number;

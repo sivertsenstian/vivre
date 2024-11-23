@@ -30,6 +30,11 @@ import _sortBy from "lodash/sortBy";
 import axios from "axios";
 import { currentUrl } from "@/utilities/api";
 import { Race } from "@/stores/races";
+import {
+  calculateAchievementPoints,
+  calculateLadderPoints,
+  countAchievements,
+} from "@/utilities/achievements.ts";
 
 const gnlBanners: { [key: string]: string } = {
   ["luckystrike"]: gnl_team_luckystrike,
@@ -148,16 +153,6 @@ export const achievements = {
 export const teamGnlBanner: any = (id: string) =>
   gnlBanners?.[id] ?? gnl_team_missing;
 
-export const calculateLadderPoints = (data?: { wins: number; loss: number }) =>
-  (data?.wins ?? 0) * 3 + (data?.loss ?? 0);
-
-export const calculateAchievementPoints = (achievements: any[]) => {
-  if (!_isEmpty(achievements)) {
-    return achievements.reduce((s, a) => (s += a.points), 0);
-  }
-  return 0;
-};
-
 const calculateStreak = (player: any) => {
   if (player === null) {
     return 0;
@@ -216,17 +211,6 @@ const calculateGamesOnDay = (player: any, date: Moment, key: string) => {
 
   player[key] = count;
   return count;
-};
-
-export const countAchievements = (
-  total: { [key: string]: number },
-  achievements: { id: string }[],
-) => {
-  if (!_isEmpty(achievements)) {
-    achievements.forEach((achievement) => {
-      total[achievement.id] = (total?.[achievement.id] ?? 0) + 1;
-    });
-  }
 };
 
 export const calculatePlayerAchievements = (account: IGNLAccount): any[] => {
@@ -357,7 +341,9 @@ export const calculatePlayerAchievements = (account: IGNLAccount): any[] => {
     result.push(achievements["might_cannot_be_matched"]);
   }
 
-  if (calculateLadderPoints(account.data) >= ladderGoal) {
+  if (
+    calculateLadderPoints(account.battleTag, account.data.matches) >= ladderGoal
+  ) {
     result.push(achievements["you_have_so_much"]);
   }
 
@@ -522,7 +508,10 @@ export const useGNLStore = defineStore("gnl", () => {
           player.ongoing = undefined;
         }
         player.team = team.id;
-        player.points = calculateLadderPoints(player.data);
+        player.points = calculateLadderPoints(
+          player.battleTag,
+          player.data.matches,
+        );
         player.achievements = calculatePlayerAchievements(player);
         player.achievementPoints = calculateAchievementPoints(
           player.achievements,

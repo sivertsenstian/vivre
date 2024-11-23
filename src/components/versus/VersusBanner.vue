@@ -115,11 +115,13 @@ const options = {
 interface Props {
   player: any;
   onRemove?: () => void;
-  mode: string;
+  mode?: string;
   rank: number;
   seasonEnd: Moment;
 }
-const props = defineProps<Props>();
+const props = withDefaults(defineProps<Props>(), {
+  mode: "season",
+});
 
 const data = computed(() => {
   if (props.mode === "week") {
@@ -290,9 +292,9 @@ const avg = computed(() =>
           <ul style="list-style-type: none">
             <li
               class="mb-1"
-              v-for="achievement in _take<any>(data.achievements, 7)">
+              v-for="achievement in _take<any>(data.achievements, 8)">
               <v-tooltip
-                :text="`${achievement.description} // ${achievement.points} Additional Points!`"
+                :text="`${achievement.name} - ${achievement.description} // ${achievement.points} Additional Points!`"
                 content-class="custom-tooltip"
                 open-on-click>
                 <template v-slot:activator="{ props }">
@@ -319,9 +321,9 @@ const avg = computed(() =>
           <ul style="list-style-type: none">
             <li
               class="mb-1"
-              v-for="achievement in _skip<any>(data.achievements, 7)">
+              v-for="achievement in _skip<any>(data.achievements, 8)">
               <v-tooltip
-                :text="`${achievement.description} // ${achievement.points} Additional Points!`"
+                :text="`${achievement.name} - ${achievement.description} // ${achievement.points} Additional Points!`"
                 content-class="custom-tooltip"
                 open-on-click>
                 <template v-slot:activator="{ props }">
