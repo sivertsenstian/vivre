@@ -10,10 +10,10 @@ import moment from "moment";
 import type { Moment } from "moment";
 import _sortBy from "lodash/sortBy";
 import {
+  season_achievements,
   calculateAchievementPoints,
   calculateLadderPoints,
-  calculatePlayerAchievements,
-} from "@/stores/gnl.ts";
+} from "@/utilities/achievements.ts";
 
 export const getPercentage = (data: any, race: Race) => {
   return _round(
@@ -92,6 +92,17 @@ export const getplayer = (tag: string) => (m: any) => {
     ...m?.teams?.find((t: any) =>
       t.players.find(
         (p: any) => p.battleTag.toLowerCase() === tag.toLowerCase(),
+      ),
+    ),
+    match: m,
+  };
+};
+
+export const getopponent = (tag: string) => (m: any) => {
+  return {
+    ...m?.teams?.find((t: any) =>
+      t.players.find(
+        (p: any) => p.battleTag.toLowerCase() !== tag.toLowerCase(),
       ),
     ),
     match: m,
@@ -215,8 +226,8 @@ export const getRaceStatistics = (tag: string, m: any[]): IRaceStatistics => {
     },
   };
 
-  result.points = calculateLadderPoints(result);
-  result.achievements = calculatePlayerAchievements({
+  result.points = calculateLadderPoints(tag, result.matches);
+  result.achievements = season_achievements[20].calculate({
     battleTag: tag,
     data: result,
   } as any);

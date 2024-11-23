@@ -534,7 +534,6 @@ const goal = computed(() => {
                 <v-col cols="12" md="4">
                   <versus-banner
                     :player="stats.player"
-                    :mode="settings.data.mode"
                     :season-end="settings.end"
                     :rank="rank[stats.player.battleTag]" />
                 </v-col>
@@ -554,7 +553,6 @@ const goal = computed(() => {
                     "
                     :challenger="challenger"
                     :player="stats.challengers[challenger]"
-                    :mode="settings.data.mode"
                     :season-end="settings.end"
                     :rank="rank[challenger]" />
                   <versus-challenger
