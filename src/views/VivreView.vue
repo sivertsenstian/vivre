@@ -66,16 +66,7 @@ const getPoints = (v: IStatistics) => {
   if (_isNil(v)) {
     return 0;
   }
-
-  if (settings.data.mode === "week") {
-    return v.week.totalPoints;
-  } else if (settings.data.mode === "month") {
-    return v.month.totalPoints;
-  } else if (settings.data.mode === "season") {
-    return v.season.summary.totalPoints;
-  }
-
-  return 0;
+  return v.season.summary.totalPoints;
 };
 
 const rank = computed(() => {
@@ -105,31 +96,8 @@ const rank = computed(() => {
   return rank;
 });
 
-const getNumberOfWeeksInMonth = (momentDate: Moment) => {
-  const monthStartWeekNumber = momentDate.startOf("month").week();
-
-  const distinctWeeks = {
-    [monthStartWeekNumber]: true,
-  };
-
-  let startOfMonth = momentDate.clone().startOf("month");
-  let endOfMonth = momentDate.clone().endOf("month");
-
-  //  this is an 'inclusive' range -> iterates through all days of a month
-  for (
-    let day = startOfMonth.clone();
-    !day.isAfter(endOfMonth);
-    day.add(1, "days")
-  ) {
-    distinctWeeks[day.week()] = true;
-  }
-
-  return Object.keys(distinctWeeks).length;
-};
-
 const goal = computed(() => {
   let total = 0;
-  let perDay = 0;
 
   const setGoalPerDay = settings.data.goal;
 
