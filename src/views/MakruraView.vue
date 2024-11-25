@@ -4,6 +4,7 @@ import { countries as allCountries, getCountryData } from "countries-list";
 import makrura from "@/assets/makrura.png";
 import holiday_makrura from "@/assets/makrura_holiday.png";
 import missing_makrura from "@/assets/makrura_missing.png";
+import new_makrura from "@/assets/makrura_new.png";
 import _map from "lodash/map";
 
 import * as am5 from "@amcharts/amcharts5";
@@ -15,6 +16,8 @@ import am5themes_Animated from "@amcharts/amcharts5/themes/Animated";
 import { useMakruraStore } from "@/stores/makrura.ts";
 import router from "@/router";
 import _round from "lodash/round";
+import moment from "moment";
+import _isNil from "lodash/isNil";
 
 const store = useMakruraStore();
 
@@ -167,6 +170,32 @@ onMounted(() => {
         bulletTemplate as any,
       );
 
+      let recent = am5.Picture.new(
+        root,
+        {
+          width: 32,
+          height: 32,
+          tooltipY: 0,
+          centerX: am5.p50,
+          centerY: am5.p50,
+          src: new_makrura,
+          templateField: "bulletSettings",
+          tooltipHTML: `
+          <div>
+            <h5 style='text-align: center'><i>Recently added/updated</i></h5>
+            <h5><strong>Owner</strong>: {owner}</h5>
+            <h5><strong>Location</strong>: {title}</h5>
+            <hr />
+            <div style="margin-top: 5px; text-align: center;">
+              <img src={image} width="250px" height="auto" style="border: 2px solid goldenrod;"/>
+            </div>
+          </div>
+          `,
+          cursorOverStyle: "pointer",
+        },
+        bulletTemplate as any,
+      );
+
       let holiday = am5.Picture.new(
         root,
         {
@@ -197,7 +226,9 @@ onMounted(() => {
           ? missing
           : z.dataContext.visit
             ? holiday
-            : normal,
+            : z.dataContext.recent
+              ? recent
+              : normal,
       });
     });
 
@@ -215,14 +246,25 @@ function generate(m: any) {
     image,
     owner,
     location,
+    updated,
+    created,
     visit,
     position: { longitude, latitude },
   } = m;
+
+  const u =
+    !_isNil(updated) &&
+    moment(updated?.toDate() ?? updated).isSame(moment(), "week");
+  const c =
+    !_isNil(created) &&
+    moment(created?.toDate() ?? created).isSame(moment(), "week");
+
   return {
     geometry: {
       type: "Point",
       coordinates: [longitude, latitude],
     },
+    recent: u || c,
     visit,
     title: location,
     image,
