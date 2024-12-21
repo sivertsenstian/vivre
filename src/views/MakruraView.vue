@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, useTemplateRef, watch } from "vue";
+import { computed, onMounted, ref, useTemplateRef, watch } from "vue";
 import { countries as allCountries, getCountryData } from "countries-list";
 import makrura from "@/assets/makrura.png";
 import christmas_makrura from "@/assets/makrura_christmas.png";
@@ -28,6 +28,8 @@ let root: any = null;
 let polygonSeries: any = null;
 let chart: any = null;
 let pointSeries: any = null;
+
+const search = ref();
 
 const stats = computed(() => {
   const owned = store.items.filter(
@@ -128,9 +130,12 @@ onMounted(() => {
       toggleKey: "active",
     } as any);
 
-    bulletTemplate.on("active", (_: any, target: any) =>
-      selectMakrura(target.dataItem),
-    );
+    bulletTemplate.on("active" as any, (_: any, target: any) => {
+      const id: any = target?.dataItem?.dataContext?.id;
+      if (id) {
+        search.value = id;
+      }
+    });
 
     pointSeries.bullets.push(function (x: any, y: any, z: any) {
       let missing = am5.Picture.new(
@@ -281,6 +286,7 @@ watch(store, async (newItems, oldItems) => {
 
 function generate(m: any) {
   const {
+    id,
     image,
     owner,
     location,
@@ -307,18 +313,23 @@ function generate(m: any) {
     title: location,
     image,
     owner,
+    id,
   };
 }
 
-const selectMakrura = (makrura: any) => {
-  const coordinates: any = makrura?.dataContext?.geometry?.coordinates ?? [];
+watch(search, (newSearch) => {
+  const item = store.items.filter((i) => i.id === newSearch)?.[0];
+  if (item?.position) {
+    selectMakrura(item.position);
+  }
+});
 
-  if (coordinates.length) {
-    const geopoint = {
-      longitude: coordinates[0],
-      latitude: coordinates[1],
-      zoom: 5,
-    };
+const selectMakrura = (coordinates: {
+  longitude: number;
+  latitude: number;
+}) => {
+  if (coordinates?.latitude) {
+    const geopoint = { ...coordinates, zoom: 5 };
 
     chart.animate({
       key: "rotationX",
@@ -368,13 +379,37 @@ const draw = () => {
         <v-row
           ><v-col cols="12" class="mt-5">
             <v-row>
-              <v-col cols="8">
+              <v-col cols="4">
                 <img style="vertical-align: middle" width="48" :src="makrura" />
                 <span
                   class="text-h5 font-weight-bold"
                   style="vertical-align: middle">
                   Makrura World Wide
                 </span>
+              </v-col>
+              <v-col cols="4">
+                <v-autocomplete
+                  :disabled="store.pending"
+                  :items="store.items"
+                  clearable
+                  v-model="search"
+                  class="mx-auto"
+                  density="comfortable"
+                  placeholder="Search for makrura owner..."
+                  prepend-inner-icon="mdi-magnify"
+                  color="warning"
+                  variant="underlined"
+                  item-title="owner"
+                  item-value="id"
+                  auto-select-first>
+                  <template v-slot:item="{ props, item }">
+                    <v-list-item
+                      v-bind="props"
+                      prepend-icon="mdi-spider-thread"
+                      :subtitle="`${item.raw.visit ? 'On holiday in ' : ''}${item.raw.location}`"
+                      :title="`Mr.${item.raw.owner}`"></v-list-item>
+                  </template>
+                </v-autocomplete>
               </v-col>
               <v-col cols="4" class="text-right">
                 <v-btn
@@ -384,6 +419,34 @@ const draw = () => {
                   >Admin</v-btn
                 >
               </v-col>
+              <v-fade-transition>
+                <v-row v-if="store.pending">
+                  <v-col
+                    class="text-subtitle-1 text-center text-warning"
+                    cols="12">
+                    <strong>Taming Makruras...</strong>
+                    <v-icon
+                      color="warning"
+                      icon="mdi-spider-thread"
+                      class="scatter" />
+                    <v-icon
+                      color="warning"
+                      icon="mdi-spider-thread"
+                      class="scatter delay-1" />
+                    <v-icon
+                      color="warning"
+                      icon="mdi-spider-thread"
+                      class="scatter delay-2" />
+                  </v-col>
+                  <v-col cols="12" style="margin-top: -20px">
+                    <v-progress-linear
+                      indeterminate
+                      rounded
+                      color="warning"
+                      :active="store.pending" />
+                  </v-col>
+                </v-row>
+              </v-fade-transition>
             </v-row>
           </v-col>
         </v-row>
@@ -475,6 +538,33 @@ const draw = () => {
     bottom: 310px;
     left: -30px;
     height: 0;
+  }
+}
+
+.scatter {
+  position: relative;
+  animation: linear infinite;
+  animation-name: run;
+  animation-duration: 5s;
+
+  &.delay-1 {
+    animation-delay: 400ms;
+  }
+
+  &.delay-2 {
+    animation-delay: 800ms;
+  }
+}
+
+@keyframes run {
+  0% {
+    left: 0;
+  }
+  50% {
+    left: 40%;
+  }
+  100% {
+    left: 0;
   }
 }
 </style>
