@@ -125,7 +125,12 @@ onMounted(() => {
 
     const bulletTemplate = am5.Template.new({
       fill: am5.color(0xe6e6e6),
+      toggleKey: "active",
     } as any);
+
+    bulletTemplate.on("active", (_: any, target: any) =>
+      selectMakrura(target.dataItem),
+    );
 
     pointSeries.bullets.push(function (x: any, y: any, z: any) {
       let missing = am5.Picture.new(
@@ -304,6 +309,35 @@ function generate(m: any) {
     owner,
   };
 }
+
+const selectMakrura = (makrura: any) => {
+  const coordinates: any = makrura?.dataContext?.geometry?.coordinates ?? [];
+
+  if (coordinates.length) {
+    const geopoint = {
+      longitude: coordinates[0],
+      latitude: coordinates[1],
+      zoom: 5,
+    };
+
+    chart.animate({
+      key: "rotationX",
+      to: -geopoint.longitude,
+      duration: 1500,
+      easing: am5.ease.inOut(am5.ease.cubic),
+    });
+    chart.animate({
+      key: "rotationY",
+      to: -geopoint.latitude,
+      duration: 1500,
+      easing: am5.ease.inOut(am5.ease.cubic),
+    });
+
+    setTimeout(function () {
+      chart.zoomToGeoPoint(geopoint, geopoint.zoom, true);
+    }, 1500);
+  }
+};
 
 const draw = () => {
   if (root !== null) {
