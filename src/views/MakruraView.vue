@@ -36,6 +36,13 @@ const stats = computed(() => {
     (m: any) => store.isvalid(m) && m.visit,
   ).length;
 
+  const countries = store.items
+    .filter(store.isvalid)
+    .reduce((r: any, v: any) => {
+      r = { ...r, [v.country]: (r?.[v.country] ?? 0) + 1 } as any;
+      return r;
+    }, {} as any);
+
   const continents = store.items
     .filter(store.isvalid)
     .reduce((r: any, v: any) => {
@@ -51,9 +58,9 @@ const stats = computed(() => {
 
   return {
     continents,
-    countries: owned,
+    countries: Object.keys(countries).length,
     totalCountries: all,
-    countryCoverage: _round((owned / all) * 100, 2),
+    countryCoverage: _round((Object.keys(countries).length / all) * 100, 2),
     owners: owned,
     onHoliday: onHoliday,
     total: owned + onHoliday,
