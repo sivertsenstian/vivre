@@ -2,6 +2,7 @@
 import { computed, onMounted, useTemplateRef, watch } from "vue";
 import { countries as allCountries, getCountryData } from "countries-list";
 import makrura from "@/assets/makrura.png";
+import christmas_makrura from "@/assets/makrura_christmas.png";
 import holiday_makrura from "@/assets/makrura_holiday.png";
 import missing_makrura from "@/assets/makrura_missing.png";
 import new_makrura from "@/assets/makrura_new.png";
@@ -36,6 +37,13 @@ const stats = computed(() => {
     (m: any) => store.isvalid(m) && m.visit,
   ).length;
 
+  const countries = store.items
+    .filter(store.isvalid)
+    .reduce((r: any, v: any) => {
+      r = { ...r, [v.country]: (r?.[v.country] ?? 0) + 1 } as any;
+      return r;
+    }, {} as any);
+
   const continents = store.items
     .filter(store.isvalid)
     .reduce((r: any, v: any) => {
@@ -51,9 +59,9 @@ const stats = computed(() => {
 
   return {
     continents,
-    countries: owned,
+    countries: Object.keys(countries).length,
     totalCountries: all,
-    countryCoverage: _round((owned / all) * 100, 2),
+    countryCoverage: _round((Object.keys(countries).length / all) * 100, 2),
     owners: owned,
     onHoliday: onHoliday,
     total: owned + onHoliday,
@@ -145,15 +153,40 @@ onMounted(() => {
         bulletTemplate as any,
       );
 
+      // let normal = am5.Picture.new(
+      //   root,
+      //   {
+      //     width: 32,
+      //     height: 32,
+      //     tooltipY: 0,
+      //     centerX: am5.p50,
+      //     centerY: am5.p50,
+      //     src: makrura,
+      //     templateField: "bulletSettings",
+      //     tooltipHTML: `
+      //     <div>
+      //       <h5><strong>Owner</strong>: {owner}</h5>
+      //       <h5><strong>Location</strong>: {title}</h5>
+      //       <hr />
+      //       <div style="margin-top: 5px; text-align: center;">
+      //         <img src={image} width="250px" height="auto" style="border: 2px solid goldenrod;"/>
+      //       </div>
+      //     </div>
+      //     `,
+      //     cursorOverStyle: "pointer",
+      //   },
+      //   bulletTemplate as any,
+      // );
+
       let normal = am5.Picture.new(
         root,
         {
-          width: 32,
-          height: 32,
+          width: 48,
+          height: 48,
           tooltipY: 0,
           centerX: am5.p50,
           centerY: am5.p50,
-          src: makrura,
+          src: christmas_makrura,
           templateField: "bulletSettings",
           tooltipHTML: `
           <div>
