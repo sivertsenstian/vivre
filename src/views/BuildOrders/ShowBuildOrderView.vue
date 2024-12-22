@@ -12,6 +12,7 @@ import ViabilitySlider from "@/components/ViabilitySlider.vue";
 
 import MarkdownViewer from "@/components/MarkdownViewer.vue";
 import StepAnnotation from "@/components/StepAnnotation.vue";
+import _isNil from "lodash/isNil";
 
 const open = (path: string) => window.open(path, "_blank");
 
@@ -108,14 +109,33 @@ const order = computed(() => {
                 prepend-icon="mdi-thumb-up-outline"
                 >{{ buildorder.stars }}</v-btn
               >
-              <span class="ml-5 text-subtitle-2"
-                ><strong>Created:</strong>
+              <span class="ml-5">
+                <img
+                  style="vertical-align: middle"
+                  width="25px"
+                  :src="raceIcon[buildorder.player]" />
+                <span
+                  style="vertical-align: center"
+                  class="font-weight-bold mx-1"
+                  >vs</span
+                >
+                <img
+                  style="vertical-align: middle"
+                  width="25px"
+                  :src="raceIcon[buildorder.opponent]" />
+              </span>
+              <span class="ml-3 text-subtitle-2"
+                ><strong>Updated:</strong>
                 <span class="text-secondary ml-1">
                   {{
-                    (buildorder.created?.toDate
-                      ? moment(buildorder.created.toDate())
-                      : moment(buildorder.created)
-                    ).format("MM.DD.YYYY HH:mm")
+                    (!_isNil(buildorder.updated)
+                      ? buildorder.updated?.toDate
+                        ? moment(buildorder.updated.toDate())
+                        : moment(buildorder.updated)
+                      : buildorder.created?.toDate
+                        ? moment(buildorder.created.toDate())
+                        : moment(buildorder.created)
+                    ).format("DD.MM.YYYY HH:mm")
                   }}
                 </span></span
               >

@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import buildOfTheWeek from "@assets/buildorders/build_of_the_week.jpg";
+import trendingBuild from "@assets/buildorders/trending.jpg";
 import moment from "moment";
 import { useBuildsStore } from "@/stores/builds";
 import { raceName, raceIcon, Race } from "@/stores/races";
@@ -9,6 +11,8 @@ import _skip from "lodash/drop";
 
 import { useStorage } from "@vueuse/core";
 import ViabilitySlider from "@/components/ViabilitySlider.vue";
+import _isNil from "lodash/isNil";
+import _first from "lodash/first";
 
 const itemsPerPage = useStorage("vivre/itemsPerPage", 25);
 const currentPage = useStorage("vivre/currentPage", 1);
@@ -47,6 +51,47 @@ const items = computed(() => {
 
   return result;
 });
+
+const popular = computed(() =>
+  _first(
+    builds.buildorders
+      .filter((b) => !_isNil(b.starred))
+      .sort((a, b) => moment(a.starred).diff(moment(b.starred))),
+  ),
+);
+
+const shuffle = (array: any[], seed: number) => {
+  let m = array.length,
+    t,
+    i;
+
+  // While there remain elements to shuffle…
+  while (m) {
+    // Pick a remaining element…
+    i = Math.floor(random(seed) * m--);
+
+    // And swap it with the current element.
+    t = array[m];
+    array[m] = array[i];
+    array[i] = t;
+    ++seed;
+  }
+
+  return array;
+};
+
+const random = (seed: number) => {
+  const x = Math.sin(seed++) * 10000;
+  return x - Math.floor(x);
+};
+
+const weekly = computed(() => {
+  const all = builds.buildorders.filter(
+    (b) => b.stars > 5 && b.id != popular.value?.id,
+  );
+  const sorted = shuffle(all, random(moment().isoWeek()));
+  return _first(sorted);
+});
 </script>
 
 <template>
@@ -68,6 +113,90 @@ const items = computed(() => {
                   @click="() => router.push('/buildorders/new')"
                   >Create Build Order</v-btn
                 >
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col cols="6">
+                <v-fade-transition>
+                  <v-card
+                    v-if="weekly?.id"
+                    link
+                    :href="`/#/buildorders/${weekly.id}`">
+                    <v-img
+                      :src="buildOfTheWeek"
+                      class="align-end"
+                      gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
+                      height="200px"
+                      cover>
+                      <v-card-title class="text-white font-weight-bold">
+                        Build Of The Week:
+                        <span class="text-warning">{{
+                          weekly.name
+                        }}</span></v-card-title
+                      >
+                    </v-img>
+                    <v-card-actions>
+                      <div style="white-space: nowrap">
+                        <img
+                          style="vertical-align: middle"
+                          width="25px"
+                          :src="raceIcon[weekly.player]" />
+                        <span
+                          style="vertical-align: text-bottom"
+                          class="font-weight-bold mx-1"
+                          >vs</span
+                        >
+                        <img
+                          style="vertical-align: middle"
+                          width="25px"
+                          :src="raceIcon[weekly.opponent]" />
+                      </div>
+                      <v-btn
+                        color="primary"
+                        :text="`By ${weekly.author}`"></v-btn>
+                    </v-card-actions>
+                  </v-card>
+                </v-fade-transition>
+              </v-col>
+              <v-col cols="6">
+                <v-fade-transition>
+                  <v-card
+                    v-if="popular?.id"
+                    link
+                    :href="`/#/buildorders/${popular.id}`">
+                    <v-img
+                      :src="trendingBuild"
+                      class="align-end"
+                      gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
+                      height="200px"
+                      cover>
+                      <v-card-title class="text-white font-weight-bold">
+                        Currently Trending:
+                        <span class="text-warning">{{
+                          popular.name
+                        }}</span></v-card-title
+                      >
+                    </v-img>
+                    <v-card-actions>
+                      <div style="white-space: nowrap">
+                        <img
+                          style="vertical-align: middle"
+                          width="25px"
+                          :src="raceIcon[popular.player]" />
+                        <span
+                          style="vertical-align: text-bottom"
+                          class="font-weight-bold mx-1"
+                          >vs</span
+                        >
+                        <img
+                          style="vertical-align: middle"
+                          width="25px"
+                          :src="raceIcon[popular.opponent]" />
+                      </div>
+                      <v-btn color="primary" :text="`By ${popular.author}`" />
+                    </v-card-actions>
+                  </v-card>
+                </v-fade-transition>
               </v-col>
             </v-row>
             <v-row>
@@ -172,20 +301,19 @@ const items = computed(() => {
                 },
                 { title: 'Author', value: 'author', key: 'author' },
                 {
-                  title: 'Created',
+                  title: 'Updated',
                   value: 'created',
                   key: 'created',
                   sortRaw: (a, b) => {
+                    const ax = a?.updated ?? a.created;
+                    const bx = b?.updated ?? b.created;
+
                     const am = (
-                      a?.created.toDate
-                        ? moment(a.created.toDate())
-                        : moment(a.created)
+                      ax?.toDate ? moment(ax.toDate()) : moment(ax)
                     ).valueOf();
 
                     const bm = (
-                      b?.created.toDate
-                        ? moment(b.created.toDate())
-                        : moment(b.created)
+                      bx?.toDate ? moment(bx.toDate()) : moment(bx)
                     ).valueOf();
                     return am - bm;
                   },
@@ -283,15 +411,21 @@ const items = computed(() => {
                   </v-chip>
                 </v-chip-group>
               </template>
-              <template v-slot:item.created="{ value }">
-                {{
-                  (value?.toDate
-                    ? moment(value.toDate())
-                    : moment(value)
-                  ).fromNow()
-                }}
+              <template v-slot:item.created="{ value, item }">
+                <div style="white-space: nowrap">
+                  {{
+                    !_isNil(item.updated)
+                      ? (item.updated?.toDate
+                          ? moment(item.updated.toDate())
+                          : moment(item.updated)
+                        ).fromNow()
+                      : (value?.toDate
+                          ? moment(value.toDate())
+                          : moment(value)
+                        ).fromNow()
+                  }}
+                </div>
               </template>
-
               <template v-slot:loading>
                 <v-skeleton-loader
                   :type="`table-row@${itemsPerPage}`"></v-skeleton-loader>
@@ -302,14 +436,17 @@ const items = computed(() => {
           <v-col cols="12">
             <v-alert
               text="
-29.08
+22.12
+-------
+- Add 'Build Of The Week' and 'Currently Trending'
+- Replace 'Created' with 'Last Updated'
+- Add race information on build order page
+
+Previously
 -------
 - Add 'Annotation' functionality to buildorder steps, making it possible to add additional context/information to the step/instruction
 - Add search field to build order list and use more of the page
 - Add author column to build order list
-
-Previously
--------
 - Add drag and drop support for build order steps in create and edit mode
 - Add 'Viability' field to build, to indicate how close to meta/standard the build is
 - Improve readability by using more of the horizontal screen space
