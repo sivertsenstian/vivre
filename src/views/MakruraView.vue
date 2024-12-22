@@ -390,7 +390,7 @@ const draw = () => {
               <v-col cols="4">
                 <v-autocomplete
                   :disabled="store.pending"
-                  :items="store.items"
+                  :items="store.items.filter(store.isvalid)"
                   clearable
                   v-model="search"
                   class="mx-auto"
@@ -407,7 +407,7 @@ const draw = () => {
                       v-bind="props"
                       prepend-icon="mdi-spider-thread"
                       :subtitle="`${item.raw.visit ? 'On holiday in ' : ''}${item.raw.location}`"
-                      :title="`Mr.${item.raw.owner}`"></v-list-item>
+                      :title="`Mr. ${item.raw.owner}`"></v-list-item>
                   </template>
                 </v-autocomplete>
               </v-col>
