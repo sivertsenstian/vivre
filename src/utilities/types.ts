@@ -122,8 +122,10 @@ export interface ISampleGame {
 export interface IBuild {
   id: string;
   author: string;
+  originalAuthor: string;
   created: any;
   updated?: any;
+  workInProgress: boolean;
   name: string;
   secret?: string;
   description: string;
