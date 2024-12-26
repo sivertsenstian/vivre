@@ -46,7 +46,9 @@ export const useBuildsStore = defineStore("builds", () => {
   const build = (): IBuild => ({
     id: uuidv4(),
     author: "",
+    originalAuthor: "",
     created: moment().toDate(),
+    workInProgress: false,
     name: "",
     description: "",
     version: "1.36.2",
