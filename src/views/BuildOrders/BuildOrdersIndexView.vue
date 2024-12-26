@@ -13,6 +13,7 @@ import { useStorage } from "@vueuse/core";
 import ViabilitySlider from "@/components/ViabilitySlider.vue";
 import _isNil from "lodash/isNil";
 import _first from "lodash/first";
+import _isEmpty from "lodash/isEmpty";
 
 const itemsPerPage = useStorage("vivre/itemsPerPage", 25);
 const currentPage = useStorage("vivre/currentPage", 1);
@@ -410,6 +411,13 @@ const weekly = computed(() => {
                     size="small">
                   </v-chip>
                 </v-chip-group>
+              </template>
+              <template v-slot:item.author="{ value, item }">
+                <span style="white-space: nowrap">{{
+                  _isEmpty(item.originalAuthor)
+                    ? value
+                    : `${item.originalAuthor} // Maintainer: ${value}`
+                }}</span>
               </template>
               <template v-slot:item.created="{ value, item }">
                 <div style="white-space: nowrap">

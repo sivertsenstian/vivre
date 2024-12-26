@@ -13,6 +13,7 @@ import ViabilitySlider from "@/components/ViabilitySlider.vue";
 import MarkdownViewer from "@/components/MarkdownViewer.vue";
 import StepAnnotation from "@/components/StepAnnotation.vue";
 import _isNil from "lodash/isNil";
+import _isEmpty from "lodash/isEmpty";
 
 const open = (path: string) => window.open(path, "_blank");
 
@@ -69,6 +70,21 @@ const order = computed(() => {
     }
   }
   return count;
+});
+
+const author = computed(() => {
+  const a = buildorder.value?.author;
+  const b = buildorder.value?.originalAuthor;
+
+  if (_isEmpty(a) && _isEmpty(b)) {
+    return { writtenBy: "Anonymous", hasOriginal: false };
+  }
+
+  if (_isEmpty(b) || (a ?? "").toLowerCase() === (b ?? "").toLowerCase()) {
+    return { writtenBy: a, hasOriginal: false };
+  }
+
+  return { original: b, writtenBy: a, hasOriginal: true };
 });
 </script>
 
@@ -139,10 +155,18 @@ const order = computed(() => {
                   }}
                 </span></span
               >
-              <span class="ml-5 text-subtitle-2"
-                ><strong>By:</strong>
+              <span v-if="author.hasOriginal" class="ml-5 text-subtitle-2"
+                ><strong>Author:</strong>
                 <span class="text-secondary ml-1">
-                  {{ buildorder.author ?? "Anonymous" }}
+                  {{ author.original }}
+                </span></span
+              >
+              <span class="ml-5 text-subtitle-2"
+                ><strong
+                  >{{ author.hasOriginal ? "Maintainer" : "Author" }}:</strong
+                >
+                <span class="text-secondary ml-1">
+                  {{ author.writtenBy }}
                 </span></span
               >
               <span class="ml-5 text-subtitle-2"

@@ -82,8 +82,7 @@ const updateFood = (race: Race) => {
           builds.data &&
           builds.data.edit?.id &&
           builds.canEdit(String(route.params.id))
-        "
-      >
+        ">
         <v-btn
           prepend-icon="mdi-arrow-left"
           color="secondary"
@@ -105,8 +104,7 @@ const updateFood = (race: Race) => {
                     hide-details
                     density="compact"
                     v-model="builds.data.edit.name"
-                    label="Name"
-                  ></v-text-field>
+                    label="Name"></v-text-field>
                 </v-col>
                 <v-col cols="6">
                   <v-select
@@ -122,8 +120,7 @@ const updateFood = (race: Race) => {
                     density="compact"
                     label="Player"
                     v-model="builds.data.edit.player"
-                    @update:modelValue="updateFood"
-                  />
+                    @update:modelValue="updateFood" />
                 </v-col>
                 <v-col cols="6">
                   <v-select
@@ -138,17 +135,22 @@ const updateFood = (race: Race) => {
                     item-value="value"
                     density="compact"
                     label="Opponent"
-                    v-model="builds.data.edit.opponent"
-                  ></v-select>
+                    v-model="builds.data.edit.opponent"></v-select>
                 </v-col>
 
-                <v-col cols="8">
+                <v-col cols="4">
+                  <v-text-field
+                    hide-details
+                    density="compact"
+                    v-model="builds.data.edit.originalAuthor"
+                    label="Original Author (optional)"></v-text-field>
+                </v-col>
+                <v-col cols="4">
                   <v-text-field
                     hide-details
                     density="compact"
                     v-model="builds.data.edit.author"
-                    label="Author (optional)"
-                  ></v-text-field>
+                    label="Maintainer (optional)"></v-text-field>
                 </v-col>
 
                 <v-col cols="4">
@@ -156,8 +158,7 @@ const updateFood = (race: Race) => {
                     hide-details
                     density="compact"
                     v-model="builds.data.edit.version"
-                    label="Patch (optional)"
-                  ></v-text-field>
+                    label="Patch (optional)"></v-text-field>
                 </v-col>
 
                 <v-col cols="8">
@@ -170,8 +171,7 @@ const updateFood = (race: Race) => {
                     :items="builds.difficulties"
                     density="compact"
                     label="Difficulty (optional)"
-                    v-model="builds.data.edit.difficulty"
-                  ></v-select>
+                    v-model="builds.data.edit.difficulty"></v-select>
                 </v-col>
 
                 <v-col cols="12">
@@ -183,8 +183,7 @@ const updateFood = (race: Race) => {
                     closable-chips
                     clearable
                     multiple
-                    placeholder="Press [Enter] to create the tag..."
-                  >
+                    placeholder="Press [Enter] to create the tag...">
                   </v-combobox>
                 </v-col>
 
@@ -214,8 +213,7 @@ const updateFood = (race: Race) => {
                                 density="compact"
                                 variant="underlined"
                                 v-model="item.id"
-                                placeholder="e.g. https://w3champions.com/match/66c1ca3e0ebc9196a2e60095"
-                              ></v-text-field>
+                                placeholder="e.g. https://w3champions.com/match/66c1ca3e0ebc9196a2e60095"></v-text-field>
                             </td>
                             <td>
                               <v-text-field
@@ -223,8 +221,7 @@ const updateFood = (race: Race) => {
                                 density="compact"
                                 variant="underlined"
                                 v-model="item.name"
-                                placeholder="e.g. 'Replay'"
-                              ></v-text-field>
+                                placeholder="e.g. 'Replay'"></v-text-field>
                             </td>
                             <td>
                               <v-btn
@@ -236,8 +233,7 @@ const updateFood = (race: Race) => {
                                 size="small"
                                 @click="
                                   () => builds.removeGame('edit', item.id)
-                                "
-                              />
+                                " />
                             </td>
                           </tr>
                         </tbody>
@@ -248,8 +244,7 @@ const updateFood = (race: Race) => {
                         @click="() => builds.addGame('edit')"
                         color="success"
                         variant="tonal"
-                        size="small"
-                      >
+                        size="small">
                         Add Link
                       </v-btn>
                     </v-col>
@@ -285,16 +280,14 @@ const updateFood = (race: Race) => {
                       :animation="200"
                       ghost-class="ghost"
                       :disabled="false"
-                      group="description"
-                    >
+                      group="description">
                       <template #item="{ element, index }">
                         <tr>
                           <td class="handle px-0">
                             <v-icon
                               size="small"
                               color="grey"
-                              icon="mdi-drag-vertical"
-                            />
+                              icon="mdi-drag-vertical" />
                           </td>
                           <td>
                             <span v-show="!element.separator">{{
@@ -307,8 +300,7 @@ const updateFood = (race: Race) => {
                               density="compact"
                               variant="underlined"
                               v-model="element.time"
-                              v-if="!element.separator"
-                            ></v-text-field>
+                              v-if="!element.separator"></v-text-field>
                           </td>
                           <td>
                             <v-text-field
@@ -316,16 +308,14 @@ const updateFood = (race: Race) => {
                               density="compact"
                               variant="underlined"
                               v-model="element.food"
-                              v-if="!element.separator"
-                            ></v-text-field>
+                              v-if="!element.separator"></v-text-field>
                           </td>
                           <td>
                             <v-text-field
                               hide-details
                               density="compact"
                               variant="underlined"
-                              v-model="element.instructions"
-                            ></v-text-field>
+                              v-model="element.instructions"></v-text-field>
                           </td>
                           <td>
                             <v-btn-group>
@@ -336,16 +326,14 @@ const updateFood = (race: Race) => {
                                 :color="element.timing ? 'success' : 'grey'"
                                 @click="element.timing = !element.timing"
                                 :disabled="element.separator"
-                                size="small"
-                              />
+                                size="small" />
                               <v-btn
                                 title="Use step as a separator or an event with only a header/instruction"
                                 variant="text"
                                 icon="mdi-shield-outline"
                                 :color="element.separator ? 'primary' : 'grey'"
                                 @click="element.separator = !element.separator"
-                                size="small"
-                              />
+                                size="small" />
                               <upsert-step-annotation :step="element" edit />
                               <v-btn
                                 title="Delete step"
@@ -355,8 +343,7 @@ const updateFood = (race: Race) => {
                                 size="small"
                                 @click="
                                   () => builds.removeStep('edit', element)
-                                "
-                              />
+                                " />
                             </v-btn-group>
                           </td>
                         </tr>
@@ -368,8 +355,7 @@ const updateFood = (race: Race) => {
                   <v-btn
                     @click="() => builds.addStep('edit')"
                     color="success"
-                    variant="tonal"
-                  >
+                    variant="tonal">
                     Add Step
                   </v-btn>
                 </v-col>
@@ -381,8 +367,7 @@ const updateFood = (race: Race) => {
                 variant="tonal"
                 block
                 :loading="builds.busy"
-                @click="() => builds.update(builds.data.edit)"
-              >
+                @click="() => builds.update(builds.data.edit)">
                 Update Build Order
               </v-btn>
             </v-col>
@@ -397,8 +382,7 @@ const updateFood = (race: Race) => {
           builds.data &&
           builds.data.edit?.id &&
           !builds.canEdit(String(route.params.id))
-        "
-      >
+        ">
         <v-btn
           prepend-icon="mdi-arrow-left"
           color="secondary"
@@ -418,8 +402,7 @@ const updateFood = (race: Race) => {
                 style="font-size: 200px; width: 200px; height: 200px"
                 size="x-large"
                 color="grey"
-                icon="mdi-alert-decagram-outline"
-              />
+                icon="mdi-alert-decagram-outline" />
               <div class="text-h4 text-red-lighten-2 my-3">
                 Unable to edit build '{{ buildorder?.name }}'
               </div>
@@ -430,8 +413,7 @@ const updateFood = (race: Race) => {
             <v-col
               cols="12"
               class="text-center text-grey mt-5"
-              v-if="buildorder?.id"
-            >
+              v-if="buildorder?.id">
               <v-col cols="12">
                 If this is <i>your</i> build order, you can attempt to claim it.
               </v-col>
@@ -441,8 +423,7 @@ const updateFood = (race: Race) => {
                   label="Secret"
                   density="compact"
                   variant="underlined"
-                  v-model="secret"
-                >
+                  v-model="secret">
                   <template v-slot:append>
                     <v-btn
                       @click="
@@ -451,8 +432,7 @@ const updateFood = (race: Race) => {
                       "
                       color="success"
                       variant="tonal"
-                      prepend-icon="mdi-shield-lock-open-outline"
-                    >
+                      prepend-icon="mdi-shield-lock-open-outline">
                       Claim
                     </v-btn>
                   </template>
@@ -463,8 +443,7 @@ const updateFood = (race: Race) => {
                   <v-icon
                     icon="mdi-party-popper"
                     color="success"
-                    class="mr-2"
-                  />
+                    class="mr-2" />
                   <span style="vertical-align: middle">Build claimed</span>
                 </span>
                 <span class="text-error" v-else>
