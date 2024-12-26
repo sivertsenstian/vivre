@@ -108,7 +108,15 @@ const author = computed(() => {
           <v-row
             ><v-col cols="12">
               <div class="text-h3 font-weight-bold">
-                {{ buildorder.name }}
+                <span style="vertical-align: middle">{{
+                  buildorder.name
+                }}</span>
+                <v-icon
+                  class="ml-2"
+                  v-if="buildorder.workInProgress"
+                  title="Work In Progress - This build order is still being worked on"
+                  color="warning"
+                  icon="mdi-hard-hat" />
               </div>
             </v-col>
             <v-col cols="8">
