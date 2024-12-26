@@ -183,8 +183,19 @@ const updateFood = (race: Race) => {
                     closable-chips
                     clearable
                     multiple
-                    placeholder="Press [Enter] to create the tag...">
+                    placeholder="Press [Enter] to create the tag..."
+                    hide-details>
                   </v-combobox>
+                </v-col>
+
+                <v-col cols="12" class="d-flex justify-end">
+                  <v-checkbox
+                    prepend-icon="mdi-hard-hat"
+                    v-model="builds.data.edit.workInProgress"
+                    base-color="orange"
+                    color="orange"
+                    label="Mark Build As Work In Progress?"
+                    hide-details></v-checkbox>
                 </v-col>
 
                 <v-col cols="12">

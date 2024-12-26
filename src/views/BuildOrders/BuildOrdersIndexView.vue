@@ -274,6 +274,11 @@ const weekly = computed(() => {
               @click:row="
                 (_: any, row: any) => router.push(`/buildorders/${row.item.id}`)
               "
+              :row-props="
+                (data) => ({
+                  class: { 'work-in-progress': data.item.workInProgress },
+                })
+              "
               :items="items"
               :headers="[
                 { title: 'Name', value: 'name', key: 'name' },
@@ -338,6 +343,16 @@ const weekly = computed(() => {
                   >
                 </div>
                 <div v-else>&nbsp;</div>
+              </template>
+
+              <template v-slot:item.name="{ value, item }">
+                <v-icon
+                  class="mr-2"
+                  v-if="item.workInProgress"
+                  title="Work In Progress - This build order is still being worked on"
+                  color="warning"
+                  icon="mdi-hard-hat" />
+                <span style="vertical-align: middle">{{ value }}</span>
               </template>
 
               <template v-slot:item.player="{ value }">
@@ -530,5 +545,12 @@ If you have any feedback - don't hesitate to contact me @Longjacket in the w3c o
     border-top: medium solid
       rgba(var(--v-border-color), var(--v-border-opacity));
   }
+}
+
+tbody tr.work-in-progress {
+  td:first-child {
+    border-left: 2px solid rgba(var(--v-theme-warning), 1);
+  }
+  background: rgba(var(--v-theme-warning), 0.1);
 }
 </style>
