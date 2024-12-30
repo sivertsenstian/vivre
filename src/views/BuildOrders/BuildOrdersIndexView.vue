@@ -79,13 +79,17 @@ const items = computed(() => {
   return result;
 });
 
-const popular = computed(() =>
-  _first(
-    builds.buildorders
-      .filter((b) => !_isNil(b.starred))
-      .sort((a, b) => moment(a.starred).diff(moment(b.starred))),
-  ),
-);
+const popular = computed(() => {
+  const starred = builds.buildorders
+    .filter((b) => !_isNil(b.starred))
+    .sort((a, b) =>
+      moment(b.starred?.toDate ? b.starred.toDate() : b.starred).diff(
+        moment(a.starred?.toDate ? a.starred.toDate() : a.starred),
+      ),
+    );
+
+  return _first(starred);
+});
 
 const shuffle = (array: any[], seed: number) => {
   let m = array.length,
@@ -113,11 +117,9 @@ const random = (seed: number) => {
 };
 
 const weekly = computed(() => {
-  const all = builds.buildorders.filter(
-    (b) => b.stars > 5 && b.id != popular.value?.id,
-  );
+  const all = builds.buildorders.filter((b) => b.stars > 5);
   const sorted = shuffle(all, random(moment().isoWeek()));
-  return _first(sorted);
+  return sorted[0]?.id === popular.value?.id ? sorted[1] : sorted[0];
 });
 </script>
 
@@ -193,7 +195,18 @@ const weekly = computed(() => {
                     link
                     :href="`/#/buildorders/${popular.id}`">
                     <v-img
-                      :src="_sample(trending)"
+                      :src="
+                        _first(
+                          shuffle(
+                            trending,
+                            random(
+                              popular.starred?.toDate
+                                ? popular.starred.toDate().getTime()
+                                : moment(popular.starred).toDate().getTime(),
+                            ),
+                          ),
+                        )
+                      "
                       class="align-end"
                       gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
                       height="200px"
@@ -287,8 +300,7 @@ const weekly = computed(() => {
                   variant="underlined"
                   hide-details
                   single-line
-                  clearable
-                  size="x-small"></v-text-field>
+                  clearable></v-text-field>
               </v-col>
             </v-row>
             <v-data-table
