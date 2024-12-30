@@ -117,7 +117,7 @@ interface Props {
   onRemove?: () => void;
   mode?: string;
   rank: number;
-  seasonEnd: Moment;
+  seasonStart: Moment;
 }
 const props = withDefaults(defineProps<Props>(), {
   mode: "season",
@@ -140,7 +140,8 @@ const dates = computed(() => {
       ? moment().utc(true).startOf("week")
       : props.mode === "month"
         ? moment().utc(true).startOf("month")
-        : props.seasonEnd;
+        : props.seasonStart;
+
   return {
     today: moment().utc(true).endOf("day"),
     daysSinceStart: Math.abs(moment().utc(true).endOf("day").diff(end, "days")),
@@ -400,7 +401,7 @@ const avg = computed(() =>
       >
       <v-card-subtitle class="d-flex justify-space-between" style="opacity: 1">
         <span style="opacity: 0.7" class="me-1"
-          >Avg. games: {{ avg }} per day
+          >Avg. games this {{ mode }}: {{ avg }} per day
         </span>
       </v-card-subtitle>
     </v-card-item>
