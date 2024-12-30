@@ -23,6 +23,32 @@ import type {
 import moment from "moment";
 import { detectIncognito } from "detectincognitojs";
 
+const version = { major: 2, minor: 0, patch: 1, full: "2.0.1" };
+
+export const getVersionColor = (v: string) => {
+  if (v === undefined || !v.length || !v.includes(".")) {
+    return "text-red";
+  }
+
+  if (v === version.full) {
+    return "text-green";
+  }
+
+  const [major, minor, patch] = v.split(".").map(Number);
+
+  if (
+    major === version.major &&
+    minor === version.minor &&
+    patch !== version.patch
+  ) {
+    return "text-yellow";
+  } else if (major === version.major && minor !== version.minor) {
+    return "text-orange";
+  } else {
+    return "text-red";
+  }
+};
+
 export const useBuildsStore = defineStore("builds", () => {
   const db = useFirestore();
   const { data: buildorders, pending } = useCollection(
@@ -51,7 +77,7 @@ export const useBuildsStore = defineStore("builds", () => {
     workInProgress: false,
     name: "",
     description: "",
-    version: "2.0.1",
+    version: version.full,
     difficulty: "Amateur",
     viability: 3,
     games: [],
@@ -208,5 +234,6 @@ export const useBuildsStore = defineStore("builds", () => {
     canEdit,
     difficulties,
     claim,
+    version,
   };
 });

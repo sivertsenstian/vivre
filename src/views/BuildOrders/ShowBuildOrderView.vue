@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import moment from "moment";
-import { useBuildsStore } from "@/stores/builds";
+import { getVersionColor, useBuildsStore } from "@/stores/builds";
 import { raceName, raceIcon, raceUpkeep } from "@/stores/races";
 import { useRoute, useRouter } from "vue-router";
 import { useDocument, useFirestore } from "vuefire";
@@ -180,7 +180,12 @@ const author = computed(() => {
               <span class="ml-5 text-subtitle-2"
                 ><strong>Patch:</strong>
                 <span class="text-secondary ml-1">
-                  {{ buildorder.version ?? "Unspecified" }}
+                  <span
+                    v-if="buildorder.version"
+                    :class="getVersionColor(buildorder.version)"
+                    >{{ buildorder.version }}</span
+                  >
+                  <span v-else>Unspecified</span>
                 </span></span
               >
             </v-col>

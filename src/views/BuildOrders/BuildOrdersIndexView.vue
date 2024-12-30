@@ -10,7 +10,7 @@ import trending_3 from "@assets/buildorders/trending_3.jpg";
 import trending_4 from "@assets/buildorders/trending_4.jpg";
 import trending_5 from "@assets/buildorders/trending_5.jpg";
 import moment from "moment";
-import { useBuildsStore } from "@/stores/builds";
+import { getVersionColor, useBuildsStore } from "@/stores/builds";
 import { raceName, raceIcon, Race } from "@/stores/races";
 import { useRouter } from "vue-router";
 import { computed, ref } from "vue";
@@ -474,6 +474,11 @@ const weekly = computed(() => {
                     : `${item.originalAuthor} // Maintainer: ${value}`
                 }}</span>
               </template>
+
+              <template v-slot:item.version="{ value }">
+                <span :class="getVersionColor(value)">{{ value }}</span>
+              </template>
+
               <template v-slot:item.created="{ value, item }">
                 <div style="white-space: nowrap">
                   {{
