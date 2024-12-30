@@ -51,7 +51,7 @@ export const useBuildsStore = defineStore("builds", () => {
     workInProgress: false,
     name: "",
     description: "",
-    version: "1.36.2",
+    version: "2.0.1",
     difficulty: "Amateur",
     viability: 3,
     games: [],
