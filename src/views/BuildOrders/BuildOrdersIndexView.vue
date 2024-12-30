@@ -1,6 +1,14 @@
 <script setup lang="ts">
-import buildOfTheWeek from "@assets/buildorders/build_of_the_week.jpg";
-import trendingBuild from "@assets/buildorders/trending.jpg";
+import buildOfTheWeek_HU from "@assets/buildorders/botw_hu.jpg";
+import buildOfTheWeek_UD from "@assets/buildorders/botw_ud.jpg";
+import buildOfTheWeek_OC from "@assets/buildorders/botw_oc.jpg";
+import buildOfTheWeek_NE from "@assets/buildorders/botw_ne.jpg";
+import trending_0 from "@assets/buildorders/trending.jpg";
+import trending_1 from "@assets/buildorders/trending_1.jpg";
+import trending_2 from "@assets/buildorders/trending_2.jpg";
+import trending_3 from "@assets/buildorders/trending_3.jpg";
+import trending_4 from "@assets/buildorders/trending_4.jpg";
+import trending_5 from "@assets/buildorders/trending_5.jpg";
 import moment from "moment";
 import { useBuildsStore } from "@/stores/builds";
 import { raceName, raceIcon, Race } from "@/stores/races";
@@ -14,6 +22,7 @@ import ViabilitySlider from "@/components/ViabilitySlider.vue";
 import _isNil from "lodash/isNil";
 import _first from "lodash/first";
 import _isEmpty from "lodash/isEmpty";
+import _sample from "lodash/sample";
 
 const itemsPerPage = useStorage("vivre/itemsPerPage", 25);
 const currentPage = useStorage("vivre/currentPage", 1);
@@ -25,6 +34,23 @@ const builds = useBuildsStore();
 const router = useRouter();
 
 const races = [Race.Random, Race.Human, Race.Orc, Race.NightElf, Race.Undead];
+
+const buildOfTheWeek: { [key: number]: string } = {
+  [Race.Human]: buildOfTheWeek_HU,
+  [Race.Orc]: buildOfTheWeek_OC,
+  [Race.NightElf]: buildOfTheWeek_NE,
+  [Race.Undead]: buildOfTheWeek_UD,
+  [Race.Random]: buildOfTheWeek_HU,
+};
+
+const trending = [
+  trending_0,
+  trending_1,
+  trending_2,
+  trending_3,
+  trending_4,
+  trending_5,
+];
 
 // Render helpers
 const getRating = (stars: number) => {
@@ -124,7 +150,8 @@ const weekly = computed(() => {
                     link
                     :href="`/#/buildorders/${weekly.id}`">
                     <v-img
-                      :src="buildOfTheWeek"
+                      :src="buildOfTheWeek[weekly.player]"
+                      position="top"
                       class="align-end"
                       gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
                       height="200px"
@@ -166,10 +193,11 @@ const weekly = computed(() => {
                     link
                     :href="`/#/buildorders/${popular.id}`">
                     <v-img
-                      :src="trendingBuild"
+                      :src="_sample(trending)"
                       class="align-end"
                       gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
                       height="200px"
+                      position="top"
                       cover>
                       <v-card-title class="text-white font-weight-bold">
                         Currently Trending:
