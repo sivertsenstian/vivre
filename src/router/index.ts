@@ -20,17 +20,17 @@ const router = createRouter({
   routes: [
     {
       path: "/",
-      name: "home",
+      name: "W3C Live Ladder Tracker",
       component: VivreView,
     },
     {
       path: "/season",
-      name: "season",
+      name: "Season Overview",
       component: SeasonView,
     },
     {
       path: "/creeproutes",
-      name: "creeproutes",
+      name: "Creep Routes",
       component: CreepRoutesView,
     },
     {
@@ -39,14 +39,17 @@ const router = createRouter({
       children: [
         {
           path: "happy-tracker",
+          name: "Event: Happy Tracker",
           component: HappyTracker,
         },
         {
           path: "road-to-3000",
+          name: "Event: Happys Road To 3000",
           component: RoadTo3000,
         },
         {
           path: "the-great-escape",
+          name: "Event: The Greate Ladder Escape",
           component: TheGreatEscapeView,
         },
       ],
@@ -54,17 +57,20 @@ const router = createRouter({
     {
       path: "/buildorders",
       children: [
-        { path: "", name: "buildorders", component: BuildOrdersIndexView },
+        { path: "", name: "Build Orders", component: BuildOrdersIndexView },
         {
           path: "new",
+          name: "Create New Build Order",
           component: NewBuildOrderView,
         },
         {
           path: ":id/edit",
+          name: "Edit Build Order",
           component: EditBuildOrderView,
         },
         {
           path: ":id",
+          name: "Build Order",
           component: ShowBuildOrderView,
         },
       ],
@@ -72,9 +78,10 @@ const router = createRouter({
     {
       path: "/gnl",
       children: [
-        { path: "", name: "gnl", component: GNLSeasonIndexView },
+        { path: "", name: "GNL Main Page", component: GNLSeasonIndexView },
         {
           path: ":team",
+          name: "GNL Team Page",
           component: GNLSeasonTeamView,
         },
       ],
@@ -82,19 +89,31 @@ const router = createRouter({
     {
       path: "/makrura",
       children: [
-        { path: "", name: "makrura", component: MakruraView },
+        { path: "", name: "Makrura World Wide", component: MakruraView },
         {
           path: "admin",
+          name: "Makrura Admin",
           component: MakruraAdminView,
         },
       ],
     },
     {
       path: "/about",
-      name: "about",
+      name: "About",
       component: AboutView,
     },
   ],
+});
+
+router.beforeEach((to, from, next) => {
+  const base = "Ape Science - WC3 Research Facility";
+  if (typeof to.name === "string") {
+    document.title = `${base} // ${to.name}`;
+  } else {
+    document.title = base;
+  }
+
+  next();
 });
 
 export default router;
