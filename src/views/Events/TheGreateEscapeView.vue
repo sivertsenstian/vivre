@@ -27,7 +27,7 @@ const recent = computed(() => {
           <v-col cols="12" class="text-center ma-0 pa-0">
             <img :src="logo" alt="APE SCIENCE - WC3 RESEARCH FACILITY" />
             <div class="text-h5 font-weight-bold">
-              THE GREAT LADDER ESCAPE - WHO ARE STILL PLAYING ON W3CHAMPIONS
+              THE GREAT LADDER ESCAPE - WHO ARE STILL PLAYING ON W3CHAMPIONS ?
             </div>
           </v-col>
         </v-row>
