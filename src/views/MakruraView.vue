@@ -6,9 +6,6 @@ import holiday_makrura from "@/assets/makrura_holiday.png";
 import missing_makrura from "@/assets/makrura_missing.png";
 import new_makrura from "@/assets/makrura_new.png";
 
-import christmas_makrura from "@/assets/makrura_christmas.png";
-import new_christmas_makrura from "@/assets/makrura_christmas_new.png";
-
 import _map from "lodash/map";
 import * as am5 from "@amcharts/amcharts5";
 import * as am5map from "@amcharts/amcharts5/map";
@@ -106,6 +103,7 @@ onMounted(() => {
         valueField: "value",
         fill: am5.color("rgb(255, 255, 255)"),
         stroke: am5.color("rgb(0,0,0"),
+        calculateAggregates: true,
       }),
     );
 
@@ -115,8 +113,6 @@ onMounted(() => {
         dataField: "value",
         min: am5.color(0xff621f),
         max: am5.color(0x661f00),
-        minValue: 1,
-        maxValue: 10,
         key: "fill",
       },
     ]);
@@ -165,40 +161,15 @@ onMounted(() => {
         bulletTemplate as any,
       );
 
-      // let normal = am5.Picture.new(
-      //   root,
-      //   {
-      //     width: 32,
-      //     height: 32,
-      //     tooltipY: 0,
-      //     centerX: am5.p50,
-      //     centerY: am5.p50,
-      //     src: makrura,
-      //     templateField: "bulletSettings",
-      //     tooltipHTML: `
-      //     <div>
-      //       <h5><strong>Owner</strong>: {owner}</h5>
-      //       <h5><strong>Location</strong>: {title}</h5>
-      //       <hr />
-      //       <div style="margin-top: 5px; text-align: center;">
-      //         <img src={image} width="250px" height="auto" style="border: 2px solid goldenrod;"/>
-      //       </div>
-      //     </div>
-      //     `,
-      //     cursorOverStyle: "pointer",
-      //   },
-      //   bulletTemplate as any,
-      // );
-
       let normal = am5.Picture.new(
         root,
         {
-          width: 48,
-          height: 48,
+          width: 32,
+          height: 32,
           tooltipY: 0,
           centerX: am5.p50,
           centerY: am5.p50,
-          src: christmas_makrura,
+          src: makrura,
           templateField: "bulletSettings",
           tooltipHTML: `
           <div>
@@ -218,12 +189,12 @@ onMounted(() => {
       let recent = am5.Picture.new(
         root,
         {
-          width: 48,
-          height: 48,
+          width: 32,
+          height: 32,
           tooltipY: 0,
           centerX: am5.p50,
           centerY: am5.p50,
-          src: new_christmas_makrura,
+          src: new_makrura,
           templateField: "bulletSettings",
           tooltipHTML: `
           <div>
@@ -240,32 +211,6 @@ onMounted(() => {
         },
         bulletTemplate as any,
       );
-
-      // let recent = am5.Picture.new(
-      //   root,
-      //   {
-      //     width: 32,
-      //     height: 32,
-      //     tooltipY: 0,
-      //     centerX: am5.p50,
-      //     centerY: am5.p50,
-      //     src: new_makrura,
-      //     templateField: "bulletSettings",
-      //     tooltipHTML: `
-      //     <div>
-      //       <h5 style='text-align: center'><i>Recently added/updated</i></h5>
-      //       <h5><strong>Owner</strong>: {owner}</h5>
-      //       <h5><strong>Location</strong>: {title}</h5>
-      //       <hr />
-      //       <div style="margin-top: 5px; text-align: center;">
-      //         <img src={image} width="250px" height="auto" style="border: 2px solid goldenrod;"/>
-      //       </div>
-      //     </div>
-      //     `,
-      //     cursorOverStyle: "pointer",
-      //   },
-      //   bulletTemplate as any,
-      // );
 
       let holiday = am5.Picture.new(
         root,
