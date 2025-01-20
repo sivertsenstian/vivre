@@ -21,6 +21,9 @@ import _isNil from "lodash/isNil";
 
 const store = useMakruraStore();
 
+const statsTab = ref<"stats" | "contact">("stats");
+const open = (path: string) => window.open(path, "_blank");
+
 const chartdiv = useTemplateRef("makrura-globe");
 
 let root: any = null;
@@ -432,64 +435,147 @@ const draw = () => {
           <v-col cols="12" md="3">
             <v-sheet
               elevation="5"
-              style="border: 2px solid darkgoldenrod; border-radius: 10px">
-              <v-table>
-                <thead>
-                  <tr>
-                    <td colspan="1" class="text-h5 font-weight-bold">
-                      Stats
-                      <hr color="goldenrod" />
-                    </td>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td class="font-weight-bold">Countries:</td>
-                    <td class="font-weight-bold">
-                      <span style="color: goldenrod" class="font-weight-bold">{{
-                        stats.countries
-                      }}</span>
-                      / {{ stats.totalCountries }} ({{
-                        stats.countryCoverage
-                      }}%)
-                    </td>
-                  </tr>
-                  <tr>
-                    <td class="font-weight-bold">Continents:</td>
-                    <td class="font-weight-bold text-no-wrap">
-                      <span v-for="(v, k, i) in stats.continents">
-                        <span style="color: goldenrod" class="font-weight-bold">
-                          {{ k }}:
-                        </span>
-                        <span class="font-weight-bold"> {{ v }}</span>
-                        <span
-                          class="font-weight-bold"
-                          v-if="i !== Object.keys(stats.continents).length - 1">
-                          //
-                        </span>
-                      </span>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td class="font-weight-bold">Makrura Owners:</td>
-                    <td class="font-weight-bold" style="color: goldenrod">
-                      {{ stats.owners }}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td class="font-weight-bold">Makruras On Holiday:</td>
-                    <td class="font-weight-bold" style="color: goldenrod">
-                      {{ stats.onHoliday }}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td class="font-weight-bold">Total Makruras:</td>
-                    <td class="font-weight-bold" style="color: goldenrod">
-                      {{ stats.total }}
-                    </td>
-                  </tr>
-                </tbody>
-              </v-table>
+              style="
+                border: 2px solid darkgoldenrod;
+                border-radius: 10px;
+                min-height: 310px;
+              ">
+              <v-tabs
+                fixed-tabs
+                v-model="statsTab"
+                slider-color="#daa520"
+                class="mb-2">
+                <v-tab class="text-none" text="Stats" value="stats"></v-tab>
+                <v-tab
+                  class="text-none"
+                  text="How To Contact"
+                  value="contact"></v-tab>
+              </v-tabs>
+              <v-window v-model="statsTab">
+                <v-window-item value="stats">
+                  <v-table>
+                    <tbody>
+                      <tr>
+                        <td class="font-weight-bold">Countries:</td>
+                        <td class="font-weight-bold">
+                          <span
+                            style="color: goldenrod"
+                            class="font-weight-bold"
+                            >{{ stats.countries }}</span
+                          >
+                          / {{ stats.totalCountries }} ({{
+                            stats.countryCoverage
+                          }}%)
+                        </td>
+                      </tr>
+                      <tr>
+                        <td class="font-weight-bold">Continents:</td>
+                        <td class="font-weight-bold text-no-wrap">
+                          <span v-for="(v, k, i) in stats.continents">
+                            <span
+                              style="color: goldenrod"
+                              class="font-weight-bold">
+                              {{ k }}:
+                            </span>
+                            <span class="font-weight-bold"> {{ v }}</span>
+                            <span
+                              class="font-weight-bold"
+                              v-if="
+                                i !== Object.keys(stats.continents).length - 1
+                              ">
+                              //
+                            </span>
+                          </span>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td class="font-weight-bold">Makrura Owners:</td>
+                        <td class="font-weight-bold" style="color: goldenrod">
+                          {{ stats.owners }}
+                        </td>
+                      </tr>
+                      <tr>
+                        <td class="font-weight-bold">Makruras On Holiday:</td>
+                        <td class="font-weight-bold" style="color: goldenrod">
+                          {{ stats.onHoliday }}
+                        </td>
+                      </tr>
+                      <tr>
+                        <td class="font-weight-bold">Total Makruras:</td>
+                        <td class="font-weight-bold" style="color: goldenrod">
+                          {{ stats.total }}
+                        </td>
+                      </tr>
+                    </tbody>
+                  </v-table>
+                </v-window-item>
+                <v-window-item value="contact">
+                  <v-row class="pa-8 text-center">
+                    <v-col cols="12" class="font-weight-bold text-title">
+                      Contact the MAKRURA MASTER
+                      <span style="color: goldenrod; font-weight: bold"
+                        >SaulApeMan</span
+                      >
+                      to get your picture on the globe by using one of the links
+                      below!
+                    </v-col>
+                    <v-col cols="4">
+                      <v-btn
+                        @click="() => open('mailto:saulapeman@gmail.com')"
+                        title="Send an email"
+                        icon="mdi-email-outline"
+                        variant="outlined"
+                        color="#daa520" />
+                    </v-col>
+                    <v-col cols="4">
+                      <v-btn
+                        @click="
+                          () => open('https://discord.com/invite/SxAgrxqT3T')
+                        "
+                        title="Join discord"
+                        icon="mdi-chat"
+                        variant="outlined"
+                        color="#daa520" />
+                    </v-col>
+                    <v-col cols="4">
+                      <v-btn
+                        @click="() => open('https://www.twitch.tv/saulapeman')"
+                        title="Follow on twitch"
+                        icon="mdi-twitch"
+                        variant="outlined"
+                        color="#daa520" />
+                    </v-col>
+                    <v-col cols="4">
+                      <v-btn
+                        @click="
+                          () => open('https://www.youtube.com/@SaulApeMan')
+                        "
+                        title="Like and Subscribe on Youtube"
+                        icon="mdi-youtube"
+                        variant="outlined"
+                        color="#daa520" />
+                    </v-col>
+                    <v-col cols="4">
+                      <v-btn
+                        @click="
+                          () => open('https://www.instagram.com/saulapeman/')
+                        "
+                        title="Slide into DMs on instagram"
+                        icon="mdi-instagram"
+                        variant="outlined"
+                        color="#daa520" />
+                    </v-col>
+                    <v-col cols="4">
+                      <v-btn
+                        @click="() => open('https://x.com/saulapeman')"
+                        title="Tweet"
+                        icon="mdi-twitter"
+                        variant="outlined"
+                        color="#daa520" />
+                    </v-col>
+                  </v-row>
+                </v-window-item>
+              </v-window>
             </v-sheet>
           </v-col>
         </v-row>
