@@ -15,6 +15,7 @@ import EditBuildOrderView from "@/views/BuildOrders/EditBuildOrderView.vue";
 import GNLSeasonIndexView from "@/views/GNL/GNLSeasonIndexView.vue";
 import GNLSeasonTeamView from "@/views/GNL/GNLSeasonTeamView.vue";
 import ChallengersView from "@/views/ChallengersView.vue";
+import OnlyFangsView from "@/views/Events/OnlyFangsView.vue";
 
 const router = createRouter({
   history: createWebHashHistory(import.meta.env.BASE_URL),
@@ -57,6 +58,11 @@ const router = createRouter({
           path: "the-great-escape",
           name: "Event: The Greate Ladder Escape",
           component: TheGreatEscapeView,
+        },
+        {
+          path: "onlyfangs",
+          name: "Event: OnlyFangs W3C Ladder Race",
+          component: OnlyFangsView,
         },
       ],
     },

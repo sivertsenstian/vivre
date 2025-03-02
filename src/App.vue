@@ -79,6 +79,12 @@ const route = useRoute();
             color="green-lighten-3"
             router
             to="/events/the-great-escape" />
+          <v-list-item
+            prepend-icon="mdi-bottle-soda-classic"
+            title="OnlyFangs Ladder"
+            color="purple-lighten-1"
+            router
+            to="/events/onlyfangs" />
         </v-list-group>
         <v-list-item
           color="green"
