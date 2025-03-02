@@ -11,6 +11,7 @@ export const useSettingsStore = defineStore("settings", () => {
     mmr: null,
     mode: "week", // 'week', 'month', 'season'
     challengers: [null, null],
+    ladder: "",
   });
 
   const season = 20;

@@ -153,7 +153,17 @@ const mmr = computed(() => {
   if (data.value?.matches.length) {
     const g = _groupBy(data.value?.matches, (m) => {
       const d = moment(m.endTime).dayOfYear() - 1;
-      return dates.value.daysSinceStart - (dates.value.today.dayOfYear() - d);
+      const y = moment(m.endTime).year();
+      const yd =
+        dates.value.today.year() > y
+          ? moment().year(y).isLeapYear()
+            ? 366
+            : 365
+          : 0;
+
+      return (
+        dates.value.daysSinceStart - (dates.value.today.dayOfYear() - d) - yd
+      );
     });
 
     const initial = getPlayer(_last(g[Object.keys(g)[0]]))?.players[0].oldMmr;
@@ -193,10 +203,18 @@ const wins = computed(() => {
     ?.reduce(
       (r: number[], m: any) => {
         const d = moment(m.endTime).dayOfYear() - 1;
+        const y = moment(m.endTime).year();
+        const yd =
+          dates.value.today.year() > y
+            ? moment().year(y).isLeapYear()
+              ? 366
+              : 365
+            : 0;
         const day =
-          dates.value.daysSinceStart - (dates.value.today.dayOfYear() - d);
+          dates.value.daysSinceStart - (dates.value.today.dayOfYear() - d) - yd;
 
         r[day]++;
+
         return r;
       },
       _fill(
@@ -216,8 +234,15 @@ const loss = computed(() => {
     ?.reduce(
       (r: number[], m: any) => {
         const d = moment(m.endTime).dayOfYear() - 1;
+        const y = moment(m.endTime).year();
+        const yd =
+          dates.value.today.year() > y
+            ? moment().year(y).isLeapYear()
+              ? 366
+              : 365
+            : 0;
         const day =
-          dates.value.daysSinceStart - (dates.value.today.dayOfYear() - d);
+          dates.value.daysSinceStart - (dates.value.today.dayOfYear() - d) - yd;
 
         r[day]++;
         return r;
@@ -344,7 +369,6 @@ const avg = computed(() =>
     </v-list-item>
 
     <v-img height="250" :src="raceBanner[player.race]" cover></v-img>
-
     <Bar
       v-if="data?.matches?.length"
       style="position: absolute; bottom: 217px"

@@ -46,7 +46,9 @@ const getBattleTag = async (input: string) => {
           :src="raceIcon[Race.Random]" />
       </template>
       <template v-slot:title>
-        <div class="ml-1 text-left text-h5">A New Challenger ?</div>
+        <div class="ml-1 text-left text-h5">
+          {{ props.loading ? model : "A New Challenger ?" }}
+        </div>
       </template>
     </v-list-item>
 
@@ -69,7 +71,11 @@ const getBattleTag = async (input: string) => {
         <div
           class="text-subtitle-2 mt-5 text-wrap"
           style="vertical-align: middle; color: goldenrod">
-          Add a challenger from the w3c ladder to compete against!
+          {{
+            props.loading
+              ? `Adding challenger and calculating w3c ladder stats for ${model}...`
+              : "Add a challenger from the w3c ladder to compete against!"
+          }}
         </div>
       </v-card-subtitle>
     </v-card-item>

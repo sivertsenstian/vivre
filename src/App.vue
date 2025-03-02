@@ -34,7 +34,13 @@ const route = useRoute();
           prepend-icon="mdi-crown"
           title="Live"
           router
-          to="/"></v-list-item>
+          to="/" />
+        <v-list-item
+          color="green"
+          prepend-icon="mdi-account-group"
+          title="Challengers Ladder"
+          router
+          to="/challengers" />
         <v-list-item
           color="green"
           prepend-icon="mdi-flag"
