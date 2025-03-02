@@ -75,6 +75,10 @@ const rank = computed(() => {
 
   return rank;
 });
+
+const ladder = computed(() =>
+  store.ladder.sort((a, b) => rank.value[a] - rank.value[b]),
+);
 </script>
 
 <template>
@@ -194,9 +198,7 @@ const rank = computed(() => {
             md="4"
             lg="3"
             xl="2"
-            v-for="(challenger, i) in store.ladder.sort(
-              (a, b) => rank[a] - rank[b],
-            )">
+            v-for="(challenger, i) in ladder">
             <versus-banner
               v-if="
                 !_isNil(challenger) &&
