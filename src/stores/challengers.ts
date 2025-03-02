@@ -27,7 +27,14 @@ export const useChallengersStore = defineStore("challengers", () => {
     try {
       l = JSON.parse(window.atob(settings.data.ladder));
     } catch (e) {
-      l = ["Tyler1#11151", "Ahmp#1107", "Skippy1337#1171", "Guzu#21761"];
+      l = [
+        "Tyler1#11151",
+        "Ahmp#1107",
+        "Skippy1337#1171",
+        "Guzu#21761",
+        "Dendi#22659",
+        "Geranimo#11740",
+      ];
     }
   }
 
