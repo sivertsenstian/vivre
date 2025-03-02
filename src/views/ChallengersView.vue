@@ -212,7 +212,7 @@ const ladder = computed(() =>
               :challenger="challenger"
               :player="store.challengers[challenger]"
               :season-start="store.start"
-              :rank="i + 1" />
+              :rank="i" />
             <versus-challenger
               v-else
               :loading="
