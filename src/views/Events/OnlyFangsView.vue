@@ -1,0 +1,236 @@
+<script setup lang="ts">
+import logo from "@/assets/events/onlyfangs_banner.jpg";
+import banner_tyler1 from "@assets/events/tyler1.jpg";
+import banner_ahmpy from "@assets/events/ahmpy.jpg";
+import banner_soda from "@assets/events/sodapoppin.jpg";
+import banner_guzu from "@assets/events/guzu.jpg";
+import banner_dendi from "@assets/events/dendi.jpg";
+import banner_geranimo from "@assets/events/geranimo.jpg";
+
+import VersusChallenger from "@/components/events/onlyfangs/OnlyFangsVersusChallenger.vue";
+import _isNil from "lodash/isNil";
+import VersusBanner from "@/components/events/onlyfangs/OnlyFangsVersusBanner.vue";
+import { computed } from "vue";
+import _fromPairs from "lodash/fromPairs";
+import _sortBy from "lodash/sortBy";
+import type { IStatistics } from "@/utilities/types.ts";
+import { useOnlyFangsStore } from "@/stores/onlyfangs.ts";
+import { Race, raceIcon, raceName } from "@/stores/races.ts";
+
+const store = useOnlyFangsStore();
+
+const onlyFangsBanner: any = {
+  "Tyler1#11151": banner_tyler1,
+  "Ahmp#1107": banner_ahmpy,
+  "Skippy1337#1171": banner_soda,
+  "Guzu#21761": banner_guzu,
+  "Dendi#22658": banner_dendi,
+  "Geranimo#11740": banner_geranimo,
+};
+
+const modeLabel = (mode: string) => {
+  if (mode === "points") {
+    return "Points";
+  } else if (mode === "mmr") {
+    return "MMR";
+  } else if (mode === "weeklyActivity") {
+    return "Activity this week";
+  } else if (mode === "monthlyActivity") {
+    return "Activity this month";
+  } else if (mode === "seasonActivity") {
+    return "Activity this season";
+  }
+};
+
+const getPoints = (mode: string, v: IStatistics) => {
+  if (_isNil(v)) {
+    return 0;
+  }
+
+  if (mode === "points") {
+    return v.season.summary.totalPoints;
+  } else if (mode === "mmr") {
+    return v.season.summary.mmr.current;
+  } else if (mode === "weeklyActivity") {
+    return v.week.total;
+  } else if (mode === "monthlyActivity") {
+    return v.month.total;
+  } else if (mode === "seasonActivity") {
+    return v.season.summary.total;
+  }
+};
+
+const rank = computed(() => {
+  let points: any[] = [];
+  let rank: Record<string, number> = {};
+
+  if (store.ladder.length) {
+    for (const challenger of store.ladder.filter((v) => !_isNil(v))) {
+      points.push({
+        id: challenger,
+        points: getPoints(store.mode, store.challengers[challenger]),
+      });
+    }
+
+    return _fromPairs(
+      _sortBy(points, "points")
+        .reverse()
+        .map((p, i) => [p.id, i]),
+    );
+  }
+
+  return rank;
+});
+
+const ladder = computed(() =>
+  [...store.ladder].sort((a, b) => rank.value[a] - rank.value[b]),
+);
+</script>
+
+<template>
+  <main style="height: 100vh; overflow-y: auto">
+    <v-container fluid style="opacity: 0.9">
+      <v-sheet class="pa-6" elevation="10">
+        <v-row>
+          <v-col cols="12" class="text-center ma-0 pa-0">
+            <img :src="logo" alt="APE SCIENCE - WC3 RESEARCH FACILITY" />
+            <div class="text-h4 font-weight-bold">W3C LADDER RACE!</div>
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col cols="12" md="7">
+            <v-row>
+              <v-col cols="12" md="6">
+                <div class="text-h6">Rank Ladder By</div>
+                <hr color="darkgoldenrod" />
+              </v-col>
+              <v-col cols="12" md="12">
+                <v-radio-group inline v-model="store.mode">
+                  <v-radio
+                    v-for="mode in store.modes"
+                    :label="modeLabel(mode)"
+                    :value="mode"
+                    density="comfortable" />
+                </v-radio-group>
+              </v-col>
+            </v-row>
+          </v-col>
+        </v-row>
+
+        <v-row>
+          <v-col cols="12" class="text-center">
+            <span style="vertical-align: middle; font-weight: bold">
+              Players are compared and ranked by the selected criteria
+              (currently
+              <i
+                ><strong>{{ modeLabel(store.mode) }}</strong></i
+              >). They can also earn
+              <span style="color: goldenrod; font-weight: bold">points</span>
+              and
+              <span style="color: darkgoldenrod; font-weight: bold"
+                >achievements</span
+              >
+              in the current w3c ladder season based on their games played!
+            </span>
+          </v-col>
+        </v-row>
+      </v-sheet>
+      <v-sheet class="pa-4 pb-10" :elevation="5">
+        <v-row>
+          <v-col
+            cols="12"
+            sm="6"
+            md="4"
+            lg="3"
+            xl="2"
+            v-for="(challenger, i) in ladder">
+            <versus-banner
+              v-if="
+                !_isNil(challenger) &&
+                !_isNil(store.challengers[challenger]?.battleTag)
+              "
+              :banner="onlyFangsBanner[challenger]"
+              :challenger="challenger"
+              :player="store.challengers[challenger]"
+              :season-start="store.start"
+              :highlight="store.mode"
+              :rank="i" />
+            <versus-challenger
+              v-else
+              :banner="onlyFangsBanner[challenger]"
+              :loading="
+                !_isNil(challenger) &&
+                _isNil(store.challengers[challenger]?.battleTag)
+              "
+              v-model="store.ladder[i]" />
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col cols="10" offset="1">
+            <v-table hover fixed-header>
+              <thead>
+                <tr>
+                  <th class="text-left">#</th>
+                  <th class="text-left">Player</th>
+                  <th class="text-left">Race</th>
+                  <th class="text-center">Wins</th>
+                  <th class="text-center">Losses</th>
+                  <th class="text-center">Total</th>
+                  <th class="text-center">Winrate</th>
+                  <th class="text-center">MMR</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="(challenger, i) in ladder">
+                  <template
+                    v-if="
+                      !_isNil(challenger) &&
+                      !_isNil(store.challengers[challenger]?.battleTag)
+                    ">
+                    <td>
+                      <strong>{{ i + 1 }}.</strong>
+                    </td>
+                    <td>{{ challenger }}</td>
+                    <td>
+                      <div style="white-space: nowrap">
+                        <img
+                          style="vertical-align: middle"
+                          width="25px"
+                          :src="raceIcon[store.challengers[challenger].race]" />
+                        {{ raceName[store.challengers[challenger].race] }}
+                      </div>
+                    </td>
+                    <td class="text-center text-green font-weight-bold">
+                      {{ store.challengers[challenger].season.summary.wins }}
+                    </td>
+                    <td class="text-center text-red font-weight-bold">
+                      {{ store.challengers[challenger].season.summary.loss }}
+                    </td>
+                    <td class="text-center font-weight-bold">
+                      {{ store.challengers[challenger].season.summary.total }}
+                    </td>
+                    <td class="text-center font-weight-bold">
+                      {{
+                        Math.round(
+                          (store.challengers[challenger].season.summary.wins /
+                            store.challengers[challenger].season.summary
+                              .total) *
+                            100,
+                        )
+                      }}%
+                    </td>
+                    <td class="text-center font-weight-bold">
+                      {{
+                        store.challengers[challenger].season.summary.mmr.current
+                      }}
+                    </td>
+                  </template>
+                </tr>
+              </tbody>
+            </v-table>
+          </v-col>
+        </v-row>
+      </v-sheet>
+    </v-container>
+  </main>
+</template>
