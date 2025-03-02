@@ -32,7 +32,7 @@ export const useChallengersStore = defineStore("challengers", () => {
         "Ahmp#1107",
         "Skippy1337#1171",
         "Guzu#21761",
-        "Dendi#22659",
+        "Dendi#22658",
         "Geranimo#11740",
       ];
     }
