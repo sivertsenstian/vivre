@@ -14,6 +14,7 @@ import ShowBuildOrderView from "@/views/BuildOrders/ShowBuildOrderView.vue";
 import EditBuildOrderView from "@/views/BuildOrders/EditBuildOrderView.vue";
 import GNLSeasonIndexView from "@/views/GNL/GNLSeasonIndexView.vue";
 import GNLSeasonTeamView from "@/views/GNL/GNLSeasonTeamView.vue";
+import ChallengersView from "@/views/ChallengersView.vue";
 
 const router = createRouter({
   history: createWebHashHistory(import.meta.env.BASE_URL),
@@ -22,6 +23,11 @@ const router = createRouter({
       path: "/",
       name: "W3C Live Ladder Tracker",
       component: VivreView,
+    },
+    {
+      path: "/challengers",
+      name: "W3C Challengers",
+      component: ChallengersView,
     },
     {
       path: "/season",
