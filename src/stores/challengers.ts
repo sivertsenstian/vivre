@@ -14,7 +14,6 @@ import {
 } from "@/utilities/matchcalculator.ts";
 import { Race } from "@/stores/races.ts";
 import { useRoute } from "vue-router";
-import { useBase64 } from "@vueuse/core";
 
 export const useChallengersStore = defineStore("challengers", () => {
   const settings = useSettingsStore();

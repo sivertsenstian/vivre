@@ -77,7 +77,7 @@ const rank = computed(() => {
 });
 
 const ladder = computed(() =>
-  store.ladder.sort((a, b) => rank.value[a] - rank.value[b]),
+  [...store.ladder].sort((a, b) => rank.value[a] - rank.value[b]),
 );
 </script>
 
@@ -212,7 +212,7 @@ const ladder = computed(() =>
               :challenger="challenger"
               :player="store.challengers[challenger]"
               :season-start="store.start"
-              :rank="rank[challenger]" />
+              :rank="i + 1" />
             <versus-challenger
               v-else
               :loading="
