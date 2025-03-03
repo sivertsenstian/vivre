@@ -84,6 +84,7 @@ const getBattleTag = async (input: string) => {
       <v-autocomplete
         :items="searchResults"
         :loading="searching"
+        :disabled="loading"
         @input="(e: any) => getBattleTag(e.target.value)"
         clearable
         v-model="model as any"
