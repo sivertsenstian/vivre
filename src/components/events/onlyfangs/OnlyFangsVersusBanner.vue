@@ -27,6 +27,15 @@ const raceColor: any = {
   [Race.Random]: "#59524A",
 };
 
+const twitch: any = {
+  "Tyler1#11151": "loltyler1",
+  "Ahmp#1107": "ahmpy",
+  "Skippy1337#1171": "sodapoppin",
+  "Guzu#21761": "guzu",
+  "Dendi#22658": "dendi",
+  "Geranimo#11740": "lolgeranimo",
+};
+
 // Chart stuff
 import { Bar } from "vue-chartjs";
 import {
@@ -265,6 +274,9 @@ const open = (battleTag: string) =>
     `https://www.w3champions.com/player/${encodeURIComponent(battleTag)}`,
     "_blank",
   );
+
+const openTwitch = (battleTag: string) =>
+  window.open(`https://www.twitch.tv/${twitch[battleTag]}`, "_blank");
 
 const avg = computed(() =>
   data.value?.total
@@ -537,14 +549,27 @@ const avg = computed(() =>
     </v-card-item>
 
     <v-card-actions>
-      <v-btn
-        title="Open W3Champions Profile Page"
-        color="transparent"
-        block
-        variant="flat"
-        @click="() => open(player.battleTag)"
-        ><img :src="w3ciconDark" height="22px"
-      /></v-btn>
+      <v-row>
+        <v-col cols="6" class="text-center">
+          <v-btn
+            title="Open W3Champions Profile Page"
+            color="transparent"
+            variant="flat"
+            @click="() => open(player.battleTag)"
+            ><img :src="w3ciconDark" height="22px"
+          /></v-btn>
+        </v-col>
+        <v-col cols="6" class="text-center">
+          <v-btn
+            title="Open Twitch Page"
+            prepend-icon="mdi-twitch"
+            color="purple"
+            variant="text"
+            @click="() => openTwitch(player.battleTag)"
+            >Twitch</v-btn
+          >
+        </v-col>
+      </v-row>
     </v-card-actions>
   </v-card>
 </template>

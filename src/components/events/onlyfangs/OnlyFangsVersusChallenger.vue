@@ -6,10 +6,10 @@ import { ref } from "vue";
 import { search } from "@/utilities/api.ts";
 
 const raceColor: any = "#daa520";
-const model = defineModel<string | null>();
 
 interface Props {
   loading?: boolean;
+  battleTag: string;
   banner?: string;
 }
 const props = defineProps<Props>();
@@ -48,14 +48,14 @@ const getBattleTag = async (input: string) => {
       </template>
       <template v-slot:title>
         <div class="ml-1 text-left text-h5">
-          {{ props.loading ? model : "A New Challenger ?" }}
+          {{ battleTag }}
         </div>
       </template>
     </v-list-item>
 
     <v-img height="250" :src="banner ?? banner_challenger" cover></v-img>
 
-    <v-card-item class="py-0">
+    <v-card-item class="py-6">
       <v-card-title>
         <span
           class="text-h3 fontweight-bold"
@@ -73,28 +73,12 @@ const getBattleTag = async (input: string) => {
           class="text-subtitle-2 mt-5 text-wrap"
           style="vertical-align: middle; color: goldenrod">
           {{
-            props.loading ? `Calculating w3c ladder stats for ${model}...` : ""
+            props.loading
+              ? `Calculating w3c ladder stats for ${battleTag}...`
+              : `No w3c ladder stats available for ${battleTag} yet!`
           }}
         </div>
       </v-card-subtitle>
-    </v-card-item>
-
-    <v-card-item class="py-4">
-      <v-autocomplete
-        disabled
-        :items="searchResults"
-        :loading="searching"
-        @input="(e: any) => getBattleTag(e.target.value)"
-        clearable
-        v-model="model as any"
-        class="mx-auto"
-        density="comfortable"
-        placeholder="Search W3C for player..."
-        prepend-inner-icon="mdi-magnify"
-        variant="solo"
-        item-title="battleTag"
-        item-value="battleTag"
-        auto-select-first />
     </v-card-item>
   </v-card>
 </template>

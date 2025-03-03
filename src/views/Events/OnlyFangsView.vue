@@ -6,6 +6,8 @@ import banner_soda from "@assets/events/sodapoppin.jpg";
 import banner_guzu from "@assets/events/guzu.jpg";
 import banner_dendi from "@assets/events/dendi.jpg";
 import banner_geranimo from "@assets/events/geranimo.jpg";
+import banner_sunglitters from "@assets/events/sunglitters.jpg";
+import banner_annie from "@assets/events/annie.jpg";
 
 import VersusChallenger from "@/components/events/onlyfangs/OnlyFangsVersusChallenger.vue";
 import _isNil from "lodash/isNil";
@@ -26,6 +28,8 @@ const onlyFangsBanner: any = {
   "Guzu#21761": banner_guzu,
   "Dendi#22658": banner_dendi,
   "Geranimo#11740": banner_geranimo,
+  Sunglitters: banner_sunglitters,
+  AnnieFuchsia: banner_annie,
 };
 
 const modeLabel = (mode: string) => {
@@ -115,6 +119,20 @@ const ladder = computed(() =>
               </v-col>
             </v-row>
           </v-col>
+          <v-col cols="12" md="5">
+            <v-row>
+              <v-col cols="12" md="6">
+                <div class="text-h6">Want to create your own ladder!</div>
+                <hr color="darkgoldenrod" />
+              </v-col>
+              <v-col cols="12" md="12">
+                You can create your own personal and shareable ladder ranking
+                and compare your w3c progress to others<a href="/#/challengers"
+                  >here</a
+                >!
+              </v-col>
+            </v-row>
+          </v-col>
         </v-row>
 
         <v-row>
@@ -157,27 +175,36 @@ const ladder = computed(() =>
               :rank="i" />
             <versus-challenger
               v-else
+              :battle-tag="challenger"
               :banner="onlyFangsBanner[challenger]"
               :loading="
                 !_isNil(challenger) &&
-                _isNil(store.challengers[challenger]?.battleTag)
+                _isNil(store.challengers[challenger]?.battleTag) &&
+                challenger.includes('#')
               "
               v-model="store.ladder[i]" />
           </v-col>
         </v-row>
+
         <v-row>
-          <v-col cols="10" offset="1">
+          <v-col cols="10" offset="1" class="my-5">
+            <hr color="darkgoldenrod" />
+          </v-col>
+        </v-row>
+        <v-row class="text-center">
+          <v-col cols="0" sm="1" md="2" lg="3" xl="3" />
+          <v-col cols="12" sm="10" md="8" lg="6" xl="6">
             <v-table hover fixed-header>
               <thead>
                 <tr>
-                  <th class="text-left">#</th>
-                  <th class="text-left">Player</th>
-                  <th class="text-left">Race</th>
-                  <th class="text-center">Wins</th>
-                  <th class="text-center">Losses</th>
-                  <th class="text-center">Total</th>
-                  <th class="text-center">Winrate</th>
-                  <th class="text-center">MMR</th>
+                  <th class="text-center font-weight-bold">#</th>
+                  <th class="text-left font-weight-bold">Player</th>
+                  <th class="text-left font-weight-bold">Race</th>
+                  <th class="text-center font-weight-bold">Wins</th>
+                  <th class="text-center font-weight-bold">Losses</th>
+                  <th class="text-center font-weight-bold">Total</th>
+                  <th class="text-center font-weight-bold">Winrate</th>
+                  <th class="text-center font-weight-bold">MMR</th>
                 </tr>
               </thead>
               <tbody>
@@ -187,11 +214,11 @@ const ladder = computed(() =>
                       !_isNil(challenger) &&
                       !_isNil(store.challengers[challenger]?.battleTag)
                     ">
-                    <td>
+                    <td class="text-center">
                       <strong>{{ i + 1 }}.</strong>
                     </td>
-                    <td>{{ challenger }}</td>
-                    <td>
+                    <td class="text-left">{{ challenger }}</td>
+                    <td class="text-left">
                       <div style="white-space: nowrap">
                         <img
                           style="vertical-align: middle"
