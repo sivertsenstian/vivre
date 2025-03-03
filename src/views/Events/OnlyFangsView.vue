@@ -121,8 +121,8 @@ const ladder = computed(() =>
           </v-col>
           <v-col cols="12" md="5">
             <v-row>
-              <v-col cols="12" md="6">
-                <div class="text-h6">Want to create your own ladder!</div>
+              <v-col cols="12" md="7">
+                <div class="text-h6">Want to create your own ladder?</div>
                 <hr color="darkgoldenrod" />
               </v-col>
               <v-col cols="12" md="12">
@@ -150,6 +150,9 @@ const ladder = computed(() =>
               >
               in the current w3c ladder season based on their games played!
             </span>
+            <p style="color: goldenrod">
+              The page updates <i>automatically</i> - so no need to refresh!
+            </p>
           </v-col>
         </v-row>
       </v-sheet>

@@ -14,6 +14,8 @@ import {
 } from "@/utilities/matchcalculator.ts";
 import { Race } from "@/stores/races.ts";
 import { useRoute } from "vue-router";
+import axios from "axios";
+import { currentUrl } from "@/utilities/api.ts";
 
 export const useOnlyFangsStore = defineStore("onlyfangs", () => {
   const settings = useSettingsStore();
@@ -63,6 +65,37 @@ export const useOnlyFangsStore = defineStore("onlyfangs", () => {
   const today = moment().startOf("day");
   const weekRule = moment().startOf("isoWeek");
   const monthRule = moment().startOf("month");
+
+  const getOngoing = async (tag: string) => {
+    try {
+      const { data: onGoingResponse } = await axios.get(currentUrl(tag));
+      if (!_isNil(onGoingResponse?.id) && onGoingResponse?.gameMode === 1) {
+        const player = onGoingResponse.teams?.find((t: any) =>
+          t.players.some(
+            (p: any) => p.battleTag.toLowerCase() === tag.toLowerCase(),
+          ),
+        )?.players?.[0];
+        const opponent = onGoingResponse.teams?.find((t: any) =>
+          t.players.some(
+            (p: any) => p.battleTag.toLowerCase() != tag.toLowerCase(),
+          ),
+        )?.players?.[0];
+
+        return {
+          id: onGoingResponse.id,
+          start: moment(onGoingResponse.startTime) as any,
+          active: true,
+          player,
+          opponent,
+          map: onGoingResponse.mapName,
+          server: onGoingResponse.serverInfo,
+        };
+      }
+    } catch (error) {
+      return console.log(error);
+    }
+    return undefined;
+  };
 
   const getMatches = async (btag: string) => {
     let result: IStatistics = {} as any;
@@ -131,7 +164,7 @@ export const useOnlyFangsStore = defineStore("onlyfangs", () => {
           [Race.Orc]: getRaceStatistics(btag, season[Race.Orc]),
           [Race.Undead]: getRaceStatistics(btag, season[Race.Undead]),
           [Race.NightElf]: getRaceStatistics(btag, season[Race.NightElf]),
-        },
+        } as any,
       };
     } catch (error) {
       console.log(error);
@@ -149,6 +182,9 @@ export const useOnlyFangsStore = defineStore("onlyfangs", () => {
   setInterval(async () => {
     for (const challenger of ladder.value.filter((v) => !_isNil(v))) {
       const c = await getMatches(challenger);
+      const o = await getOngoing(challenger);
+
+      c.player.ongoing = o !== undefined;
       challengers.value[challenger] = c.player;
     }
   }, 10000);
