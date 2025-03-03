@@ -116,6 +116,7 @@ interface Props {
   player: any;
   onRemove?: () => void;
   mode?: string;
+  highlight?: string;
   rank: number;
   seasonStart: Moment;
 }
@@ -421,8 +422,16 @@ const avg = computed(() =>
             rank + 1
           }}</span></span
         >
-        <span>{{ data?.mmr?.current ?? "-" }} MMR</span></v-card-title
-      >
+
+        <span v-if="highlight === 'points'"
+          >{{ data?.mmr?.current ?? "-" }} MMR</span
+        >
+        <span
+          :title="`${data.points} points from ladder, ${data.achievementPoints} points from achievements`"
+          v-else
+          >{{ data.totalPoints ?? "-" }} Points</span
+        >
+      </v-card-title>
       <v-card-subtitle class="d-flex justify-space-between" style="opacity: 1">
         <span style="opacity: 0.7" class="me-1"
           >Avg. games this {{ mode }}: {{ avg }} per day
@@ -430,7 +439,7 @@ const avg = computed(() =>
       </v-card-subtitle>
     </v-card-item>
 
-    <v-card-item class="py-0">
+    <v-card-item class="py-0" v-if="highlight === 'points'">
       <v-card-title>
         <span
           class="text-h3 fontweight-bold"
@@ -463,6 +472,43 @@ const avg = computed(() =>
               class="text-subtitle-2"
               style="vertical-align: middle; color: goldenrod"
               >points</span
+            >
+          </span>
+        </span>
+      </v-card-subtitle>
+    </v-card-item>
+
+    <v-card-item class="py-0" v-else>
+      <v-card-title>
+        <span
+          class="text-h3 fontweight-bold"
+          style="color: goldenrod; vertical-align: middle"
+          ><v-progress-circular indeterminate v-if="isNaN(data.points)" />
+          <span v-else>
+            {{ data?.mmr?.current ?? "-" }}
+          </span>
+        </span>
+      </v-card-title>
+      <v-card-subtitle>
+        <span
+          class="text-subtitle-2"
+          style="vertical-align: middle; color: goldenrod"
+          v-if="isNaN(data.points)">
+          calculating...
+        </span>
+        <span v-else>
+          <span
+            v-if="data.points === 0"
+            class="text-subtitle-2"
+            style="vertical-align: middle; color: goldenrod">
+            Play 1v1 on the w3c ladder to increase your rank!
+          </span>
+          <span v-else>
+            <v-icon size="x-small" icon="mdi-medal" style="color: goldenrod" />
+            <span
+              class="text-subtitle-2"
+              style="vertical-align: middle; color: goldenrod"
+              ><strong>MMR</strong></span
             >
           </span>
         </span>

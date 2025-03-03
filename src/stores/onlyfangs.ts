@@ -34,6 +34,8 @@ export const useOnlyFangsStore = defineStore("onlyfangs", () => {
         "Guzu#21761",
         "Dendi#22658",
         "Geranimo#11740",
+        "Sunglitters",
+        "AnnieFuchsia",
       ];
     }
   }
