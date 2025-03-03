@@ -207,7 +207,8 @@ const ladder = computed(() =>
               "
               :on-remove="
                 () => {
-                  store.ladder.splice(i, 1);
+                  const idx = store.ladder.indexOf(challenger);
+                  store.ladder.splice(idx, 1);
                 }
               "
               :challenger="challenger"
