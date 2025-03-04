@@ -168,9 +168,22 @@ export const getRaceStatistics = (tag: string, m: any[]): IRaceStatistics => {
   const averageGain =
     matches.reduce((s, m) => s + getplayer(tag)(m).players[0].mmrGain, 0) / c;
 
+  const maps = matches?.reduce((r, m) => {
+    return {
+      ...r,
+      [m.mapName]: {
+        ...r[m.mapName],
+        total: (r?.[m.mapName]?.total ?? 0) + 1,
+        wins: (r?.[m.mapName]?.wins ?? 0) + (iswin(m, tag) ? 1 : 0),
+        loss: (r?.[m.mapName]?.loss ?? 0) + (iswin(m, tag) ? 0 : 1),
+      },
+    };
+  }, {});
+
   let result: IRaceStatistics = {
     matches,
     total: matches?.length ?? 0,
+    maps: maps,
     wins: wins?.length ?? 0,
     loss: loss?.length ?? 0,
     percentage: (wins?.length ?? 0) / (wins?.length + loss?.length),
