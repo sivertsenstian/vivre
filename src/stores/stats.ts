@@ -31,7 +31,7 @@ export const useStatsStore = defineStore("stats", () => {
 
   const searchResults = ref([]);
   const searching = ref(false);
-  const latest = 20;
+  const latest = 21;
 
   const currentUrl = (tag: string) =>
     `https://website-backend.w3champions.com/api/matches/ongoing/${encodeURIComponent(
@@ -148,8 +148,8 @@ export const useStatsStore = defineStore("stats", () => {
       };
 
       result = {
-        battleTag: info.battleTag,
-        race: info.race,
+        battleTag: info.battleTag ?? btag,
+        race: info.race ?? Race.Random,
         day: getRaceStatistics(btag, dayActual),
         week: getRaceStatistics(btag, weekActual),
         month: getRaceStatistics(btag, monthActual),

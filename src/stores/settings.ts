@@ -14,9 +14,9 @@ export const useSettingsStore = defineStore("settings", () => {
     ladder: "",
   });
 
-  const season = 20;
+  const season = 21;
   const seasonDurationInWeeks = 15;
-  const start = moment("07.10.24", "DD.MM.YYYY");
+  const start = moment("04.03.25", "DD.MM.YYYY");
   const end = moment(start).add(seasonDurationInWeeks, "weeks");
   const duration = Math.abs(end.diff(start, "days"));
 

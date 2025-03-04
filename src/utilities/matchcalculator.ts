@@ -227,7 +227,7 @@ export const getRaceStatistics = (tag: string, m: any[]): IRaceStatistics => {
   };
 
   result.points = calculateLadderPoints(tag, result.matches);
-  result.achievements = season_achievements[20].calculate({
+  result.achievements = season_achievements[21].calculate({
     battleTag: tag,
     data: result,
   } as any);

@@ -117,7 +117,7 @@ interface Props {
   onRemove?: () => void;
   mode?: string;
   highlight?: string;
-  rank: number;
+  rank?: number;
   seasonStart: Moment;
 }
 const props = withDefaults(defineProps<Props>(), {
@@ -267,7 +267,7 @@ const open = (battleTag: string) =>
 
 const avg = computed(() =>
   data.value?.total
-    ? Math.ceil(data.value.total / dates.value.daysSinceStart)
+    ? `${Math.ceil(data.value.total / dates.value.daysSinceStart)} per day`
     : "-",
 );
 </script>
@@ -286,7 +286,7 @@ const avg = computed(() =>
       </template>
       <template v-slot:title>
         <div class="ml-1 text-left text-h5">
-          {{ player.battleTag.split("#")[0] }}
+          {{ player.battleTag?.split("#")[0] }}
           <v-icon
             v-if="player.ongoing"
             class="elementToFadeInAndOut"
@@ -419,10 +419,9 @@ const avg = computed(() =>
       <v-card-title class="d-flex justify-space-between"
         ><span
           >Rank #<span class="font-weight-bold" style="color: darkgoldenrod">{{
-            rank + 1
+            (rank ?? 0) + 1
           }}</span></span
         >
-
         <span v-if="highlight === 'points'"
           >{{ data?.mmr?.current ?? "-" }} MMR</span
         >
@@ -434,7 +433,7 @@ const avg = computed(() =>
       </v-card-title>
       <v-card-subtitle class="d-flex justify-space-between" style="opacity: 1">
         <span style="opacity: 0.7" class="me-1"
-          >Avg. games this {{ mode }}: {{ avg }} per day
+          >Avg. games this {{ mode }}: {{ avg }}
         </span>
       </v-card-subtitle>
     </v-card-item>
@@ -448,7 +447,7 @@ const avg = computed(() =>
           <span
             v-else
             :title="`${data.points} points from ladder, ${data.achievementPoints} points from achievements`">
-            {{ data.totalPoints }}
+            <span v-if="data.points > 0">{{ data.totalPoints }}</span>
           </span>
         </span>
       </v-card-title>
@@ -462,8 +461,12 @@ const avg = computed(() =>
         <span v-else>
           <span
             v-if="data.points === 0"
-            class="text-subtitle-2"
-            style="vertical-align: middle; color: goldenrod">
+            class="d-block text-subtitle-2 my-7"
+            style="
+              vertical-align: middle;
+              color: goldenrod;
+              white-space: normal;
+            ">
             Play 1v1 on the w3c ladder to earn points!
           </span>
           <span v-else>
@@ -485,7 +488,7 @@ const avg = computed(() =>
           style="color: goldenrod; vertical-align: middle"
           ><v-progress-circular indeterminate v-if="isNaN(data.points)" />
           <span v-else>
-            {{ data?.mmr?.current ?? "-" }}
+            <span v-if="data.points > 0">{{ data?.mmr?.current ?? "-" }}</span>
           </span>
         </span>
       </v-card-title>
@@ -499,9 +502,13 @@ const avg = computed(() =>
         <span v-else>
           <span
             v-if="data.points === 0"
-            class="text-subtitle-2"
-            style="vertical-align: middle; color: goldenrod">
-            Play 1v1 on the w3c ladder to increase your rank!
+            class="d-block text-subtitle-2 my-7"
+            style="
+              vertical-align: middle;
+              color: goldenrod;
+              white-space: normal;
+            ">
+            Play 1v1 on the w3c ladder to earn points!
           </span>
           <span v-else>
             <v-icon size="x-small" icon="mdi-medal" style="color: goldenrod" />
