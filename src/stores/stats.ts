@@ -79,14 +79,10 @@ export const useStatsStore = defineStore("stats", () => {
 
     try {
       let all = await getAllSeasonGames(btag, latest);
-
-      const race = all?.[0]?.teams.find((t: any) =>
-        t.players.some(
-          (p: any) => p.battleTag.toLowerCase() === btag.toLowerCase(),
-        ),
-      )?.players?.[0]?.race;
-
       seasonActual = all;
+      const info = getInfo(btag, seasonActual);
+      const race = info.race ?? Race.Random;
+
       monthActual = all
         .filter((m: any) => moment(m.endTime).isAfter(monthRule))
         .filter((m: any) => isRace(btag, m, race));
@@ -97,7 +93,7 @@ export const useStatsStore = defineStore("stats", () => {
         .filter((m: any) => moment(m.endTime).isAfter(today))
         .filter((m: any) => isRace(btag, m, race));
 
-      const info = getInfo(btag, seasonActual);
+      console.log({ all });
 
       const season = {
         [Race.Human]: seasonActual.filter((m) => isRace(btag, m, Race.Human)),
@@ -111,7 +107,7 @@ export const useStatsStore = defineStore("stats", () => {
 
       result = {
         battleTag: info.battleTag ?? btag,
-        race: info.race ?? Race.Random,
+        race: race,
         day: getRaceStatistics(btag, dayActual),
         week: getRaceStatistics(btag, weekActual),
         month: getRaceStatistics(btag, monthActual),

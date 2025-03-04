@@ -134,7 +134,9 @@ const data = computed(() => {
   } else if (props.mode === "month") {
     return props.player.month;
   } else if (props.mode === "season") {
-    return props.player.season.summary;
+    return props.player.race
+      ? props.player.season[props.player.race]
+      : props.player.season.summary;
   }
   return {};
 });

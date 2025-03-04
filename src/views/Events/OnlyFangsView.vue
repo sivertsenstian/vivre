@@ -17,7 +17,7 @@ import _fromPairs from "lodash/fromPairs";
 import _sortBy from "lodash/sortBy";
 import type { IStatistics } from "@/utilities/types.ts";
 import { useOnlyFangsStore } from "@/stores/onlyfangs.ts";
-import { Race, raceIcon, raceName } from "@/stores/races.ts";
+import { raceIcon, raceName } from "@/stores/races.ts";
 
 const store = useOnlyFangsStore();
 
@@ -52,15 +52,15 @@ const getPoints = (mode: string, v: IStatistics) => {
   }
 
   if (mode === "points") {
-    return v.season.summary.totalPoints;
+    return v.season[v.race].totalPoints;
   } else if (mode === "mmr") {
-    return v.season.summary.mmr.current;
+    return v.season[v.race].mmr.current;
   } else if (mode === "weeklyActivity") {
     return v.week.total;
   } else if (mode === "monthlyActivity") {
     return v.month.total;
   } else if (mode === "seasonActivity") {
-    return v.season.summary.total;
+    return v.season[v.race].total;
   }
 };
 
@@ -233,27 +233,44 @@ const ladder = computed(() =>
                       </div>
                     </td>
                     <td class="text-center text-green font-weight-bold">
-                      {{ store.challengers[challenger].season.summary.wins }}
+                      {{
+                        store.challengers[challenger].season[
+                          store.challengers[challenger].race
+                        ].wins
+                      }}
                     </td>
                     <td class="text-center text-red font-weight-bold">
-                      {{ store.challengers[challenger].season.summary.loss }}
+                      {{
+                        store.challengers[challenger].season[
+                          store.challengers[challenger].race
+                        ].loss
+                      }}
                     </td>
                     <td class="text-center font-weight-bold">
-                      {{ store.challengers[challenger].season.summary.total }}
+                      {{
+                        store.challengers[challenger].season[
+                          store.challengers[challenger].race
+                        ].total
+                      }}
                     </td>
                     <td class="text-center font-weight-bold">
                       {{
                         Math.round(
-                          (store.challengers[challenger].season.summary.wins /
-                            store.challengers[challenger].season.summary
-                              .total) *
+                          (store.challengers[challenger].season[
+                            store.challengers[challenger].race
+                          ].wins /
+                            store.challengers[challenger].season[
+                              store.challengers[challenger].race
+                            ].total) *
                             100,
                         )
                       }}%
                     </td>
                     <td class="text-center font-weight-bold">
                       {{
-                        store.challengers[challenger].season.summary.mmr.current
+                        store.challengers[challenger].season[
+                          store.challengers[challenger].race
+                        ].mmr.current
                       }}
                     </td>
                   </template>
