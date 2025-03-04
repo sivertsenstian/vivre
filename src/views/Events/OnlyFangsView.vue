@@ -170,6 +170,8 @@ const ladder = computed(() =>
                 !_isNil(challenger) &&
                 !_isNil(store.challengers[challenger]?.battleTag)
               "
+              :laddering="store.laddering[challenger]"
+              :streaming="store.streaming[challenger]"
               :banner="onlyFangsBanner[challenger]"
               :challenger="challenger"
               :player="store.challengers[challenger]"

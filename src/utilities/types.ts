@@ -49,7 +49,6 @@ export interface IRaceStatistics {
 export interface IStatistics {
   battleTag: string;
   race: Race;
-  ongoing?: boolean;
   day: IRaceStatistics;
   week: IRaceStatistics;
   month: IRaceStatistics;

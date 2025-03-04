@@ -1,9 +1,9 @@
 ﻿<script setup lang="ts">
 import { Race, raceIcon } from "@/stores/races";
 import banner_challenger from "@assets/versus/banner_challenger.png";
-import axios from "axios";
 import { ref } from "vue";
-import { search } from "@/utilities/api.ts";
+import w3ciconDark from "@/assets/w3c_dark.png";
+import { twitch } from "@/stores/onlyfangs.ts";
 
 const raceColor: any = "#daa520";
 
@@ -11,27 +11,15 @@ interface Props {
   loading?: boolean;
   battleTag: string;
   banner?: string;
+  streaming?: boolean;
 }
 const props = defineProps<Props>();
 
 const searchResults = ref([]);
 const searching = ref(false);
 
-const getBattleTag = async (input: string) => {
-  if (input.length < 3) {
-    return;
-  }
-
-  try {
-    searching.value = true;
-    const { data: results } = await axios.get(search(input));
-    searchResults.value = results;
-  } catch (error) {
-    console.log(error);
-  } finally {
-    searching.value = false;
-  }
-};
+const openTwitch = (battleTag: string) =>
+  window.open(`https://www.twitch.tv/${twitch[battleTag]}`, "_blank");
 </script>
 
 <template>
@@ -80,6 +68,30 @@ const getBattleTag = async (input: string) => {
         </div>
       </v-card-subtitle>
     </v-card-item>
+
+    <v-card-actions class="mt-5">
+      <v-row>
+        <v-col cols="6" class="text-center">
+          <v-btn
+            style="opacity: 0.2"
+            title="Open W3Champions Profile Page"
+            color="transparent"
+            variant="flat"
+            ><img :src="w3ciconDark" height="22px"
+          /></v-btn>
+        </v-col>
+        <v-col cols="6" class="text-center">
+          <v-btn
+            title="Open Twitch Page"
+            prepend-icon="mdi-twitch"
+            :color="streaming ? 'purple' : 'disabled'"
+            variant="text"
+            @click="() => openTwitch(battleTag)"
+            >Twitch</v-btn
+          >
+        </v-col>
+      </v-row>
+    </v-card-actions>
   </v-card>
 </template>
 
