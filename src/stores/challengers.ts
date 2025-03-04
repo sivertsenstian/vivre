@@ -45,10 +45,10 @@ export const useChallengersStore = defineStore("challengers", () => {
 
   const mode = ref<string>("points");
 
-  const latest = 20;
-  const season = 20;
+  const latest = 21;
+  const season = 21;
   const seasonDurationInWeeks = 15;
-  const start = moment("07.10.24", "DD.MM.YYYY");
+  const start = moment("04.03.25", "DD.MM.YYYY");
   const end = moment(start).add(seasonDurationInWeeks, "weeks");
   const duration = Math.abs(end.diff(start, "days"));
 
@@ -96,8 +96,8 @@ export const useChallengersStore = defineStore("challengers", () => {
       };
 
       result = {
-        battleTag: info.battleTag,
-        race: info.race,
+        battleTag: info.battleTag ?? btag,
+        race: info.race ?? Race.Random,
         day: getRaceStatistics(btag, dayActual),
         week: getRaceStatistics(btag, weekActual),
         month: getRaceStatistics(btag, monthActual),

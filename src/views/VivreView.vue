@@ -481,7 +481,7 @@ const goal = computed(() => {
                 </v-col>
               </v-row>
 
-              <v-row>
+              <v-row v-if="stats.player.battleTag">
                 <v-col cols="12" class="text-center">
                   <span style="vertical-align: middle; font-weight: bold">
                     Earn

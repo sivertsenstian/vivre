@@ -9,6 +9,7 @@ import {
   getInfo,
   getloss,
   getRaceStatistics,
+  getSeasonGamesBetween,
   getwins,
   isRace,
 } from "@/utilities/matchcalculator.ts";
@@ -89,8 +90,8 @@ export const useOnlyFangsStore = defineStore("onlyfangs", () => {
 
   const mode = ref<string>("mmr");
 
-  const latest = 20;
-  const season = 20;
+  const latest = 21;
+  const season = 21;
   const start = moment("22.02.25", "DD.MM.YYYY");
   const end = moment("14.03.25", "DD.MM.YYYY");
   const duration = Math.abs(end.diff(start, "days"));
@@ -151,7 +152,7 @@ export const useOnlyFangsStore = defineStore("onlyfangs", () => {
     let dayActual = [];
 
     try {
-      let all = await getAllSeasonGames(btag, latest);
+      let all = await getSeasonGamesBetween(btag, [20, latest], start, end);
 
       const race = all?.[0]?.teams.find((t: any) =>
         t.players.some(

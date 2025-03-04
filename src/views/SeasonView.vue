@@ -7,7 +7,7 @@ import { Race, raceIcon } from "@/stores/races";
 const settings = useSettingsStore();
 const stats = useStatsStore();
 
-const start = moment("07.10.24", "DD.MM.YYYY");
+const start = moment("04.03.25", "DD.MM.YYYY");
 const end = moment(start).add(15, "weeks");
 
 const today = moment();
@@ -45,7 +45,11 @@ const races = [Race.Human, Race.Orc, Race.NightElf, Race.Undead, Race.Random];
                 </v-col>
                 <v-col cols="6" class="text-center">
                   <div class="text-h5">
-                    {{ Math.ceil(stats.player.season.summary.total / days) }}
+                    {{
+                      Math.ceil(
+                        stats.player.season.summary.total / Math.max(days, 1),
+                      )
+                    }}
                     game(s) per day on average
                   </div>
                 </v-col>
