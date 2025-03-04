@@ -1,16 +1,12 @@
 import axios from "axios";
 import { defineStore } from "pinia";
 import { ref, computed, watchEffect } from "vue";
-import _take from "lodash/take";
-import _last from "lodash/last";
-import _isEmpty from "lodash/isEmpty";
 import _isNil from "lodash/isNil";
-import _sortBy from "lodash/sortBy";
-import _toPairs from "lodash/toPairs";
+import _forEach from "lodash/forEach";
 import moment from "moment";
 import { useSettingsStore } from "./settings";
 import { Race } from "@/stores/races";
-import type { IOngoing, IStatistics } from "@/utilities/types";
+import type { IStatistics } from "@/utilities/types";
 import {
   getAllSeasonGames,
   getInfo,
@@ -18,12 +14,11 @@ import {
   getRaceStatistics,
   getwins,
   isRace,
-  opponentIsRace,
 } from "@/utilities/matchcalculator";
-import _round from "lodash/round";
+import _groupBy from "lodash/groupBy";
 import { search } from "@/utilities/api.ts";
 
-export const useStatsStore = defineStore("stats", () => {
+export const useSeasonStore = defineStore("stats", () => {
   const settings = useSettingsStore();
   const tag = computed(() => settings.data.battleTag);
 
@@ -31,20 +26,13 @@ export const useStatsStore = defineStore("stats", () => {
   const searching = ref(false);
   const latest = 21;
 
-  const currentUrl = (tag: string) =>
-    `https://website-backend.w3champions.com/api/matches/ongoing/${encodeURIComponent(
+  const gameModeStatsUrl = (tag: string, season: number) =>
+    `https://website-backend.w3champions.com/api/players/${encodeURIComponent(
       tag,
-    )}`;
+    )}/game-mode-stats?gateway=20&season=${season}`;
 
-  const opponentHistoryUrl = (tag: string, opponent: string) =>
-    `https://website-backend.w3champions.com/api/matches/search?playerId=${encodeURIComponent(
-      tag,
-    )}&opponentId=${encodeURIComponent(
-      opponent,
-    )}&pageSize=100&season=${latest}`;
-
-  const getMatchUrl = (id: string) =>
-    `https://website-backend.w3champions.com/api/matches/${id}`;
+  const getMapsUrl = () =>
+    "https://website-backend.w3champions.com/api/ladder/active-modes";
 
   const daily = ref<{ count: number; matches: any[] }>({
     count: 0,
@@ -62,6 +50,9 @@ export const useStatsStore = defineStore("stats", () => {
     count: 0,
     matches: [],
   });
+  const maps = ref<string[]>([]);
+
+  const highscore = ref<any>({});
 
   const today = moment().startOf("day");
   const weekRule = moment().startOf("isoWeek");
@@ -69,6 +60,49 @@ export const useStatsStore = defineStore("stats", () => {
 
   const player = ref<IStatistics>();
   const challengers = ref<Record<string, IStatistics>>({});
+
+  const getMaps = async () => {
+    try {
+      const { data: modes } = await axios.get(getMapsUrl());
+      return (
+        modes
+          ?.find((m: any) => m.id === 1)
+          ?.maps?.map((m: any) => m.name)
+          ?.sort() ?? []
+      );
+    } catch (e) {
+      return [];
+    }
+  };
+
+  const getHighScores = async () => {
+    let result: any = {};
+    highscore.value = { loading: true };
+    try {
+      for (let i = 1; i <= latest; i++) {
+        const { data: stats } = await axios.get(gameModeStatsUrl(tag.value, i));
+        const g = _groupBy(
+          stats.filter((s: any) => s.gameMode === 1 && s.race !== null),
+          (v) => v.race,
+        );
+
+        _forEach(g, ([s]) => {
+          if (
+            !_isNil(s) &&
+            (_isNil(result[s.race]) || s.mmr >= result[s.race].mmr)
+          ) {
+            result[s.race] = {
+              race: s.race,
+              mmr: s.mmr,
+              season: i,
+            };
+          }
+        });
+      }
+    } finally {
+      highscore.value = result;
+    }
+  };
 
   const getMatches = async (btag: string) => {
     let result: IStatistics = {} as any;
@@ -168,164 +202,6 @@ export const useStatsStore = defineStore("stats", () => {
     }
   }, 10000);
 
-  const ongoing = ref<IOngoing>();
-
-  const getOpponentHistory = async (player: any, opponent: any) => {
-    if (_isEmpty(opponent)) {
-      return {
-        wins: 0,
-        loss: 0,
-        total: 0,
-        performance: [],
-        last: [],
-        heroes: [],
-        games: {
-          winDuration: 0,
-          lossDuration: 0,
-          isLamer: false,
-        },
-      };
-    }
-
-    try {
-      const { data: historyResponse } = await axios.get(
-        opponentHistoryUrl(tag.value, opponent.battleTag),
-      );
-
-      const matches = historyResponse?.matches ?? [];
-      const performance = matches.map(
-        (match: any) =>
-          match?.teams?.[0]?.players?.[0]?.battleTag.toLowerCase() ===
-          player.battleTag.toLowerCase(),
-      );
-
-      // Find hero usage from last 100 games in the season
-      const season = await getAllSeasonGames(opponent.battleTag, latest, 100);
-      const last = _take(
-        season
-          .filter((m) => m.durationInSeconds > 4 * 60)
-          .filter((m) => isRace(opponent.battleTag, m, opponent.race))
-          .filter((m) => opponentIsRace(opponent.battleTag, m, player.race)),
-        10,
-      );
-
-      let m: any[] = [];
-      for (let i = 0; i < last.length; i++) {
-        const { data: ma } = await axios.get(getMatchUrl(last[i].id));
-        m.push(ma);
-      }
-
-      let heroes: any = {};
-      for (let i = 0; i < m.length; i++) {
-        const score = m[i].playerScores.find(
-          (s: any) =>
-            s.battleTag.toLowerCase() === opponent.battleTag.toLowerCase(),
-        );
-        const key = score.heroes
-          .map((h: any) => h.icon)
-          // .sort()
-          .join(",");
-
-        if (heroes[key]) {
-          heroes[key] += 1;
-        } else {
-          heroes[key] = 1;
-        }
-      }
-
-      const wins = m
-        .map((m: any) => m.match)
-        .filter((x: any) => getwins(opponent.battleTag, x));
-      const loss = m
-        .map((m: any) => m.match)
-        .filter((x: any) => getloss(opponent.battleTag, x));
-
-      const winDuration = _round(
-        wins.reduce((s, m) => s + m.durationInSeconds, 0) / wins.length / 60,
-      );
-      const lossDuration = _round(
-        loss.reduce((s, m) => s + m.durationInSeconds, 0) / loss.length / 60,
-      );
-
-      const result = {
-        performance,
-        last: _take(performance, 5),
-        wins: matches.filter((m: any) => getwins(player.battleTag, m)).length,
-        loss: matches.filter((m: any) => getloss(player.battleTag, m)).length,
-        total: historyResponse.count,
-        heroes: _take(_sortBy(_toPairs(heroes), (v) => _last(v)).reverse(), 3),
-        games: {
-          winDuration,
-          lossDuration,
-          isLamer: winDuration >= 25 || lossDuration >= 25,
-        },
-      };
-      return result;
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const getOngoing = async (reset: boolean = false) => {
-    let result = {
-      id: null,
-      start: null,
-      active: false,
-      player: { name: "", race: 0, battleTag: "", oldMmr: 0 },
-      opponent: { name: "", race: 0, battleTag: "", oldMmr: 0 },
-      map: "",
-      server: {},
-      history: {
-        wins: 0,
-        loss: 0,
-        total: 0,
-        performance: [],
-        last: [],
-        heroes: [],
-        games: {
-          winDuration: 0,
-          lossDuration: 0,
-          isLamer: false,
-        },
-      },
-    };
-
-    try {
-      const { data: onGoingResponse } = await axios.get(currentUrl(tag.value));
-      if (!_isNil(onGoingResponse?.id)) {
-        const player = onGoingResponse.teams?.find((t: any) =>
-          t.players.some(
-            (p: any) => p.battleTag.toLowerCase() === tag.value.toLowerCase(),
-          ),
-        )?.players?.[0];
-        const opponent = onGoingResponse.teams?.find((t: any) =>
-          t.players.some(
-            (p: any) => p.battleTag.toLowerCase() != tag.value.toLowerCase(),
-          ),
-        )?.players?.[0];
-
-        result = {
-          id: onGoingResponse.id,
-          start: moment(onGoingResponse.startTime) as any,
-          active: true,
-          player,
-          opponent,
-          map: onGoingResponse.mapName,
-          server: onGoingResponse.serverInfo,
-          history: (await getOpponentHistory(player, opponent)) as any,
-        };
-      }
-    } catch (error) {
-      console.log(error);
-    } finally {
-      ongoing.value = result;
-    }
-  };
-
-  setInterval(() => {
-    void getOngoing();
-  }, 10000);
-
   const getBattleTag = async (input: string) => {
     if (input.length < 3) {
       return;
@@ -349,6 +225,7 @@ export const useStatsStore = defineStore("stats", () => {
     weekly.value = results.week;
     monthly.value = results.month;
     season.value = results.season;
+    maps.value = await getMaps();
 
     for (const challenger of settings.data.challengers.filter(
       (v) => !_isNil(v),
@@ -357,7 +234,7 @@ export const useStatsStore = defineStore("stats", () => {
       challengers.value[challenger] = c.player;
     }
 
-    void getOngoing(true);
+    void getHighScores();
   });
 
   return {
@@ -366,10 +243,11 @@ export const useStatsStore = defineStore("stats", () => {
     daily,
     player,
     challengers,
-    ongoing,
     getBattleTag,
     searchResults,
     searching,
+    highscore,
     latest,
+    maps,
   };
 });
