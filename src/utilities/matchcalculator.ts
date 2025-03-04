@@ -294,7 +294,7 @@ export const getAllSeasonGames = async (
     failsafe++;
   }
 
-  return all;
+  return _sortBy(all, "endTime").reverse();
 };
 
 export const getSeasonGamesBetween = async (
@@ -332,10 +332,11 @@ export const getSeasonGamesBetween = async (
     all = [...all, ...seasonAll];
   }
 
-  return all.filter(
+  const result = all.filter(
     (m) =>
       moment(m.endTime).isAfter(from) && moment(m.endTime).isSameOrBefore(to),
   );
+  return _sortBy(result, "endTime").reverse();
 };
 
 export const numberOfGames = (target: number, avg: number) =>

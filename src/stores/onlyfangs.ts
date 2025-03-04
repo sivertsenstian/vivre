@@ -5,7 +5,6 @@ import { computed, ref, shallowRef } from "vue";
 import type { IStatistics } from "@/utilities/types.ts";
 import _isNil from "lodash/isNil";
 import {
-  getAllSeasonGames,
   getInfo,
   getloss,
   getRaceStatistics,
@@ -152,15 +151,11 @@ export const useOnlyFangsStore = defineStore("onlyfangs", () => {
     let dayActual = [];
 
     try {
-      let all = await getSeasonGamesBetween(btag, [20, latest], start, end);
-
-      const race = all?.[0]?.teams.find((t: any) =>
-        t.players.some(
-          (p: any) => p.battleTag.toLowerCase() === btag.toLowerCase(),
-        ),
-      )?.players?.[0]?.race;
-
+      let all = await getSeasonGamesBetween(btag, [20, 21], start, end);
       seasonActual = all;
+      const info = getInfo(btag, seasonActual);
+      const race = info.race ?? Race.Random;
+
       monthActual = all
         .filter((m: any) => moment(m.endTime).isAfter(monthRule))
         .filter((m: any) => isRace(btag, m, race));
@@ -170,8 +165,6 @@ export const useOnlyFangsStore = defineStore("onlyfangs", () => {
       dayActual = all
         .filter((m: any) => moment(m.endTime).isAfter(today))
         .filter((m: any) => isRace(btag, m, race));
-
-      const info = getInfo(btag, seasonActual);
 
       const season = {
         [Race.Human]: seasonActual.filter((m) => isRace(btag, m, Race.Human)),
@@ -185,7 +178,7 @@ export const useOnlyFangsStore = defineStore("onlyfangs", () => {
 
       result = {
         battleTag: info.battleTag,
-        race: info.race,
+        race: race,
         day: getRaceStatistics(btag, dayActual),
         week: getRaceStatistics(btag, weekActual),
         month: getRaceStatistics(btag, monthActual),
