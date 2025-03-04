@@ -122,6 +122,7 @@ interface Props {
 }
 const props = withDefaults(defineProps<Props>(), {
   mode: "season",
+  highlight: "points",
 });
 
 const data = computed(() => {
