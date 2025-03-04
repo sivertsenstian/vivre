@@ -27,15 +27,6 @@ const raceColor: any = {
   [Race.Random]: "#59524A",
 };
 
-const twitch: any = {
-  "Tyler1#11151": "loltyler1",
-  "Ahmp#1107": "ahmpy",
-  "Skippy1337#1171": "sodapoppin",
-  "Guzu#21761": "guzu",
-  "Dendi#22658": "dendi",
-  "Geranimo#11740": "lolgeranimo",
-};
-
 // Chart stuff
 import { Bar } from "vue-chartjs";
 import {
@@ -58,6 +49,7 @@ import _last from "lodash/last";
 import _take from "lodash/take";
 import _skip from "lodash/drop";
 import type { Moment } from "moment";
+import { twitch } from "@/stores/onlyfangs.ts";
 
 ChartJS.register(
   LineController,
@@ -129,6 +121,8 @@ interface Props {
   highlight?: string;
   rank: number;
   seasonStart: Moment;
+  streaming?: boolean;
+  laddering?: boolean;
 }
 const props = withDefaults(defineProps<Props>(), {
   mode: "season",
@@ -301,13 +295,14 @@ const avg = computed(() =>
         <div class="ml-1 text-left text-h5">
           {{ player.battleTag.split("#")[0] }}
           <v-icon
-            v-if="player.ongoing"
+            v-if="laddering"
             class="elementToFadeInAndOut"
             style="vertical-align: center"
             size="x-small"
-            icon="mdi-circle"
+            icon="mdi-broadcast"
             title="Currently in a ladder game!"
             color="green" />
+          <span v-if="laddering" class="text-green ml-1">LIVE!</span>
 
           <v-btn
             v-if="onRemove"
@@ -563,7 +558,7 @@ const avg = computed(() =>
           <v-btn
             title="Open Twitch Page"
             prepend-icon="mdi-twitch"
-            color="purple"
+            :color="streaming ? 'purple' : 'disabled'"
             variant="text"
             @click="() => openTwitch(player.battleTag)"
             >Twitch</v-btn
