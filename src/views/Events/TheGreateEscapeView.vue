@@ -54,10 +54,12 @@ const recent = computed(() => {
                 <WeeklyResultChart :weekly="player.weekly" :goal="100" />
                 <h1
                   v-if="
-                    player.matches.length > 0 &&
-                    !player.matches.some(
-                      (x: any) => moment().diff(moment(x.endTime), 'days') < 7,
-                    )
+                    player.matches.length === 0 ||
+                    (player.matches.length > 0 &&
+                      !player.matches.some(
+                        (x: any) =>
+                          moment().diff(moment(x.endTime), 'days') < 7,
+                      ))
                   "
                   class="text-red font-weight-bold text-center"
                   style="
