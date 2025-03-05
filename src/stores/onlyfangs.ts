@@ -1,7 +1,6 @@
 import { defineStore } from "pinia";
 import moment from "moment";
-import { useSettingsStore } from "@/stores/settings.ts";
-import { computed, ref, shallowRef } from "vue";
+import { computed, ref } from "vue";
 import type { IStatistics } from "@/utilities/types.ts";
 import _isNil from "lodash/isNil";
 import {
@@ -13,7 +12,6 @@ import {
   isRace,
 } from "@/utilities/matchcalculator.ts";
 import { Race } from "@/stores/races.ts";
-import { useRoute } from "vue-router";
 import axios from "axios";
 import { currentUrl } from "@/utilities/api.ts";
 
@@ -29,30 +27,6 @@ export const twitch: any = {
 };
 
 export const useOnlyFangsStore = defineStore("onlyfangs", () => {
-  const settings = useSettingsStore();
-  const route = useRoute();
-
-  const query = String(route.query.data ?? "");
-  let l = [];
-  try {
-    l = JSON.parse(window.atob(query));
-  } catch (e) {
-    try {
-      l = JSON.parse(window.atob(settings.data.ladder));
-    } catch (e) {
-      l = [
-        "Tyler1#11151",
-        "Ahmp#1107",
-        "Skippy1337#1171",
-        "Guzu#21761",
-        "Dendi#22658",
-        "Geranimo#11740",
-        "Sunglitters",
-        "AnnieFuchsia",
-      ];
-    }
-  }
-
   const streaming = ref<Record<string, boolean>>({
     "Tyler1#11151": false,
     "Ahmp#1107": false,
@@ -75,7 +49,16 @@ export const useOnlyFangsStore = defineStore("onlyfangs", () => {
     AnnieFuchsia: false,
   });
 
-  const ladder = ref<string[]>(l);
+  const ladder = ref<string[]>([
+    "Tyler1#11151",
+    "Ahmp#1107",
+    "Skippy1337#1171",
+    "Guzu#21761",
+    "Dendi#22658",
+    "Geranimo#11740",
+    "Sunglitters",
+    "AnnieFuchsia",
+  ]);
 
   const challengers = ref<Record<string, IStatistics>>({});
 
