@@ -183,7 +183,12 @@ export const getRaceStatistics = (tag: string, m: any[]): IRaceStatistics => {
   let result: IRaceStatistics = {
     matches,
     total: matches?.length ?? 0,
-    maps: maps,
+    maps: Object.keys(maps)
+      .sort()
+      .reduce((r: any, m: string) => {
+        r[m] = maps[m];
+        return r;
+      }, {}),
     wins: wins?.length ?? 0,
     loss: loss?.length ?? 0,
     percentage: (wins?.length ?? 0) / (wins?.length + loss?.length),

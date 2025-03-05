@@ -46,6 +46,9 @@ export const useStatsStore = defineStore("stats", () => {
   const getMatchUrl = (id: string) =>
     `https://website-backend.w3champions.com/api/matches/${id}`;
 
+  const getMapsUrl = () =>
+    "https://website-backend.w3champions.com/api/ladder/active-modes";
+
   const daily = ref<{ count: number; matches: any[] }>({
     count: 0,
     matches: [],
@@ -62,6 +65,7 @@ export const useStatsStore = defineStore("stats", () => {
     count: 0,
     matches: [],
   });
+  const maps = ref<string[]>([]);
 
   const today = moment().startOf("day");
   const weekRule = moment().startOf("isoWeek");
@@ -69,6 +73,20 @@ export const useStatsStore = defineStore("stats", () => {
 
   const player = ref<IStatistics>();
   const challengers = ref<Record<string, IStatistics>>({});
+
+  const getMaps = async () => {
+    try {
+      const { data: modes } = await axios.get(getMapsUrl());
+      return (
+        modes
+          ?.find((m: any) => m.id === 1)
+          ?.maps?.map((m: any) => m.name)
+          ?.sort() ?? []
+      );
+    } catch (e) {
+      return [];
+    }
+  };
 
   const getMatches = async (btag: string) => {
     let result: IStatistics = {} as any;
@@ -343,6 +361,7 @@ export const useStatsStore = defineStore("stats", () => {
     weekly.value = results.week;
     monthly.value = results.month;
     season.value = results.season;
+    maps.value = await getMaps();
 
     for (const challenger of settings.data.challengers.filter(
       (v) => !_isNil(v),
@@ -365,5 +384,6 @@ export const useStatsStore = defineStore("stats", () => {
     searchResults,
     searching,
     latest,
+    maps,
   };
 });
