@@ -560,6 +560,7 @@ const avg = computed(() =>
           <v-btn
             title="Open Twitch Page"
             prepend-icon="mdi-twitch"
+            :class="streaming ? 'elementToFadeInAndOut' : ''"
             :color="streaming ? 'purple' : 'disabled'"
             variant="text"
             @click="() => openTwitch(player.battleTag)"

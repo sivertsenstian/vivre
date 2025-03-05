@@ -192,6 +192,7 @@ const ladder = computed(() =>
               v-else
               :battle-tag="challenger"
               :banner="onlyFangsBanner[challenger]"
+              :streaming="store.streaming[challenger]"
               :loading="
                 !_isNil(challenger) &&
                 _isNil(store.challengers[challenger]?.battleTag) &&
