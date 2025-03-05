@@ -83,6 +83,7 @@ const openTwitch = (battleTag: string) =>
         <v-col cols="6" class="text-center">
           <v-btn
             title="Open Twitch Page"
+            :class="streaming ? 'elementToFadeInAndOut' : ''"
             prepend-icon="mdi-twitch"
             :color="streaming ? 'purple' : 'disabled'"
             variant="text"
@@ -147,5 +148,23 @@ const openTwitch = (battleTag: string) =>
     200%0,
     0 0;
   transition-duration: 1.5s;
+}
+
+.elementToFadeInAndOut {
+  -webkit-animation: fadeinout 3s linear infinite;
+  animation: fadeinout 3s linear infinite;
+  opacity: 0;
+}
+
+@-webkit-keyframes fadeinout {
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeinout {
+  50% {
+    opacity: 1;
+  }
 }
 </style>
