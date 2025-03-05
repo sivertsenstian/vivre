@@ -97,8 +97,16 @@ const ladder = computed(() =>
       <v-sheet class="pa-6" elevation="10">
         <v-row>
           <v-col cols="12" class="text-center ma-0 pa-0">
-            <img :src="logo" alt="APE SCIENCE - WC3 RESEARCH FACILITY" />
-            <div class="text-h4 font-weight-bold">W3C LADDER RACE!</div>
+            <v-img
+              :src="logo"
+              style="border: 1px solid darkgoldenrod"
+              rounded="pill"
+              alt="ONLYFANGS W3C LADDER"
+              class="mx-auto"
+              max-width="1200px" />
+            <div class="text-sm-h4 text-h6 font-weight-bold mt-2">
+              W3C LADDER RACE!
+            </div>
           </v-col>
         </v-row>
         <v-row>
@@ -122,10 +130,12 @@ const ladder = computed(() =>
           <v-col cols="12" md="5">
             <v-row>
               <v-col cols="12" md="7">
-                <div class="text-h6">Want to create your own ladder?</div>
+                <div class="text-h6 text-no-wrap">
+                  Want to create your own ladder?
+                </div>
                 <hr color="darkgoldenrod" />
               </v-col>
-              <v-col cols="12" md="12">
+              <v-col cols="12" md="12" class="text-center">
                 You can create your own personal and shareable ladder ranking
                 and compare your w3c progress to others<a href="/#/challengers"
                   >here</a

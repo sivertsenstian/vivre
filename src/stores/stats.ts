@@ -93,8 +93,6 @@ export const useStatsStore = defineStore("stats", () => {
         .filter((m: any) => moment(m.endTime).isAfter(today))
         .filter((m: any) => isRace(btag, m, race));
 
-      console.log({ all });
-
       const season = {
         [Race.Human]: seasonActual.filter((m) => isRace(btag, m, Race.Human)),
         [Race.Orc]: seasonActual.filter((m) => isRace(btag, m, Race.Orc)),
