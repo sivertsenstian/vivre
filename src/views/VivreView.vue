@@ -56,7 +56,7 @@ const data = computed<Partial<IRaceStatistics>>(() => {
     } else if (settings.data.mode === "month") {
       return stats.player.month;
     } else if (settings.data.mode === "season") {
-      return stats.player.season.summary;
+      return stats.player.season[stats.player.race];
     }
   }
   return { wins: 0, loss: 0, total: 0 };
@@ -66,7 +66,7 @@ const getPoints = (v: IStatistics) => {
   if (_isNil(v)) {
     return 0;
   }
-  return v.season.summary.totalPoints;
+  return v.season[v.race].totalPoints;
 };
 
 const rank = computed(() => {
@@ -693,6 +693,27 @@ const goal = computed(() => {
                     :visible="Number(data.total) > 0"
                     :performance="data.performance ?? []"
                     :today="stats.player.day.total" />
+                </v-col>
+                <v-col cols="12">
+                  <v-table density="compact">
+                    <thead>
+                      <tr>
+                        <th></th>
+                        <th style="width: 60%" class="text-center" />
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr
+                        v-for="(map, name) in stats.player.season[
+                          stats.player.race
+                        ].maps">
+                        <td class="font-weight-bold">{{ name }}</td>
+                        <td class="text-center text-green">
+                          <ResultChart :result="map" />
+                        </td>
+                      </tr>
+                    </tbody>
+                  </v-table>
                 </v-col>
               </v-row>
             </v-sheet>
