@@ -202,18 +202,25 @@ export const useOnlyFangsStore = defineStore("onlyfangs", () => {
     };
   };
 
-  setInterval(async () => {
-    for (const challenger of ladder.value.filter((v) => !_isNil(v))) {
-      const c = await getMatches(challenger);
-      const o = await getOngoing(challenger);
-      const t = await getStreaming(challenger);
+  const update = async () => {
+    await Promise.allSettled(
+      ladder.value
+        .filter((v) => !_isNil(v))
+        .map(async (challenger) => {
+          const c = await getMatches(challenger);
+          const o = await getOngoing(challenger);
+          const t = await getStreaming(challenger);
 
-      laddering.value[challenger] = o !== undefined;
-      streaming.value[challenger] = t;
+          laddering.value[challenger] = o !== undefined;
+          streaming.value[challenger] = t;
 
-      challengers.value[challenger] = c.player;
-    }
-  }, 10000);
+          challengers.value[challenger] = c.player;
+        }),
+    );
+  };
+
+  void update();
+  setInterval(update, 10000);
 
   return {
     mode,
