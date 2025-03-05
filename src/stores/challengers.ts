@@ -138,12 +138,19 @@ export const useChallengersStore = defineStore("challengers", () => {
     };
   };
 
-  setInterval(async () => {
-    for (const challenger of ladder.value.filter((v) => !_isNil(v))) {
-      const c = await getMatches(challenger);
-      challengers.value[challenger] = c.player;
-    }
-  }, 10000);
+  const update = async () => {
+    await Promise.allSettled(
+      ladder.value
+        .filter((v) => !_isNil(v))
+        .map(async (challenger) => {
+          const c = await getMatches(challenger);
+          challengers.value[challenger] = c.player;
+        }),
+    );
+  };
+
+  void update();
+  setInterval(update, 10000);
 
   return {
     mode,

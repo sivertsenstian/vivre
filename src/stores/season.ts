@@ -18,7 +18,7 @@ import {
 import _groupBy from "lodash/groupBy";
 import { search } from "@/utilities/api.ts";
 
-export const useSeasonStore = defineStore("stats", () => {
+export const useSeasonStore = defineStore("season", () => {
   const settings = useSettingsStore();
   const tag = computed(() => settings.data.battleTag);
 
@@ -59,7 +59,6 @@ export const useSeasonStore = defineStore("stats", () => {
   const monthRule = moment().startOf("month");
 
   const player = ref<IStatistics>();
-  const challengers = ref<Record<string, IStatistics>>({});
 
   const getMaps = async () => {
     try {
@@ -186,21 +185,17 @@ export const useSeasonStore = defineStore("stats", () => {
     };
   };
 
-  setInterval(async () => {
+  const update = async () => {
     const results = await getMatches(tag.value);
     player.value = results.player;
     daily.value = results.day;
     weekly.value = results.week;
     monthly.value = results.month;
     season.value = results.season;
+  };
 
-    for (const challenger of settings.data.challengers.filter(
-      (v) => !_isNil(v),
-    )) {
-      const c = await getMatches(challenger);
-      challengers.value[challenger] = c.player;
-    }
-  }, 10000);
+  void update();
+  setInterval(update, 10000);
 
   const getBattleTag = async (input: string) => {
     if (input.length < 3) {
@@ -227,13 +222,6 @@ export const useSeasonStore = defineStore("stats", () => {
     season.value = results.season;
     maps.value = await getMaps();
 
-    for (const challenger of settings.data.challengers.filter(
-      (v) => !_isNil(v),
-    )) {
-      const c = await getMatches(challenger);
-      challengers.value[challenger] = c.player;
-    }
-
     void getHighScores();
   });
 
@@ -242,7 +230,6 @@ export const useSeasonStore = defineStore("stats", () => {
     weekly,
     daily,
     player,
-    challengers,
     getBattleTag,
     searchResults,
     searching,
