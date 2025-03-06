@@ -297,14 +297,25 @@ const avg = computed(() =>
         <div class="ml-1 text-left text-h5">
           {{ player.battleTag.split("#")[0] }}
           <v-icon
-            v-if="laddering"
+            v-if="laddering || streaming"
             class="elementToFadeInAndOut"
-            style="vertical-align: center"
+            style="vertical-align: middle"
             size="x-small"
             icon="mdi-broadcast"
             title="Currently in a ladder game!"
-            color="green" />
-          <span v-if="laddering" class="text-green ml-1">LIVE!</span>
+            :color="laddering ? 'green-lighten-1' : 'purple-lighten-1'" />
+          <span
+            v-if="laddering"
+            class="text-green-lighten-1 ml-1"
+            style="vertical-align: middle"
+            >IN GAME!</span
+          >
+          <span
+            v-if="streaming && !laddering"
+            class="text-purple-lighten-1 ml-1"
+            style="vertical-align: middle"
+            >LIVE!</span
+          >
 
           <v-btn
             v-if="onRemove"
@@ -561,7 +572,7 @@ const avg = computed(() =>
             title="Open Twitch Page"
             prepend-icon="mdi-twitch"
             :class="streaming ? 'elementToFadeInAndOut' : ''"
-            :color="streaming ? 'purple' : 'disabled'"
+            :color="streaming ? 'purple-lighten-1' : 'disabled'"
             variant="text"
             @click="() => openTwitch(player.battleTag)"
             >Twitch</v-btn
