@@ -14,6 +14,7 @@ import {
 import { Race } from "@/stores/races.ts";
 import axios from "axios";
 import { currentUrl } from "@/utilities/api.ts";
+import _map from "lodash/map";
 
 export const twitch: any = {
   "Tyler1#11151": "loltyler1",
@@ -202,25 +203,55 @@ export const useOnlyFangsStore = defineStore("onlyfangs", () => {
     };
   };
 
-  const update = async () => {
-    await Promise.allSettled(
-      ladder.value
-        .filter((v) => !_isNil(v))
-        .map(async (challenger) => {
-          const c = await getMatches(challenger);
-          const o = await getOngoing(challenger);
-          const t = await getStreaming(challenger);
+  const update = async (force = false) => {
+    if (force) {
+      await Promise.allSettled(
+        ladder.value
+          .filter((v) => !_isNil(v))
+          .map(async (challenger) => {
+            const c = await getMatches(challenger);
+            const o = await getOngoing(challenger);
+            const t = await getStreaming(challenger);
 
-          laddering.value[challenger] = o !== undefined;
-          streaming.value[challenger] = t;
+            laddering.value[challenger] = o !== undefined;
+            streaming.value[challenger] = t;
 
-          challengers.value[challenger] = c.player;
+            challengers.value[challenger] = c.player;
+          }),
+      );
+    } else {
+      // Check to see who is online
+      await Promise.allSettled(
+        ladder.value
+          .filter((v) => !_isNil(v))
+          .map(async (c) => {
+            streaming.value[c] = await getStreaming(c);
+          }),
+      );
+
+      // Check to see who is laddering of the online players
+      await Promise.allSettled(
+        _map(streaming.value, async (v, c) => {
+          if (v) {
+            laddering.value[c] = (await getOngoing(c)) !== undefined;
+          }
         }),
-    );
+      );
+
+      // Update stats for laddering players
+      await Promise.allSettled(
+        _map(laddering.value, async (v, c) => {
+          if (v) {
+            const m = await getMatches(c);
+            challengers.value[c] = m.player;
+          }
+        }),
+      );
+    }
   };
 
-  void update();
-  setInterval(update, 10000);
+  void update(true);
+  setInterval(update, 30000);
 
   return {
     mode,
