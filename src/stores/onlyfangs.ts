@@ -22,8 +22,8 @@ export const twitch: any = {
   "Guzu#21761": "guzu",
   "Dendi#22658": "dendi",
   "Geranimo#11740": "lolgeranimo",
-  Sunglitters: "sunglitters",
-  AnnieFuchsia: "anniefuchsia",
+  "Sunglitters#21798": "sunglitters",
+  "AnnieFuchsia#2169": "anniefuchsia",
 };
 
 export const useOnlyFangsStore = defineStore("onlyfangs", () => {
@@ -34,8 +34,8 @@ export const useOnlyFangsStore = defineStore("onlyfangs", () => {
     "Guzu#21761": false,
     "Dendi#22658": false,
     "Geranimo#11740": false,
-    Sunglitters: false,
-    AnnieFuchsia: false,
+    "Sunglitters#21798": false,
+    "AnnieFuchsia#2169": false,
   });
 
   const laddering = ref<Record<string, boolean>>({
@@ -45,8 +45,8 @@ export const useOnlyFangsStore = defineStore("onlyfangs", () => {
     "Guzu#21761": false,
     "Dendi#22658": false,
     "Geranimo#11740": false,
-    Sunglitters: false,
-    AnnieFuchsia: false,
+    "Sunglitters#21798": false,
+    "AnnieFuchsia#2169": false,
   });
 
   const ladder = ref<string[]>([
@@ -56,8 +56,8 @@ export const useOnlyFangsStore = defineStore("onlyfangs", () => {
     "Guzu#21761",
     "Dendi#22658",
     "Geranimo#11740",
-    "Sunglitters",
-    "AnnieFuchsia",
+    "Sunglitters#21798",
+    "AnnieFuchsia#2169",
   ]);
 
   const challengers = ref<Record<string, IStatistics>>({});
@@ -160,7 +160,7 @@ export const useOnlyFangsStore = defineStore("onlyfangs", () => {
       };
 
       result = {
-        battleTag: info.battleTag,
+        battleTag: info.battleTag ?? btag,
         race: race,
         day: getRaceStatistics(btag, dayActual),
         week: getRaceStatistics(btag, weekActual),

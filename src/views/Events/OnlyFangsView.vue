@@ -28,8 +28,8 @@ const onlyFangsBanner: any = {
   "Guzu#21761": banner_guzu,
   "Dendi#22658": banner_dendi,
   "Geranimo#11740": banner_geranimo,
-  Sunglitters: banner_sunglitters,
-  AnnieFuchsia: banner_annie,
+  "Sunglitters#21798": banner_sunglitters,
+  "AnnieFuchsia#2169": banner_annie,
 };
 
 const modeLabel = (mode: string) => {
@@ -270,9 +270,12 @@ const ladder = computed(() =>
                           (store.challengers[challenger].season[
                             store.challengers[challenger].race
                           ].wins /
-                            store.challengers[challenger].season[
-                              store.challengers[challenger].race
-                            ].total) *
+                            Math.max(
+                              1,
+                              store.challengers[challenger].season[
+                                store.challengers[challenger].race
+                              ].total,
+                            )) *
                             100,
                         )
                       }}%

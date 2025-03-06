@@ -15,9 +15,6 @@ interface Props {
 }
 const props = defineProps<Props>();
 
-const searchResults = ref([]);
-const searching = ref(false);
-
 const openTwitch = (battleTag: string) =>
   window.open(`https://www.twitch.tv/${twitch[battleTag]}`, "_blank");
 </script>
