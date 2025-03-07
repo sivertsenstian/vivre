@@ -150,7 +150,21 @@ export const useChallengersStore = defineStore("challengers", () => {
   };
 
   void update();
-  setInterval(update, 10000);
+
+  const subscription = ref<number | null>(null);
+
+  const subscribe = () => {
+    if (subscription.value === null) {
+      subscription.value = setInterval(update, 30000);
+    }
+  };
+
+  const unsubscribe = () => {
+    if (subscription.value !== null) {
+      clearInterval(subscription.value);
+      subscription.value = null;
+    }
+  };
 
   return {
     mode,
@@ -162,5 +176,7 @@ export const useChallengersStore = defineStore("challengers", () => {
     challengers,
     ladder,
     link: computed(() => window.btoa(JSON.stringify(ladder.value))),
+    subscribe,
+    unsubscribe,
   };
 });
