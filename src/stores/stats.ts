@@ -164,22 +164,6 @@ export const useStatsStore = defineStore("stats", () => {
     };
   };
 
-  setInterval(async () => {
-    const results = await getMatches(tag.value);
-    player.value = results.player;
-    daily.value = results.day;
-    weekly.value = results.week;
-    monthly.value = results.month;
-    season.value = results.season;
-
-    for (const challenger of settings.data.challengers.filter(
-      (v) => !_isNil(v),
-    )) {
-      const c = await getMatches(challenger);
-      challengers.value[challenger] = c.player;
-    }
-  }, 10000);
-
   const ongoing = ref<IOngoing>();
 
   const getOpponentHistory = async (player: any, opponent: any) => {
@@ -303,29 +287,33 @@ export const useStatsStore = defineStore("stats", () => {
     };
 
     try {
-      const { data: onGoingResponse } = await axios.get(currentUrl(tag.value));
-      if (!_isNil(onGoingResponse?.id)) {
-        const player = onGoingResponse.teams?.find((t: any) =>
-          t.players.some(
-            (p: any) => p.battleTag.toLowerCase() === tag.value.toLowerCase(),
-          ),
-        )?.players?.[0];
-        const opponent = onGoingResponse.teams?.find((t: any) =>
-          t.players.some(
-            (p: any) => p.battleTag.toLowerCase() != tag.value.toLowerCase(),
-          ),
-        )?.players?.[0];
+      if (!_isNil(tag.value)) {
+        const { data: onGoingResponse } = await axios.get(
+          currentUrl(tag.value),
+        );
+        if (!_isNil(onGoingResponse?.id)) {
+          const player = onGoingResponse.teams?.find((t: any) =>
+            t.players.some(
+              (p: any) => p.battleTag.toLowerCase() === tag.value.toLowerCase(),
+            ),
+          )?.players?.[0];
+          const opponent = onGoingResponse.teams?.find((t: any) =>
+            t.players.some(
+              (p: any) => p.battleTag.toLowerCase() != tag.value.toLowerCase(),
+            ),
+          )?.players?.[0];
 
-        result = {
-          id: onGoingResponse.id,
-          start: moment(onGoingResponse.startTime) as any,
-          active: true,
-          player,
-          opponent,
-          map: onGoingResponse.mapName,
-          server: onGoingResponse.serverInfo,
-          history: (await getOpponentHistory(player, opponent)) as any,
-        };
+          result = {
+            id: onGoingResponse.id,
+            start: moment(onGoingResponse.startTime) as any,
+            active: true,
+            player,
+            opponent,
+            map: onGoingResponse.mapName,
+            server: onGoingResponse.serverInfo,
+            history: (await getOpponentHistory(player, opponent)) as any,
+          };
+        }
       }
     } catch (error) {
       console.log(error);
@@ -333,10 +321,6 @@ export const useStatsStore = defineStore("stats", () => {
       ongoing.value = result;
     }
   };
-
-  setInterval(() => {
-    void getOngoing();
-  }, 10000);
 
   const getBattleTag = async (input: string) => {
     if (input.length < 3) {
@@ -355,6 +339,8 @@ export const useStatsStore = defineStore("stats", () => {
   };
 
   watchEffect(async () => {
+    console.log("WATCH EFFECT ??");
+
     const results = await getMatches(tag.value);
     player.value = results.player;
     daily.value = results.day;
@@ -373,6 +359,37 @@ export const useStatsStore = defineStore("stats", () => {
     void getOngoing(true);
   });
 
+  const subscription = ref<number | null>(null);
+
+  const subscribe = () => {
+    if (subscription.value === null) {
+      subscription.value = setInterval(async () => {
+        const results = await getMatches(tag.value);
+        player.value = results.player;
+        daily.value = results.day;
+        weekly.value = results.week;
+        monthly.value = results.month;
+        season.value = results.season;
+
+        void getOngoing();
+
+        for (const challenger of settings.data.challengers.filter(
+          (v) => !_isNil(v),
+        )) {
+          const c = await getMatches(challenger);
+          challengers.value[challenger] = c.player;
+        }
+      }, 10000);
+    }
+  };
+
+  const unsubscribe = () => {
+    if (subscription.value !== null) {
+      clearInterval(subscription.value);
+      subscription.value = null;
+    }
+  };
+
   return {
     season,
     weekly,
@@ -385,5 +402,7 @@ export const useStatsStore = defineStore("stats", () => {
     searching,
     latest,
     maps,
+    subscribe,
+    unsubscribe,
   };
 });

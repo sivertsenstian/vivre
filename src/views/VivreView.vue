@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, onMounted, onUnmounted, ref } from "vue";
 import NumberAnimation from "vue-number-animation";
 import moment, { type Moment } from "moment";
 import _round from "lodash/round";
@@ -115,6 +115,14 @@ const goal = computed(() => {
     perDay: setGoalPerDay,
     perDayOfWeek: Math.ceil(total / 7),
   };
+});
+
+onMounted(() => {
+  stats.subscribe();
+});
+
+onUnmounted(() => {
+  stats.unsubscribe();
 });
 </script>
 

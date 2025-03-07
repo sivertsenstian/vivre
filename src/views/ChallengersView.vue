@@ -4,7 +4,7 @@ import VersusChallenger from "@/components/versus/VersusChallenger.vue";
 import _isNil from "lodash/isNil";
 import VersusBanner from "@/components/versus/VersusBanner.vue";
 import { useChallengersStore } from "@/stores/challengers.ts";
-import { computed } from "vue";
+import { computed, onMounted, onUnmounted } from "vue";
 import _fromPairs from "lodash/fromPairs";
 import _sortBy from "lodash/sortBy";
 import type { IStatistics } from "@/utilities/types.ts";
@@ -80,6 +80,14 @@ const rank = computed(() => {
 const ladder = computed(() =>
   [...store.ladder].sort((a, b) => rank.value[a] - rank.value[b]),
 );
+
+onMounted(() => {
+  store.subscribe();
+});
+
+onUnmounted(() => {
+  store.unsubscribe();
+});
 </script>
 
 <template>

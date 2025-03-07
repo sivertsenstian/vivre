@@ -284,19 +284,21 @@ export const getAllSeasonGames = async (
   let prev = all.length;
   let failsafe = 0;
 
-  while (!finished && failsafe < 30) {
-    const { data: response } = await axios.get(
-      url(tag, all.length, 100, season),
-    );
+  if (!_isNil(tag) && tag.includes("#")) {
+    while (!finished && failsafe < 30) {
+      const { data: response } = await axios.get(
+        url(tag, all.length, 100, season),
+      );
 
-    all = [...all, ...response.matches];
+      all = [...all, ...response.matches];
 
-    finished =
-      all.length === response.count ||
-      all.length === prev ||
-      (max !== 0 && all.length > max);
-    prev = all.length;
-    failsafe++;
+      finished =
+        all.length === response.count ||
+        all.length === prev ||
+        (max !== 0 && all.length > max);
+      prev = all.length;
+      failsafe++;
+    }
   }
 
   return _sortBy(all, "endTime").reverse();
@@ -311,30 +313,32 @@ export const getSeasonGamesBetween = async (
 ) => {
   let all: any[] = [];
 
-  for (let s = 0; s < seasons.length; s++) {
-    const season = seasons[s];
-    let finished = false;
-    let prev = 0;
-    let failsafe = 0;
-    let seasonAll: any[] = [];
+  if (!_isNil(tag) && tag.includes("#")) {
+    for (let s = 0; s < seasons.length; s++) {
+      const season = seasons[s];
+      let finished = false;
+      let prev = 0;
+      let failsafe = 0;
+      let seasonAll: any[] = [];
 
-    while (!finished && failsafe < 10) {
-      const { data: response } = await axios.get(
-        url(tag, seasonAll.length, 100, season),
-      );
+      while (!finished && failsafe < 10) {
+        const { data: response } = await axios.get(
+          url(tag, seasonAll.length, 100, season),
+        );
 
-      seasonAll = [...seasonAll, ...response.matches];
+        seasonAll = [...seasonAll, ...response.matches];
 
-      finished =
-        seasonAll.length === response.count ||
-        seasonAll.length === prev ||
-        (max !== 0 && seasonAll.length > max) ||
-        moment(_last(seasonAll)?.endTime).isBefore(from);
-      prev = seasonAll.length;
-      failsafe++;
+        finished =
+          seasonAll.length === response.count ||
+          seasonAll.length === prev ||
+          (max !== 0 && seasonAll.length > max) ||
+          moment(_last(seasonAll)?.endTime).isBefore(from);
+        prev = seasonAll.length;
+        failsafe++;
+      }
+
+      all = [...all, ...seasonAll];
     }
-
-    all = [...all, ...seasonAll];
   }
 
   const result = all.filter(
