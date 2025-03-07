@@ -1004,12 +1004,50 @@ const model = defineModel<string>({
 });
 
 onMounted(() => {
-  store.initialize();
+  //store.initialize();
 });
 </script>
 
 <template>
-  <main style="height: 100vh; overflow-y: auto">
+  <main style="height: 100vh; overflow-y: auto" v-if="true">
+    <v-container fluid style="opacity: 1">
+      <v-sheet
+        v-if="_isEmpty(store.data)"
+        class="pa-md-12 pa-3"
+        elevation="10"
+        transition="fade-transition"
+        style="min-height: 90vh">
+        <v-row>
+          <v-col cols="12" class="text-center"
+            ><div class="text-md-h2 text-h5">
+              <span>GNL Season {{ store.data?.season }}</span>
+              <span class="text-grey mx-2">//</span>
+              <span class="text-secondary">Overview</span>
+            </div>
+            <hr />
+          </v-col>
+        </v-row>
+
+        <v-row>
+          <v-col cols="12" class="text-center text-h4" style="color: goldenrod">
+            Season 15 Summary
+            <hr color="goldenrod" />
+          </v-col>
+
+          <v-col cols="12" class="text-center">
+            <h1>
+              Congratulations to the
+              <span style="color: goldenrod; font-weight: bolder">WINNER</span>
+              Giggling Goblins!
+            </h1>
+            <img :src="podium" height="80%" style="opacity: 0.85" />
+          </v-col>
+        </v-row>
+      </v-sheet>
+    </v-container>
+  </main>
+
+  <main style="height: 100vh; overflow-y: auto" v-else>
     <v-container fluid style="opacity: 1">
       <v-sheet
         v-if="_isEmpty(store.data)"
