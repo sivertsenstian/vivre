@@ -23,7 +23,7 @@ export const twitch: any = {
   "Guzu#21761": "guzu",
   "Dendi#22658": "dendi",
   "Geranimo#11740": "lolgeranimo",
-  "Sunglitters#21798": "sunglitters",
+  "sunglitters#21798": "sunglitters",
   "AnnieFuchsia#2169": "anniefuchsia",
 };
 
@@ -35,7 +35,7 @@ export const useOnlyFangsStore = defineStore("onlyfangs", () => {
     "Guzu#21761": false,
     "Dendi#22658": false,
     "Geranimo#11740": false,
-    "Sunglitters#21798": false,
+    "sunglitters#21798": false,
     "AnnieFuchsia#2169": false,
   });
 
@@ -46,7 +46,7 @@ export const useOnlyFangsStore = defineStore("onlyfangs", () => {
     "Guzu#21761": false,
     "Dendi#22658": false,
     "Geranimo#11740": false,
-    "Sunglitters#21798": false,
+    "sunglitters#21798": false,
     "AnnieFuchsia#2169": false,
   });
 
@@ -57,7 +57,7 @@ export const useOnlyFangsStore = defineStore("onlyfangs", () => {
     "Guzu#21761",
     "Dendi#22658",
     "Geranimo#11740",
-    "Sunglitters#21798",
+    "sunglitters#21798",
     "AnnieFuchsia#2169",
   ]);
 

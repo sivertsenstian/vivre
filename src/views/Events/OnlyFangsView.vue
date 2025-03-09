@@ -28,7 +28,7 @@ const onlyFangsBanner: any = {
   "Guzu#21761": banner_guzu,
   "Dendi#22658": banner_dendi,
   "Geranimo#11740": banner_geranimo,
-  "Sunglitters#21798": banner_sunglitters,
+  "sunglitters#21798": banner_sunglitters,
   "AnnieFuchsia#2169": banner_annie,
 };
 
