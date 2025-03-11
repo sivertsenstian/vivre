@@ -14,7 +14,14 @@ import Performance from "@/components/Performance.vue";
 import VersusBanner from "@/components/versus/VersusBanner.vue";
 import { useSettingsStore } from "@/stores/settings";
 import { useStatsStore } from "@/stores/stats";
-import { Race, creeproutes, raceIcon, heroIcon } from "@/stores/races";
+import {
+  Race,
+  creeproutes,
+  raceIcon,
+  heroIcon,
+  CreepRouteCategory,
+  category,
+} from "@/stores/races";
 
 const settings = useSettingsStore();
 const stats = useStatsStore();
@@ -28,6 +35,8 @@ import VersusChallenger from "@/components/versus/VersusChallenger.vue";
 import _isNil from "lodash/isNil";
 import type { IRaceStatistics, IStatistics } from "@/utilities/types.ts";
 import _sortBy from "lodash/sortBy";
+import { useStorage } from "@vueuse/core";
+import MapLink from "@/components/MapLink.vue";
 
 const raceBanner: any = {
   [Race.Human]: hu_banner,
@@ -117,6 +126,23 @@ const goal = computed(() => {
   };
 });
 
+const getRoute = (
+  race: Race,
+  category: CreepRouteCategory,
+  opponent: Race,
+  map: string,
+) => {
+  const r = creeproutes[race]?.[category]?.[opponent]?.[map];
+  if (_isNil(r?.img) || r?.img.includes("missing")) {
+    return (
+      creeproutes[race]?.[CreepRouteCategory.Beginner]?.[Race.Random]?.[map] ??
+      {}
+    );
+  }
+
+  return r;
+};
+
 onMounted(() => {
   stats.subscribe();
 });
@@ -137,7 +163,7 @@ onUnmounted(() => {
                 <v-col cols="12" md="8" class="text-center">
                   <v-col cols="12">
                     <span class="text-h6 font-weight-bold"
-                      >Playing on '{{ stats.ongoing?.map }}' :
+                      >Playing on '<map-link :name="stats.ongoing?.map" />' :
                       {{ duration }}</span
                     >
                   </v-col>
@@ -203,18 +229,22 @@ onUnmounted(() => {
                     cols="12"
                     class="text-center"
                     v-if="
-                      _has(creeproutes, [
+                      getRoute(
                         stats.ongoing.player?.race,
+                        category,
                         stats.ongoing.opponent?.race,
                         stats.ongoing.map,
-                      ])
+                      )?.img
                     ">
                     <span class="caption">Suggested Creep Route</span>
                     <img
                       :src="
-                        creeproutes[stats.ongoing?.player?.race][
-                          stats.ongoing?.opponent?.race
-                        ][stats.ongoing?.map].img
+                        getRoute(
+                          stats.ongoing.player?.race,
+                          category,
+                          stats.ongoing.opponent?.race,
+                          stats.ongoing.map,
+                        )?.img
                       "
                       width="100%" />
                   </v-col>
@@ -715,7 +745,9 @@ onUnmounted(() => {
                         v-for="(map, name) in stats.player.season[
                           stats.player.race
                         ].maps">
-                        <td class="font-weight-bold">{{ name }}</td>
+                        <td class="font-weight-bold">
+                          <map-link :name="name" />
+                        </td>
                         <td class="text-center text-green">
                           <ResultChart :result="map" />
                         </td>

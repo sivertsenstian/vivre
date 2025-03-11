@@ -76,8 +76,9 @@ export const useOnlyFangsStore = defineStore("onlyfangs", () => {
   const latest = 21;
   const season = 21;
   const start = moment("22.02.25", "DD.MM.YYYY");
-  const end = moment("14.03.25", "DD.MM.YYYY");
+  const end = moment("14.03.25:17:00:00", "DD.MM.YYYY:HH:mm:ss");
   const duration = Math.abs(end.diff(start, "days"));
+  const timeRemaining = end.diff(moment(), "milliseconds");
 
   const today = moment().startOf("day");
   const weekRule = moment().startOf("isoWeek");
@@ -260,6 +261,7 @@ export const useOnlyFangsStore = defineStore("onlyfangs", () => {
     duration,
     start,
     end,
+    timeRemaining,
     challengers,
     ladder,
     link: computed(() => window.btoa(JSON.stringify(ladder.value))),

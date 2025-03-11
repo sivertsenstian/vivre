@@ -3,9 +3,6 @@ import { computed, ref } from "vue";
 import makrura from "@/assets/makrura.png";
 import trophy from "@/assets/events/trophy.jpg";
 import confetti from "@/assets/events/confetti.png";
-import happa1 from "@/assets/events/happa1.mp4";
-import happa2 from "@/assets/events/happa2.mp4";
-import happa3 from "@/assets/events/happa3.mp4";
 import w3cicon from "@/assets/w3c.png";
 import w3ciconDark from "@/assets/w3c_dark.png";
 import Banner from "@/components/Banner.vue";
@@ -331,52 +328,6 @@ setInterval(() => {
                       )
                     }}</span
                   >
-                  <v-card-item
-                    class="d-flex justify-center"
-                    style="margin-top: -15px">
-                    <video
-                      autoplay
-                      muted
-                      loop
-                      class="rounded-xl mx-1"
-                      style="
-                        width: 300px;
-                        height: 175px;
-                        object-fit: cover;
-                        object-position: center center;
-                        opacity: 0.8;
-                      ">
-                      <source :src="happa1" type="video/mp4" />
-                    </video>
-                    <video
-                      autoplay
-                      muted
-                      loop
-                      class="rounded-xl mx-1"
-                      style="
-                        width: 300px;
-                        height: 175px;
-                        object-fit: cover;
-                        object-position: center center;
-                        opacity: 0.8;
-                      ">
-                      <source :src="happa2" type="video/mp4" />
-                    </video>
-                    <video
-                      autoplay
-                      muted
-                      loop
-                      class="rounded-xl mx-1"
-                      style="
-                        width: 300px;
-                        height: 175px;
-                        object-fit: cover;
-                        object-position: center center;
-                        opacity: 0.8;
-                      ">
-                      <source :src="happa3" type="video/mp4" />
-                    </video>
-                  </v-card-item>
                 </v-card>
               </v-col>
             </v-row>
