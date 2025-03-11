@@ -18,6 +18,7 @@ import _sortBy from "lodash/sortBy";
 import type { IStatistics } from "@/utilities/types.ts";
 import { useOnlyFangsStore } from "@/stores/onlyfangs.ts";
 import { raceIcon, raceName } from "@/stores/races.ts";
+import VueCountdown from "@chenfengyuan/vue-countdown";
 
 const store = useOnlyFangsStore();
 
@@ -106,6 +107,32 @@ const ladder = computed(() =>
               max-width="1200px" />
             <div class="text-sm-h4 text-h6 font-weight-bold mt-2">
               W3C LADDER RACE!
+            </div>
+            <div>
+              <a
+                href="https://liquipedia.net/warcraft/OnlyFangs_Invitational"
+                target="_blank"
+                ><span class="vertical-align:middle"
+                  ><v-icon
+                    icon="mdi-link"
+                    class="mr-1"
+                    style="color: goldenrod"
+                    size="x-small" /></span
+                >Link to OnlyFangs Invitational Tournament</a
+              >
+            </div>
+          </v-col>
+          <v-col cols="12" class="text-center">
+            <div class="text-md-h5 font-weight-bold">
+              <span>
+                <vue-countdown
+                  :time="store.timeRemaining"
+                  v-slot="{ days, hours, minutes, seconds }">
+                  {{ days }} day(s), {{ hours }} hour(s),
+                  {{ minutes }} minute(s), {{ seconds }} second(s) until the
+                  tournament is live!
+                </vue-countdown>
+              </span>
             </div>
           </v-col>
         </v-row>

@@ -16,6 +16,7 @@ const days = today.diff(start, "days");
 import moment from "moment/moment";
 import Performance from "@/components/Performance.vue";
 import Banner from "@/components/Banner.vue";
+import MapLink from "@/components/MapLink.vue";
 
 const races = [Race.Human, Race.Orc, Race.NightElf, Race.Undead, Race.Random];
 </script>
@@ -212,7 +213,7 @@ const races = [Race.Human, Race.Orc, Race.NightElf, Race.Undead, Race.Random];
                   </thead>
                   <tbody>
                     <tr v-for="map in store.maps">
-                      <td class="font-weight-bold">{{ map }}</td>
+                      <td class="font-weight-bold"><map-link :name="map" /></td>
                       <td class="text-center text-green">
                         <span>{{
                           store.player.season[race].maps[map]?.wins ?? "-"
