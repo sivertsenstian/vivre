@@ -1,11 +1,12 @@
 <script setup lang="ts">
+import live_explain_dark from "@/assets/live_help_dark.png";
+import live_explain from "@/assets/live_help.png";
 import { computed, onMounted, onUnmounted, ref } from "vue";
 import NumberAnimation from "vue-number-animation";
 import moment, { type Moment } from "moment";
 import _round from "lodash/round";
 import _capitalize from "lodash/capitalize";
 import _fromPairs from "lodash/fromPairs";
-import _has from "lodash/has";
 import ConfettiExplosion from "vue-confetti-explosion";
 import ResultChart from "@/components/ResultChart.vue";
 import WeeklyGoalChart from "@/components/WeeklyGoalChart.vue";
@@ -32,10 +33,10 @@ import ud_banner from "@/assets/take_a_look_at_banner_undead.png";
 import ne_banner from "@/assets/take_a_look_at_banner_nightelf.png";
 import oc_banner from "@/assets/take_a_look_at_banner_orc.png";
 import VersusChallenger from "@/components/versus/VersusChallenger.vue";
+import { useTheme } from "vuetify";
 import _isNil from "lodash/isNil";
 import type { IRaceStatistics, IStatistics } from "@/utilities/types.ts";
 import _sortBy from "lodash/sortBy";
-import { useStorage } from "@vueuse/core";
 import MapLink from "@/components/MapLink.vue";
 
 const raceBanner: any = {
@@ -142,6 +143,9 @@ const getRoute = (
 
   return r;
 };
+
+const theme = useTheme();
+const isDark = computed(() => theme.global.current.value.dark);
 
 onMounted(() => {
   stats.subscribe();
@@ -319,7 +323,7 @@ onUnmounted(() => {
           </v-col>
 
           <v-col cols="12" v-if="!stats?.ongoing?.active">
-            <v-sheet class="pa-8" elevation="5">
+            <v-sheet class="pa-8" elevation="5" v-if="settings.data.battleTag">
               <v-row>
                 <v-col cols="12" md="6">
                   <v-col cols="12" class="text-center">
@@ -477,6 +481,17 @@ onUnmounted(() => {
                       </div>
                     </v-col>
                   </v-row>
+                </v-col>
+              </v-row>
+            </v-sheet>
+
+            <v-sheet class="pa-8" elevation="5" v-else>
+              <v-row>
+                <v-col cols="12">
+                  <v-img
+                    :src="isDark ? live_explain_dark : live_explain"
+                    width="100%"
+                    cover />
                 </v-col>
               </v-row>
             </v-sheet>
