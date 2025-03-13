@@ -168,6 +168,16 @@ onUnmounted(() => {
               >
             </div>
           </v-col>
+          <v-col cols="12" class="text-center">
+            <h2 class="py-2">
+              If you are enjoying this ladder, please consider sponsoring my
+              next coffee!
+            </h2>
+            <a href="https://www.buymeacoffee.com/longjacket" target="_blank"
+              ><img
+                src="https://img.buymeacoffee.com/button-api/?text=Buy me a coffee&emoji=☕&slug=longjacket&button_colour=FFDD00&font_colour=000000&font_family=Bree&outline_colour=000000&coffee_colour=ffffff"
+            /></a>
+          </v-col>
           <v-col cols="12" class="text-center" v-if="!showWinner">
             <div class="text-md-h4 h5 font-weight-bold">
               <span>
