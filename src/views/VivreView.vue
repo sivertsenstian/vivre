@@ -756,10 +756,7 @@ onUnmounted(() => {
                       </tr>
                     </thead>
                     <tbody>
-                      <tr
-                        v-for="(map, name) in stats.player.season[
-                          stats.player.race
-                        ].maps">
+                      <tr v-for="(map, name) in data.maps">
                         <td class="font-weight-bold">
                           <map-link :name="name" />
                         </td>
