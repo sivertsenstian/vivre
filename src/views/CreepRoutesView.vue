@@ -28,7 +28,7 @@ const getRoute = (
   race: Race,
   category: CreepRouteCategory,
   opponent: Race,
-  map: string,
+  map: any,
 ) => {
   const r = creeproutes[race][category]?.[opponent][map];
   if (_isNil(r.img) || r.img.includes("missing")) {
@@ -371,7 +371,7 @@ const getRoute = (
   </main>
 </template>
 
-<style>
+<style scoped>
 div.v-selection-control-group.v-selection-control-group--inline {
   justify-content: center;
 }
