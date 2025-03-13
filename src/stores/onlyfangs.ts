@@ -71,14 +71,21 @@ export const useOnlyFangsStore = defineStore("onlyfangs", () => {
     "seasonActivity",
   ];
 
-  const mode = ref<string>("mmr");
+  const groups = ["individual", "tournament"];
 
-  const latest = 21;
+  const mode = ref<string>("mmr");
+  const groupBy = ref<string>("individual");
+
+  const tournamentGroups = [
+    ["Tyler1#11151", "Skippy1337#1171", "Dendi#22658", "AnnieFuchsia#2169"],
+    ["Ahmp#1107", "Guzu#21761", "Geranimo#11740", "sunglitters#21798"],
+  ];
+
   const season = 21;
   const start = moment("22.02.25", "DD.MM.YYYY");
   const end = moment("14.03.25:17:00:00", "DD.MM.YYYY:HH:mm:ss");
   const duration = Math.abs(end.diff(start, "days"));
-  const timeRemaining = end.diff(moment(), "milliseconds");
+  const initialized = ref(false);
 
   const today = moment().startOf("day");
   const weekRule = moment().startOf("isoWeek");
@@ -249,23 +256,47 @@ export const useOnlyFangsStore = defineStore("onlyfangs", () => {
         }),
       );
     }
+
+    initialized.value = true;
   };
 
   void update(true);
   setInterval(update, 30000);
 
+  const subscription = ref<number | null>(null);
+
+  const subscribe = () => {
+    if (subscription.value === null) {
+      subscription.value = setInterval(async () => {
+        void update();
+      }, 30000);
+    }
+  };
+
+  const unsubscribe = () => {
+    if (subscription.value !== null) {
+      clearInterval(subscription.value);
+      subscription.value = null;
+    }
+  };
+
   return {
     mode,
     modes,
+    groupBy,
+    groups,
     season,
     duration,
     start,
     end,
-    timeRemaining,
     challengers,
     ladder,
     link: computed(() => window.btoa(JSON.stringify(ladder.value))),
     streaming,
     laddering,
+    initialized,
+    subscribe,
+    unsubscribe,
+    tournamentGroups,
   };
 });

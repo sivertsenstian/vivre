@@ -371,7 +371,7 @@ const getRoute = (
   </main>
 </template>
 
-<style>
+<style scoped>
 div.v-selection-control-group.v-selection-control-group--inline {
   justify-content: center;
 }

@@ -123,6 +123,7 @@ interface Props {
   seasonStart: Moment;
   streaming?: boolean;
   laddering?: boolean;
+  winner?: boolean;
 }
 const props = withDefaults(defineProps<Props>(), {
   mode: "season",
@@ -284,7 +285,7 @@ const avg = computed(() =>
 <template>
   <v-card
     color="surface"
-    class="text-center pa-0 card-shine-effect"
+    :class="`text-center pa-0 ${winner ? 'gold goal' : 'card-shine-effect'}`"
     :elevation="10">
     <v-list-item class="px-3" :style="`background: ${raceColor[player.race]}`">
       <template v-slot:prepend>
@@ -587,6 +588,30 @@ const avg = computed(() =>
 .goal {
   box-shadow: 0 0 15px 5px goldenrod !important;
   animation: pulse 2s infinite;
+}
+
+.gold {
+  border-radius: 0.875rem;
+  padding: 4rem 2rem;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  border: 1px solid darkgoldenrod;
+
+  background: radial-gradient(
+      ellipse farthest-corner at right bottom,
+      #fedb37 0%,
+      #fdb931 8%,
+      #9f7928 30%,
+      #8a6e2f 40%,
+      transparent 80%
+    ),
+    radial-gradient(
+      ellipse farthest-corner at left top,
+      #ffffff 0%,
+      #ffffac 8%,
+      #d1b464 25%,
+      #5d4a1f 62.5%,
+      #5d4a1f 100%
+    );
 }
 
 @keyframes pulse {
