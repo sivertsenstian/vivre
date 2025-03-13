@@ -123,7 +123,7 @@ const ladder = computed(() =>
             </div>
           </v-col>
           <v-col cols="12" class="text-center">
-            <div class="text-md-h5 font-weight-bold">
+            <div class="text-md-h4 h5 font-weight-bold">
               <span>
                 <vue-countdown
                   :time="store.timeRemaining"
