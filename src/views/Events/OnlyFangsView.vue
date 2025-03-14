@@ -20,7 +20,7 @@ import { useOnlyFangsStore } from "@/stores/onlyfangs.ts";
 import { raceIcon, raceName } from "@/stores/races.ts";
 import VueCountdown from "@chenfengyuan/vue-countdown";
 import ConfettiExplosion from "vue-confetti-explosion";
-import moment from "moment";
+import moment from "moment/moment";
 
 const store = useOnlyFangsStore();
 
@@ -108,7 +108,7 @@ const winner = computed(() => {
     for (const challenger of store.ladder.filter((v) => !_isNil(v))) {
       points.push({
         id: challenger,
-        points: getPoints(store.mode, store.challengers[challenger]),
+        points: getPoints("mmr", store.challengers[challenger]),
       });
     }
 
@@ -127,7 +127,7 @@ onMounted(() => {
     explode.value = !explode.value;
     showWinner.value =
       store.initialized &&
-      store.end.utc().diff(moment().utc(), "milliseconds") <= 0;
+      store.tournamentStart.utc().diff(moment().utc(), "milliseconds") <= 0;
   }, 2000);
 
   store.subscribe();
@@ -183,7 +183,11 @@ onUnmounted(() => {
             <div class="text-md-h4 h5 font-weight-bold">
               <span>
                 <vue-countdown
-                  :time="store.end.utc().diff(moment().utc(), 'milliseconds')"
+                  :time="
+                    store.tournamentStart
+                      .utc()
+                      .diff(moment().utc(), 'milliseconds')
+                  "
                   v-slot="{ days, hours, minutes, seconds }">
                   {{ days }} day(s), {{ hours }} hour(s),
                   {{ minutes }} minute(s), {{ seconds }} second(s) until the

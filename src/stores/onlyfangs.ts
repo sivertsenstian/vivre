@@ -81,9 +81,11 @@ export const useOnlyFangsStore = defineStore("onlyfangs", () => {
     ["Ahmp#1107", "Guzu#21761", "Geranimo#11740", "sunglitters#21798"],
   ];
 
+  const tournamentStart = moment("2025-03-14T16:00:00Z");
+
   const season = 21;
-  const start = moment("2025-02-22:00:00Z");
-  const end = moment("2025-03-14T16:00:00Z");
+  const start = moment("22.02.25", "DD.MM.YYYY");
+  const end = moment("14.03.25:17:00:00", "DD.MM.YYYY:HH:mm:ss");
   const duration = Math.abs(end.diff(start, "days"));
   const initialized = ref(false);
 
@@ -298,5 +300,6 @@ export const useOnlyFangsStore = defineStore("onlyfangs", () => {
     subscribe,
     unsubscribe,
     tournamentGroups,
+    tournamentStart,
   };
 });
