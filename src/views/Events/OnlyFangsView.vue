@@ -20,7 +20,7 @@ import { useOnlyFangsStore } from "@/stores/onlyfangs.ts";
 import { raceIcon, raceName } from "@/stores/races.ts";
 import VueCountdown from "@chenfengyuan/vue-countdown";
 import ConfettiExplosion from "vue-confetti-explosion";
-import moment from "moment/moment";
+import moment from "moment";
 
 const store = useOnlyFangsStore();
 
@@ -126,7 +126,8 @@ onMounted(() => {
   winnersubscription.value = setInterval(() => {
     explode.value = !explode.value;
     showWinner.value =
-      store.initialized && store.end.diff(moment(), "milliseconds") <= 0;
+      store.initialized &&
+      store.end.utc().diff(moment().utc(), "milliseconds") <= 0;
   }, 2000);
 
   store.subscribe();
@@ -182,7 +183,7 @@ onUnmounted(() => {
             <div class="text-md-h4 h5 font-weight-bold">
               <span>
                 <vue-countdown
-                  :time="store.end.diff(moment(), 'milliseconds')"
+                  :time="store.end.utc().diff(moment().utc(), 'milliseconds')"
                   v-slot="{ days, hours, minutes, seconds }">
                   {{ days }} day(s), {{ hours }} hour(s),
                   {{ minutes }} minute(s), {{ seconds }} second(s) until the
