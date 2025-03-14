@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import moment from "moment";
+import moment from "moment-timezone";
 import { computed, ref } from "vue";
 import type { IStatistics } from "@/utilities/types.ts";
 import _isNil from "lodash/isNil";
@@ -82,8 +82,10 @@ export const useOnlyFangsStore = defineStore("onlyfangs", () => {
   ];
 
   const season = 21;
-  const start = moment("22.02.25", "DD.MM.YYYY");
-  const end = moment("14.03.25:17:00:00", "DD.MM.YYYY:HH:mm:ss");
+  const start = moment("22.02.25", "DD.MM.YYYY").tz("Europe/Berlin");
+  const end = moment("14.03.25:17:00:00", "DD.MM.YYYY:HH:mm:ss").tz(
+    "Europe/Berlin",
+  );
   const duration = Math.abs(end.diff(start, "days"));
   const initialized = ref(false);
 
