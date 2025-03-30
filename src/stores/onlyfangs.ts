@@ -80,7 +80,7 @@ export const useOnlyFangsStore = defineStore("onlyfangs", () => {
 
   const tournamentGroups = [[], []];
 
-  const tournamentStart = moment("2025-05-14T16:00:00Z");
+  const tournamentStart = moment("2025-04-18T16:00:00Z");
 
   const season = 21;
   const start = moment("30.03.25", "DD.MM.YYYY");
