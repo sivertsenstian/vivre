@@ -283,7 +283,13 @@ onMounted(() => {
           </v-col>
         </v-row>
         <v-row class="justify-center">
-          <v-col cols="12" md="3" v-for="coach in current.coaches">
+          <v-col
+            cols="12"
+            sm="6"
+            md="4"
+            lg="3"
+            xl="2"
+            v-for="coach in current.coaches">
             <KLCoachBanner :prefix="current.prefix" :coach="coach" />
           </v-col>
         </v-row>
@@ -293,16 +299,26 @@ onMounted(() => {
             <hr />
           </v-col>
         </v-row>
-        <v-row class="justify-center">
-          <v-col cols="12" md="3" v-for="(player, rank) in players" :key="rank">
-            <KLPlayerBanner
-              :dates="store.dates"
-              :rank="rank"
-              :team-points="teamPoints"
-              :prefix="current.prefix"
-              :player="player" />
-          </v-col>
-        </v-row>
+        <v-col cols="12" class="text-center">
+          <v-row>
+            <v-col
+              class="d-inline-block"
+              cols="12"
+              sm="6"
+              md="4"
+              lg="3"
+              xl="2"
+              v-for="(player, rank) in players"
+              :key="rank">
+              <KLPlayerBanner
+                :dates="store.dates"
+                :rank="rank"
+                :team-points="teamPoints"
+                :prefix="current.prefix"
+                :player="player" />
+            </v-col>
+          </v-row>
+        </v-col>
       </v-sheet>
     </v-container>
   </main>
