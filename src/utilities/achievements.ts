@@ -589,6 +589,88 @@ export const season_21_calculation = (account: any): any[] => {
   return result.reverse();
 };
 
+const kreis_liga_season_5_definitions = {
+  ...season_21_definitions,
+  // 500
+  ladder_goal: {
+    id: "ladder_goal",
+    points: 500,
+    icon: "mdi-sausage",
+    name: "Alles hat ein Ende, nur die Wurst hat zwei!",
+    description: "Reach this seasons ladder goal!",
+  },
+
+  // 25
+  alle_gute_dinge: {
+    id: "alle_gute_dinge",
+    points: 25,
+    icon: "mdi-numeric-3-circle",
+    name: "Aller guten Dinge sind drei",
+    description: "Win 3 games in a row",
+  },
+  // 25
+  ach_du_scheisse: {
+    id: "ach_du_scheisse",
+    points: 25,
+    icon: "mdi-emoticon-poop",
+    name: "Ach du Scheiße!",
+    description: "Lose 5 games in a row",
+  },
+};
+
+const kreis_liga_season_5_calculation = (
+  account: any,
+  ladderGoal: number,
+): any[] => {
+  const result = season_21_calculation(account);
+
+  const performance = account.data?.performance ?? [];
+
+  // Number of wins/loss
+  let consecutiveLoss = 0;
+  let consecutiveWins = 0;
+  let w = 0;
+  let l = 0;
+  for (let i = 0; i < performance.length; i++) {
+    if (performance[i]) {
+      w++;
+    } else {
+      l++;
+    }
+
+    if (i > 0) {
+      consecutiveWins = Math.max(consecutiveWins, w);
+      consecutiveLoss = Math.max(consecutiveLoss, l);
+
+      if (performance[i] !== performance[i - 1]) {
+        w = 0;
+        l = 0;
+        if (performance[i]) {
+          w++;
+        } else {
+          l++;
+        }
+      }
+    }
+  }
+
+  if (consecutiveLoss >= 5) {
+    result.push(kreis_liga_season_5_definitions["ach_du_scheisse"]);
+  }
+
+  if (consecutiveWins >= 3) {
+    result.push(kreis_liga_season_5_definitions["alle_gute_dinge"]);
+  }
+
+  if (
+    calculateLadderPoints(account.battleTag, account.data.matches) >= ladderGoal
+  ) {
+    result.push(kreis_liga_season_5_definitions["ladder_goal"]);
+  }
+
+  return result;
+};
+
 export const season_achievements = {
   20: {
     definitions: season_20_definitions,
@@ -597,5 +679,9 @@ export const season_achievements = {
   21: {
     definitions: season_21_definitions,
     calculate: season_21_calculation,
+  },
+  kreis_liga_season_5: {
+    definitions: kreis_liga_season_5_definitions,
+    calculate: kreis_liga_season_5_calculation,
   },
 };

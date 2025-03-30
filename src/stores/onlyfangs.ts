@@ -89,7 +89,7 @@ export const useOnlyFangsStore = defineStore("onlyfangs", () => {
   const duration = Math.abs(end.diff(start, "days"));
   const initialized = ref(false);
 
-  const today = moment().startOf("day");
+  const today = end; //moment().startOf("day");
   const weekRule = moment().startOf("isoWeek");
   const monthRule = moment().startOf("month");
 
