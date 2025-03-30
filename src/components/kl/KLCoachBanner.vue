@@ -46,7 +46,7 @@ const open = (battleTag: string) =>
       <template v-slot:title>
         <div class="ml-1 text-left text-h5">
           <span v-if="prefix" class="mr-1">{{ prefix }}</span
-          >{{ coach.battleTag.split("#")[0] }}
+          >{{ coach?.name ?? coach.battleTag.split("#")[0] }}
         </div>
       </template>
     </v-list-item>
