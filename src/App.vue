@@ -4,7 +4,7 @@ import { RouterView, useRoute } from "vue-router";
 import bgLightUrl from "@/assets/bg_light.jpg";
 import bgDarkUrl from "@/assets/bg_dark.jpg";
 import logo from "@/assets/logo.png";
-import { computed } from "vue";
+import { computed, ref, watch } from "vue";
 
 const inProduction = import.meta.env.PROD;
 
@@ -16,11 +16,20 @@ function toggleTheme() {
 }
 
 const route = useRoute();
+
+const drawer = ref(false);
 </script>
 
 <template>
   <v-app>
-    <v-navigation-drawer expand-on-hover rail>
+    <v-app-bar v-if="$vuetify.display.mobile">
+      <v-app-bar-nav-icon variant="text" @click.stop="drawer = !drawer" />
+      <v-toolbar-title>Ape Science</v-toolbar-title>
+    </v-app-bar>
+    <v-navigation-drawer
+      expand-on-hover
+      rail
+      :location="$vuetify.display.mobile ? 'bottom' : undefined">
       <v-list>
         <v-list-item
           :prepend-avatar="logo"
@@ -97,7 +106,7 @@ const route = useRoute();
             <v-list-item
               color="green"
               v-bind="props"
-              prepend-icon="mdi-podium"
+              prepend-icon="mdi-podium-silver"
               title="Gym Newbie League"
               router
               to="/gnl"></v-list-item>
@@ -138,6 +147,41 @@ const route = useRoute();
             color="green-lighten-3"
             router
             to="/gnl/gnlbears"></v-list-item>
+        </v-list-group>
+        <v-list-group v-if="false">
+          <template v-slot:activator="{ props }">
+            <v-list-item
+              color="green"
+              v-bind="props"
+              prepend-icon="mdi-podium-gold"
+              title="Kreis Liga"
+              router
+              to="/kreisliga"></v-list-item>
+          </template>
+          <v-list-item
+            prepend-icon="mdi-shield-crown-outline"
+            title="Vashj's Vipers"
+            color="green-lighten-3"
+            router
+            to="/kreisliga/vashjsvipers"></v-list-item>
+          <v-list-item
+            prepend-icon="mdi-shield-crown-outline"
+            title="Azeroth Titans"
+            color="green-lighten-3"
+            router
+            to="/kreisliga/azerothtitans"></v-list-item>
+          <v-list-item
+            prepend-icon="mdi-shield-crown-outline"
+            title="Pandarens"
+            color="green-lighten-3"
+            router
+            to="/kreisliga/pandarens"></v-list-item>
+          <v-list-item
+            prepend-icon="mdi-shield-crown-outline"
+            title="Stormwind Kickerz"
+            color="green-lighten-3"
+            router
+            to="/kreisliga/stormwindkickerz"></v-list-item>
         </v-list-group>
         <v-list-item
           color="red"

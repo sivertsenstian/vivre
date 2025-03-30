@@ -143,16 +143,14 @@ const data = computed(() => {
 });
 
 const dates = computed(() => {
-  const end =
-    props.mode === "week"
-      ? moment().utc(true).startOf("week")
-      : props.mode === "month"
-        ? moment().utc(true).startOf("month")
-        : props.seasonStart;
+  const start = moment("20.02.25", "DD.MM.YYYY");
+  const end = moment("14.03.25:17:00:00", "DD.MM.YYYY:HH:mm:ss");
 
   return {
+    start,
+    end,
     today: moment().utc(true).endOf("day"),
-    daysSinceStart: Math.abs(moment().utc(true).endOf("day").diff(end, "days")),
+    daysSinceStart: Math.abs(start.utc(true).endOf("day").diff(end, "days")),
   };
 });
 
@@ -170,15 +168,15 @@ const mmr = computed(() => {
           : 0;
 
       return (
-        dates.value.daysSinceStart - (dates.value.today.dayOfYear() - d) - yd
+        dates.value.daysSinceStart - (dates.value.end.dayOfYear() - d) - yd
       );
     });
 
     const initial = getPlayer(_last(g[Object.keys(g)[0]]))?.players[0].oldMmr;
     const v = _fill(
       _range(
-        dates.value.today.dayOfYear() - dates.value.daysSinceStart,
-        dates.value.today.dayOfYear(),
+        dates.value.end.dayOfYear() - dates.value.daysSinceStart,
+        dates.value.end.dayOfYear(),
       ),
       initial,
     );
@@ -198,8 +196,8 @@ const mmr = computed(() => {
 
   return _fill(
     _range(
-      dates.value.today.dayOfYear() - dates.value.daysSinceStart,
-      dates.value.today.dayOfYear(),
+      dates.value.end.dayOfYear() - dates.value.daysSinceStart,
+      dates.value.end.dayOfYear(),
     ),
     0,
   );
@@ -213,13 +211,13 @@ const wins = computed(() => {
         const d = moment(m.endTime).dayOfYear() - 1;
         const y = moment(m.endTime).year();
         const yd =
-          dates.value.today.year() > y
+          dates.value.end.year() > y
             ? moment().year(y).isLeapYear()
               ? 366
               : 365
             : 0;
         const day =
-          dates.value.daysSinceStart - (dates.value.today.dayOfYear() - d) - yd;
+          dates.value.daysSinceStart - (dates.value.end.dayOfYear() - d) - yd;
 
         r[day]++;
 
@@ -227,8 +225,8 @@ const wins = computed(() => {
       },
       _fill(
         _range(
-          dates.value.today.dayOfYear() - dates.value.daysSinceStart,
-          dates.value.today.dayOfYear(),
+          dates.value.end.dayOfYear() - dates.value.daysSinceStart,
+          dates.value.end.dayOfYear(),
         ),
         0,
       ),
@@ -244,21 +242,21 @@ const loss = computed(() => {
         const d = moment(m.endTime).dayOfYear() - 1;
         const y = moment(m.endTime).year();
         const yd =
-          dates.value.today.year() > y
+          dates.value.end.year() > y
             ? moment().year(y).isLeapYear()
               ? 366
               : 365
             : 0;
         const day =
-          dates.value.daysSinceStart - (dates.value.today.dayOfYear() - d) - yd;
+          dates.value.daysSinceStart - (dates.value.end.dayOfYear() - d) - yd;
 
         r[day]++;
         return r;
       },
       _fill(
         _range(
-          dates.value.today.dayOfYear() - dates.value.daysSinceStart,
-          dates.value.today.dayOfYear(),
+          dates.value.end.dayOfYear() - dates.value.daysSinceStart,
+          dates.value.end.dayOfYear(),
         ),
         0,
       ),
@@ -398,7 +396,10 @@ const avg = computed(() =>
       :data="{
         labels: _range(0, dates.daysSinceStart)
           .map((n) => {
-            return moment().subtract(n, 'days').startOf('day');
+            return moment('14.03.25:17:00:00', 'DD.MM.YYYY:HH:mm:ss')
+              .subtract(n, 'days')
+              .startOf('day');
+            // return moment().subtract(n, 'days').startOf('day');
           })
           .reverse(),
         datasets: [

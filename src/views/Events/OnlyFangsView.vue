@@ -170,9 +170,9 @@ onUnmounted(() => {
             </div>
           </v-col>
           <v-col cols="12" class="text-center">
-            <h2 class="py-2">
-              If you are enjoying this ladder, please consider sponsoring my
-              next coffee!
+            <h2 class="py-2 whitespace-wrap">
+              The onlyfangs invitational #1 is now complete! If you enjoyed this
+              ladder event, please consider sponsoring my next coffee!
             </h2>
             <a href="https://www.buymeacoffee.com/longjacket" target="_blank"
               ><img

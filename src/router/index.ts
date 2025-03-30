@@ -16,6 +16,8 @@ import GNLSeasonIndexView from "@/views/GNL/GNLSeasonIndexView.vue";
 import GNLSeasonTeamView from "@/views/GNL/GNLSeasonTeamView.vue";
 import ChallengersView from "@/views/ChallengersView.vue";
 import OnlyFangsView from "@/views/Events/OnlyFangsView.vue";
+import KLSeasonTeamView from "@/views/KL/KLSeasonTeamView.vue";
+import KLSeasonIndexView from "@/views/KL/KLSeasonIndexView.vue";
 
 const router = createRouter({
   history: createWebHashHistory(import.meta.env.BASE_URL),
@@ -95,6 +97,21 @@ const router = createRouter({
           path: ":team",
           name: "GNL Team Page",
           component: GNLSeasonTeamView,
+        },
+      ],
+    },
+    {
+      path: "/kreisliga",
+      children: [
+        {
+          path: "",
+          name: "Kreis Liga Main Page",
+          component: KLSeasonIndexView,
+        },
+        {
+          path: ":team",
+          name: "Kreis Liga Team Page",
+          component: KLSeasonTeamView,
         },
       ],
     },
