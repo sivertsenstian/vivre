@@ -372,8 +372,14 @@ onMounted(() => {
         transition="fade-transition"
         style="min-height: 90vh">
         <v-row>
-          <v-col cols="12" class="text-center"
-            ><div class="text-md-h2 text-h5">
+          <v-col cols="12" class="text-center">
+            >
+            <div class="text-md-h2 text-h5 d-flex align-center justify-center">
+              <img
+                class="mr-auto"
+                alt="kreis liga season 5!"
+                :src="kreis_logo"
+                height="100" />
               <span>Kreis Liga Season {{ store.data?.season }}</span>
               <span class="text-grey mx-2">//</span>
               <span class="text-secondary">Overview</span>
@@ -419,12 +425,16 @@ onMounted(() => {
         style="min-height: 90vh">
         <v-row>
           <v-col cols="12" class="text-center"
-            ><div class="text-md-h2 text-h5">
+            ><div class="text-md-h2 text-h5 d-flex align-center justify-center">
+              <img
+                class="mr-auto"
+                alt="kreis liga season 5!"
+                :src="kreis_logo"
+                height="100" />
               <span>Kreis Liga Season {{ store.data?.season }}</span>
               <span class="text-grey mx-2">//</span>
-              <span class="text-secondary">Overview</span>
+              <span class="text-secondary mr-auto">Overview</span>
             </div>
-            <hr />
           </v-col>
         </v-row>
         <v-row class="text-center">
@@ -511,9 +521,6 @@ onMounted(() => {
         </v-row>
 
         <v-row>
-          <v-col cols="12" class="d-flex justify-center">
-            <v-img height="150" width="100" :src="kreis_logo" />
-          </v-col>
           <v-col
             cols="12"
             class="text-center text-h6 text-uppercase d-flex align-center">
