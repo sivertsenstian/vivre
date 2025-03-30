@@ -4,6 +4,7 @@ import { computed, onMounted } from "vue";
 import { teamKLIndexBanner, useKreisLigaStore } from "@/stores/kreisliga.ts";
 import { Race } from "@/stores/races";
 import VueCountdown from "@chenfengyuan/vue-countdown";
+import kreis_logo from "@/assets/kreisliga/logo_Kreisliga.png";
 
 const theme = useTheme();
 const isDark = computed(() => theme.global.current.value.dark);
@@ -628,9 +629,14 @@ onMounted(() => {
             </div>
           </v-col>
         </v-row>
-        <v-col cols="12" class="text-center">
-          <markdown-viewer v-model="model" />
-        </v-col>
+        <v-row>
+          <v-col cols="10" class="text-center">
+            <markdown-viewer v-model="model" />
+          </v-col>
+          <v-col cols="2" class="d-flex">
+            <v-img class="my-auto" width="100%" :src="kreis_logo" />
+          </v-col>
+        </v-row>
       </v-sheet>
     </v-container>
   </main>
