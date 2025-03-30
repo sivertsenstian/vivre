@@ -1,13 +1,14 @@
 <script setup lang="ts">
 import logo from "@/assets/events/onlyfangs_banner.jpg";
-import banner_tyler1 from "@assets/events/tyler1.jpg";
-import banner_ahmpy from "@assets/events/ahmpy.jpg";
-import banner_soda from "@assets/events/sodapoppin.jpg";
-import banner_guzu from "@assets/events/guzu.jpg";
-import banner_dendi from "@assets/events/dendi.jpg";
-import banner_geranimo from "@assets/events/geranimo.jpg";
-import banner_sunglitters from "@assets/events/sunglitters.jpg";
-import banner_annie from "@assets/events/annie.jpg";
+import missing from "@assets/creeproutes/missing.png";
+import p1 from "@assets/events/tasteless.jpg";
+import p2 from "@assets/events/lowko.jpg";
+import p3 from "@assets/events/theviper.jpg";
+import p4 from "@assets/events/t90.jpg";
+import p5 from "@assets/events/redpanda.jpg";
+import p6 from "@assets/events/turin.jpg";
+import p7 from "@assets/events/lacari.jpg";
+import p8 from "@assets/events/tommy.jpg";
 
 import VersusChallenger from "@/components/events/onlyfangs/OnlyFangsVersusChallenger.vue";
 import _isNil from "lodash/isNil";
@@ -25,14 +26,14 @@ import moment from "moment/moment";
 const store = useOnlyFangsStore();
 
 const onlyFangsBanner: any = {
-  "Tyler1#11151": banner_tyler1,
-  "Ahmp#1107": banner_ahmpy,
-  "Skippy1337#1171": banner_soda,
-  "Guzu#21761": banner_guzu,
-  "Dendi#22658": banner_dendi,
-  "Geranimo#11740": banner_geranimo,
-  "sunglitters#21798": banner_sunglitters,
-  "AnnieFuchsia#2169": banner_annie,
+  [store.participants[0]]: p1,
+  [store.participants[1]]: p2,
+  [store.participants[2]]: p3,
+  [store.participants[3]]: p4,
+  [store.participants[4]]: p5,
+  [store.participants[5]]: p6,
+  [store.participants[6]]: p7,
+  [store.participants[7]]: p8,
 };
 
 const modeLabel = (mode: string) => {
@@ -153,11 +154,13 @@ onUnmounted(() => {
               class="mx-auto"
               max-width="1200px" />
             <div class="text-sm-h4 text-h6 font-weight-bold mt-2">
-              W3C LADDER RACE!
+              W3C LADDER RACE - ROUND 2!
             </div>
             <div>
               <a
-                href="https://liquipedia.net/warcraft/OnlyFangs_Invitational"
+                style="pointer-events: none"
+                class="text-disabled"
+                href="https://liquipedia.net/warcraft/OnlyFangs_Invitational_2"
                 target="_blank"
                 ><span class="vertical-align:middle"
                   ><v-icon
@@ -165,14 +168,15 @@ onUnmounted(() => {
                     class="mr-1"
                     style="color: goldenrod"
                     size="x-small" /></span
-                >Link to OnlyFangs Invitational Tournament</a
+                >Link to OnlyFangs Invitational Tournament - not yet
+                available!</a
               >
             </div>
           </v-col>
           <v-col cols="12" class="text-center">
             <h2 class="py-2 whitespace-wrap">
-              The onlyfangs invitational #1 is now complete! If you enjoyed this
-              ladder event, please consider sponsoring my next coffee!
+              If you are enjoying this ladder event, please consider sponsoring
+              my next coffee!
             </h2>
             <a href="https://www.buymeacoffee.com/longjacket" target="_blank"
               ><img

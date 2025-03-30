@@ -16,50 +16,52 @@ import axios from "axios";
 import { currentUrl } from "@/utilities/api.ts";
 import _map from "lodash/map";
 
+const participants = [
+  "Tasteless#???",
+  "LowkoTV#???",
+  "TheViper#???",
+  "T90#???",
+  "BonjwaRedPanda#???",
+  "Turin#???",
+  "Lacari#???",
+  "TommyKayLIVE#???",
+];
+
 export const twitch: any = {
-  "Tyler1#11151": "loltyler1",
-  "Ahmp#1107": "ahmpy",
-  "Skippy1337#1171": "sodapoppin",
-  "Guzu#21761": "guzu",
-  "Dendi#22658": "dendi",
-  "Geranimo#11740": "lolgeranimo",
-  "sunglitters#21798": "sunglitters",
-  "AnnieFuchsia#2169": "anniefuchsia",
+  [participants[0]]: "tastelesstv",
+  [participants[1]]: "LowkoTV",
+  [participants[2]]: "theviper",
+  [participants[3]]: "t90official",
+  [participants[4]]: "BonjwaRedPanda",
+  [participants[5]]: "TurinRTS",
+  [participants[6]]: "lacari",
+  [participants[7]]: "TommyKayLIVE",
 };
 
 export const useOnlyFangsStore = defineStore("onlyfangs", () => {
   const streaming = ref<Record<string, boolean>>({
-    "Tyler1#11151": false,
-    "Ahmp#1107": false,
-    "Skippy1337#1171": false,
-    "Guzu#21761": false,
-    "Dendi#22658": false,
-    "Geranimo#11740": false,
-    "sunglitters#21798": false,
-    "AnnieFuchsia#2169": false,
+    [participants[0]]: false,
+    [participants[1]]: false,
+    [participants[2]]: false,
+    [participants[3]]: false,
+    [participants[4]]: false,
+    [participants[5]]: false,
+    [participants[6]]: false,
+    [participants[7]]: false,
   });
 
   const laddering = ref<Record<string, boolean>>({
-    "Tyler1#11151": false,
-    "Ahmp#1107": false,
-    "Skippy1337#1171": false,
-    "Guzu#21761": false,
-    "Dendi#22658": false,
-    "Geranimo#11740": false,
-    "sunglitters#21798": false,
-    "AnnieFuchsia#2169": false,
+    [participants[0]]: false,
+    [participants[1]]: false,
+    [participants[2]]: false,
+    [participants[3]]: false,
+    [participants[4]]: false,
+    [participants[5]]: false,
+    [participants[6]]: false,
+    [participants[7]]: false,
   });
 
-  const ladder = ref<string[]>([
-    "Tyler1#11151",
-    "Ahmp#1107",
-    "Skippy1337#1171",
-    "Guzu#21761",
-    "Dendi#22658",
-    "Geranimo#11740",
-    "sunglitters#21798",
-    "AnnieFuchsia#2169",
-  ]);
+  const ladder = ref<string[]>(participants);
 
   const challengers = ref<Record<string, IStatistics>>({});
 
@@ -71,21 +73,18 @@ export const useOnlyFangsStore = defineStore("onlyfangs", () => {
     "seasonActivity",
   ];
 
-  const groups = ["individual", "tournament"];
+  const groups = ["individual"];
 
   const mode = ref<string>("mmr");
   const groupBy = ref<string>("individual");
 
-  const tournamentGroups = [
-    ["Tyler1#11151", "Skippy1337#1171", "Dendi#22658", "AnnieFuchsia#2169"],
-    ["Ahmp#1107", "Guzu#21761", "Geranimo#11740", "sunglitters#21798"],
-  ];
+  const tournamentGroups = [[], []];
 
-  const tournamentStart = moment("2025-03-14T16:00:00Z");
+  const tournamentStart = moment("2025-05-14T16:00:00Z");
 
   const season = 21;
-  const start = moment("22.02.25", "DD.MM.YYYY");
-  const end = moment("14.03.25:17:00:00", "DD.MM.YYYY:HH:mm:ss");
+  const start = moment("30.03.25", "DD.MM.YYYY");
+  const end = moment("18.04.25:17:00:00", "DD.MM.YYYY:HH:mm:ss");
   const duration = Math.abs(end.diff(start, "days"));
   const initialized = ref(false);
 
@@ -301,5 +300,6 @@ export const useOnlyFangsStore = defineStore("onlyfangs", () => {
     unsubscribe,
     tournamentGroups,
     tournamentStart,
+    participants,
   };
 });
