@@ -4,7 +4,7 @@ import _sample from "lodash/sample";
 import { raceIcon } from "@/stores/races";
 import gnl_coach_exiled from "@assets/kreisliga/coaches/Exiled_Profile.png";
 import gnl_coach_quikeet from "@assets/kreisliga/coaches/Quikeet_Profile.jpg";
-import gnl_coach_sparta from "@assets/kreisliga/coaches/Sparta_Profile.jpg";
+import gnl_coach_sparta from "@assets/kreisliga/coaches/sparta.png";
 import gnl_coach_sharky from "@assets/kreisliga/coaches/Sharky_Profile.jpg";
 import gnl_coach_whitefang from "@assets/kreisliga/coaches/WhiteFang_Profile.png";
 

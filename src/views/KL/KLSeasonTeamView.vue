@@ -281,9 +281,9 @@ onMounted(() => {
           <v-col
             cols="12"
             sm="6"
-            md="4"
+            md="5"
             lg="4"
-            xl="2"
+            xl="3"
             v-for="coach in current.coaches">
             <KLCoachBanner :prefix="current.prefix" :coach="coach" />
           </v-col>
@@ -300,9 +300,9 @@ onMounted(() => {
               class="d-inline-block"
               cols="12"
               sm="6"
-              md="4"
+              md="5"
               lg="4"
-              xl="2"
+              xl="3"
               v-for="(player, rank) in players"
               :key="rank">
               <KLPlayerBanner
