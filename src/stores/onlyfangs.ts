@@ -24,7 +24,7 @@ const participants = [
   "T90#???",
   "BonjwaRedPanda#???",
   "Turin#???",
-  "Lacari#???",
+  "Lacari#1890",
   "TommyKayLIVE#???",
 ];
 
