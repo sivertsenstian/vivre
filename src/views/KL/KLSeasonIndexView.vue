@@ -27,6 +27,7 @@ const current = {
       coaches: [
         {
           battleTag: "Quikeet#21349",
+          name: 'Giovanni "Exiled" Trapattoni',
           race: Race.NightElf,
           races: [Race.NightElf, Race.Orc],
           roles: ["Coach", "Player"],
@@ -509,11 +510,14 @@ onMounted(() => {
           </v-col>
         </v-row>
 
-        <v-row
-          ><v-col
+        <v-row>
+          <v-col cols="12" class="d-flex justify-center">
+            <v-img height="150" width="100" :src="kreis_logo" />
+          </v-col>
+          <v-col
             cols="12"
-            class="text-center text-h6 text-uppercase d-flex align-center"
-            ><span class="text-h4 text-green-accent-3 ml-auto mr-2">{{
+            class="text-center text-h6 text-uppercase d-flex align-center">
+            <span class="text-h4 text-green-accent-3 ml-auto mr-2">{{
               games.reduce((r: any, s: any) => r + s, 0)
             }}</span>
             <span v-if="store.dates.timeRemaining > 0" class="mr-auto"
@@ -524,7 +528,6 @@ onMounted(() => {
             >
           </v-col></v-row
         >
-
         <v-row>
           <v-col
             cols="12"
@@ -601,7 +604,7 @@ onMounted(() => {
             v-if="
               store.dates.daysSinceStart > 0 && store.dates.timeRemaining > 0
             ">
-            <div class="text-md-h4 text-h5 font-weight-bold">
+            <div class="text-md-h5 text-h6 font-weight-bold">
               <span>
                 <vue-countdown
                   :time="store.dates.timeRemaining"
@@ -616,10 +619,10 @@ onMounted(() => {
             </div>
           </v-col>
           <v-col
-            cols="12"
+            cols="10"
             class="text-center"
             v-if="store.dates.daysSinceStart <= 0">
-            <div class="text-md-h4 text-h5 font-weight-bold">
+            <div class="text-md-h5 text-h6 font-weight-bold">
               <span
                 >{{ Math.abs(store.dates.daysSinceStart - 1) }} day(s) until we
                 roll</span
@@ -630,11 +633,8 @@ onMounted(() => {
           </v-col>
         </v-row>
         <v-row>
-          <v-col cols="10" class="text-center">
+          <v-col cols="12">
             <markdown-viewer v-model="model" />
-          </v-col>
-          <v-col cols="2" class="d-flex">
-            <v-img class="my-auto" width="100%" :src="kreis_logo" />
           </v-col>
         </v-row>
       </v-sheet>

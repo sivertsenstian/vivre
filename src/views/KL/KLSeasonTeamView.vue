@@ -211,8 +211,7 @@ onMounted(() => {
                   Team Points:
                   <span class="font-weight-bold" style="color: goldenrod">
                     <span style="vertical-align: middle">{{ teamPoints }}</span>
-                    <v-icon size="x-small" class="ml-1" icon="mdi-medal"
-                  /></span>
+                  </span>
                 </div>
               </v-col>
               <v-col cols="12" md="6" class="text-center">
@@ -222,11 +221,7 @@ onMounted(() => {
                     <span style="vertical-align: middle">{{
                       teamMatches
                     }}</span>
-                    <v-icon
-                      size="x-small"
-                      class="ml-1"
-                      icon="mdi-shield-sword-outline"
-                  /></span>
+                  </span>
                 </div>
               </v-col>
             </v-row>
@@ -287,7 +282,7 @@ onMounted(() => {
             cols="12"
             sm="6"
             md="4"
-            lg="3"
+            lg="4"
             xl="2"
             v-for="coach in current.coaches">
             <KLCoachBanner :prefix="current.prefix" :coach="coach" />
@@ -306,7 +301,7 @@ onMounted(() => {
               cols="12"
               sm="6"
               md="4"
-              lg="3"
+              lg="4"
               xl="2"
               v-for="(player, rank) in players"
               :key="rank">
