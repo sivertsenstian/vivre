@@ -486,7 +486,7 @@ const avg = computed(() =>
             v-if="data.points === 0"
             class="text-subtitle-2"
             style="vertical-align: middle; color: goldenrod">
-            Play 1v1 on the w3c ladder to earn points!
+            No 1v1 games (or no account) on the w3c ladder yet!
           </span>
           <span v-else>
             <v-icon size="x-small" icon="mdi-medal" style="color: goldenrod" />
@@ -523,7 +523,7 @@ const avg = computed(() =>
             v-if="data.points === 0"
             class="text-subtitle-2"
             style="vertical-align: middle; color: goldenrod">
-            Play 1v1 on the w3c ladder to increase your rank!
+            No 1v1 games (or no account) on the w3c ladder yet!
           </span>
           <span v-else>
             <v-icon size="x-small" icon="mdi-medal" style="color: goldenrod" />
