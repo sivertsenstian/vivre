@@ -148,7 +148,7 @@ const drawer = ref(false);
             router
             to="/gnl/gnlbears"></v-list-item>
         </v-list-group>
-        <v-list-group v-if="false">
+        <v-list-group>
           <template v-slot:activator="{ props }">
             <v-list-item
               color="green"

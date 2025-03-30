@@ -22,6 +22,7 @@ import { raceIcon, raceName } from "@/stores/races.ts";
 import VueCountdown from "@chenfengyuan/vue-countdown";
 import ConfettiExplosion from "vue-confetti-explosion";
 import moment from "moment/moment";
+import KLPlayerBanner from "@/components/kl/KLPlayerBanner.vue";
 
 const store = useOnlyFangsStore();
 
@@ -232,7 +233,8 @@ onUnmounted(() => {
                   :streaming="store.streaming[winner]"
                   :banner="onlyFangsBanner[winner]"
                   :player="store.challengers[winner]"
-                  :season-start="store.start"
+                  :season-start="store.dates.start"
+                  :dates="store.dates"
                   :highlight="store.mode"
                   :rank="0" />
               </v-col>
@@ -334,7 +336,8 @@ onUnmounted(() => {
               :streaming="store.streaming[challenger]"
               :banner="onlyFangsBanner[challenger]"
               :player="store.challengers[challenger]"
-              :season-start="store.start"
+              :season-start="store.dates.start"
+              :dates="store.dates"
               :highlight="store.mode"
               :rank="i" />
             <versus-challenger
@@ -367,7 +370,8 @@ onUnmounted(() => {
               :streaming="store.streaming[challenger]"
               :banner="onlyFangsBanner[challenger]"
               :player="store.challengers[challenger]"
-              :season-start="store.start"
+              :season-start="store.dates.start"
+              :dates="store.dates"
               :highlight="store.mode"
               :rank="i" />
             <versus-challenger

@@ -124,6 +124,7 @@ interface Props {
   streaming?: boolean;
   laddering?: boolean;
   winner?: boolean;
+  dates: any;
 }
 const props = withDefaults(defineProps<Props>(), {
   mode: "season",
@@ -142,18 +143,6 @@ const data = computed(() => {
   return {};
 });
 
-const dates = computed(() => {
-  const start = moment("20.02.25", "DD.MM.YYYY");
-  const end = moment("14.03.25:17:00:00", "DD.MM.YYYY:HH:mm:ss");
-
-  return {
-    start,
-    end,
-    today: moment().utc(true).endOf("day"),
-    daysSinceStart: Math.abs(start.utc(true).endOf("day").diff(end, "days")),
-  };
-});
-
 const mmr = computed(() => {
   const getPlayer = getplayer(props.player.battleTag);
   if (data.value?.matches.length) {
@@ -161,22 +150,22 @@ const mmr = computed(() => {
       const d = moment(m.endTime).dayOfYear() - 1;
       const y = moment(m.endTime).year();
       const yd =
-        dates.value.today.year() > y
+        props.dates.today.year() > y
           ? moment().year(y).isLeapYear()
             ? 366
             : 365
           : 0;
 
       return (
-        dates.value.daysSinceStart - (dates.value.end.dayOfYear() - d) - yd
+        props.dates.daysSinceStart - (props.dates.end.dayOfYear() - d) - yd
       );
     });
 
     const initial = getPlayer(_last(g[Object.keys(g)[0]]))?.players[0].oldMmr;
     const v = _fill(
       _range(
-        dates.value.end.dayOfYear() - dates.value.daysSinceStart,
-        dates.value.end.dayOfYear(),
+        props.dates.today.dayOfYear() - props.dates.daysSinceStart,
+        props.dates.today.dayOfYear(),
       ),
       initial,
     );
@@ -196,8 +185,8 @@ const mmr = computed(() => {
 
   return _fill(
     _range(
-      dates.value.end.dayOfYear() - dates.value.daysSinceStart,
-      dates.value.end.dayOfYear(),
+      props.dates.today.dayOfYear() - props.dates.daysSinceStart,
+      props.dates.today.dayOfYear(),
     ),
     0,
   );
@@ -211,13 +200,13 @@ const wins = computed(() => {
         const d = moment(m.endTime).dayOfYear() - 1;
         const y = moment(m.endTime).year();
         const yd =
-          dates.value.end.year() > y
+          props.dates.end.year() > y
             ? moment().year(y).isLeapYear()
               ? 366
               : 365
             : 0;
         const day =
-          dates.value.daysSinceStart - (dates.value.end.dayOfYear() - d) - yd;
+          props.dates.daysSinceStart - (props.dates.today.dayOfYear() - d) - yd;
 
         r[day]++;
 
@@ -225,8 +214,8 @@ const wins = computed(() => {
       },
       _fill(
         _range(
-          dates.value.end.dayOfYear() - dates.value.daysSinceStart,
-          dates.value.end.dayOfYear(),
+          props.dates.today.dayOfYear() - props.dates.daysSinceStart,
+          props.dates.today.dayOfYear(),
         ),
         0,
       ),
@@ -242,21 +231,21 @@ const loss = computed(() => {
         const d = moment(m.endTime).dayOfYear() - 1;
         const y = moment(m.endTime).year();
         const yd =
-          dates.value.end.year() > y
+          props.dates.today.year() > y
             ? moment().year(y).isLeapYear()
               ? 366
               : 365
             : 0;
         const day =
-          dates.value.daysSinceStart - (dates.value.end.dayOfYear() - d) - yd;
+          props.dates.daysSinceStart - (props.dates.today.dayOfYear() - d) - yd;
 
         r[day]++;
         return r;
       },
       _fill(
         _range(
-          dates.value.end.dayOfYear() - dates.value.daysSinceStart,
-          dates.value.end.dayOfYear(),
+          props.dates.today.dayOfYear() - props.dates.daysSinceStart,
+          props.dates.today.dayOfYear(),
         ),
         0,
       ),
@@ -275,7 +264,7 @@ const openTwitch = (battleTag: string) =>
 
 const avg = computed(() =>
   data.value?.total
-    ? Math.ceil(data.value.total / dates.value.daysSinceStart)
+    ? Math.ceil(data.value.total / props.dates.daysSinceStart)
     : "-",
 );
 </script>
@@ -396,10 +385,7 @@ const avg = computed(() =>
       :data="{
         labels: _range(0, dates.daysSinceStart)
           .map((n) => {
-            return moment('14.03.25:17:00:00', 'DD.MM.YYYY:HH:mm:ss')
-              .subtract(n, 'days')
-              .startOf('day');
-            // return moment().subtract(n, 'days').startOf('day');
+            return moment().subtract(n, 'days').startOf('day');
           })
           .reverse(),
         datasets: [
