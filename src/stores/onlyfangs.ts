@@ -4,6 +4,7 @@ import { computed, ref } from "vue";
 import type { IStatistics } from "@/utilities/types.ts";
 import _isNil from "lodash/isNil";
 import {
+  getAllSeasonGames,
   getInfo,
   getloss,
   getRaceStatistics,
@@ -18,7 +19,7 @@ import _map from "lodash/map";
 
 const participants = [
   "Tasteless#???",
-  "LowkoTV#???",
+  "Lowko#2287",
   "TheViper#???",
   "T90#???",
   "BonjwaRedPanda#???",
@@ -83,12 +84,21 @@ export const useOnlyFangsStore = defineStore("onlyfangs", () => {
   const tournamentStart = moment("2025-04-18T16:00:00Z");
 
   const season = 21;
-  const start = moment("30.03.25", "DD.MM.YYYY");
-  const end = moment("18.04.25:17:00:00", "DD.MM.YYYY:HH:mm:ss");
-  const duration = Math.abs(end.diff(start, "days"));
   const initialized = ref(false);
 
-  const today = end; //moment().startOf("day");
+  const start = moment("28.03.2025", "DD.MM.YYYY").utc(true).startOf("day");
+  const end = moment("18.04.2025", "DD.MM.YYYY").utc(true).startOf("day");
+
+  const dates = computed(() => ({
+    start: start.utc(true).startOf("day"),
+    end: end.utc(true).endOf("day"),
+    today: moment().utc(true).endOf("day"),
+    daysSinceStart: moment().utc(true).startOf("day").diff(start, "days") + 1,
+    durationInDays: Math.abs(end.diff(start, "days")),
+    daysRemaining: end.diff(moment().utc(true).startOf("day"), "days"),
+    timeRemaining: end.diff(moment(), "milliseconds"),
+  }));
+
   const weekRule = moment().startOf("isoWeek");
   const monthRule = moment().startOf("month");
 
@@ -136,7 +146,7 @@ export const useOnlyFangsStore = defineStore("onlyfangs", () => {
     return undefined;
   };
 
-  const getMatches = async (btag: string) => {
+  const getMatches = async (btag: string, from: any, to: any) => {
     let result: IStatistics = {} as any;
     let seasonActual = [];
     let monthActual = [];
@@ -144,7 +154,7 @@ export const useOnlyFangsStore = defineStore("onlyfangs", () => {
     let dayActual = [];
 
     try {
-      let all = await getSeasonGamesBetween(btag, [20, 21], start, end);
+      let all = await getSeasonGamesBetween(btag, [21], from, to);
       seasonActual = all;
       const info = getInfo(btag, seasonActual);
       const race = info.race ?? Race.Random;
@@ -156,7 +166,7 @@ export const useOnlyFangsStore = defineStore("onlyfangs", () => {
         .filter((m: any) => moment(m.endTime).isAfter(weekRule))
         .filter((m: any) => isRace(btag, m, race));
       dayActual = all
-        .filter((m: any) => moment(m.endTime).isAfter(today))
+        .filter((m: any) => moment(m.endTime).isAfter(dates.value.today))
         .filter((m: any) => isRace(btag, m, race));
 
       const season = {
@@ -218,7 +228,11 @@ export const useOnlyFangsStore = defineStore("onlyfangs", () => {
         ladder.value
           .filter((v) => !_isNil(v))
           .map(async (challenger) => {
-            const c = await getMatches(challenger);
+            const c = await getMatches(
+              challenger,
+              dates.value.start,
+              dates.value.end,
+            );
             const o = await getOngoing(challenger);
             const t = await getStreaming(challenger);
 
@@ -251,7 +265,7 @@ export const useOnlyFangsStore = defineStore("onlyfangs", () => {
       await Promise.allSettled(
         _map(laddering.value, async (v, c) => {
           if (v) {
-            const m = await getMatches(c);
+            const m = await getMatches(c, dates.value.start, dates.value.end);
             challengers.value[c] = m.player;
           }
         }),
@@ -287,9 +301,6 @@ export const useOnlyFangsStore = defineStore("onlyfangs", () => {
     groupBy,
     groups,
     season,
-    duration,
-    start,
-    end,
     challengers,
     ladder,
     link: computed(() => window.btoa(JSON.stringify(ladder.value))),
@@ -301,5 +312,6 @@ export const useOnlyFangsStore = defineStore("onlyfangs", () => {
     tournamentGroups,
     tournamentStart,
     participants,
+    dates,
   };
 });
