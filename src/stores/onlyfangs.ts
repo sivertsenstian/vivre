@@ -20,7 +20,7 @@ import _map from "lodash/map";
 const participants = [
   "Tasteless#1788",
   "Lowko#2287",
-  "TheViper#???",
+  "TheViper#2786",
   "T90#???",
   "BonjwaRedPanda#???",
   "Turin#???",
