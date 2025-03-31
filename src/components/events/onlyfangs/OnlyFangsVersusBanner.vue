@@ -157,7 +157,7 @@ const mmr = computed(() => {
           : 0;
 
       return (
-        props.dates.daysSinceStart - (props.dates.end.dayOfYear() - d) - yd
+        props.dates.daysSinceStart - (props.dates.today.dayOfYear() - d) - yd
       );
     });
 
