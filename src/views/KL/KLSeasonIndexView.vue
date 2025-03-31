@@ -304,7 +304,7 @@ const options = {
     y: {
       grid: { display: false },
       min: 0,
-      suggestedMax: 12000,
+      suggestedMax: 500,
     },
   },
 } as any;
@@ -334,7 +334,7 @@ const games = computed(() => {
 
 const leader = computed(() => {
   const i = points.value.indexOf(Math.max(...points.value));
-  return i > 0 ? store.data?.teams?.[i] : {};
+  return i >= 0 ? store.data?.teams?.[i] : {};
 });
 
 // Text
