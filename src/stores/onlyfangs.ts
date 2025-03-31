@@ -18,7 +18,7 @@ import { currentUrl } from "@/utilities/api.ts";
 import _map from "lodash/map";
 
 const participants = [
-  "Tasteless#???",
+  "Tasteless#1788",
   "Lowko#2287",
   "TheViper#???",
   "T90#???",
