@@ -61,9 +61,10 @@ const router = createRouter({
           name: "Event: The Greate Ladder Escape",
           component: TheGreatEscapeView,
         },
+        { path: "onlyfangs", redirect: "/events/grubbys-invitational" },
         {
-          path: "onlyfangs",
-          name: "Event: OnlyFangs W3C Ladder Race",
+          path: "grubbys-invitational",
+          name: "Event: Grubbys Streamer Invitational W3C Ladder Race",
           component: OnlyFangsView,
         },
       ],
