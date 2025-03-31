@@ -89,11 +89,11 @@ const drawer = ref(false);
             router
             to="/events/the-great-escape" />
           <v-list-item
-            prepend-icon="mdi-bottle-soda-classic"
-            title="OnlyFangs Ladder"
+            prepend-icon="mdi-twitch"
+            title="Grubbys Streamer Ladder"
             color="purple-lighten-1"
             router
-            to="/events/onlyfangs" />
+            to="/events/grubbys-invitational" />
         </v-list-group>
         <v-list-item
           color="green"

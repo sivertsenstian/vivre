@@ -151,17 +151,15 @@ onUnmounted(() => {
               :src="logo"
               style="border: 1px solid darkgoldenrod"
               rounded="pill"
-              alt="ONLYFANGS W3C LADDER"
+              alt="GRUBBYS INVITATIONAL W3C LADDER"
               class="mx-auto"
               max-width="1200px" />
             <div class="text-sm-h4 text-h6 font-weight-bold mt-2">
-              W3C LADDER RACE - ROUND 2!
+              W3C STREAMER LADDER RACE
             </div>
             <div>
               <a
-                style="pointer-events: none"
-                class="text-disabled"
-                href="https://liquipedia.net/warcraft/OnlyFangs_Invitational_2"
+                href="https://liquipedia.net/warcraft/Warcraft_3_Streamer_Invitational"
                 target="_blank"
                 ><span class="vertical-align:middle"
                   ><v-icon
@@ -169,8 +167,7 @@ onUnmounted(() => {
                     class="mr-1"
                     style="color: goldenrod"
                     size="x-small" /></span
-                >Link to OnlyFangs Invitational Tournament - not yet
-                available!</a
+                >Link to Streamer Invitational Tournament</a
               >
             </div>
           </v-col>
@@ -205,7 +202,7 @@ onUnmounted(() => {
             <v-row class="mb-5">
               <v-col cols="12">
                 <h1 style="color: goldenrod; font-weight: bold">
-                  CONGRATULATIONS TO THE ONLYFANGS LADDER WINNER !!!
+                  CONGRATULATIONS TO THE STREAMER LADDER WINNER !!!
                 </h1>
                 <ConfettiExplosion
                   :duration="2000"
