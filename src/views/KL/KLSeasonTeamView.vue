@@ -101,7 +101,7 @@ const options = {
     },
     y: {
       grid: { display: false },
-      suggestedMax: 1800,
+      suggestedMax: 300,
     },
   },
 } as any;

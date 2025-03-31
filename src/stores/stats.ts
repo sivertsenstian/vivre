@@ -339,8 +339,6 @@ export const useStatsStore = defineStore("stats", () => {
   };
 
   watchEffect(async () => {
-    console.log("WATCH EFFECT ??");
-
     const results = await getMatches(tag.value);
     player.value = results.player;
     daily.value = results.day;
