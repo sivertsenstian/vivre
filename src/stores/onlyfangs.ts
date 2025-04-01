@@ -22,7 +22,7 @@ const participants = [
   "Lowko#2287",
   "TheViper#2786",
   "T90#???",
-  "BonjwaRedPanda#???",
+  "RedPanda#2507",
   "Turin#???",
   "Lacari#1890",
   "Fuccboiii69#2102", // TommyKayLIVE
@@ -33,7 +33,7 @@ export const twitch: any = {
   [participants[1]]: "LowkoTV",
   [participants[2]]: "theviper",
   [participants[3]]: "t90official",
-  [participants[4]]: "BonjwaRedPanda",
+  [participants[4]]: "bonjwa",
   [participants[5]]: "TurinRTS",
   [participants[6]]: "lacari",
   [participants[7]]: "TommyKayLIVE",
