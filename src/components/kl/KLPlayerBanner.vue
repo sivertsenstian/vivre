@@ -461,14 +461,18 @@ const avg = computed(() =>
     </v-card-item>
 
     <v-card-actions>
-      <v-btn
-        title="Open W3Champions Profile Page"
-        color="transparent"
-        block
-        variant="flat"
-        @click="() => open(player.battleTag)"
-        ><img :src="w3ciconDark" height="22px"
-      /></v-btn>
+      <v-row>
+        <v-col cols="6" class="text-center">
+          <v-btn
+            title="Open W3Champions Profile Page"
+            color="transparent"
+            variant="flat"
+            @click="() => open(player.battleTag)"
+            ><img :src="w3ciconDark" height="22px"
+          /></v-btn>
+        </v-col>
+        <v-col cols="6" class="text-center fancy">KREIS LIGA</v-col>
+      </v-row>
     </v-card-actions>
   </v-card>
 </template>
@@ -530,6 +534,16 @@ const avg = computed(() =>
     200%0,
     0 0;
   transition-duration: 1.5s;
+}
+
+.fancy {
+  font-weight: bold;
+  vertical-align: middle;
+  margin-top: 10px;
+  text-shadow:
+    0 0 1px white,
+    0 0 5px gold,
+    0 0 10px gold;
 }
 
 :global(.custom-tooltip) {
