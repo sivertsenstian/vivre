@@ -23,7 +23,7 @@ const participants = [
   "TheViper#2786",
   "T90#???",
   "RedPanda#2507",
-  "Turin#???",
+  "Turin#1177",
   "Lacari#1890",
   "Fuccboiii69#2102", // TommyKayLIVE
 ];
