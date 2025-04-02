@@ -21,7 +21,7 @@ const participants = [
   "Tasteless#1788",
   "Lowko#2287",
   "TheViper#2786",
-  "T90#???",
+  "T90Official#1971",
   "RedPanda#2507",
   "Turin#1177",
   "Lacari#1890",
