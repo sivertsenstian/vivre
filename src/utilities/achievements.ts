@@ -616,15 +616,26 @@ const kreis_liga_season_5_definitions = {
     name: "Ach du Scheiße!",
     description: "Lose 5 games in a row",
   },
+
+  // 10 + 1 per kill!
+  aint_war_hell: {
+    id: "aint_war_hell",
+    points: 10,
+    icon: "mdi-knife-military",
+    name: "Get Some!",
+    description: "Defeat a player from an opposing team",
+  },
 };
 
 const kreis_liga_season_5_calculation = (
   account: any,
   ladderGoal: number,
+  teams: any[] = [],
 ): any[] => {
   const result = season_21_calculation(account);
 
   const performance = account.data?.performance ?? [];
+  const matches = account.data?.matches ?? [];
 
   // Number of wins/loss
   let consecutiveLoss = 0;
@@ -654,12 +665,36 @@ const kreis_liga_season_5_calculation = (
     }
   }
 
+  let kills = 0;
+  const team = account.team;
+  const others = teams.reduce(
+    (a, t) =>
+      t.id === team ? a : [...a, ...t.players.map((p: any) => p.battleTag)],
+    [],
+  );
+
+  const getPlayerOpponent = getopponent(account.battleTag);
+
+  for (let i = 0; i < matches.length; i++) {
+    const t = getPlayerOpponent(matches[i]).players[0].battleTag;
+    if (others.includes(t)) {
+      kills++;
+    }
+  }
+
   if (consecutiveLoss >= 5) {
     result.push(kreis_liga_season_5_definitions["ach_du_scheisse"]);
   }
 
   if (consecutiveWins >= 3) {
     result.push(kreis_liga_season_5_definitions["alle_gute_dinge"]);
+  }
+
+  if (kills > 0) {
+    const r = { ...kreis_liga_season_5_definitions["aint_war_hell"] };
+    r.points += kills;
+    r.description += ` - ${kills} kill(s)`;
+    result.push(r);
   }
 
   if (
