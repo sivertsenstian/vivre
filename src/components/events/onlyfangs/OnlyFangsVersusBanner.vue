@@ -49,7 +49,7 @@ import _last from "lodash/last";
 import _take from "lodash/take";
 import _skip from "lodash/drop";
 import type { Moment } from "moment";
-import { twitch } from "@/stores/onlyfangs.ts";
+import { knownFrom, twitch } from "@/stores/onlyfangs.ts";
 
 ChartJS.register(
   LineController,
@@ -441,9 +441,13 @@ const avg = computed(() =>
         >
       </v-card-title>
       <v-card-subtitle class="d-flex justify-space-between" style="opacity: 1">
-        <span style="opacity: 0.7" class="me-1"
-          >Avg. games this {{ mode }}: {{ avg }} per day
-        </span>
+        <span style="opacity: 0.7" class="me-1">Games: {{ avg }} per day </span>
+        <span>
+          From:
+          <strong style="color: gold">{{
+            knownFrom[player.battleTag]
+          }}</strong></span
+        >
       </v-card-subtitle>
     </v-card-item>
 

@@ -39,6 +39,17 @@ export const twitch: any = {
   [participants[7]]: "TommyKayLIVE",
 };
 
+export const knownFrom: any = {
+  [participants[0]]: "STARCRAFT",
+  [participants[1]]: "STARCRAFT 2",
+  [participants[2]]: "AGE OF EMPIRES 2",
+  [participants[3]]: "AGE OF EMPIRES 2",
+  [participants[4]]: "STARCRAFT 2",
+  [participants[5]]: "AGE OF EMPIRES 4",
+  [participants[6]]: "DOTA 2",
+  [participants[7]]: "HEARTS OF IRON IV",
+};
+
 export const useOnlyFangsStore = defineStore("onlyfangs", () => {
   const streaming = ref<Record<string, boolean>>({
     [participants[0]]: false,
