@@ -296,7 +296,7 @@ export const useKreisLigaStore = defineStore("kreisliga", () => {
         );
         player.achievements = season_achievements[
           "kreis_liga_season_5"
-        ].calculate(player, ladderGoal);
+        ].calculate(player, ladderGoal, d.teams);
         player.achievementPoints = calculateAchievementPoints(
           player.achievements,
         );
