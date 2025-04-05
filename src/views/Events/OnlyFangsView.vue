@@ -1,10 +1,9 @@
 <script setup lang="ts">
 import logo from "@/assets/events/onlyfangs_banner.jpg";
-import missing from "@assets/creeproutes/missing.png";
 import p1 from "@assets/events/tasteless.jpg";
 import p2 from "@assets/events/lowko.jpg";
 import p3 from "@assets/events/theviper.jpg";
-import p4 from "@assets/events/t90.jpg";
+import p4 from "@assets/events/singsing.jpg";
 import p5 from "@assets/events/redpanda.jpg";
 import p6 from "@assets/events/turin.jpg";
 import p7 from "@assets/events/lacari.jpg";
