@@ -706,6 +706,88 @@ const kreis_liga_season_5_calculation = (
   return result;
 };
 
+const gnl_season_16_definitions = {
+  // 500
+  ladder_goal: {
+    id: "ladder_goal",
+    points: 500,
+    icon: "mdi-seed-plus",
+    name: "The end of a journey holds the seed of new dreams!",
+    description: "Reach this seasons ladder goal!",
+  },
+
+  // 100
+  i_am_the_captain_now: {
+    id: "i_am_the_captain_now",
+    points: 100,
+    icon: "mdi-ferry",
+    name: "I'm the captain now!",
+    description: "Win a ladder game vs. a GNL coach!",
+  },
+
+  // 50
+  dats_fakt_ap: {
+    id: "dats_fakt_ap",
+    points: 50,
+    icon: "mdi-egg",
+    name: "DATS FAKT AP",
+    description: "Lose 10 games in a row",
+  },
+
+  // 50
+  winner_winner: {
+    id: "winner_winner",
+    points: 50,
+    icon: "mdi-food-drumstick",
+    name: "Winner winner chicken dinner!",
+    description: "Win 100 games",
+  },
+  sad_trombone: {
+    id: "sad_trombone",
+    points: 50,
+    icon: "mdi-trumpet",
+    name: "Sad Trombone",
+    description: "Lose 100 games",
+  },
+
+  // 25
+  alle_gute_dinge: {
+    id: "alle_gute_dinge",
+    points: 25,
+    icon: "mdi-numeric-3-circle",
+    name: "Aller guten Dinge sind drei",
+    description: "Win 3 games in a row",
+  },
+
+  lose_first: {
+    id: "lose_first",
+    points: 25,
+    icon: "mdi-coffin",
+    name: "When I'm In Command, Every Mission Is A Suicide Mission.",
+    description: "Lose your first game",
+  },
+
+  // 10 + 5 per kill!
+  duck_hunting: {
+    id: "duck_hunting",
+    points: 10,
+    icon: "mdi-duck",
+    name: "Duck Season! Rabbit Season!",
+    description: "Defeat a player from an opposing team",
+  },
+
+  // 10
+  win_first: {
+    id: "win_first",
+    points: 10,
+    icon: "mdi-redhat",
+    name: "I am the danger!",
+    description: "Win your first game",
+  },
+
+  // 5
+};
+
 export const season_achievements = {
   20: {
     definitions: season_20_definitions,
@@ -718,5 +800,9 @@ export const season_achievements = {
   kreis_liga_season_5: {
     definitions: kreis_liga_season_5_definitions,
     calculate: kreis_liga_season_5_calculation,
+  },
+  gnl_season_16: {
+    definitions: season_21_definitions,
+    calculate: season_21_calculation,
   },
 };
