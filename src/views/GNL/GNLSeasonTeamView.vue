@@ -27,16 +27,20 @@ onBeforeRouteLeave(() => {
 });
 
 const teamPoints = computed(() => {
-  return current.value.players.reduce(
-    (s: number, p: any) => (s += p?.totalPoints ?? 0),
-    0,
+  return (
+    current.value?.players?.reduce(
+      (s: number, p: any) => (s += p?.totalPoints ?? 0),
+      0,
+    ) ?? 0
   );
 });
 
 const teamMatches = computed(() => {
-  return current.value.players.reduce(
-    (r: number, p: IGNLAccount) => r + (p.data?.total ?? 0),
-    0,
+  return (
+    current.value?.players?.reduce(
+      (r: number, p: IGNLAccount) => r + (p.data?.total ?? 0),
+      0,
+    ) ?? 0
   );
 });
 

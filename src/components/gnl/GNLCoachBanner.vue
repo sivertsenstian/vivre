@@ -3,17 +3,25 @@ import _sample from "lodash/sample";
 
 import { raceIcon } from "@/stores/races";
 import gnl_coach_saulapeman from "@assets/gnl/coaches/saulapeman.jpg";
-import gnl_coach_gotquail from "@assets/gnl/coaches/gotquail.jpg";
 import gnl_coach_barren from "@assets/gnl/coaches/barren.jpg";
 import gnl_coach_spycreed from "@assets/gnl/coaches/spycreed.jpg";
-import gnl_coach_tod from "@assets/gnl/coaches/tod.jpg";
 import gnl_coach_jabba from "@assets/gnl/coaches/jabba.jpg";
 import gnl_coach_northdrakkar from "@assets/gnl/coaches/northdrakkar.jpg";
-import gnl_coach_floss from "@assets/gnl/coaches/floss.png";
-import gnl_coach_wontu from "@assets/gnl/coaches/wontu.jpg";
-import gnl_coach_ember from "@assets/gnl/coaches/ember.jpg";
-import gnl_coach_cas from "@assets/gnl/coaches/cas.jpg";
-import gnl_coach_kennyg from "@assets/gnl/coaches/kennyg.jpg";
+import gnl_coach_slayday from "@assets/gnl/coaches/slayday.jpg";
+import gnl_coach_dark from "@assets/gnl/coaches/chelsea.png";
+import gnl_coach_ikbencool from "@assets/gnl/coaches/ikbencool.png";
+
+import gnl_coach_eashibby from "@assets/gnl/coaches/eashibby.jpg";
+import gnl_coach_oldgreg from "@assets/gnl/coaches/oldgreg.jpg";
+import gnl_coach_quadgfan from "@assets/gnl/coaches/quadgfan.jpg";
+import gnl_coach_RaZeR from "@assets/gnl/coaches/RaZeR.jpg";
+import gnl_coach_sharky from "@assets/gnl/coaches/Sharky_Profile.jpg";
+import gnl_coach_Thaedalius from "@assets/gnl/coaches/Thaedalius.png";
+import gnl_coach_Anar from "@assets/gnl/coaches/Anar.jpg";
+import gnl_coach_Carson from "@assets/gnl/coaches/carsoNNN.png";
+import gnl_coach_Echo from "@assets/gnl/coaches/EchoGoodman.jpg";
+import gnl_coach_ves from "@assets/gnl/coaches/veS.jpg";
+import gnl_coach_kage from "@assets/gnl/coaches/KaGeMaN.jpg";
 
 import gnl_coach_missing from "@/assets/creeproutes/missing.png";
 
@@ -21,20 +29,26 @@ import w3cicon from "@/assets/w3c.png";
 import w3ciconDark from "@/assets/w3c_dark.png";
 
 const coachGnlBanner: any = {
-  ["Barren#1153"]: gnl_coach_barren,
+  ["React#21633"]: gnl_coach_barren,
   ["SaulApeMan#2163"]: gnl_coach_saulapeman,
-  ["gotQuail#1103"]: gnl_coach_gotquail,
   ["jolin#31419"]: gnl_coach_jabba,
-  ["ToD#2792"]: gnl_coach_tod,
   ["spycreed#2536"]: gnl_coach_spycreed,
   ["NorthDrakkar#1745"]: gnl_coach_northdrakkar,
+  ["Slayday#11794"]: gnl_coach_slayday,
+  ["ChelseaFC#21447"]: gnl_coach_dark,
+  ["ikbencool#2603"]: gnl_coach_ikbencool,
 
-  ["kennyg6050#1543"]: gnl_coach_kennyg,
-  ["EmilyHuttson#1378"]: gnl_coach_cas,
-  ["floss2xdaily#1987"]: gnl_coach_floss,
-  ["Ember#21963"]: gnl_coach_ember,
-  ["Wontu#1218"]: gnl_coach_wontu,
-  ["Lucker#11299"]: gnl_coach_missing,
+  ["EAShibby#2644"]: gnl_coach_eashibby,
+  ["OldGreg#11862"]: gnl_coach_oldgreg,
+  ["quadgfan#1418"]: gnl_coach_quadgfan,
+  ["RaZeR#23389"]: gnl_coach_RaZeR,
+  ["RobotNinja#2136641"]: gnl_coach_sharky,
+  ["Thaedalius#1362"]: gnl_coach_Thaedalius,
+  ["Anár#1939"]: gnl_coach_Anar,
+  ["carsoNNN#1657"]: gnl_coach_Carson,
+  ["EchoGoodman#2734"]: gnl_coach_Echo,
+  ["veS#1614"]: gnl_coach_ves,
+  ["KaGeMaN#1160"]: gnl_coach_kage,
 };
 
 interface Props {
@@ -98,10 +112,9 @@ const open = (battleTag: string) =>
     <v-card-item>
       <v-card-title class="d-flex align-center"
         ><i
-          v-if="coach.quotes?.length"
           class="text-subtitle-2 text-wrap"
-          style="opacity: 0.7; font-size: 12px !important"
-          >{{ _sample(coach.quotes) }}</i
+          style="opacity: 0.7; font-size: 12px !important; height: 35px"
+          >{{ coach.quotes?.length ? _sample(coach.quotes) : "" }}</i
         >
       </v-card-title>
     </v-card-item>
