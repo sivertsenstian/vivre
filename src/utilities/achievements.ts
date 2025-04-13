@@ -3,11 +3,28 @@ import _sortBy from "lodash/sortBy";
 import {
   getloss,
   getopponent,
+  getplayer,
   getwins,
   iswin,
 } from "@/utilities/matchcalculator.ts";
 import moment from "moment/moment";
 import { Race } from "@/stores/races.ts";
+import type { Moment } from "moment";
+import _last from "lodash/last";
+import _groupBy from "lodash/groupBy";
+import _map from "lodash/map";
+import cr_beginner_hu_1 from "@/assets/creeproutes/beginner/human/random/AL.jpg";
+import cr_beginner_hu_2 from "@/assets/creeproutes/beginner/human/random/CH.jpg";
+import cr_beginner_hu_3 from "@/assets/creeproutes/beginner/human/random/HF.jpg";
+import cr_beginner_hu_4 from "@/assets/creeproutes/beginner/human/random/LR.jpg";
+import cr_beginner_hu_5 from "@/assets/creeproutes/beginner/human/random/NiS.jpg";
+import cr_beginner_hu_6 from "@/assets/creeproutes/beginner/human/random/SG.jpg";
+import cr_beginner_hu_8 from "@/assets/creeproutes/beginner/human/random/ST.jpg";
+import cr_beginner_hu_7 from "@/assets/creeproutes/beginner/human/random/TH.jpg";
+import cr_beginner_hu_9 from "@/assets/creeproutes/beginner/human/random/WH.jpg";
+import cr_beginner_hu_10 from "@/assets/creeproutes/beginner/human/random/SV.jpg";
+import cr_beginner_hu_11 from "@/assets/creeproutes/beginner/human/random/MV.jpg";
+import cr_beginner_hu_12 from "@/assets/creeproutes/beginner/human/random/BV.jpg";
 
 export const calculateLadderPoints = (battleTag: string, data?: any[]) => {
   const matches = (data ?? []).filter((m: any) => m.durationInSeconds > 2 * 60);
@@ -486,7 +503,6 @@ export const season_21_calculation = (account: any): any[] => {
   const visitedMakruras = locations.every((l) => mapwins.includes(l));
 
   // Time based
-
   const playduration = matches.reduce((s, m) => {
     return s + moment.duration(moment(m.endTime).diff(m.startTime)).asHours();
   }, 0);
@@ -635,7 +651,9 @@ const kreis_liga_season_5_calculation = (
   const result = season_21_calculation(account);
 
   const performance = account.data?.performance ?? [];
-  const matches = account.data?.matches ?? [];
+  const wins = account.data?.matches?.filter((m: any) =>
+    iswin(m, account.battleTag),
+  );
 
   // Number of wins/loss
   let consecutiveLoss = 0;
@@ -675,8 +693,8 @@ const kreis_liga_season_5_calculation = (
 
   const getPlayerOpponent = getopponent(account.battleTag);
 
-  for (let i = 0; i < matches.length; i++) {
-    const t = getPlayerOpponent(matches[i]).players[0].battleTag;
+  for (let i = 0; i < wins.length; i++) {
+    const t = getPlayerOpponent(wins[i]).players[0].battleTag;
     if (others.includes(t)) {
       kills++;
     }
@@ -724,6 +742,20 @@ const gnl_season_16_definitions = {
     name: "I'm the captain now!",
     description: "Win a ladder game vs. a GNL coach!",
   },
+  addicted: {
+    id: "addicted",
+    points: 100,
+    icon: "mdi-flask",
+    name: "Better Living Through Chemistry",
+    description: "Play 30 games in 24-hour span",
+  },
+  elite: {
+    id: "elite",
+    points: 100,
+    icon: "mdi-emoticon-cool-outline",
+    name: "1337",
+    description: "Get your MMR to 1337",
+  },
 
   // 50
   dats_fakt_ap: {
@@ -733,8 +765,6 @@ const gnl_season_16_definitions = {
     name: "DATS FAKT AP",
     description: "Lose 10 games in a row",
   },
-
-  // 50
   winner_winner: {
     id: "winner_winner",
     points: 50,
@@ -751,41 +781,358 @@ const gnl_season_16_definitions = {
   },
 
   // 25
-  alle_gute_dinge: {
-    id: "alle_gute_dinge",
-    points: 25,
-    icon: "mdi-numeric-3-circle",
-    name: "Aller guten Dinge sind drei",
-    description: "Win 3 games in a row",
+  win_first: {
+    id: "win_first",
+    points: 15,
+    icon: "mdi-redhat",
+    name: "I am the danger!",
+    description: "Win your first GNL game",
   },
-
   lose_first: {
     id: "lose_first",
     points: 25,
-    icon: "mdi-coffin",
+    icon: "mdi-skull",
     name: "When I'm In Command, Every Mission Is A Suicide Mission.",
-    description: "Lose your first game",
+    description: "Lose your first GNL game",
+  },
+  win_streak: {
+    id: "win_streak",
+    points: 25,
+    icon: "mdi-tally-mark-5",
+    name: "Connect Five!",
+    description: "Win 5 games in a row",
+  },
+  win_every_map: {
+    id: "win_every_map",
+    points: 25,
+    icon: "mdi-map-check",
+    name: "Dora the explorer",
+    description: "Win a game on every ladder map",
+  },
+  rising_star: {
+    id: "rising_star",
+    points: 25,
+    icon: "mdi-brain",
+    name: "I know kung fu",
+    description: "Earn over 100 MMR in a single day",
   },
 
   // 10 + 5 per kill!
   duck_hunting: {
     id: "duck_hunting",
     points: 10,
-    icon: "mdi-duck",
-    name: "Duck Season! Rabbit Season!",
+    icon: "mdi-target-account",
+    name: "Hunting Season!",
     description: "Defeat a player from an opposing team",
   },
 
-  // 10
-  win_first: {
-    id: "win_first",
+  // 10 + 1 per win!
+  night_elf: {
+    id: "night_elf",
     points: 10,
-    icon: "mdi-redhat",
-    name: "I am the danger!",
-    description: "Win your first game",
+    icon: "mdi-shield-moon",
+    name: "Destroyer of Trees",
+    description: "Win 10+ games vs. Night Elf",
+  },
+  undead: {
+    id: "undead",
+    points: 10,
+    icon: "mdi-ghost-outline",
+    name: "Bane of the Scourge",
+    description: "Win 10+ games vs. Undead",
+  },
+  orc: {
+    id: "orc",
+    points: 10,
+    icon: "mdi-paw-outline",
+    name: "Reaper of Greenskins",
+    description: "Win 10+ games vs. Orc",
+  },
+  human: {
+    id: "human",
+    points: 10,
+    icon: "mdi-wizard-hat",
+    name: "A plague upon Humanity",
+    description: "Win 10+ games vs. Human",
+  },
+
+  // 10
+  join_them: {
+    id: "join_them",
+    points: 10,
+    icon: "mdi-handshake",
+    name: "If you can't beat them...",
+    description: "Win and Lose a game that lasted over 30min",
+  },
+  winter: {
+    id: "winter",
+    points: 10,
+    icon: "mdi-weather-snowy-heavy",
+    name: "A true Stark",
+    description: "Win a game on every winter map",
   },
 
   // 5
+  holiday: {
+    id: "holiday",
+    points: 5,
+    icon: "mdi-palm-tree",
+    name: "I'm on holiday!",
+    description: "Win a game on Tide Hunters",
+  },
+  newbie: {
+    id: "newbie",
+    points: 5,
+    icon: "mdi-new-box",
+    name: "Don’t be afraid to try something new!",
+    description: "Win a game on every NEW map!",
+  },
+};
+
+const gnl_season_16_calculation = (
+  account: any,
+  ladderGoal: number,
+  teams: any[] = [],
+): any[] => {
+  const result = [];
+
+  const getPlayerOpponent = getopponent(account.battleTag);
+  const getPlayer = getplayer(account.battleTag);
+
+  const performance = account.data?.performance ?? [];
+  const matches = account.data?.matches ?? [];
+  const wins =
+    account.data?.matches?.filter((m: any) => iswin(m, account.battleTag)) ??
+    [];
+  const losses =
+    account.data?.matches?.filter((m: any) => !iswin(m, account.battleTag)) ??
+    [];
+
+  // First match
+  const first = _last(matches);
+  if (matches.length > 0) {
+    if (iswin(first, account.battleTag)) {
+      result.push(gnl_season_16_definitions["win_first"]);
+    } else {
+      result.push(gnl_season_16_definitions["lose_first"]);
+    }
+  }
+
+  if (wins.length >= 100) {
+    result.push(gnl_season_16_definitions["winner_winner"]);
+  }
+
+  if (losses.length >= 100) {
+    result.push(gnl_season_16_definitions["sad_trombone"]);
+  }
+
+  // MMR
+  const mmrs = matches.map((m: any) =>
+    Math.round(getPlayer(m).players[0].currentMmr),
+  );
+  if (mmrs.some((v: any) => v === 1570)) {
+    result.push(gnl_season_16_definitions["elite"]);
+  }
+
+  // Number of wins/loss
+  let consecutiveLoss = 0;
+  let consecutiveWins = 0;
+  let w = 0;
+  let l = 0;
+  for (let i = 0; i < performance.length; i++) {
+    if (performance[i]) {
+      w++;
+    } else {
+      l++;
+    }
+
+    if (i > 0) {
+      consecutiveWins = Math.max(consecutiveWins, w);
+      consecutiveLoss = Math.max(consecutiveLoss, l);
+
+      if (performance[i] !== performance[i - 1]) {
+        w = 0;
+        l = 0;
+        if (performance[i]) {
+          w++;
+        } else {
+          l++;
+        }
+      }
+    }
+  }
+
+  let kills = 0;
+  let coachKills = 0;
+  const team = account.team;
+  const others = teams.reduce(
+    (a, t) =>
+      t.id === team ? a : [...a, ...t.players.map((p: any) => p.battleTag)],
+    [],
+  );
+  const coaches = teams.reduce(
+    (a, t) => [...a, ...t.coaches.map((p: any) => p.battleTag)],
+    [],
+  );
+
+  for (let i = 0; i < wins.length; i++) {
+    const t = getPlayerOpponent(wins[i]).players[0].battleTag;
+    if (others.includes(t)) {
+      kills++;
+    }
+    if (coaches.includes(t)) {
+      coachKills++;
+    }
+  }
+
+  if (consecutiveLoss >= 10) {
+    result.push(gnl_season_16_definitions["dats_fakt_ap"]);
+  }
+
+  if (consecutiveWins >= 5) {
+    result.push(gnl_season_16_definitions["win_streak"]);
+  }
+
+  if (kills > 0) {
+    const r = { ...gnl_season_16_definitions["duck_hunting"] };
+    r.points += kills;
+    r.description += ` - ${kills} kill(s)`;
+    result.push(r);
+  }
+
+  if (coachKills > 0) {
+    result.push(gnl_season_16_definitions["i_am_the_captain_now"]);
+  }
+
+  // Race based
+  const wins_ne =
+    wins.filter(
+      (m: any) => getPlayerOpponent(m).players[0].race === Race.NightElf,
+    )?.length ?? 0;
+  const wins_oc =
+    wins.filter((m: any) => getPlayerOpponent(m).players[0].race === Race.Orc)
+      ?.length ?? 0;
+  const wins_hu =
+    wins.filter((m: any) => getPlayerOpponent(m).players[0].race === Race.Human)
+      ?.length ?? 0;
+  const wins_ud =
+    wins.filter(
+      (m: any) => getPlayerOpponent(m).players[0].race === Race.Undead,
+    )?.length ?? 0;
+
+  if (wins_ne >= 10) {
+    const r = { ...gnl_season_16_definitions["night_elf"] };
+    r.points += wins_ne;
+    r.description += ` - ${wins_ne} wins!`;
+    result.push(r);
+  }
+
+  if (wins_oc >= 10) {
+    const r = { ...gnl_season_16_definitions["orc"] };
+    r.points += wins_oc;
+    r.description += ` - ${wins_oc} wins!`;
+    result.push(r);
+  }
+
+  if (wins_ud >= 10) {
+    const r = { ...gnl_season_16_definitions["undead"] };
+    r.points += wins_ud;
+    r.description += ` - ${wins_ud} wins!`;
+    result.push(r);
+  }
+
+  if (wins_hu >= 10) {
+    const r = { ...gnl_season_16_definitions["human"] };
+    r.points += wins_hu;
+    r.description += ` - ${wins_hu} wins!`;
+    result.push(r);
+  }
+
+  // Map based
+  const mapwins = wins.map((m: any) => m.mapName);
+
+  const holiday = ["Tidehunters"];
+  const winterMaps = ["Northern Isles", "Melting Valley v2", "Springtime"];
+  const newMaps = [
+    "War Hail",
+    "Melting Valley v2",
+    "Secret Valley v2",
+    "Boulder Vale",
+  ];
+  const allMaps = [
+    "Autumn Leaves v2",
+    "Concealed Hill",
+    "Hammerfall",
+    "Last Refuge",
+    "Northern Isles",
+    "Shallow Grave",
+    "Springtime",
+    "Tidehunters",
+    "War Hail",
+    "Secret Valley v2",
+    "Melting Valley v2",
+    "Boulder Vale",
+  ];
+
+  const onHoliday = holiday.every((l) => mapwins.includes(l));
+  const isWinterReady = winterMaps.every((l) => mapwins.includes(l));
+  const isNewbie = newMaps.every((l) => mapwins.includes(l));
+  const isExplorer = allMaps.every((l) => mapwins.includes(l));
+
+  if (onHoliday) {
+    result.push(gnl_season_16_definitions["holiday"]);
+  }
+
+  if (isWinterReady) {
+    result.push(gnl_season_16_definitions["winter"]);
+  }
+
+  if (isNewbie) {
+    result.push(gnl_season_16_definitions["newbie"]);
+  }
+
+  if (isExplorer) {
+    result.push(gnl_season_16_definitions["win_every_map"]);
+  }
+
+  // Lamers
+  const longestWin = wins.reduce((r: number, m: any) => {
+    return r < m.durationInSeconds ? m.durationInSeconds : r;
+  }, 0);
+  const longestLoss = losses.reduce((r: number, m: any) => {
+    return r < m.durationInSeconds ? m.durationInSeconds : r;
+  }, 0);
+
+  if (longestWin > 60 * 30 && longestLoss > 60 * 30) {
+    result.push(gnl_season_16_definitions["join_them"]);
+  }
+
+  // # games in 24hr
+  const matchesPerDay = _groupBy(matches, (m: any) =>
+    moment(m.endTime).dayOfYear(),
+  );
+  const grindCounter = _map(matchesPerDay, (v: any[]) => v.length);
+  const maxMatchesPerDay = Math.max(...grindCounter, 0);
+
+  if (maxMatchesPerDay >= 30) {
+    result.push(gnl_season_16_definitions["addicted"]);
+  }
+
+  const gain = _map(matchesPerDay, (v: any[]) =>
+    v.reduce((r: number, s: any) => r + getPlayer(s).players[0].mmrGain, 0),
+  );
+  const mmrGainInADay = Math.max(...gain, 0);
+  if (mmrGainInADay > 100) {
+    result.push(gnl_season_16_definitions["rising_star"]);
+  }
+
+  if (
+    calculateLadderPoints(account.battleTag, account.data.matches) >= ladderGoal
+  ) {
+    result.push(gnl_season_16_definitions["ladder_goal"]);
+  }
+
+  return result.sort((a, b) => b.points - a.points);
 };
 
 export const season_achievements = {
@@ -802,7 +1149,7 @@ export const season_achievements = {
     calculate: kreis_liga_season_5_calculation,
   },
   gnl_season_16: {
-    definitions: season_21_definitions,
-    calculate: season_21_calculation,
+    definitions: gnl_season_16_definitions,
+    calculate: gnl_season_16_calculation,
   },
 };

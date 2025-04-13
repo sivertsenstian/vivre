@@ -113,28 +113,40 @@ const drawer = ref(false);
           </template>
           <v-list-item
             prepend-icon="mdi-shield-crown-outline"
-            title="Lucky Strike"
+            title="Thrall's Thundershock"
             color="green-lighten-3"
             router
-            to="/gnl/luckystrike"></v-list-item>
+            to="/gnl/tttg"></v-list-item>
           <v-list-item
             prepend-icon="mdi-shield-crown-outline"
-            title="Rage & Ape"
+            title="Chinese Panda"
             color="green-lighten-3"
             router
-            to="/gnl/rageandape"></v-list-item>
+            to="/gnl/panda"></v-list-item>
+          <v-list-item
+            prepend-icon="mdi-shield-crown-outline"
+            title="Fiends with Benefits"
+            color="green-lighten-3"
+            router
+            to="/gnl/fiends"></v-list-item>
+          <v-list-item
+            prepend-icon="mdi-shield-crown-outline"
+            title="Clutch or Kick"
+            color="green-lighten-3"
+            router
+            to="/gnl/cok"></v-list-item>
+          <v-list-item
+            prepend-icon="mdi-shield-crown-outline"
+            title="Pitty Party"
+            color="green-lighten-3"
+            router
+            to="/gnl/pitty"></v-list-item>
           <v-list-item
             prepend-icon="mdi-shield-crown-outline"
             title="Apelords"
             color="green-lighten-3"
             router
             to="/gnl/apelords"></v-list-item>
-          <v-list-item
-            prepend-icon="mdi-shield-crown-outline"
-            title="Manner Time"
-            color="green-lighten-3"
-            router
-            to="/gnl/mannertime"></v-list-item>
           <v-list-item
             prepend-icon="mdi-shield-crown-outline"
             title="Giggling Goblins"
