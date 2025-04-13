@@ -22,6 +22,7 @@ import gnl_coach_Carson from "@assets/gnl/coaches/carsoNNN.png";
 import gnl_coach_Echo from "@assets/gnl/coaches/EchoGoodman.jpg";
 import gnl_coach_ves from "@assets/gnl/coaches/veS.jpg";
 import gnl_coach_kage from "@assets/gnl/coaches/KaGeMaN.jpg";
+import gnl_coach_fatts from "@assets/gnl/coaches/fatts.jpg";
 
 import gnl_coach_missing from "@/assets/creeproutes/missing.png";
 
@@ -49,6 +50,7 @@ const coachGnlBanner: any = {
   ["EchoGoodman#2734"]: gnl_coach_Echo,
   ["veS#1614"]: gnl_coach_ves,
   ["KaGeMaN#1160"]: gnl_coach_kage,
+  ["MangoIsNice#1230"]: gnl_coach_fatts,
 };
 
 interface Props {
