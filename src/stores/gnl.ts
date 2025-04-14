@@ -22,8 +22,8 @@ import gnl_team_tttg from "@assets/gnl/teams/TTTG_LOGO.jpg";
 import gnl_team_index_tttg from "@assets/gnl/teams/TTTG_LOGO_index.jpg";
 import gnl_team_panda from "@assets/gnl/teams/chinese_panda.jpg";
 import gnl_team_index_panda from "@assets/gnl/teams/chinese_panda_index.jpg";
-import gnl_team_pitty from "@assets/gnl/teams/pitty.jpg";
-import gnl_team_index_pitty from "@assets/gnl/teams/pitty_index.jpg";
+import gnl_team_pitty from "@assets/gnl/teams/pitty.png";
+import gnl_team_pitty_index from "@assets/gnl/teams/pitty_index.png";
 import gnl_team_missing from "@/assets/creeproutes/missing.png";
 import _isEmpty from "lodash/isEmpty";
 import _isNil from "lodash/isNil";
@@ -58,7 +58,7 @@ const gnlIndexBanners: { [key: string]: string } = {
   ["gigglinggoblins"]: gnl_team_gigglinggoblins,
   ["gnlbears"]: gnl_team_gnlbears,
   ["panda"]: gnl_team_index_panda,
-  ["pitty"]: gnl_team_index_pitty,
+  ["pitty"]: gnl_team_pitty_index,
 };
 
 export const ladderGoal = 500;

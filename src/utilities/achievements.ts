@@ -930,7 +930,7 @@ const gnl_season_16_calculation = (
   const mmrs = matches.map((m: any) =>
     Math.round(getPlayer(m).players[0].currentMmr),
   );
-  if (mmrs.some((v: any) => v === 1570)) {
+  if (mmrs.some((v: any) => v === 1337)) {
     result.push(gnl_season_16_definitions["elite"]);
   }
 
@@ -980,7 +980,7 @@ const gnl_season_16_calculation = (
     if (others.includes(t)) {
       kills++;
     }
-    if (coaches.includes(t)) {
+    if (!coaches.includes(account.battleTag) && coaches.includes(t)) {
       coachKills++;
     }
   }
