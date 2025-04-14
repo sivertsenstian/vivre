@@ -17,6 +17,7 @@ import gnl_team_apelords from "@assets/gnl/teams/apelords.jpg";
 import gnl_team_fiends from "@assets/gnl/teams/fiends_with_benefits.png";
 import gnl_team_index_fiends from "@assets/gnl/teams/fiends_with_benefits_index.png";
 import gnl_team_gigglinggoblins from "@assets/gnl/teams/goblins.jpg";
+import gnl_team_index_gigglinggoblins from "@assets/gnl/teams/goblins_index.png";
 import gnl_team_gnlbears from "@assets/gnl/teams/bears.jpg";
 import gnl_team_tttg from "@assets/gnl/teams/TTTG_LOGO.jpg";
 import gnl_team_index_tttg from "@assets/gnl/teams/TTTG_LOGO_index.jpg";
@@ -55,7 +56,7 @@ const gnlIndexBanners: { [key: string]: string } = {
   ["fiends"]: gnl_team_index_fiends,
   ["apelords"]: gnl_team_apelords,
   ["tttg"]: gnl_team_index_tttg,
-  ["gigglinggoblins"]: gnl_team_gigglinggoblins,
+  ["gigglinggoblins"]: gnl_team_index_gigglinggoblins,
   ["gnlbears"]: gnl_team_gnlbears,
   ["panda"]: gnl_team_index_panda,
   ["pitty"]: gnl_team_pitty_index,
