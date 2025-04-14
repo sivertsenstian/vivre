@@ -78,10 +78,16 @@ const drawer = ref(false);
             to="/events/happy-tracker"></v-list-item>
           <v-list-item
             prepend-icon="mdi-trophy"
-            title="3000 MMR"
+            title="Happy: 3000 MMR"
             color="green-lighten-3"
             router
             to="/events/road-to-3000"></v-list-item>
+          <v-list-item
+            prepend-icon="mdi-trophy"
+            title="Tyler1: 2000 MMR"
+            color="green-lighten-3"
+            router
+            to="/events/road-to-2000"></v-list-item>
           <v-list-item
             prepend-icon="mdi-run"
             title="The Great Escape"

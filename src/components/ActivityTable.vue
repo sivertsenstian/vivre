@@ -8,9 +8,27 @@ import _isNil from "lodash/isNil";
 interface Props {
   matches: any[];
   dark?: boolean;
+  hours?: any;
 }
 
-const props = defineProps<Props>();
+const props = withDefaults(defineProps<Props>(), {
+  hours: [
+    "08",
+    "09",
+    "10",
+    "11",
+    "12",
+    "13",
+    "14",
+    "15",
+    "16",
+    "17",
+    "18",
+    "19",
+    "20",
+    "21",
+  ],
+});
 
 const maxActivity = ref(5);
 
@@ -162,23 +180,7 @@ const darkIntensity = (n: number) => {
       </tr>
     </thead>
     <tbody>
-      <tr
-        v-for="hour in [
-          '08',
-          '09',
-          '10',
-          '11',
-          '12',
-          '13',
-          '14',
-          '15',
-          '16',
-          '17',
-          '18',
-          '19',
-          '20',
-          '21',
-        ]">
+      <tr v-for="hour in hours">
         <td
           :class="{
             'font-weight-bold': moment().format('HH') === hour,
