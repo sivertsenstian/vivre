@@ -1326,22 +1326,24 @@ ChartJS.register(
   ChartDataLabels,
 );
 
-const options = {
-  responsive: true,
-  maintainAspectRatio: false,
-  scales: {
-    x: {
-      grid: { display: false },
-      type: "category",
-      stacked: true,
+const options = computed<any>(() => {
+  return {
+    responsive: true,
+    maintainAspectRatio: false,
+    scales: {
+      x: {
+        grid: { display: false },
+        type: "category",
+        stacked: true,
+      },
+      y: {
+        grid: { display: false },
+        min: 0,
+        suggestedMax: Math.max(...points.value) * 1.2,
+      },
     },
-    y: {
-      grid: { display: false },
-      min: 0,
-      suggestedMax: 1000,
-    },
-  },
-} as any;
+  };
+});
 // End
 
 const points = computed(() => {

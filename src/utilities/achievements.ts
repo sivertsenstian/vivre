@@ -995,7 +995,7 @@ const gnl_season_16_calculation = (
 
   if (kills > 0) {
     const r = { ...gnl_season_16_definitions["duck_hunting"] };
-    r.points += kills;
+    r.points += kills * 5;
     r.description += ` - ${kills} kill(s)`;
     result.push(r);
   }
