@@ -1468,6 +1468,7 @@ onMounted(() => {
           <v-col cols="12" class="text-center"
             ><div class="text-md-h2 text-h5 d-flex align-center justify-center">
               <img
+                v-if="!$vuetify.display.mobile"
                 class="mr-auto"
                 alt="Gym Newbiew League!"
                 :src="gnl_logo"
@@ -1481,7 +1482,11 @@ onMounted(() => {
         <v-row class="text-center">
           <v-col cols="12">
             <v-row>
-              <v-col v-for="team in store.data?.teams ?? []" cols="3">
+              <v-col
+                v-for="team in store.data?.teams ?? []"
+                cols="12"
+                sm="6"
+                md="3">
                 <v-card
                   :class="`team ${leader?.id === team.id ? 'gold' : ''}`"
                   @click="() => router.push(`/gnl/${team.id}`)">
@@ -1516,7 +1521,11 @@ onMounted(() => {
               :data="{
                 labels: _isEmpty(store.data.teams)
                   ? []
-                  : store.data.teams?.map((t: any) => t.name),
+                  : store.data.teams?.map((t: any) =>
+                      $vuetify.display.mobile && t.name.length > 10
+                        ? `${t.name.substring(0, 10)}...`
+                        : t.name,
+                    ),
                 datasets: [
                   {
                     label: 'points',
