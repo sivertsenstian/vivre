@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { useTheme } from "vuetify";
+import { useDisplay, useTheme } from "vuetify";
 import { RouterView, useRoute } from "vue-router";
 import bgLightUrl from "@/assets/bg_light.jpg";
 import bgDarkUrl from "@/assets/bg_dark.jpg";
 import logo from "@/assets/logo.png";
-import { computed, ref, watch } from "vue";
+import { computed, ref } from "vue";
+const { mobile } = useDisplay();
 
 const inProduction = import.meta.env.PROD;
 
@@ -17,7 +18,7 @@ function toggleTheme() {
 
 const route = useRoute();
 
-const drawer = ref(false);
+const drawer = ref(!mobile.value);
 </script>
 
 <template>
@@ -29,6 +30,7 @@ const drawer = ref(false);
     <v-navigation-drawer
       expand-on-hover
       rail
+      v-model="drawer"
       :location="$vuetify.display.mobile ? 'bottom' : undefined">
       <v-list>
         <v-list-item
