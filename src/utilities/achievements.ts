@@ -1020,28 +1020,48 @@ const gnl_season_16_calculation = (
       (m: any) => getPlayerOpponent(m).players[0].race === Race.Undead,
     )?.length ?? 0;
 
-  if (wins_ne >= 10) {
+  if (
+    wins_ne >= 10 &&
+    wins_ne > wins_oc &&
+    wins_ne > wins_hu &&
+    wins_ne > wins_ud
+  ) {
     const r = { ...gnl_season_16_definitions["night_elf"] };
     r.points += wins_ne;
     r.description += ` - ${wins_ne} wins!`;
     result.push(r);
   }
 
-  if (wins_oc >= 10) {
+  if (
+    wins_oc >= 10 &&
+    wins_oc > wins_ne &&
+    wins_oc > wins_hu &&
+    wins_oc > wins_ud
+  ) {
     const r = { ...gnl_season_16_definitions["orc"] };
     r.points += wins_oc;
     r.description += ` - ${wins_oc} wins!`;
     result.push(r);
   }
 
-  if (wins_ud >= 10) {
+  if (
+    wins_ud >= 10 &&
+    wins_ud > wins_ne &&
+    wins_ud > wins_hu &&
+    wins_ud > wins_oc
+  ) {
     const r = { ...gnl_season_16_definitions["undead"] };
     r.points += wins_ud;
     r.description += ` - ${wins_ud} wins!`;
     result.push(r);
   }
 
-  if (wins_hu >= 10) {
+  if (
+    wins_hu >= 10 &&
+    wins_hu > wins_ne &&
+    wins_hu > wins_ud &&
+    wins_hu > wins_oc
+  ) {
     const r = { ...gnl_season_16_definitions["human"] };
     r.points += wins_hu;
     r.description += ` - ${wins_hu} wins!`;
