@@ -144,6 +144,12 @@ const getRoute = (
   return r;
 };
 
+const challengers = computed(() => {
+  return [stats.player?.battleTag, ...settings.data.challengers].sort(
+    (a, b) => (rank.value?.[a ?? ""] ?? 0) - (rank.value[b ?? ""] ?? 0),
+  );
+});
+
 const theme = useTheme();
 const isDark = computed(() => theme.global.current.value.dark);
 
@@ -552,37 +558,48 @@ onUnmounted(() => {
                 </v-col>
               </v-row>
               <v-row>
-                <v-col cols="12" md="4">
-                  <versus-banner
-                    :player="stats.player"
-                    :season-start="settings.start"
-                    :rank="rank[stats.player.battleTag]" />
-                </v-col>
                 <v-col
                   cols="12"
                   md="4"
-                  v-for="(challenger, i) in settings.data.challengers">
+                  v-for="(challenger, i) in challengers.filter(
+                    (c) =>
+                      !_isNil(c) &&
+                      (!_isNil(stats.challengers[c]?.battleTag) ||
+                        c === stats.player?.battleTag),
+                  )">
                   <versus-banner
-                    v-if="
-                      !_isNil(challenger) &&
-                      !_isNil(stats.challengers[challenger]?.battleTag)
-                    "
+                    v-if="challenger === stats.player.battleTag"
+                    :player="stats.player"
+                    :season-start="settings.start"
+                    :rank="rank[stats.player.battleTag]" />
+                  <versus-banner
+                    v-else
                     :on-remove="
                       () => {
                         settings.data.challengers[i] = null;
                       }
                     "
                     :challenger="challenger"
-                    :player="stats.challengers[challenger]"
+                    :player="stats.challengers[challenger!]"
                     :season-start="settings.start"
-                    :rank="rank[challenger]" />
+                    :rank="rank[challenger!]" />
+                </v-col>
+                <v-col
+                  cols="12"
+                  md="4"
+                  v-for="(challenger, i) in settings.data.challengers.filter(
+                    (c) => _isNil(c) || _isNil(stats.challengers[c]?.battleTag),
+                  )">
                   <versus-challenger
-                    v-else
                     :loading="
                       !_isNil(challenger) &&
                       _isNil(stats.challengers[challenger]?.battleTag)
                     "
-                    v-model="settings.data.challengers[i]" />
+                    v-model="
+                      settings.data.challengers[
+                        settings.data.challengers.findIndex(_isNil)
+                      ]
+                    " />
                 </v-col>
               </v-row>
             </v-sheet>

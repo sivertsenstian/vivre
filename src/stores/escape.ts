@@ -7,7 +7,7 @@ import _forEach from "lodash/forEach";
 export const useEscapeStore = defineStore("escape", () => {
   const accounts = {
     Happy: ["AuroraHappy#2668", "Happy#2384", "Cacxa26#2948"],
-    Fortitude: ["noname"],
+    Fortitude: ["noname#114787"],
     Starbuck: [
       "drǃbucki#2383",
       "fishingRod#21560",
