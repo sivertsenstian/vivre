@@ -118,9 +118,9 @@ interface Props {
   team?: string;
   player: any;
   dates: any;
-  teamPoints: number;
   rank: number;
   highlight?: boolean;
+  logo?: boolean;
 }
 const props = defineProps<Props>();
 
@@ -231,7 +231,17 @@ const avg = computed(() =>
       class="px-3"
       :style="`background: ${raceGnlColor[player.race]}`">
       <template v-slot:prepend>
+        <v-img
+          v-if="logo"
+          rounded="circle"
+          cover
+          class="mr-1"
+          style="vertical-align: middle; border: 1px solid gold"
+          width="35px"
+          height="35px"
+          :src="teamGnlBanner(player.team)" />
         <img
+          v-else
           style="vertical-align: middle"
           width="40px"
           :src="raceIcon[player.race]" />
@@ -375,7 +385,6 @@ const avg = computed(() =>
         <v-rating
           readonly
           half-increments
-          :title="`Team points contribution: ${_round(((player.data?.wins * 3 + player.data?.loss) / teamPoints) * 100)}%`"
           :length="5"
           :size="20"
           :model-value="
