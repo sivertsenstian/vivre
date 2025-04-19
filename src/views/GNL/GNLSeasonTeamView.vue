@@ -300,7 +300,6 @@ onMounted(() => {
             <GNLPlayerBanner
               :dates="store.dates"
               :rank="rank"
-              :team-points="teamPoints"
               :prefix="current.prefix"
               :player="player" />
           </v-col>

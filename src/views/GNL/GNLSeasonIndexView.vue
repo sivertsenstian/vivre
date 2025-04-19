@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useTheme } from "vuetify";
 import { computed, onMounted } from "vue";
-import { teamGnlBanner, teamGnlIndexBanner, useGNLStore } from "@/stores/gnl";
+import { teamGnlIndexBanner, useGNLStore } from "@/stores/gnl";
 import { Race } from "@/stores/races";
 import VueCountdown from "@chenfengyuan/vue-countdown";
 
@@ -1313,6 +1313,8 @@ import _take from "lodash/take";
 import _skip from "lodash/drop";
 import GNLCoachBanner from "@/components/gnl/GNLCoachBanner.vue";
 import GNLPlayerBanner from "@/components/gnl/GNLPlayerBanner.vue";
+import _capitalize from "lodash/capitalize";
+import _first from "lodash/first";
 
 ChartJS.register(
   LineController,
@@ -1376,6 +1378,17 @@ const leader = computed(() => {
 const winnerId = "gigglinggoblins";
 const winner = computed(() => {
   return store.data?.teams?.find((t: any) => t.id === winnerId);
+});
+
+const players = computed(() => {
+  if (_isEmpty(store.data?.teams)) {
+    return [];
+  }
+  return store.data.teams
+    .reduce((s: any[], t: any) => {
+      return [...s, ...t.players];
+    }, [])
+    .sort((a: any, b: any) => b.totalPoints - a.totalPoints);
 });
 
 // Text
@@ -1686,6 +1699,62 @@ onMounted(() => {
               >
               <span class="px-2">-</span>
               <span>HYPE!</span>
+            </div>
+          </v-col>
+        </v-row>
+        <v-row class="justify-center">
+          <v-col cols="12" class="text-center">
+            <span class="text-h4" style="color: goldenrod">
+              CURRENT GNL LADDER GODS
+            </span>
+          </v-col>
+          <v-col cols="12" class="my-0 py-0">
+            <v-col cols="10" class="mx-auto">
+              <hr color="goldenrod" class="my-0 py-0" />
+            </v-col>
+            <v-col cols="12" md="12" class="pt-0 text-center" v-if="false">
+              <v-radio-group
+                inline
+                v-model="store.ladderGodCategory"
+                hide-details>
+                <v-radio
+                  v-for="(c, i) in store.ladderGodCategories"
+                  :label="_capitalize(c)"
+                  :disabled="i > 1"
+                  :value="c"
+                  :style="{
+                    color:
+                      c === store.ladderGodCategory ? 'goldenrod' : 'inherit',
+                  }"
+                  density="comfortable" />
+              </v-radio-group>
+            </v-col>
+          </v-col>
+          <v-col
+            v-if="store.initialized"
+            cols="12"
+            md="3"
+            v-for="(player, rank) in _take(players, 12)"
+            :key="rank">
+            <GNLPlayerBanner
+              logo
+              :dates="store.dates"
+              :rank="rank"
+              :team-points="0"
+              :prefix="
+                store.data.teams.find((t: any) => t.id === (player as any).team)
+                  ?.prefix
+              "
+              :player="player" />
+          </v-col>
+          <v-col cols="12" class="text-center" v-else>
+            <div
+              class="text-h5 fontweight-bold"
+              style="color: goldenrod; vertical-align: middle">
+              <v-progress-circular indeterminate />
+            </div>
+            <div class="text-h5 fontweight-bold" style="color: goldenrod">
+              Calculating...
             </div>
           </v-col>
         </v-row>

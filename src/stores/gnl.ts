@@ -214,6 +214,19 @@ export const useGNLStore = defineStore("gnl", () => {
   const numberOfPlayers = ref<number>(0);
   const orbs = ref<any[]>([]);
 
+  const ladderGodCategory = ref<string>("all");
+  const ladderGodCategories = [
+    "all",
+    "week 1",
+    "week 2",
+    "week 3",
+    "week 4",
+    "week 5",
+    "week 6",
+    "week 7",
+    "week 8",
+  ];
+
   const dates = computed(() => ({
     start: start.value,
     end: end.value,
@@ -235,8 +248,6 @@ export const useGNLStore = defineStore("gnl", () => {
       start.value = moment(d.start, "DD.MM.YYYY").utc(true).startOf("day");
       end.value = moment(d.end, "DD.MM.YYYY").utc(true).endOf("day");
       data.value = d;
-
-      console.log({ start: start.value, end: end.value });
     }
 
     clearTimeout(timer.value);
@@ -432,6 +443,9 @@ export const useGNLStore = defineStore("gnl", () => {
     playerStats,
     numberOfPlayers,
     orbs,
+
+    ladderGodCategory,
+    ladderGodCategories,
 
     initialized,
     initialize,
