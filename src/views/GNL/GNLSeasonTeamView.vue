@@ -224,10 +224,7 @@ onMounted(() => {
                     <span style="vertical-align: middle">{{
                       teamMatches
                     }}</span>
-                    <v-icon
-                      size="x-small"
-                      class="ml-1"
-                      icon="mdi-shield-sword-outline"
+                    <v-icon size="x-small" class="ml-1" icon="mdi-shield-crown"
                   /></span>
                 </div>
               </v-col>

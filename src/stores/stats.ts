@@ -22,6 +22,8 @@ import {
 } from "@/utilities/matchcalculator";
 import _round from "lodash/round";
 import { search } from "@/utilities/api.ts";
+import _groupBy from "lodash/groupBy";
+import _forEach from "lodash/forEach";
 
 export const useStatsStore = defineStore("stats", () => {
   const settings = useSettingsStore();
@@ -72,6 +74,7 @@ export const useStatsStore = defineStore("stats", () => {
   const monthRule = moment().startOf("month");
 
   const player = ref<IStatistics>();
+  const ranking = ref<any>();
   const challengers = ref<Record<string, IStatistics>>({});
 
   const getMaps = async () => {
@@ -85,6 +88,54 @@ export const useStatsStore = defineStore("stats", () => {
       );
     } catch (e) {
       return [];
+    }
+  };
+
+  const gameModeStatsUrl = (tag: string, season: number) =>
+    `https://website-backend.w3champions.com/api/players/${encodeURIComponent(
+      tag,
+    )}/game-mode-stats?gateway=20&season=${season}`;
+
+  const getLeagueAndRanking = async () => {
+    let result: any = {};
+    ranking.value = { ...ranking.value, loading: true };
+    try {
+      for (let i = 1; i <= latest; i++) {
+        const { data: stats } = await axios.get(gameModeStatsUrl(tag.value, i));
+        const g = _groupBy(
+          stats.filter((s: any) => s.gameMode === 1 && s.race !== null),
+          (v) => v.race,
+        );
+
+        _forEach(g, ([s]) => {
+          if (
+            !_isNil(s) &&
+            (_isNil(result[s.race]) || s.mmr >= result[s.race].mmr)
+          ) {
+            const progress = s.rankingPoints - Math.floor(s.rankingPoints);
+            const previous = ranking.value?.[s.race]?.levelProgress ?? progress;
+
+            result[s.race] = {
+              race: s.race,
+              mmr: s.mmr,
+              rank: s.rank,
+              level: s.rankingPoints,
+              levelLabel: Math.floor(s.rankingPoints),
+              levelProgress: previous,
+              levelProgressRecent: progress,
+              league: s.leagueOrder,
+              division: s.division,
+              wins: s.wins,
+              losses: s.losses,
+              winrate: s.winrate,
+              quantile: s.quantile,
+              season: i,
+            };
+          }
+        });
+      }
+    } finally {
+      ranking.value = result;
     }
   };
 
@@ -355,6 +406,7 @@ export const useStatsStore = defineStore("stats", () => {
     }
 
     void getOngoing(true);
+    void getLeagueAndRanking();
   });
 
   const subscription = ref<number | null>(null);
@@ -370,6 +422,7 @@ export const useStatsStore = defineStore("stats", () => {
         season.value = results.season;
 
         void getOngoing();
+        void getLeagueAndRanking();
 
         for (const challenger of settings.data.challengers.filter(
           (v) => !_isNil(v),
@@ -402,5 +455,6 @@ export const useStatsStore = defineStore("stats", () => {
     maps,
     subscribe,
     unsubscribe,
+    ranking,
   };
 });

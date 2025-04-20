@@ -28,6 +28,7 @@ export interface IRaceStatistics {
   achievementPoints: number;
   totalPoints: number;
   mmr: {
+    max: number;
     initial: number;
     current: number;
     diff: number;
