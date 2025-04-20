@@ -98,7 +98,7 @@ export const useStatsStore = defineStore("stats", () => {
 
   const getLeagueAndRanking = async () => {
     let result: any = {};
-    ranking.value = { ...ranking.value, loading: true };
+    ranking.value = { ...ranking.value, tag, loading: true };
     try {
       for (let i = 1; i <= latest; i++) {
         const { data: stats } = await axios.get(gameModeStatsUrl(tag.value, i));
@@ -113,7 +113,10 @@ export const useStatsStore = defineStore("stats", () => {
             (_isNil(result[s.race]) || s.mmr >= result[s.race].mmr)
           ) {
             const progress = s.rankingPoints - Math.floor(s.rankingPoints);
-            const previous = ranking.value?.[s.race]?.levelProgress ?? progress;
+            const previous =
+              ranking.value.tag === tag
+                ? (ranking.value?.[s.race]?.levelProgress ?? progress)
+                : progress;
 
             result[s.race] = {
               race: s.race,

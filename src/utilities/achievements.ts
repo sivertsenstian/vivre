@@ -779,6 +779,13 @@ const gnl_season_16_definitions = {
     name: "Sad Trombone",
     description: "Lose 100 games",
   },
+  win_streak_2: {
+    id: "win_streak_2",
+    points: 50,
+    icon: "mdi-karate",
+    name: "Who can stop me?!",
+    description: "Win 10 games in a row",
+  },
 
   // 25
   win_first: {
@@ -991,6 +998,10 @@ const gnl_season_16_calculation = (
 
   if (consecutiveWins >= 5) {
     result.push(gnl_season_16_definitions["win_streak"]);
+  }
+
+  if (consecutiveWins >= 10) {
+    result.push(gnl_season_16_definitions["win_streak_2"]);
   }
 
   if (kills > 0) {
