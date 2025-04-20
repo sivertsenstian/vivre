@@ -10,7 +10,7 @@ interface Props {
 }
 defineProps<Props>();
 
-const height = 20;
+const height = 16;
 const theme = useTheme();
 const isDark = computed(() => theme.global.current.value.dark);
 </script>
@@ -20,6 +20,7 @@ const isDark = computed(() => theme.global.current.value.dark);
     <v-progress-linear
       color="green-lighten-1"
       :model-value="((result.wins ?? 0) / result.total) * 100"
+      rounded
       :height="height"
       :style="{ top: height / 2 + 'px', border: '1px solid green' }">
       <template v-slot:default="{ value }">
@@ -39,6 +40,7 @@ const isDark = computed(() => theme.global.current.value.dark);
     <v-progress-linear
       color="red-lighten-1"
       :model-value="((result.loss ?? 0) / result.total) * 100"
+      rounded
       :height="height"
       :style="{
         top: -height / 2 + 'px',

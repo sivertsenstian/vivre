@@ -626,7 +626,7 @@ const isActive = computed(() => {
                                 color="green"
                                 label
                                 class="rounded-0">
-                                <v-icon icon="mdi-shield-sword-outline" />
+                                <v-icon icon="mdi-shield-crown" />
                               </v-chip>
                               <v-chip
                                 v-else
@@ -635,7 +635,7 @@ const isActive = computed(() => {
                                 color="red"
                                 label
                                 class="rounded-0">
-                                <v-icon icon="mdi-shield-sword-outline" />
+                                <v-icon icon="mdi-shield-crown-outline" />
                               </v-chip>
                             </template>
                           </div>

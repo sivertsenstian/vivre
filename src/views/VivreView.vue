@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import live_explain_dark from "@/assets/live_help_dark.png";
 import live_explain from "@/assets/live_help.png";
+import level_texture from "@/assets/player-level-background.jpg";
 import { computed, onMounted, onUnmounted, ref } from "vue";
 import NumberAnimation from "vue-number-animation";
 import moment, { type Moment } from "moment";
@@ -46,6 +47,18 @@ const raceBanner: any = {
   [Race.NightElf]: ne_banner,
   [Race.Random]: r_banner,
 };
+
+const ranks = [
+  { name: "Grandmaster", icon: "mdi-trophy-award", color: "#FFD700" },
+  { name: "Master", icon: "mdi-trophy", color: "#CB3A1F" },
+  { name: "Adept", icon: "mdi-trophy-outline", color: "#EB42EF" },
+  { name: "Diamond", icon: "mdi-diamond", color: "#b9f2ff" },
+  { name: "Platinum", icon: "mdi-gold", color: "#e5e4e2" },
+  { name: "Gold", icon: "mdi-gold", color: "#FFD700" },
+  { name: "Silver", icon: "mdi-gold", color: "#C0C0C0" },
+  { name: "Bronze", icon: "mdi-gold", color: "#CD7F32" },
+  { name: "Grass", icon: "mdi-grass", color: "#136d15" },
+];
 
 const numberOfGames = (target: number, avg: number) =>
   Math.abs(Math.ceil(target / avg));
@@ -221,7 +234,7 @@ onUnmounted(() => {
                           color="green"
                           label
                           class="rounded-0">
-                          <v-icon icon="mdi-shield-sword-outline" />
+                          <v-icon icon="mdi-shield-crown" />
                         </v-chip>
                         <v-chip
                           v-else
@@ -230,7 +243,7 @@ onUnmounted(() => {
                           color="red"
                           label
                           class="rounded-0">
-                          <v-icon icon="mdi-shield-sword-outline" />
+                          <v-icon icon="mdi-shield-crown-outline" />
                         </v-chip>
                       </template>
                     </div>
@@ -704,6 +717,11 @@ onUnmounted(() => {
                             Today
                           </span>
                         </v-col>
+                        <v-col cols="12" v-if="false">
+                          <pre>{{
+                            JSON.stringify(stats?.ranking, null, 2)
+                          }}</pre>
+                        </v-col>
                         <v-col cols="12" md="6" class="pa-0">
                           <span class="ml-2 text-h6">
                             <span
@@ -716,6 +734,166 @@ onUnmounted(() => {
                             </span>
                             This {{ settings.data.mode }}</span
                           >
+                        </v-col>
+                        <v-col cols="12" class="mt-1 pb-0 mb-0">
+                          <div style="font-size: 16px" class="mb-3">
+                            Highest this season:
+                            <strong style="font-size: 18px">
+                              {{
+                                stats.player?.season?.[stats.player.race]?.mmr
+                                  .max
+                              }}
+                              MMR</strong
+                            >
+                          </div>
+                          <div
+                            v-if="stats.ranking?.[stats.player.race]?.rank"
+                            class="fade-in"
+                            style="vertical-align: middle; font-weight: bold">
+                            <v-icon
+                              class="mx-1"
+                              style="vertical-align: middle"
+                              size="x-large"
+                              :icon="
+                                ranks?.[
+                                  stats.ranking?.[stats.player.race]?.league
+                                ]?.icon
+                              "
+                              :color="
+                                ranks?.[
+                                  stats.ranking?.[stats.player.race]?.league
+                                ]?.color
+                              " />
+                            <span style="vertical-align: middle" class="mx-1"
+                              >{{
+                                ranks?.[
+                                  stats.ranking?.[stats.player.race]?.league
+                                ]?.name
+                              }}
+                              {{
+                                stats.ranking?.[stats.player.race]?.division
+                              }}</span
+                            >
+                            <span style="vertical-align: middle"
+                              >Rank
+                              {{
+                                stats.ranking?.[stats.player.race]?.rank
+                              }}</span
+                            >
+                          </div>
+                        </v-col>
+                        <v-col
+                          class="fade-in"
+                          cols="12"
+                          v-if="stats.ranking?.[stats.player.race]?.level">
+                          <v-row>
+                            <v-col cols="12" class="py-0" style="height: 40px">
+                              <v-progress-linear
+                                class="level-progress mt-2"
+                                height="25"
+                                :max="1"
+                                :min="0"
+                                buffer-color="#FFD700"
+                                buffer-opacity="1"
+                                :buffer-value="
+                                  stats.ranking?.[stats.player.race]
+                                    ?.levelProgressRecent ?? 0
+                                "
+                                :model-value="
+                                  stats.ranking?.[stats.player.race]
+                                    ?.levelProgress ?? 0
+                                " />
+                              <span class="level-label" style="height: 0"
+                                >Level
+                                {{
+                                  stats.ranking?.[stats.player.race]
+                                    ?.levelLabel ?? 0
+                                }}</span
+                              >
+                              <div
+                                style="
+                                  position: relative;
+                                  bottom: 40px;
+                                  left: 130px;
+                                  height: 0;
+                                "
+                                v-if="
+                                  stats.ranking?.[stats.player.race]
+                                    ?.levelProgressRecent >
+                                  stats.ranking?.[stats.player.race]
+                                    ?.levelProgress
+                                ">
+                                <ConfettiExplosion
+                                  :colors="[
+                                    'goldenrod',
+                                    'darkgoldenrod',
+                                    'silver',
+                                    'gold',
+                                  ]" />
+                              </div>
+                              <div
+                                v-if="
+                                  stats.ranking?.[stats.player.race]
+                                    ?.levelProgressRecent >
+                                  stats.ranking?.[stats.player.race]
+                                    ?.levelProgress
+                                "
+                                class="gained"
+                                style="
+                                  position: relative;
+                                  bottom: 40px;
+                                  left: 0px;
+                                  height: 0;
+                                ">
+                                <h1 class="my-0 font-weight-bold">
+                                  {{
+                                    (
+                                      stats.ranking[stats.player.race]
+                                        .levelProgressRecent *
+                                        100 -
+                                      stats.ranking[stats.player.race]
+                                        .levelProgress *
+                                        100
+                                    ).toFixed(1)
+                                  }}% XP
+                                </h1>
+                                <h4 class="ml-4 my-0 font-weight-bold">
+                                  EARNED
+                                </h4>
+                              </div>
+                            </v-col>
+                            <v-col
+                              cols="12"
+                              class="12 d-flex justify-center my-0 py-0">
+                              <div class="text-grey mr-4">
+                                Progress
+                                {{
+                                  (
+                                    stats.ranking?.[stats.player.race]
+                                      ?.levelProgressRecent * 100
+                                  ).toFixed(1)
+                                }}%
+                              </div>
+                              <div
+                                style="color: gold"
+                                v-if="
+                                  stats.ranking?.[stats.player.race]
+                                    ?.levelProgressRecent >
+                                  stats.ranking?.[stats.player.race]
+                                    ?.levelProgress
+                                ">
+                                +{{
+                                  (
+                                    (stats.ranking?.[stats.player.race]
+                                      ?.levelProgressRecent -
+                                      stats.ranking?.[stats.player.race]
+                                        ?.levelProgress) *
+                                    100
+                                  ).toFixed(1)
+                                }}% from last game
+                              </div>
+                            </v-col>
+                          </v-row>
                         </v-col>
                       </v-row>
                     </v-card-text>
@@ -794,8 +972,84 @@ onUnmounted(() => {
 </template>
 
 <style>
-.v-stepper-item {
-  opacity: 1;
+:root {
+  --level-start-color: rgb(237 0 0 / 87%);
+  --level-end-color: rgb(255 180 0 / 77%);
+}
+
+.level-progress {
+  border: 1px solid goldenrod;
+  background-color: transparent;
+  border-radius: 5px;
+
+  .v-progress-linear__determinate {
+    background-image: linear-gradient(
+        to right,
+        var(--level-start-color),
+        var(--level-end-color)
+      ),
+      url("@/assets/player-level-background.jpg");
+    background-size: cover;
+    background-position: center;
+  }
+
+  .v-progress-linear__buffer {
+    box-shadow: 0px 0px 15px 5px gold !important;
+    animation: pulse 3s infinite ease-in-out;
+    opacity: 0.8;
+  }
+}
+
+.gained {
+  color: gold;
+
+  opacity: 0;
+  animation: fade 5s ease-in-out;
+  animation-iteration-count: 1;
+  text-shadow:
+    0 0 20px #fff,
+    0 0 30px gold,
+    0 0 40px gold,
+    0 0 50px gold,
+    0 0 60px gold,
+    0 0 70px gold,
+    0 0 80px gold;
+}
+
+.level-label {
+  font-size: 14px;
+  font-weight: bold;
+  position: relative;
+  left: 0px;
+  bottom: 23px;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 0.8;
+  }
+
+  50% {
+    opacity: 0.4;
+  }
+
+  100% {
+    opacity: 0.8;
+  }
+}
+
+@keyframes fade {
+  0% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+  }
 }
 
 .loss .v-stepper-item__avatar {
@@ -809,5 +1063,18 @@ onUnmounted(() => {
 }
 .disable-animation * {
   animation: none !important;
+}
+
+.fade-in {
+  animation: fade-in 0.5s;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 100;
+  }
 }
 </style>
