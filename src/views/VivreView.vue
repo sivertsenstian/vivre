@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import live_explain_dark from "@/assets/live_help_dark.png";
 import live_explain from "@/assets/live_help.png";
-import level_texture from "@/assets/player-level-background.jpg";
 import { computed, onMounted, onUnmounted, ref } from "vue";
 import NumberAnimation from "vue-number-animation";
 import moment, { type Moment } from "moment";
@@ -73,16 +72,22 @@ setInterval(() => {
 }, 1000);
 
 const data = computed<Partial<IRaceStatistics>>(() => {
+  let d: Partial<IRaceStatistics> = { wins: 0, loss: 0, total: 0 };
   if (!_isNil(stats.player)) {
     if (settings.data.mode === "week") {
-      return stats.player.week;
+      d = stats.player.week;
     } else if (settings.data.mode === "month") {
-      return stats.player.month;
+      d = stats.player.month;
     } else if (settings.data.mode === "season") {
-      return stats.player.season[stats.player.race];
+      d = stats.player.season[stats.player.race];
+    }
+
+    if (d.mmr?.current === 0) {
+      d.mmr = stats.player.season[stats.player.race]?.mmr ?? {};
     }
   }
-  return { wins: 0, loss: 0, total: 0 };
+
+  return d;
 });
 
 const getPoints = (v: IStatistics) => {
@@ -685,6 +690,7 @@ onUnmounted(() => {
                             easing="linear" />
                           {{
                         }}</span>
+
                         <span
                           class="text-white"
                           style="

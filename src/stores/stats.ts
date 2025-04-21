@@ -100,43 +100,43 @@ export const useStatsStore = defineStore("stats", () => {
     let result: any = {};
     ranking.value = { ...ranking.value, tag, loading: true };
     try {
-      for (let i = 1; i <= latest; i++) {
-        const { data: stats } = await axios.get(gameModeStatsUrl(tag.value, i));
-        const g = _groupBy(
-          stats.filter((s: any) => s.gameMode === 1 && s.race !== null),
-          (v) => v.race,
-        );
+      const { data: stats } = await axios.get(
+        gameModeStatsUrl(tag.value, latest),
+      );
+      const g = _groupBy(
+        stats.filter((s: any) => s.gameMode === 1 && s.race !== null),
+        (v) => v.race,
+      );
 
-        _forEach(g, ([s]) => {
-          if (
-            !_isNil(s) &&
-            (_isNil(result[s.race]) || s.mmr >= result[s.race].mmr)
-          ) {
-            const progress = s.rankingPoints - Math.floor(s.rankingPoints);
-            const previous =
-              ranking.value.tag === tag
-                ? (ranking.value?.[s.race]?.levelProgress ?? progress)
-                : progress;
+      _forEach(g, ([s]) => {
+        if (
+          !_isNil(s) &&
+          (_isNil(result[s.race]) || s.mmr >= result[s.race].mmr)
+        ) {
+          const progress = s.rankingPoints - Math.floor(s.rankingPoints);
+          const previous =
+            ranking.value.tag === tag
+              ? (ranking.value?.[s.race]?.levelProgress ?? progress)
+              : progress;
 
-            result[s.race] = {
-              race: s.race,
-              mmr: s.mmr,
-              rank: s.rank,
-              level: s.rankingPoints,
-              levelLabel: Math.floor(s.rankingPoints),
-              levelProgress: previous,
-              levelProgressRecent: progress,
-              league: s.leagueOrder,
-              division: s.division,
-              wins: s.wins,
-              losses: s.losses,
-              winrate: s.winrate,
-              quantile: s.quantile,
-              season: i,
-            };
-          }
-        });
-      }
+          result[s.race] = {
+            race: s.race,
+            mmr: s.mmr,
+            rank: s.rank,
+            level: s.rankingPoints,
+            levelLabel: Math.floor(s.rankingPoints),
+            levelProgress: previous,
+            levelProgressRecent: progress,
+            league: s.leagueOrder,
+            division: s.division,
+            wins: s.wins,
+            losses: s.losses,
+            winrate: s.winrate,
+            quantile: s.quantile,
+            season: latest,
+          };
+        }
+      });
     } finally {
       ranking.value = result;
     }
@@ -401,15 +401,15 @@ export const useStatsStore = defineStore("stats", () => {
     season.value = results.season;
     maps.value = await getMaps();
 
+    void getOngoing(true);
+    void getLeagueAndRanking();
+
     for (const challenger of settings.data.challengers.filter(
       (v) => !_isNil(v),
     )) {
       const c = await getMatches(challenger);
       challengers.value[challenger] = c.player;
     }
-
-    void getOngoing(true);
-    void getLeagueAndRanking();
   });
 
   const subscription = ref<number | null>(null);
