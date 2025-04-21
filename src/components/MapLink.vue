@@ -7,6 +7,7 @@ defineProps<Props>();
 
 <template>
   <a
+    class="text-no-wrap"
     title="Click to visit the creep route planner for this map!"
     :href="`https://coff-creeps.web.app?category=w3c 1v1&map=${name}`"
     target="_blank"
