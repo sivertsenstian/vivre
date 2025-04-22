@@ -823,6 +823,13 @@ const gnl_season_16_definitions = {
     name: "I know kung fu",
     description: "Earn over 100 MMR in a single day",
   },
+  falling_star: {
+    id: "falling_star",
+    points: 25,
+    icon: "mdi-account-tie",
+    name: "Did you even say thank you?",
+    description: "Lose over 100 MMR in a single day",
+  },
 
   // 10 + 5 per kill!
   duck_hunting: {
@@ -1155,6 +1162,11 @@ const gnl_season_16_calculation = (
   const mmrGainInADay = Math.max(...gain, 0);
   if (mmrGainInADay > 100) {
     result.push(gnl_season_16_definitions["rising_star"]);
+  }
+
+  const mmrLossInADay = Math.abs(Math.min(...gain, 0));
+  if (mmrLossInADay > 100) {
+    result.push(gnl_season_16_definitions["falling_star"]);
   }
 
   if (
