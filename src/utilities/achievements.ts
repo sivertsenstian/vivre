@@ -725,6 +725,15 @@ const kreis_liga_season_5_calculation = (
 };
 
 const gnl_season_16_definitions = {
+  // 1000
+  double_up: {
+    id: "double_up",
+    points: 1000,
+    icon: "mdi-chart-bubble",
+    name: "Double Up On The Bubble Up",
+    description: "Reach this seasons ladder goal! TWICE!",
+  },
+
   // 500
   ladder_goal: {
     id: "ladder_goal",
@@ -1173,6 +1182,13 @@ const gnl_season_16_calculation = (
     calculateLadderPoints(account.battleTag, account.data.matches) >= ladderGoal
   ) {
     result.push(gnl_season_16_definitions["ladder_goal"]);
+  }
+
+  if (
+    calculateLadderPoints(account.battleTag, account.data.matches) >=
+    ladderGoal * 2
+  ) {
+    result.push(gnl_season_16_definitions["double_up"]);
   }
 
   return result.sort((a, b) => b.points - a.points);
