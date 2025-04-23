@@ -62,7 +62,7 @@ const gnlIndexBanners: { [key: string]: string } = {
   ["pitty"]: gnl_team_pitty_index,
 };
 
-export const ladderGoal = 300;
+export const ladderGoal = 500;
 
 export const teamGnlBanner: any = (id: string) =>
   gnlBanners?.[id] ?? gnl_team_missing;
