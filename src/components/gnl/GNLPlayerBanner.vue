@@ -383,6 +383,7 @@ const avg = computed(() =>
           >Avg. games: {{ avg }} per day
         </span>
         <v-rating
+          v-if="player.data?.wins * 3 + player.data?.loss < ladderGoal * 1.2"
           readonly
           half-increments
           :length="5"
@@ -394,9 +395,21 @@ const avg = computed(() =>
           active-color="#daa520"
           empty-icon="mdi-circle-outline"
           half-icon="mdi-circle-half-full"
-          :full-icon="
-            player.points < ladderGoal ? 'mdi-circle' : 'mdi-medal'
-          " />
+          full-icon="mdi-circle" />
+        <v-rating
+          v-else
+          readonly
+          half-increments
+          :length="5"
+          :size="20"
+          :model-value="
+            ((player.data?.wins * 3 + player.data?.loss) / (ladderGoal * 2)) * 5
+          "
+          color="#ffd700"
+          active-color="#ffd700"
+          empty-icon="mdi-star-outline"
+          half-icon="mdi-star-half-full"
+          full-icon="mdi-star" />
       </v-card-subtitle>
     </v-card-item>
 
