@@ -25,6 +25,7 @@ import cr_beginner_hu_9 from "@/assets/creeproutes/beginner/human/random/WH.jpg"
 import cr_beginner_hu_10 from "@/assets/creeproutes/beginner/human/random/SV.jpg";
 import cr_beginner_hu_11 from "@/assets/creeproutes/beginner/human/random/MV.jpg";
 import cr_beginner_hu_12 from "@/assets/creeproutes/beginner/human/random/BV.jpg";
+import _maxBy from "lodash/maxBy";
 
 export const calculateLadderPoints = (battleTag: string, data?: any[]) => {
   const matches = (data ?? []).filter((m: any) => m.durationInSeconds > 2 * 60);
@@ -1032,67 +1033,42 @@ const gnl_season_16_calculation = (
   }
 
   // Race based
-  const wins_ne =
-    wins.filter(
-      (m: any) => getPlayerOpponent(m).players[0].race === Race.NightElf,
-    )?.length ?? 0;
-  const wins_oc =
-    wins.filter((m: any) => getPlayerOpponent(m).players[0].race === Race.Orc)
-      ?.length ?? 0;
-  const wins_hu =
-    wins.filter((m: any) => getPlayerOpponent(m).players[0].race === Race.Human)
-      ?.length ?? 0;
-  const wins_ud =
-    wins.filter(
-      (m: any) => getPlayerOpponent(m).players[0].race === Race.Undead,
-    )?.length ?? 0;
+  const race = {
+    wins: _groupBy(
+      matches.filter((m) => getwins(account.battleTag, m)),
+      (w) => w.teams[1].players[0].race,
+    ),
+    loss: _groupBy(
+      matches.filter((m) => getloss(account.battleTag, m)),
+      (l) => l.teams[0].players[0].race,
+    ),
+  };
 
-  if (
-    wins_ne >= 10 &&
-    wins_ne > wins_oc &&
-    wins_ne > wins_hu &&
-    wins_ne > wins_ud
-  ) {
-    const r = { ...gnl_season_16_definitions["night_elf"] };
-    r.points += wins_ne;
-    r.description += ` - ${wins_ne} wins!`;
-    result.push(r);
-  }
+  const maxRace = _maxBy(Object.keys(race.wins), (k) => race.wins[k]);
+  const maxWins: number = race.wins?.[maxRace ?? 0]?.length ?? 0;
 
-  if (
-    wins_oc >= 10 &&
-    wins_oc > wins_ne &&
-    wins_oc > wins_hu &&
-    wins_oc > wins_ud
-  ) {
-    const r = { ...gnl_season_16_definitions["orc"] };
-    r.points += wins_oc;
-    r.description += ` - ${wins_oc} wins!`;
-    result.push(r);
-  }
-
-  if (
-    wins_ud >= 10 &&
-    wins_ud > wins_ne &&
-    wins_ud > wins_hu &&
-    wins_ud > wins_oc
-  ) {
-    const r = { ...gnl_season_16_definitions["undead"] };
-    r.points += wins_ud;
-    r.description += ` - ${wins_ud} wins!`;
-    result.push(r);
-  }
-
-  if (
-    wins_hu >= 10 &&
-    wins_hu > wins_ne &&
-    wins_hu > wins_ud &&
-    wins_hu > wins_oc
-  ) {
-    const r = { ...gnl_season_16_definitions["human"] };
-    r.points += wins_hu;
-    r.description += ` - ${wins_hu} wins!`;
-    result.push(r);
+  if (maxRace && maxWins > 10) {
+    if (Number(maxRace) === Race.NightElf) {
+      const r = { ...gnl_season_16_definitions["night_elf"] };
+      r.points += maxWins;
+      r.description += ` - ${maxWins} wins!`;
+      result.push(r);
+    } else if (Number(maxRace) === Race.Orc) {
+      const r = { ...gnl_season_16_definitions["orc"] };
+      r.points += maxWins;
+      r.description += ` - ${maxWins} wins!`;
+      result.push(r);
+    } else if (Number(maxRace) === Race.Human) {
+      const r = { ...gnl_season_16_definitions["human"] };
+      r.points += maxWins;
+      r.description += ` - ${maxWins} wins!`;
+      result.push(r);
+    } else if (Number(maxRace) === Race.Undead) {
+      const r = { ...gnl_season_16_definitions["undead"] };
+      r.points += maxWins;
+      r.description += ` - ${maxWins} wins!`;
+      result.push(r);
+    }
   }
 
   // Map based
