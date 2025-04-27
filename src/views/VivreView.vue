@@ -594,7 +594,10 @@ onUnmounted(() => {
                     v-else
                     :on-remove="
                       () => {
-                        settings.data.challengers[i] = null;
+                        settings.data.challengers =
+                          settings.data.challengers.map((c) =>
+                            c === challenger ? null : c,
+                          );
                       }
                     "
                     :challenger="challenger"
