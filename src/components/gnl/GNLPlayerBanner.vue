@@ -128,15 +128,17 @@ const mmr = computed(() => {
   const getPlayer = getplayer(props.player.battleTag);
   if (props.player.data?.matches.length) {
     const g = _groupBy(props.player.data?.matches, (m) => {
-      const d = moment(m.endTime).dayOfYear() - 1;
-      return props.dates.daysSinceStart - (props.dates.today.dayOfYear() - d);
+      const d = moment(m.endTime).utc().dayOfYear() - 1;
+      return (
+        props.dates.daysSinceStart - (props.dates.today.utc().dayOfYear() - d)
+      );
     });
 
     const initial = getPlayer(_last(g[Object.keys(g)[0]]))?.players[0].oldMmr;
     const v = _fill(
       _range(
-        props.dates.today.dayOfYear() - props.dates.daysSinceStart,
-        props.dates.today.dayOfYear(),
+        props.dates.today.utc().dayOfYear() - props.dates.daysSinceStart,
+        props.dates.today.utc().dayOfYear(),
       ),
       initial,
     );
@@ -156,8 +158,8 @@ const mmr = computed(() => {
 
   return _fill(
     _range(
-      props.dates.today.dayOfYear() - props.dates.daysSinceStart,
-      props.dates.today.dayOfYear(),
+      props.dates.today.utc().dayOfYear() - props.dates.daysSinceStart,
+      props.dates.today.utc().dayOfYear(),
     ),
     0,
   );
@@ -168,17 +170,18 @@ const wins = computed(() => {
     .filter((m: any) => getwins(props.player.battleTag, m))
     ?.reduce(
       (r: number[], m: any) => {
-        const d = moment(m.endTime).dayOfYear() - 1;
+        const d = moment(m.endTime).utc().dayOfYear() - 1;
         const day =
-          props.dates.daysSinceStart - (props.dates.today.dayOfYear() - d);
+          props.dates.daysSinceStart -
+          (props.dates.today.utc().dayOfYear() - d);
 
         r[day]++;
         return r;
       },
       _fill(
         _range(
-          props.dates.today.dayOfYear() - props.dates.daysSinceStart,
-          props.dates.today.dayOfYear(),
+          props.dates.today.utc().dayOfYear() - props.dates.daysSinceStart,
+          props.dates.today.utc().dayOfYear(),
         ),
         0,
       ),
@@ -191,17 +194,18 @@ const loss = computed(() => {
     ?.filter((m: any) => getloss(props.player.battleTag, m))
     ?.reduce(
       (r: number[], m: any) => {
-        const d = moment(m.endTime).dayOfYear() - 1;
+        const d = moment(m.endTime).utc().dayOfYear() - 1;
         const day =
-          props.dates.daysSinceStart - (props.dates.today.dayOfYear() - d);
+          props.dates.daysSinceStart -
+          (props.dates.today.utc().dayOfYear() - d);
 
         r[day]++;
         return r;
       },
       _fill(
         _range(
-          props.dates.today.dayOfYear() - props.dates.daysSinceStart,
-          props.dates.today.dayOfYear(),
+          props.dates.today.utc().dayOfYear() - props.dates.daysSinceStart,
+          props.dates.today.utc().dayOfYear(),
         ),
         0,
       ),
@@ -383,21 +387,7 @@ const avg = computed(() =>
           >Avg. games: {{ avg }} per day
         </span>
         <v-rating
-          v-if="player.data?.wins * 3 + player.data?.loss < ladderGoal * 1.2"
-          readonly
-          half-increments
-          :length="5"
-          :size="20"
-          :model-value="
-            ((player.data?.wins * 3 + player.data?.loss) / ladderGoal) * 5
-          "
-          color="#b8860b"
-          active-color="#daa520"
-          empty-icon="mdi-circle-outline"
-          half-icon="mdi-circle-half-full"
-          full-icon="mdi-circle" />
-        <v-rating
-          v-else
+          v-if="player.data?.wins * 3 + player.data?.loss > ladderGoal * 1.2"
           readonly
           half-increments
           :length="5"
@@ -412,6 +402,20 @@ const avg = computed(() =>
           empty-icon="mdi-star-outline"
           half-icon="mdi-star-half-full"
           full-icon="mdi-star" />
+        <v-rating
+          v-else
+          readonly
+          half-increments
+          :length="5"
+          :size="20"
+          :model-value="
+            ((player.data?.wins * 3 + player.data?.loss) / ladderGoal) * 5
+          "
+          color="#b8860b"
+          active-color="#daa520"
+          empty-icon="mdi-circle-outline"
+          half-icon="mdi-circle-half-full"
+          full-icon="mdi-circle" />
       </v-card-subtitle>
     </v-card-item>
 
