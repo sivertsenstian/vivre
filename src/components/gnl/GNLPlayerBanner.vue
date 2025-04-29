@@ -225,7 +225,7 @@ const avg = computed(() =>
 <template>
   <v-card
     color="surface"
-    :class="`text-center pa-0 card-shine-effect ${player.points >= ladderGoal ? 'goal' : ''}`"
+    :class="`text-center pa-0 card-shine-effect ${player.points >= ladderGoal ? (player.points >= ladderGoal * 2 ? 'omega-goal' : 'goal') : ''}`"
     :elevation="10">
     <v-list-item
       class="px-3"
@@ -403,7 +403,9 @@ const avg = computed(() =>
           :length="5"
           :size="20"
           :model-value="
-            ((player.data?.wins * 3 + player.data?.loss) / (ladderGoal * 2)) * 5
+            ((player.data?.wins * 3 + player.data?.loss - ladderGoal) /
+              ladderGoal) *
+            5
           "
           color="#ffd700"
           active-color="#ffd700"
@@ -501,6 +503,11 @@ const avg = computed(() =>
   animation: pulse 2s infinite;
 }
 
+.omega-goal {
+  box-shadow: 0 0 20px 12px #b9f2ff !important;
+  animation: pulse2 1s infinite;
+}
+
 @keyframes pulse {
   0% {
     border-color: white;
@@ -512,6 +519,20 @@ const avg = computed(() =>
 
   100% {
     border-color: white;
+  }
+}
+
+@keyframes pulse2 {
+  0% {
+    border-color: gold;
+  }
+
+  50% {
+    border-color: #b9f2ff;
+  }
+
+  100% {
+    border-color: gold;
   }
 }
 
