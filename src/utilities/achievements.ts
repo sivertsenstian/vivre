@@ -1132,7 +1132,7 @@ const gnl_season_16_calculation = (
 
   // # games in 24hr
   const matchesPerDay = _groupBy(matches, (m: any) =>
-    moment(m.endTime).dayOfYear(),
+    moment(m.endTime).utc().dayOfYear(),
   );
   const grindCounter = _map(matchesPerDay, (v: any[]) => v.length);
   const maxMatchesPerDay = Math.max(...grindCounter, 0);
