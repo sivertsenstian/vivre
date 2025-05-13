@@ -46,6 +46,10 @@ export const getInfo = (tag: string, matches: any[]) => {
     ...matches.map((m) => getplayer(tag)(m)?.players[0].currentMmr),
   );
 
+  const minMmr = Math.min(
+    ...matches.map((m) => getplayer(tag)(m)?.players[0].currentMmr),
+  );
+
   const last = _last<any>(matches)?.teams?.reduce(
     (r: any, t: any) =>
       t.players.some(
@@ -59,6 +63,7 @@ export const getInfo = (tag: string, matches: any[]) => {
   first.initialMmr = last?.oldMmr ?? first.currentMmr;
   first.diffMmr = first.currentMmr - first.initialMmr;
   first.maxMmr = maxMmr;
+  first.minMmr = minMmr;
 
   return first;
 };
@@ -206,6 +211,7 @@ export const getRaceStatistics = (tag: string, m: any[]): IRaceStatistics => {
 
     mmr: {
       max: info?.maxMmr ?? info?.currentMmr ?? 0,
+      min: info?.minMmr ?? info?.currentMmr ?? 0,
       initial: info?.initialMmr ?? 0,
       current: info?.currentMmr ?? 0,
       diff: info?.diffMmr ?? 0,

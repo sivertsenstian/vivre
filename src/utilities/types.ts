@@ -29,6 +29,7 @@ export interface IRaceStatistics {
   totalPoints: number;
   mmr: {
     max: number;
+    min: number;
     initial: number;
     current: number;
     diff: number;
