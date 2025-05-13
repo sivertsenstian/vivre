@@ -1035,11 +1035,11 @@ const gnl_season_16_calculation = (
   // Race based
   const race = {
     wins: _groupBy(
-      matches.filter((m) => getwins(account.battleTag, m)),
+      matches.filter((m: any) => getwins(account.battleTag, m)),
       (w) => w.teams[1].players[0].race,
     ),
     loss: _groupBy(
-      matches.filter((m) => getloss(account.battleTag, m)),
+      matches.filter((m: any) => getloss(account.battleTag, m)),
       (l) => l.teams[0].players[0].race,
     ),
   };
