@@ -409,7 +409,10 @@ onMounted(() => {
                   <th
                     @click="sortBy('battleTag')"
                     class="sortable"
-                    :style="{ color: sort === 'battleTag' ? 'gold' : '' }">
+                    :style="{
+                      color: sort === 'battleTag' ? 'gold' : '',
+                      textAlign: 'left!important',
+                    }">
                     Name
                     <span v-if="sort === 'battleTag'"
                       ><v-icon
@@ -616,5 +619,9 @@ onMounted(() => {
   &:hover {
     filter: brightness(1.5);
   }
+}
+
+th {
+  text-align: center !important;
 }
 </style>
