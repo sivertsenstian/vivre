@@ -408,10 +408,9 @@ onMounted(() => {
                   <th style="min-width: 65px"></th>
                   <th
                     @click="sortBy('battleTag')"
-                    class="sortable"
+                    class="sortable left"
                     :style="{
                       color: sort === 'battleTag' ? 'gold' : '',
-                      textAlign: 'left!important',
                     }">
                     Name
                     <span v-if="sort === 'battleTag'"
@@ -618,6 +617,10 @@ onMounted(() => {
 
   &:hover {
     filter: brightness(1.5);
+  }
+
+  &.left {
+    text-align: left !important;
   }
 }
 
