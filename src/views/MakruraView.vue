@@ -18,6 +18,9 @@ import router from "@/router";
 import _round from "lodash/round";
 import moment from "moment";
 import _isNil from "lodash/isNil";
+import { useDisplay } from "vuetify";
+
+const { mobile } = useDisplay();
 
 const store = useMakruraStore();
 
@@ -133,7 +136,7 @@ onMounted(() => {
 
     bulletTemplate.on("active" as any, (_: any, target: any) => {
       const id: any = target?.dataItem?.dataContext?.id;
-      if (id) {
+      if (!mobile.value && id) {
         search.value = id;
       }
     });
