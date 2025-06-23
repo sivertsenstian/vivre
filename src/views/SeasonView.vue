@@ -7,7 +7,7 @@ import { Race, raceIcon } from "@/stores/races";
 const settings = useSettingsStore();
 const store = useSeasonStore();
 
-const start = moment("04.03.25", "DD.MM.YYYY");
+const start = moment("23.06.25", "DD.MM.YYYY");
 const end = moment(start).add(15, "weeks");
 
 const today = moment();

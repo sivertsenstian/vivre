@@ -31,7 +31,7 @@ export const useStatsStore = defineStore("stats", () => {
 
   const searchResults = ref([]);
   const searching = ref(false);
-  const latest = 21;
+  const latest = 22;
 
   const currentUrl = (tag: string) =>
     `https://website-backend.w3champions.com/api/matches/ongoing/${encodeURIComponent(
