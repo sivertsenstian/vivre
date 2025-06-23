@@ -75,8 +75,8 @@ const router = createRouter({
           component: OnlyFangsView,
         },
         {
-          path: "spartas-inferno",
-          name: "Event: Spartas Inferno W3C Ladder Race",
+          path: "dach-ladder",
+          name: "Event: DACH Ladder Challenge - W3C Ladder Race",
           component: SpartasInfernoView,
         },
       ],

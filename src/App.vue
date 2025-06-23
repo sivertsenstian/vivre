@@ -104,10 +104,10 @@ const drawer = ref(!mobile.value);
             to="/events/grubbys-invitational" />
           <v-list-item
             prepend-icon="mdi-fire"
-            title="Spartas Inferno Ladder"
+            title="DACH Ladder Challenge"
             color="orange-lighten-1"
             router
-            to="/events/spartas-inferno" />
+            to="/events/dach-ladder" />
         </v-list-group>
         <v-list-item
           color="green"

@@ -1233,14 +1233,14 @@ const spartas_inferno_1 = {
     points: 15,
     icon: "mdi-redhat",
     name: "I am the danger!",
-    description: "Win your first INFERNO game",
+    description: "Win your first game",
   },
   lose_first: {
     id: "lose_first",
     points: 25,
     icon: "mdi-skull",
     name: "When I'm In Command, Every Mission Is A Suicide Mission.",
-    description: "Lose your first INFERNO game",
+    description: "Lose your first game",
   },
   win_streak: {
     id: "win_streak",

@@ -1,18 +1,34 @@
 <script setup lang="ts">
 import logo from "@/assets/events/spartas_inferno.jpg";
 
-import _isNil from "lodash/isNil";
 import VersusBanner from "@/components/events/spartasinferno/SpartasInfernoVersusBanner.vue";
 import VersusChallenger from "@/components/events/spartasinferno/SpartasInfernoVersusChallenger.vue";
 import { onMounted, onUnmounted, ref } from "vue";
-import { raceIcon, raceName } from "@/stores/races.ts";
-import VueCountdown from "@chenfengyuan/vue-countdown";
 import moment from "moment/moment";
 import { useSpartasInfernoStore } from "@/stores/spartasinferno.ts";
 import { v4 as uuidv4 } from "uuid";
 import _orderBy from "lodash/orderBy";
+import MarkdownViewer from "@/components/MarkdownViewer.vue";
 
 const store = useSpartasInfernoStore();
+
+const model = defineModel<string>({
+  default: `
+  ### DACH Ladder Challenge - hosted by Sp4rta // https://www.twitch.tv/sp4rta
+  **DATE : 23.06.2025 - 23.07.2025**
+
+  ### RULES:
+  Every played game (2 minutes min) will add points to your score .
+  Wins = 3 points, Losses = 1 point
+  Points are earned with the race you chose in 1on1 mode .
+
+  ### PRIZE
+  You can win a unique w3c profile picture if you make it to the top 3.
+  If you manage to do at least 20 games in the challenge you are part of the HOLY Giveaway ( Bubblegum Butterfly Tube worth 40€) .
+
+  ### Good luck and let the grind begin!
+  `,
+});
 
 const current = {
   id: uuidv4(),
@@ -230,28 +246,15 @@ onUnmounted(() => {
               alt="SPARTAS W3C LADDER RACE"
               class="mx-auto"
               max-width="1200px" />
-            <div class="text-sm-h4 text-h6 font-weight-bold mt-2">
-              SPARTAS W3C LADDER RACE
-            </div>
             <div>
-              <a
-                href="https://liquipedia.net/warcraft/Warcraft_3_Streamer_Invitational"
-                target="_blank"
-                ><span class="vertical-align:middle"
-                  ><v-icon
-                    icon="mdi-link"
-                    class="mr-1"
-                    style="color: goldenrod"
-                    size="x-small" /></span
-                >Link to Streamer Invitational Tournament</a
-              >
+              <markdown-viewer v-model="model" />
             </div>
           </v-col>
-          <v-col cols="12" class="text-center">
-            <h2 class="py-2 whitespace-wrap">
+          <v-col cols="12" class="text-left">
+            <h3 class="py-2 whitespace-wrap">
               If you are enjoying this ladder event, please consider sponsoring
               my next coffee!
-            </h2>
+            </h3>
             <a href="https://www.buymeacoffee.com/longjacket" target="_blank"
               ><img
                 src="https://img.buymeacoffee.com/button-api/?text=Buy me a coffee&emoji=☕&slug=longjacket&button_colour=FFDD00&font_colour=000000&font_family=Bree&outline_colour=000000&coffee_colour=ffffff"
