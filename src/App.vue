@@ -102,6 +102,12 @@ const drawer = ref(!mobile.value);
             color="purple-lighten-1"
             router
             to="/events/grubbys-invitational" />
+          <v-list-item
+            prepend-icon="mdi-fire"
+            title="Spartas Inferno Ladder"
+            color="orange-lighten-1"
+            router
+            to="/events/spartas-inferno" />
         </v-list-group>
         <v-list-item
           color="green"
