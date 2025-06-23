@@ -191,7 +191,7 @@ export const getRaceStatistics = (tag: string, m: any[]): IRaceStatistics => {
   }, {});
 
   let result: IRaceStatistics = {
-    matches,
+    matches: matches ?? [],
     total: matches?.length ?? 0,
     maps: Object.keys(maps)
       .sort()

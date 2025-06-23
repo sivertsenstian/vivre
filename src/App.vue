@@ -102,6 +102,12 @@ const drawer = ref(!mobile.value);
             color="purple-lighten-1"
             router
             to="/events/grubbys-invitational" />
+          <v-list-item
+            prepend-icon="mdi-fire"
+            title="DACH Ladder Challenge"
+            color="orange-lighten-1"
+            router
+            to="/events/dach-ladder" />
         </v-list-group>
         <v-list-item
           color="green"

@@ -17,6 +17,7 @@ import GNLSeasonIndexView from "@/views/GNL/GNLSeasonIndexView.vue";
 import GNLSeasonTeamView from "@/views/GNL/GNLSeasonTeamView.vue";
 import ChallengersView from "@/views/ChallengersView.vue";
 import OnlyFangsView from "@/views/Events/OnlyFangsView.vue";
+import SpartasInfernoView from "@/views/Events/SpartasInfernoView.vue";
 import KLSeasonTeamView from "@/views/KL/KLSeasonTeamView.vue";
 import KLSeasonIndexView from "@/views/KL/KLSeasonIndexView.vue";
 
@@ -72,6 +73,11 @@ const router = createRouter({
           path: "grubbys-invitational",
           name: "Event: Grubbys Streamer Invitational W3C Ladder Race",
           component: OnlyFangsView,
+        },
+        {
+          path: "dach-ladder",
+          name: "Event: DACH Ladder Challenge - W3C Ladder Race",
+          component: SpartasInfernoView,
         },
       ],
     },
