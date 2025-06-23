@@ -37,7 +37,7 @@ export const useEventsStore = defineStore("events", () => {
   const daysSinceStart = today.diff(start, "days");
   const weekRule = moment().startOf("isoWeek");
   const monthRule = moment().startOf("month");
-  const latest = 21;
+  const latest = 22;
 
   const getData = async (tag: string) => {
     let result: IStatistics = {} as any;
