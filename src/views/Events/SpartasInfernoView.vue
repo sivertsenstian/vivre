@@ -3,7 +3,7 @@ import logo from "@/assets/events/spartas_inferno.jpg";
 
 import VersusBanner from "@/components/events/spartasinferno/SpartasInfernoVersusBanner.vue";
 import VersusChallenger from "@/components/events/spartasinferno/SpartasInfernoVersusChallenger.vue";
-import { onMounted, onUnmounted, ref } from "vue";
+import { computed, onMounted, onUnmounted, ref } from "vue";
 import moment from "moment/moment";
 import { useSpartasInfernoStore } from "@/stores/spartasinferno.ts";
 import { v4 as uuidv4 } from "uuid";
@@ -193,6 +193,13 @@ const current = {
   ],
 };
 
+const challengers = computed(() => {
+  const players = [...(store.data.players ?? [])];
+  const ranked = _orderBy<any>(players, "totalPoints", "desc");
+
+  return ranked;
+});
+
 // const winner = computed(() => {
 //   if (store.initialized) {
 //     let points: any[] = [];
@@ -270,11 +277,7 @@ onUnmounted(() => {
             md="4"
             lg="3"
             xl="2"
-            v-for="(challenger, i) in _orderBy<any>(
-              store.data.players,
-              'totalPoints',
-              'desc',
-            )">
+            v-for="(challenger, i) in challengers">
             <versus-banner
               v-if="challenger.data"
               :player="challenger.data.player"

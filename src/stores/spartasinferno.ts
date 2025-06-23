@@ -76,24 +76,30 @@ export const useSpartasInfernoStore = defineStore("spartasinferno", () => {
         dates.value.end,
       );
       getOngoing(player.battleTag).then((r: any) => (player.ongoing = r));
-      player.data.player.season[player.race].points = calculateLadderPoints(
+
+      const ladder_points = calculateLadderPoints(
         player.battleTag,
         player.data.player.season[player.race].matches,
       );
-      player.data.player.season[player.race].achievements = season_achievements[
+      const achievements = season_achievements[
         "spartas_inferno_season_1"
       ].calculate({
         battleTag: player.battleTag,
         data: player.data.player.season[player.race],
       });
+      const achievement_points = calculateAchievementPoints(achievements);
+      const totalPoints = ladder_points + achievement_points;
+
+      player.points = ladder_points;
+      player.achievementPoints = achievement_points;
+      player.achievements = achievements;
+      player.totalPoints = totalPoints;
+
+      player.data.player.season[player.race].points = ladder_points;
       player.data.player.season[player.race].achievementPoints =
-        calculateAchievementPoints(
-          player.data.player.season[player.race].achievements,
-        );
-      player.data.player.season[player.race].totalPoints =
-        player.data.player.season[player.race].points +
-        player.data.player.season[player.race].achievementPoints;
-      player.totalPoints = player.data.player.season[player.race].totalPoints;
+        achievement_points;
+      player.data.player.season[player.race].achievements = achievements;
+      player.data.player.season[player.race].totalPoints = totalPoints;
     }
   };
 
