@@ -67,15 +67,24 @@ export const useSpartasInfernoStore = defineStore("spartasinferno", () => {
     start.value = moment(d.start, "DD.MM.YYYY").utc(true).startOf("day");
     end.value = moment(d.end, "DD.MM.YYYY").utc(true).endOf("day");
 
+    await Promise.allSettled(
+      d.players.map(async (player: any) => {
+        player.data = await getData(
+          player.battleTag,
+          player.race,
+          dates.value.start,
+          dates.value.end,
+        );
+        getOngoing(player.battleTag).then((r: any) => (player.ongoing = r));
+      }),
+    );
+
+    // for (let p = 0; p < d.players.length; p++) {
+    //   const player = d.players[p];
+    // }
+
     for (let p = 0; p < d.players.length; p++) {
       const player = d.players[p];
-      player.data = await getData(
-        player.battleTag,
-        player.race,
-        dates.value.start,
-        dates.value.end,
-      );
-      getOngoing(player.battleTag).then((r: any) => (player.ongoing = r));
 
       const ladder_points = calculateLadderPoints(
         player.battleTag,
@@ -87,18 +96,31 @@ export const useSpartasInfernoStore = defineStore("spartasinferno", () => {
         battleTag: player.battleTag,
         data: player.data.player.season[player.race],
       });
+      const awards = season_achievements[
+        "spartas_inferno_season_1"
+      ].calculate_awards(
+        {
+          battleTag: player.battleTag,
+          data: player.data.player.season[player.race],
+        },
+        d.players,
+      );
+
+      const award_points = calculateAchievementPoints(awards);
       const achievement_points = calculateAchievementPoints(achievements);
-      const totalPoints = ladder_points + achievement_points;
+      const totalPoints = ladder_points + achievement_points + award_points;
 
       player.points = ladder_points;
       player.achievementPoints = achievement_points;
       player.achievements = achievements;
+      player.awards = awards;
       player.totalPoints = totalPoints;
 
       player.data.player.season[player.race].points = ladder_points;
       player.data.player.season[player.race].achievementPoints =
         achievement_points;
       player.data.player.season[player.race].achievements = achievements;
+      player.data.player.season[player.race].awards = awards;
       player.data.player.season[player.race].totalPoints = totalPoints;
     }
   };
@@ -225,11 +247,12 @@ export const useSpartasInfernoStore = defineStore("spartasinferno", () => {
 
   const subscribe = () => {
     if (subscription.value === null) {
-      void initialize().then(() => {
-        subscription.value = setInterval(async () => {
-          void update();
-        }, 30000);
-      });
+      void initialize();
+      // .then(() => {
+      //   subscription.value = setInterval(async () => {
+      //     void update();
+      //   }, 30000);
+      // });
     }
   };
 

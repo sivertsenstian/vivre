@@ -26,6 +26,7 @@ import cr_beginner_hu_10 from "@/assets/creeproutes/beginner/human/random/SV.jpg
 import cr_beginner_hu_11 from "@/assets/creeproutes/beginner/human/random/MV.jpg";
 import cr_beginner_hu_12 from "@/assets/creeproutes/beginner/human/random/BV.jpg";
 import _maxBy from "lodash/maxBy";
+import _orderBy from "lodash/orderBy";
 
 export const calculateLadderPoints = (battleTag: string, data?: any[]) => {
   const matches = (data ?? []).filter((m: any) => m.durationInSeconds > 2 * 60);
@@ -1333,7 +1334,6 @@ const spartas_inferno_1 = {
     description: "Win a game on every NEW map!",
   },
 };
-
 const spartas_inferno_1_calculation = (account: any): any[] => {
   const result = [];
 
@@ -1542,6 +1542,106 @@ const spartas_inferno_1_calculation = (account: any): any[] => {
 
   return result.sort((a, b) => b.points - a.points);
 };
+const spartas_inferno_1_awards = {
+  // 100
+
+  winratio: {
+    id: "winratio",
+    points: 50,
+    icon: "mdi-head-plus",
+    name: "Streets ahead",
+    description: "Have a positive winrate by the end of the challenge",
+  },
+  first_winrate: {
+    id: "first_winrate",
+    points: 125,
+    icon: "mdi-numeric-1-circle",
+    name: "Ein",
+    description:
+      "Have the best winrate (50 game minimum) by the end of the challenge",
+  },
+  second_winrate: {
+    id: "second_winrate",
+    points: 100,
+    icon: "mdi-numeric-2-circle",
+    name: "Zwei",
+    description:
+      "Have the second best winrate (50 game minimum) by the end of the challenge",
+  },
+  third_winrate: {
+    id: "third_winrate",
+    points: 50,
+    icon: "mdi-numeric-3-circle",
+    name: "Drei",
+    description:
+      "Have the third best winrate (50 game minimum) by the end of the challenge",
+  },
+
+  hundred_games: {
+    id: "hundred_games",
+    points: 50,
+    icon: "mdi-cash-100",
+    name: "C-Note",
+    description: "Play at least 100 games during the challenge",
+  },
+
+  five_day_average: {
+    id: "five_day_average",
+    points: 50,
+    icon: "mdi-gauge",
+    name: "Average Joe",
+    description: "Maintain a 5 games per day average during the challenge",
+  },
+};
+
+const spartas_inferno_1_awards_calculation = (
+  account: any,
+  players: any[],
+): any[] => {
+  const result = [];
+
+  const days = 31;
+  const games = account.data.total;
+  const avg = Math.ceil(games / days);
+
+  // win ratio
+  if (games >= 50 && account.data.percentage >= 0.5) {
+    result.push(spartas_inferno_1_awards["winratio"]);
+  }
+
+  // win ratio 1st 2nd and 3rd place
+  const [gold, silver, bronze] = _sortBy(
+    players.filter((p) => p.data.player.season[p.race].total >= 50),
+    (p) => {
+      const r = p.data.player.season[p.race].percentage;
+      return isNaN(r) ? 0 : r;
+    },
+  ).reverse();
+
+  if (gold.battleTag.toLowerCase() === account.battleTag.toLowerCase()) {
+    result.push(spartas_inferno_1_awards["first_winrate"]);
+  } else if (
+    silver.battleTag.toLowerCase() === account.battleTag.toLowerCase()
+  ) {
+    result.push(spartas_inferno_1_awards["second_winrate"]);
+  } else if (
+    bronze.battleTag.toLowerCase() === account.battleTag.toLowerCase()
+  ) {
+    result.push(spartas_inferno_1_awards["third_winrate"]);
+  }
+
+  // Games played
+  if (games >= 100) {
+    result.push(spartas_inferno_1_awards["hundred_games"]);
+  }
+
+  // Games averaged
+  if (avg >= 5.0) {
+    result.push(spartas_inferno_1_awards["five_day_average"]);
+  }
+
+  return result.sort((a, b) => b.points - a.points);
+};
 
 export const season_achievements = {
   20: {
@@ -1563,5 +1663,7 @@ export const season_achievements = {
   spartas_inferno_season_1: {
     definitions: spartas_inferno_1,
     calculate: spartas_inferno_1_calculation,
+    awards: spartas_inferno_1_awards,
+    calculate_awards: spartas_inferno_1_awards_calculation,
   },
 };
