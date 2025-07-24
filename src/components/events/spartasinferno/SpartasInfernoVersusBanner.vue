@@ -49,6 +49,7 @@ import _last from "lodash/last";
 import _take from "lodash/take";
 import _skip from "lodash/drop";
 import type { Moment } from "moment";
+import _round from "lodash/round";
 
 ChartJS.register(
   LineController,
@@ -266,7 +267,7 @@ const avg = computed(() =>
 <template>
   <v-card
     color="surface"
-    :class="`text-center pa-0 ${winner ? 'gold goal' : 'card-shine-effect'}`"
+    :class="`text-center pa-0 ${rank < 3 ? 'gold goal' : 'card-shine-effect'}`"
     :elevation="10">
     <v-list-item class="px-3" :style="`background: ${raceColor[player.race]}`">
       <template v-slot:prepend>
@@ -322,7 +323,7 @@ const avg = computed(() =>
           <ul style="list-style-type: none" class="d-flex flex-row">
             <li
               class="mr-1"
-              v-for="achievement in _take<any>(data.achievements, 10)">
+              v-for="achievement in _take<any>(data.achievements, 8)">
               <v-tooltip
                 :text="`${achievement.name} - ${achievement.description} // ${achievement.points} Additional Points!`"
                 content-class="custom-tooltip"
@@ -351,7 +352,7 @@ const avg = computed(() =>
           <ul style="list-style-type: none" class="d-flex flex-row">
             <li
               class="mr-1"
-              v-for="achievement in _skip<any>(data.achievements, 10)">
+              v-for="achievement in _skip<any>(data.achievements, 8)">
               <v-tooltip
                 :text="`${achievement.name} - ${achievement.description} // ${achievement.points} Additional Points!`"
                 content-class="custom-tooltip"
@@ -364,6 +365,115 @@ const avg = computed(() =>
                     style="color: goldenrod; border: 1px solid goldenrod"
                     color="dark"
                     :icon="achievement.icon" />
+                </template>
+              </v-tooltip>
+            </li>
+          </ul>
+        </div>
+
+        <div
+          style="
+            position: absolute;
+            opacity: 0.85;
+            left: 2px;
+            top: 178px;
+            overflow: visible;
+            z-index: 99999999999999;
+            width: 95%;
+            margin-left: 2.5%;
+          ">
+          <ul style="list-style-type: none" class="d-flex flex-row">
+            <li
+              class="mr-1"
+              style="width: 100%; display: contents"
+              v-for="award in _take<any>(data.awards, 1)">
+              <v-tooltip
+                :text="`${award.name} - ${award.description} // ${award.points} Additional Points!`"
+                content-class="custom-tooltip"
+                open-on-click>
+                <template v-slot:activator="{ props }">
+                  <v-btn
+                    block
+                    v-bind="props"
+                    size="small"
+                    variant="elevated"
+                    style="color: gold; border: 1px solid gold"
+                    color="dark"
+                    :prepend-icon="award.icon"
+                    >AWARD: {{ award.name }}</v-btn
+                  >
+                </template>
+              </v-tooltip>
+            </li>
+          </ul>
+        </div>
+        <div
+          style="
+            position: absolute;
+            opacity: 0.85;
+            left: 2px;
+            top: 208px;
+            overflow: visible;
+            z-index: 99999999999999;
+            width: 95%;
+            margin-left: 2.5%;
+          ">
+          <ul style="list-style-type: none" class="d-flex flex-row">
+            <li
+              class="mr-1"
+              style="display: contents"
+              v-for="award in _take<any>(_skip<any>(data.awards, 1), 1)">
+              <v-tooltip
+                :text="`${award.name} - ${award.description} // ${award.points} Additional Points!`"
+                content-class="custom-tooltip"
+                open-on-click>
+                <template v-slot:activator="{ props }">
+                  <v-btn
+                    block
+                    v-bind="props"
+                    size="small"
+                    variant="elevated"
+                    style="color: gold; border: 1px solid gold"
+                    color="dark"
+                    :prepend-icon="award.icon"
+                    >AWARD: {{ award.name }}</v-btn
+                  >
+                </template>
+              </v-tooltip>
+            </li>
+          </ul>
+        </div>
+        <div
+          style="
+            position: absolute;
+            opacity: 0.85;
+            left: 2px;
+            top: 238px;
+            overflow: visible;
+            z-index: 99999999999999;
+            width: 95%;
+            margin-left: 2.5%;
+          ">
+          <ul style="list-style-type: none" class="d-flex flex-row">
+            <li
+              class="mr-1"
+              style="display: contents"
+              v-for="award in _take<any>(_skip<any>(data.awards, 2), 1)">
+              <v-tooltip
+                :text="`${award.name} - ${award.description} // ${award.points} Additional Points!`"
+                content-class="custom-tooltip"
+                open-on-click>
+                <template v-slot:activator="{ props }">
+                  <v-btn
+                    block
+                    v-bind="props"
+                    size="small"
+                    variant="elevated"
+                    style="color: gold; border: 1px solid gold"
+                    color="dark"
+                    :prepend-icon="award.icon"
+                    >AWARD: {{ award.name }}</v-btn
+                  >
                 </template>
               </v-tooltip>
             </li>
@@ -441,7 +551,10 @@ const avg = computed(() =>
         >
       </v-card-title>
       <v-card-subtitle class="d-flex justify-space-between" style="opacity: 1">
-        <span style="opacity: 0.7" class="me-1">Games: {{ avg }} per day </span>
+        <span style="opacity: 0.7" class="me-1"
+          >Games: {{ avg }} per day -
+          {{ _round(_round(data.percentage, 4) * 100, 2) }}% win rate</span
+        >
       </v-card-subtitle>
     </v-card-item>
 
