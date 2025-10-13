@@ -24,7 +24,7 @@ export const useSeasonStore = defineStore("season", () => {
 
   const searchResults = ref([]);
   const searching = ref(false);
-  const latest = 22;
+  const latest = 23;
 
   const gameModeStatsUrl = (tag: string, season: number) =>
     `https://website-backend.w3champions.com/api/players/${encodeURIComponent(

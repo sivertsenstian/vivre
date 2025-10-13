@@ -73,7 +73,7 @@ const getBattleTag = async (input: string) => {
           style="vertical-align: middle; color: goldenrod">
           {{
             props.loading
-              ? `Adding challenger and calculating w3c ladder stats for ${model}...`
+              ? `Adding challenger and calculating w3c ladder stats for ${model ?? "new challenger"}...`
               : "Add a challenger from the w3c ladder to compete against!"
           }}
         </div>
