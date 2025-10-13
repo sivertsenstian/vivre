@@ -36,7 +36,7 @@ export const useEscapeStore = defineStore("escape", () => {
   const today = moment().startOf("day");
   const daysSinceStart = today.diff(start, "days");
   const rule = moment().startOf("isoWeek");
-  const latest = 22;
+  const latest = 23;
 
   const getData = async (tag: string) => {
     let result = {};

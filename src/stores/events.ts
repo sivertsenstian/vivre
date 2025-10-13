@@ -32,12 +32,12 @@ export const useEventsStore = defineStore("events", () => {
 
   const ongoing = ref<any>({});
 
-  const start = moment("07.10.2024", "DD.MM.YYYY").startOf("day");
+  const start = moment("06.10.2025", "DD.MM.YYYY").startOf("day");
   const today = moment().startOf("day");
   const daysSinceStart = today.diff(start, "days");
   const weekRule = moment().startOf("isoWeek");
   const monthRule = moment().startOf("month");
-  const latest = 22;
+  const latest = 23;
 
   const getData = async (tag: string) => {
     let result: IStatistics = {} as any;
