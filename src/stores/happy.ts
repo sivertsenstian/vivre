@@ -227,20 +227,18 @@ export const useHappyStore = defineStore("happy", () => {
   };
 
   // Do it live!
-  setInterval(() => {
-    accounts.forEach(async (account: string) => {
-      const result = await getData(account);
-      data.value[account] = result;
-      const o = await getOngoing(account);
-      if (
-        (o.active && !ongoing.value?.active) ||
-        (account === ongoing.value?.player?.battleTag &&
-          o.id !== ongoing.value?.id)
-      ) {
-        ongoing.value = o;
-      }
-    });
-  }, 10000);
+  accounts.forEach(async (account: string) => {
+    const result = await getData(account);
+    data.value[account] = result;
+    const o = await getOngoing(account);
+    if (
+      (o.active && !ongoing.value?.active) ||
+      (account === ongoing.value?.player?.battleTag &&
+        o.id !== ongoing.value?.id)
+    ) {
+      ongoing.value = o;
+    }
+  });
 
   const matches = computed(() => {
     return accounts

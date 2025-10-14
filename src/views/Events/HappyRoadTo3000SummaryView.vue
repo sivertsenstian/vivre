@@ -372,45 +372,6 @@ setInterval(() => {
                       {
                         type: 'line' as any,
                         yAxisID: 'mmrAxis',
-                        backgroundColor: '#daa520e8',
-                        borderColor: 'transparent',
-                        pointRadius: 10,
-                        pointHoverRadius: 15,
-                        data: events.data['Cacxa26#2948'].season[
-                          Race.Undead
-                        ].matches
-                          .filter((m: any) => {
-                            return moment(m.endTime).isSame(
-                              moment(end).subtract(1, 'day'),
-                              'day',
-                            );
-                          })
-                          .reverse()
-                          ?.reduce(
-                            (r: number[], m: any) => {
-                              const d = moment(m.endTime).dayOfYear();
-                              const day = days - (today.dayOfYear() - d);
-                              const p = getplayer('Cacxa26#2948')(m);
-                              const mmr = p.players[0].currentMmr;
-
-                              for (let i = day; i < r.length; i++) {
-                                r[i] = mmr;
-                              }
-
-                              return r;
-                            },
-                            _fill(
-                              _range(end.dayOfYear(), start.dayOfYear()),
-                              undefined,
-                            ),
-                          ),
-                        datalabels: {
-                          display: false,
-                        },
-                      } as any,
-                      {
-                        type: 'line' as any,
-                        yAxisID: 'mmrAxis',
                         backgroundColor: 'lime',
                         borderColor: 'green',
                         data: events.data['Cacxa26#2948'].season[
@@ -424,16 +385,21 @@ setInterval(() => {
                           .reverse()
                           ?.reduce(
                             (r: number[], m: any) => {
-                              const d = moment(m.endTime).dayOfYear();
-                              const day = days - (today.dayOfYear() - d);
+                              const startDay = start.dayOfYear();
+                              const matchDay = moment(m.endTime).dayOfYear();
+                              const actual = matchDay - startDay; // index placement in current array
+
                               const p = getplayer('Cacxa26#2948')(m);
                               const mmr = p.players[0].currentMmr;
 
-                              for (let i = day; i < r.length; i++) {
-                                r[i] = mmr;
-                              }
+                              const result = r.map((v, i) => {
+                                if (i >= actual) {
+                                  return mmr;
+                                }
+                                return v;
+                              });
 
-                              return r;
+                              return result;
                             },
                             _fill(
                               _range(end.dayOfYear(), start.dayOfYear()),
@@ -459,11 +425,18 @@ setInterval(() => {
                           .filter((m: any) => getwins('Cacxa26#2948', m))
                           ?.reduce(
                             (r: number[], m: any) => {
-                              const d = moment(m.endTime).dayOfYear();
-                              const day = days - (today.dayOfYear() - d);
+                              const startDay = start.dayOfYear();
+                              const matchDay = moment(m.endTime).dayOfYear();
+                              const actual = matchDay - startDay; // index placement in current array
 
-                              r[day]++;
-                              return r;
+                              const result = r.map((v, i) => {
+                                if (i === actual) {
+                                  return v + 1;
+                                }
+                                return v;
+                              });
+
+                              return result;
                             },
                             _fill(
                               _range(end.dayOfYear(), start.dayOfYear()),
@@ -490,11 +463,18 @@ setInterval(() => {
                           .filter((m: any) => getloss('Cacxa26#2948', m))
                           ?.reduce(
                             (r: number[], m: any) => {
-                              const d = moment(m.endTime).dayOfYear();
-                              const day = days - (today.dayOfYear() - d);
+                              const startDay = start.dayOfYear();
+                              const matchDay = moment(m.endTime).dayOfYear();
+                              const actual = matchDay - startDay; // index placement in current array
 
-                              r[day]++;
-                              return r;
+                              const result = r.map((v, i) => {
+                                if (i === actual) {
+                                  return v + 1;
+                                }
+                                return v;
+                              });
+
+                              return result;
                             },
                             _fill(
                               _range(end.dayOfYear(), start.dayOfYear()),
