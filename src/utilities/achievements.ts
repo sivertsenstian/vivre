@@ -645,6 +645,138 @@ const kreis_liga_season_5_definitions = {
   },
 };
 
+const kreis_liga_season_6_calculation = (
+  account: any,
+  ladderGoal: number,
+  teams: any[] = [],
+): any[] => {
+  const result = season_21_calculation(account);
+
+  const performance = account.data?.performance ?? [];
+  const wins = account.data?.matches?.filter((m: any) =>
+    iswin(m, account.battleTag),
+  );
+
+  // Number of wins/loss
+  let consecutiveLoss = 0;
+  let consecutiveWins = 0;
+  let w = 0;
+  let l = 0;
+  for (let i = 0; i < performance.length; i++) {
+    if (performance[i]) {
+      w++;
+    } else {
+      l++;
+    }
+
+    if (i > 0) {
+      consecutiveWins = Math.max(consecutiveWins, w);
+      consecutiveLoss = Math.max(consecutiveLoss, l);
+
+      if (performance[i] !== performance[i - 1]) {
+        w = 0;
+        l = 0;
+        if (performance[i]) {
+          w++;
+        } else {
+          l++;
+        }
+      }
+    }
+  }
+
+  let kills = 0;
+  const team = account.team;
+  const others = teams.reduce(
+    (a, t) =>
+      t.id === team ? a : [...a, ...t.players.map((p: any) => p.battleTag)],
+    [],
+  );
+
+  const getPlayerOpponent = getopponent(account.battleTag);
+
+  for (let i = 0; i < wins.length; i++) {
+    const t = getPlayerOpponent(wins[i]).players[0].battleTag;
+    if (others.includes(t)) {
+      kills++;
+    }
+  }
+
+  if (consecutiveLoss >= 5) {
+    result.push(kreis_liga_season_6_definitions["ach_du_scheisse"]);
+  }
+
+  if (consecutiveLoss >= 9) {
+    result.push(kreis_liga_season_6_definitions["nein_nein_nein"]);
+  }
+
+  if (consecutiveWins >= 3) {
+    result.push(kreis_liga_season_6_definitions["alle_gute_dinge"]);
+  }
+
+  if (kills > 0) {
+    const r = { ...kreis_liga_season_6_definitions["aint_war_hell"] };
+    r.points += kills;
+    r.description += ` - ${kills} kill(s)`;
+    result.push(r);
+  }
+
+  if (
+    calculateLadderPoints(account.battleTag, account.data.matches) >= ladderGoal
+  ) {
+    result.push(kreis_liga_season_5_definitions["ladder_goal"]);
+  }
+
+  return result;
+};
+
+const kreis_liga_season_6_definitions = {
+  ...season_21_definitions,
+  // 500
+  ladder_goal: {
+    id: "ladder_goal",
+    points: 500,
+    icon: "mdi-sausage",
+    name: "Alles hat ein Ende, nur die Wurst hat zwei!",
+    description: "Reach this seasons ladder goal!",
+  },
+
+  // 25
+  nein_nein_nein: {
+    id: "nein_nein_nein",
+    points: 25,
+    icon: "mdi-numeric-9-circle",
+    name: "nei nein NEIN!",
+    description: "Lose 9 games in a row",
+  },
+
+  // 25
+  alle_gute_dinge: {
+    id: "alle_gute_dinge",
+    points: 25,
+    icon: "mdi-numeric-3-circle",
+    name: "Aller guten Dinge sind drei",
+    description: "Win 3 games in a row",
+  },
+  // 25
+  ach_du_scheisse: {
+    id: "ach_du_scheisse",
+    points: 25,
+    icon: "mdi-emoticon-poop",
+    name: "Ach du Scheiße!",
+    description: "Lose 5 games in a row",
+  },
+
+  // 10 + 1 per kill!
+  aint_war_hell: {
+    id: "aint_war_hell",
+    points: 10,
+    icon: "mdi-knife-military",
+    name: "Get Some!",
+    description: "Defeat a player from an opposing team",
+  },
+};
+
 const kreis_liga_season_5_calculation = (
   account: any,
   ladderGoal: number,
@@ -1655,6 +1787,10 @@ export const season_achievements = {
   kreis_liga_season_5: {
     definitions: kreis_liga_season_5_definitions,
     calculate: kreis_liga_season_5_calculation,
+  },
+  kreis_liga_season_6: {
+    definitions: kreis_liga_season_6_definitions,
+    calculate: kreis_liga_season_6_calculation,
   },
   gnl_season_16: {
     definitions: gnl_season_16_definitions,

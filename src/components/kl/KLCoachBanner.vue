@@ -7,6 +7,10 @@ import gnl_coach_quikeet from "@assets/kreisliga/coaches/Quikeet_Profile.jpg";
 import gnl_coach_sparta from "@assets/kreisliga/coaches/sparta.png";
 import gnl_coach_sharky from "@assets/kreisliga/coaches/Sharky_Profile.jpg";
 import gnl_coach_whitefang from "@assets/kreisliga/coaches/WhiteFang_Profile.png";
+import gnl_coach_cien from "@assets/kreisliga/coaches/Cien_Profile.jpg";
+import gnl_coach_bigmurphy from "@assets/kreisliga/coaches/BigMurphy_profile.jpg";
+import gnl_coach_westii from "@assets/kreisliga/coaches/Westi_Profile.png";
+import gnl_coach_hurricane from "@assets/kreisliga/coaches/huRRicane_Profile.png";
 
 import kl_coach_missing from "@/assets/creeproutes/missing.png";
 
@@ -18,6 +22,10 @@ const coachKLBanner: any = {
   ["Exiled#21153"]: gnl_coach_exiled,
   ["sp4rta#21828"]: gnl_coach_sparta,
   ["RobotNinja#2136641"]: gnl_coach_sharky,
+  ["Cien#2931"]: gnl_coach_cien,
+  ["BiGMurphY#2467"]: gnl_coach_bigmurphy,
+  ["Westii#21756"]: gnl_coach_westii,
+  ["huRRicane90#21759"]: gnl_coach_hurricane,
   ["WhiteFang28#2496"]: gnl_coach_whitefang,
 };
 
