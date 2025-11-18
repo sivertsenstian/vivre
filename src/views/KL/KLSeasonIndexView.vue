@@ -7,7 +7,6 @@ import VueCountdown from "@chenfengyuan/vue-countdown";
 import kreis_logo from "@/assets/kreisliga/logo_Kreisliga.png";
 
 const theme = useTheme();
-const isDark = computed(() => theme.global.current.value.dark);
 
 const router = useRouter();
 const store = useKreisLigaStore();
@@ -16,9 +15,9 @@ const current = {
   id: uuidv4(),
   created: moment().toDate(),
   updated: moment().toDate(),
-  season: 5,
-  start: "31.03.2025",
-  end: "22.06.2025",
+  season: 6,
+  start: "10.11.2025",
+  end: "15.02.2026",
   teams: [
     {
       id: "vashjsvipers",
@@ -26,18 +25,10 @@ const current = {
       prefix: "",
       coaches: [
         {
-          battleTag: "Quikeet#21349",
-          name: 'Giovanni "Exiled" Trapattoni',
-          race: Race.NightElf,
-          races: [Race.NightElf, Race.Orc],
-          roles: ["Coach", "Player"],
-          quotes: ["Lieber widerlich als wieder nicht"],
-        },
-        {
           battleTag: "Exiled#21153",
           race: Race.Undead,
           races: [Race.Undead],
-          roles: ["Manager", "Tactical Genius"],
+          roles: ["Manager"],
           quotes: [
             "Flutschi ist immer verletzt. Was erlaube Flutschi? Ich habe fertig",
           ],
@@ -49,40 +40,40 @@ const current = {
           race: 8,
         },
         {
-          battleTag: "FlutshfinGER#21396",
-          race: 1,
-        },
-        {
-          battleTag: "quadgfan#1418",
-          race: 2,
-        },
-        {
           battleTag: "Quikeet#21349",
           race: 4,
         },
         {
-          battleTag: "Mataratzi#2446",
-          race: 4,
-        },
-        {
-          battleTag: "Coltaine#2624",
+          battleTag: "Meftly#2917",
           race: 1,
         },
         {
-          battleTag: "huRRicane90#21759",
+          battleTag: "Fasez#2587",
           race: 2,
         },
         {
-          battleTag: "stockhuebsch#2424",
-          race: 2,
+          battleTag: "Maxim#25843",
+          race: 4,
         },
         {
-          battleTag: "Domi#22759",
-          race: 2,
-        },
-        {
-          battleTag: "Westii#21756",
+          battleTag: "Dekker#2290",
           race: 8,
+        },
+        {
+          battleTag: "SOULKEEPA#21303",
+          race: 2,
+        },
+        {
+          battleTag: "Logxatar#2793",
+          race: 2,
+        },
+        {
+          battleTag: "Schocki#21319",
+          race: 4,
+        },
+        {
+          battleTag: "DrLinguine#1141",
+          race: 4,
         },
       ],
     },
@@ -95,46 +86,53 @@ const current = {
           battleTag: "sp4rta#21828",
           race: Race.Undead,
           races: [Race.Undead],
-          roles: ["Streamer", "Manager", "Beefcake"],
+          roles: ["Streamer", "Manager", "Player"],
           quotes: ["Danke danke Danköööö"],
+        },
+        {
+          battleTag: "Cien#2931",
+          race: Race.Orc,
+          races: [Race.Orc],
+          roles: ["Manager", "Coach"],
+          quotes: ["ein Fuchs muss tun, was ein Fuchs tun muss"],
         },
       ],
       players: [
         {
-          battleTag: "ThaGrinchy31#1490",
-          race: 4,
-        },
-        {
-          battleTag: "Cien#2931",
-          race: 2,
+          battleTag: "Lord#23492",
+          race: 0,
         },
         {
           battleTag: "Eiklur#2765",
           race: 8,
         },
         {
-          battleTag: "Tarmok#2559",
+          battleTag: "AntiLucker#2301",
           race: 2,
         },
         {
-          battleTag: "Maxim#25843",
+          battleTag: "Horst#22597",
+          race: 8,
+        },
+        {
+          battleTag: "Suko#21747",
           race: 4,
         },
         {
-          battleTag: "Isekje#2550",
+          battleTag: "luluxx#21166",
           race: 1,
         },
         {
-          battleTag: "pleschwond#2931",
-          race: 0,
-        },
-        {
           battleTag: "sp4rta#21828",
-          race: 8,
+          race: 2,
         },
         {
-          battleTag: "Haru#22993",
-          race: 8,
+          battleTag: "Hope4dope#2374",
+          race: 2,
+        },
+        {
+          battleTag: "KäferLukas#2748",
+          race: 1,
         },
       ],
     },
@@ -144,113 +142,112 @@ const current = {
       prefix: "",
       coaches: [
         {
-          battleTag: "RobotNinja#2136641",
-          race: Race.Human,
+          battleTag: "BiGMurphY#2467",
+          race: Race.Undead,
           races: [Race.Human, Race.Orc, Race.NightElf],
-          roles: ["Coach", "Manager", "Streamer"],
-          quotes: ["Orc IMBA. And Elf IMBA too!"],
+          roles: ["Coach", "Manager"],
+          quotes: ["Nach dem Sieg kann man immernoch in der Dusche weinen!"],
         },
       ],
       players: [
         {
-          battleTag: "RobotNinja#2136641",
-          race: 1,
+          battleTag: "BiGMurphY#2467",
+          race: 8,
         },
         {
-          battleTag: "Physix#21205",
-          race: 1,
+          battleTag: "Tarmok#2559",
+          race: 2,
         },
         {
-          battleTag: "drawkao#2342",
-          race: 0,
+          battleTag: "Mataratzi#2446",
+          race: 4,
         },
         {
           battleTag: "ThreeWayKay#2610",
           race: 1,
         },
         {
-          battleTag: "Blackrayman#2399",
-          race: 8,
-        },
-        {
-          battleTag: "onidemoni#2572",
-          race: 2,
-        },
-        {
-          battleTag: "Ultrapro#2880",
-          race: 8,
-        },
-        {
-          battleTag: "cedde#2548",
-          race: 4,
-        },
-        {
-          battleTag: "KäferLukas#2748",
-          race: 1,
-        },
-        {
-          battleTag: "Suko#21747",
-          race: 4,
-        },
-      ],
-    },
-    {
-      id: "stormwindkickerz",
-      name: "Stormwind Kickerz",
-      prefix: "",
-      coaches: [
-        {
-          battleTag: "WhiteFang28#2496",
-          race: Race.Human,
-          races: [Race.Human],
-          roles: ["Coach", "Manager", "Streamer"],
-          quotes: ["My enemies are many, my equals are none"],
-        },
-      ],
-      players: [
-        {
-          battleTag: "WhiteFang28#2496",
-          race: 1,
-        },
-        {
-          battleTag: "KaGeMaN#1160",
-          race: 1,
-        },
-        {
-          battleTag: "SOULKEEPA#21303",
-          race: 2,
-        },
-        {
-          battleTag: "Knuffy#21436",
+          battleTag: "StaRRavE90#2237",
           race: 0,
         },
         {
-          battleTag: "AntiLucker#2301",
-          race: 2,
-        },
-        {
-          battleTag: "Spray4fun#2803",
+          battleTag: "Coltaine#2624",
           race: 1,
         },
         {
-          battleTag: "Dekker#2290",
+          battleTag: "DerMave#2965",
           race: 8,
         },
         {
-          battleTag: "donnerdaumen#1743",
-          race: 4,
+          battleTag: "be4r#21991",
+          race: 1,
         },
         {
           battleTag: "kms3d#2526",
           race: 0,
         },
         {
-          battleTag: "Rangold#2541",
+          battleTag: "Crispy#22176",
+          race: 2,
+        },
+      ],
+    },
+    {
+      id: "fcwestfall",
+      name: "FC Westfall",
+      prefix: "",
+      coaches: [
+        {
+          battleTag: "Westii#21756",
+          race: Race.Undead,
+          races: [],
+          roles: ["Manager", "Streamer"],
+          quotes: ["Wat mutt, dat mutt"],
+        },
+        {
+          battleTag: "huRRicane90#21759",
+          race: Race.Orc,
+          races: [],
+          roles: ["Manager"],
+          quotes: ["Meister sein ist nicht schwer, Meister bleiben umso mehr!"],
+        },
+      ],
+      players: [
+        {
+          battleTag: "KaGeMaN#1160",
           race: 1,
         },
         {
-          battleTag: "wolke#21320",
+          battleTag: "ThaGrinchy31#1490",
+          race: 4,
+        },
+        {
+          battleTag: "Knuffy#21436",
+          race: 0,
+        },
+        {
+          battleTag: "Spray4fun#2803",
           race: 1,
+        },
+        {
+          battleTag: "Westii#21756",
+          race: 8,
+        },
+        {
+          battleTag: "Isekje#2550",
+          race: 1,
+        },
+        {
+          battleTag: "stockhuebsch#2424",
+          race: 2,
+        },
+        {
+          battleTag: "Kallas#2961",
+          race: 2,
+        },
+        {
+          battleTag: "Blackprisme#2713",
+          race: 2,
         },
       ],
     },
@@ -377,7 +374,7 @@ onMounted(() => {
             <div class="text-md-h2 text-h5 d-flex align-center justify-center">
               <img
                 class="mr-auto"
-                alt="kreis liga season 5!"
+                :alt="`kreis liga season ${store.data?.season}!`"
                 :src="kreis_logo"
                 height="100" />
               <span>Kreis Liga Season {{ store.data?.season }}</span>
@@ -428,7 +425,7 @@ onMounted(() => {
             ><div class="text-md-h2 text-h5 d-flex align-center justify-center">
               <img
                 class="mr-auto"
-                alt="kreis liga season 5!"
+                :alt="`kreis liga season ${store.data?.season}!`"
                 :src="kreis_logo"
                 height="100" />
               <span>Kreis Liga Season {{ store.data?.season }}</span>
@@ -439,7 +436,7 @@ onMounted(() => {
         </v-row>
         <v-row class="text-center">
           <v-col cols="12" md="8">
-            <v-row>
+            <v-row class="justify-space-around">
               <v-col v-for="team in store.data?.teams ?? []" cols="6" md="6">
                 <v-card
                   :class="`team ${leader?.id === team.id ? 'gold' : ''}`"

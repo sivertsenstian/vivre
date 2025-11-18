@@ -13,11 +13,13 @@ import { useDocument, useFirestore } from "vuefire";
 import kl_team_vipers from "@assets/kreisliga/teams/vipers.png";
 import kl_team_titans from "@assets/kreisliga/teams/titans.png";
 import kl_team_pandarens from "@assets/kreisliga/teams/pandarens.png";
-import kl_team_kickers from "@assets/kreisliga/teams/kickers.png";
+import kl_team_westfall from "@assets/kreisliga/teams/fcwestfall.png";
+import kl_team_ligaleitung from "@assets/kreisliga/teams/ligaleitung.jpg";
 import kl_team_index_vipers from "@assets/kreisliga/teams/vipers_index.png";
 import kl_team_index_titans from "@assets/kreisliga/teams/titans_index.png";
 import kl_team_index_pandarens from "@assets/kreisliga/teams/pandarens_index.png";
-import kl_team_index_kickers from "@assets/kreisliga/teams/kickers_index.png";
+import kl_team_index_westfall from "@assets/kreisliga/teams/fcwestfall_index.png";
+import kl_team_index_ligaleitung from "@assets/kreisliga/teams/ligaleitung_index.jpg";
 import kl_team_missing from "@/assets/creeproutes/missing.png";
 import _isEmpty from "lodash/isEmpty";
 import _isNil from "lodash/isNil";
@@ -35,14 +37,16 @@ const klBanners: { [key: string]: string } = {
   ["vashjsvipers"]: kl_team_vipers,
   ["azerothtitans"]: kl_team_titans,
   ["pandarens"]: kl_team_pandarens,
-  ["stormwindkickerz"]: kl_team_kickers,
+  ["fcwestfall"]: kl_team_westfall,
+  ["ligaleitung"]: kl_team_ligaleitung,
 };
 
 const klIndexBanners: { [key: string]: string } = {
   ["vashjsvipers"]: kl_team_index_vipers,
   ["azerothtitans"]: kl_team_index_titans,
   ["pandarens"]: kl_team_index_pandarens,
-  ["stormwindkickerz"]: kl_team_index_kickers,
+  ["fcwestfall"]: kl_team_index_westfall,
+  ["ligaleitung"]: kl_team_index_ligaleitung,
 };
 
 export const ladderGoal = 500;
@@ -62,7 +66,7 @@ const getData = async (account: IGNLAccount, start: Moment, end: Moment) => {
 
     const all = await getSeasonGamesBetween(
       account.battleTag,
-      [21],
+      [23],
       actualStart,
       end,
     );
@@ -144,7 +148,7 @@ export const useKreisLigaStore = defineStore("kreisliga", () => {
   }));
 
   const db = useFirestore();
-  const id = "b751d614-d9f6-4aca-b63d-439973928bfe";
+  const id = "835f35ed-93e6-43a7-9dfc-a7e2af42069f";
   const { promise } = useDocument<any>(doc(db, "kreis", id));
 
   const initialize = async () => {
@@ -192,7 +196,7 @@ export const useKreisLigaStore = defineStore("kreisliga", () => {
           player.data.matches,
         );
         player.achievements = season_achievements[
-          "kreis_liga_season_5"
+          "kreis_liga_season_6"
         ].calculate(player, ladderGoal, d.teams);
         player.achievementPoints = calculateAchievementPoints(
           player.achievements,

@@ -271,7 +271,7 @@ onMounted(() => {
           </v-col>
         </v-row>
 
-        <v-row>
+        <v-row v-if="current.coaches.length">
           <v-col cols="12" md="4" offset-md="4" class="text-center">
             <div class="text-h4">Coaches</div>
             <hr />
