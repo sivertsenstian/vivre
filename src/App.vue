@@ -204,10 +204,16 @@ const drawer = ref(!mobile.value);
             to="/kreisliga/pandarens"></v-list-item>
           <v-list-item
             prepend-icon="mdi-shield-crown-outline"
-            title="Stormwind Kickerz"
+            title="FC Westfall"
             color="green-lighten-3"
             router
-            to="/kreisliga/stormwindkickerz"></v-list-item>
+            to="/kreisliga/fcwestfall"></v-list-item>
+          <v-list-item
+            prepend-icon="mdi-shield-crown-outline"
+            title="Liga Leitung"
+            color="green-lighten-3"
+            router
+            to="/kreisliga/ligaleitung"></v-list-item>
         </v-list-group>
         <v-list-item
           color="red"
