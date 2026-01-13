@@ -16,7 +16,13 @@ import {
   isRace,
 } from "@/utilities/matchcalculator";
 import _groupBy from "lodash/groupBy";
-import { search } from "@/utilities/api.ts";
+import { search } from "@/utilities/api";
+import {
+  current_month,
+  current_season,
+  current_week,
+  today,
+} from "@/utilities/constants";
 
 export const useSeasonStore = defineStore("season", () => {
   const settings = useSettingsStore();
@@ -24,7 +30,6 @@ export const useSeasonStore = defineStore("season", () => {
 
   const searchResults = ref([]);
   const searching = ref(false);
-  const latest = 23;
 
   const gameModeStatsUrl = (tag: string, season: number) =>
     `https://website-backend.w3champions.com/api/players/${encodeURIComponent(
@@ -51,13 +56,7 @@ export const useSeasonStore = defineStore("season", () => {
     matches: [],
   });
   const maps = ref<string[]>([]);
-
   const highscore = ref<any>({});
-
-  const today = moment().startOf("day");
-  const weekRule = moment().startOf("isoWeek");
-  const monthRule = moment().startOf("month");
-
   const player = ref<IStatistics>();
 
   const getMaps = async () => {
@@ -78,7 +77,7 @@ export const useSeasonStore = defineStore("season", () => {
     let result: any = {};
     highscore.value = { loading: true };
     try {
-      for (let i = 1; i <= latest; i++) {
+      for (let i = 1; i <= current_season; i++) {
         const { data: stats } = await axios.get(gameModeStatsUrl(tag.value, i));
         const g = _groupBy(
           stats.filter((s: any) => s.gameMode === 1 && s.race !== null),
@@ -111,7 +110,7 @@ export const useSeasonStore = defineStore("season", () => {
     let dayActual = [];
 
     try {
-      let all = await getAllSeasonGames(btag, latest);
+      let all = await getAllSeasonGames(btag, current_season);
 
       const race = all?.[0]?.teams.find((t: any) =>
         t.players.some(
@@ -121,10 +120,10 @@ export const useSeasonStore = defineStore("season", () => {
 
       seasonActual = all;
       monthActual = all
-        .filter((m: any) => moment(m.endTime).isAfter(monthRule))
+        .filter((m: any) => moment(m.endTime).isAfter(current_month))
         .filter((m: any) => isRace(btag, m, race));
       weekActual = all
-        .filter((m: any) => moment(m.endTime).isAfter(weekRule))
+        .filter((m: any) => moment(m.endTime).isAfter(current_week))
         .filter((m: any) => isRace(btag, m, race));
       dayActual = all
         .filter((m: any) => moment(m.endTime).isAfter(today))
@@ -234,7 +233,6 @@ export const useSeasonStore = defineStore("season", () => {
     searchResults,
     searching,
     highscore,
-    latest,
     maps,
   };
 });

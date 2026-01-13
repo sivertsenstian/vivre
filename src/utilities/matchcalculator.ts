@@ -14,6 +14,7 @@ import {
   calculateAchievementPoints,
   calculateLadderPoints,
 } from "@/utilities/achievements.ts";
+import { current_season } from "@/utilities/constants.ts";
 
 export const getPercentage = (data: any, race: Race) => {
   return _round(
@@ -271,20 +272,11 @@ const url = (
   tag: string,
   offset: number = 0,
   size: number = 100,
-  season: number = 19,
+  season: number = current_season,
 ) =>
   `https://website-backend.w3champions.com/api/matches/search?playerId=${encodeURIComponent(
     tag,
   )}&gateway=20&offset=${offset}&pageSize=${size}&gameMode=1&season=${season}`;
-
-export const getMostRecentGames: any = async (
-  tag: string,
-  season: number,
-  amount: number = 1,
-) => {
-  const { data: response } = await axios.get(url(tag, 0, amount, season));
-  return response.matches;
-};
 
 export const getAllSeasonGames = async (
   tag: string,
@@ -359,6 +351,3 @@ export const getSeasonGamesBetween = async (
   );
   return _sortBy(result, "endTime").reverse();
 };
-
-export const numberOfGames = (target: number, avg: number) =>
-  Math.abs(Math.ceil(target / avg));

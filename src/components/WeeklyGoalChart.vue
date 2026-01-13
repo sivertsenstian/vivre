@@ -2,6 +2,7 @@
 import { Doughnut } from "vue-chartjs";
 import { Chart as ChartJS, ArcElement } from "chart.js";
 import _capitalize from "lodash/capitalize";
+import { end_color, start_color } from "@/utilities/constants.ts";
 
 ChartJS.register(ArcElement);
 
@@ -28,11 +29,11 @@ const options = {
             {
               backgroundColor:
                 (props.played ?? 0) >= (props.goal ?? 0)
-                  ? ['#66BB6A']
-                  : ['rgb(218,165, 32)', 'rgb(33,33,33)'],
+                  ? [end_color]
+                  : [start_color, 'rgb(33,33,33)'],
               borderColor:
                 (props.played ?? 0) >= (props.goal ?? 0)
-                  ? '#66BB6A'
+                  ? end_color
                   : 'rgb(33,33,33)',
               data:
                 (props.played ?? 0) >= (props.goal ?? 0)
@@ -59,9 +60,8 @@ const options = {
         <v-col cols="12" class="pa-0">
           <span
             :class="{
-              'text-gold': Number(props.played ?? 0) < Number(props.goal ?? 0),
-              'text-green':
-                Number(props.played ?? 0) >= Number(props.goal ?? 0),
+              'text-start': Number(props.played ?? 0) < Number(props.goal ?? 0),
+              'text-end': Number(props.played ?? 0) >= Number(props.goal ?? 0),
             }">
             {{ props.played }}</span
           >
@@ -73,7 +73,11 @@ const options = {
 </template>
 
 <style scoped>
-.text-gold {
-  color: goldenrod;
+.text-start {
+  color: var(--level-start-color);
+}
+
+.text-end {
+  color: var(--level-end-color);
 }
 </style>

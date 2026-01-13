@@ -22,8 +22,7 @@ import type {
 } from "@/utilities/types";
 import moment from "moment";
 import { detectIncognito } from "detectincognitojs";
-
-const version = { major: 2, minor: 0, patch: 1, full: "2.0.1" };
+import { version } from "@/utilities/constants.ts";
 
 export const getVersionColor = (v: string) => {
   if (v === undefined || !v.length || !v.includes(".")) {
@@ -234,6 +233,5 @@ export const useBuildsStore = defineStore("builds", () => {
     canEdit,
     difficulties,
     claim,
-    version,
   };
 });
