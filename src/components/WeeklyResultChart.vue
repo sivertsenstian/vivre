@@ -8,6 +8,7 @@ import {
   LinearScale,
 } from "chart.js";
 import ChartDataLabels from "chartjs-plugin-datalabels";
+import { end_color, start_color } from "@/utilities/constants.ts";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, ChartDataLabels);
 
@@ -35,7 +36,7 @@ const options = {
           labels: ['M', 'T', 'W', 'T', 'F', 'S', 'S'],
           datasets: [
             {
-              backgroundColor: '#66BB6A',
+              backgroundColor: end_color,
               data:
                 props.weekly.matches
                   ?.reduce(
@@ -60,11 +61,11 @@ const options = {
                 anchor: 'end',
                 align: 'end',
                 offset: -7,
-                color: 'goldenrod',
+                color: 'lightgray',
               },
             },
             {
-              backgroundColor: 'rgb(251, 140, 0)',
+              backgroundColor: start_color,
               data:
                 props.weekly.matches
                   ?.reduce(
@@ -89,13 +90,12 @@ const options = {
                 anchor: 'end',
                 align: 'end',
                 offset: -7,
-                color: 'goldenrod',
+                color: 'gray',
               },
             },
           ],
         }"
-        :options="options"
-      />
+        :options="options" />
     </v-col>
   </v-row>
 </template>

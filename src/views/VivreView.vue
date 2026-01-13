@@ -38,6 +38,12 @@ import _isNil from "lodash/isNil";
 import type { IRaceStatistics, IStatistics } from "@/utilities/types.ts";
 import _sortBy from "lodash/sortBy";
 import MapLink from "@/components/MapLink.vue";
+import {
+  current_season,
+  duration,
+  days_since_start,
+  start,
+} from "@/utilities/constants";
 
 const raceBanner: any = {
   [Race.Human]: hu_banner,
@@ -62,11 +68,11 @@ const ranks = [
 const numberOfGames = (target: number, avg: number) =>
   Math.abs(Math.ceil(target / avg));
 
-let duration = ref(
+let ongoing_game_duration = ref(
   moment.utc(moment().diff(stats?.ongoing?.start)).format("mm:ss"),
 );
 setInterval(() => {
-  duration.value = moment
+  ongoing_game_duration.value = moment
     .utc(moment().diff(stats?.ongoing?.start))
     .format("mm:ss");
 }, 1000);
@@ -135,7 +141,7 @@ const goal = computed(() => {
     } else if (settings.data.mode === "month") {
       total = setGoalPerDay * moment().daysInMonth();
     } else if (settings.data.mode === "season") {
-      total = settings.duration * setGoalPerDay;
+      total = duration * setGoalPerDay;
     }
   }
   return {
@@ -192,7 +198,7 @@ onUnmounted(() => {
                   <v-col cols="12">
                     <span class="text-h6 font-weight-bold"
                       >Playing on '<map-link :name="stats.ongoing?.map" />' :
-                      {{ duration }}</span
+                      {{ ongoing_game_duration }}</span
                     >
                   </v-col>
                   <v-col cols="12">
@@ -376,8 +382,8 @@ onUnmounted(() => {
                       style="border: 1px solid gray"
                       :color="
                         stats.player.day.total >= goal.perDay
-                          ? 'success'
-                          : 'warning'
+                          ? 'teal'
+                          : 'purple'
                       "
                       :model-value="stats.player.day.total"
                       :max="goal.perDay"
@@ -588,7 +594,7 @@ onUnmounted(() => {
                   <versus-banner
                     v-if="challenger === stats.player.battleTag"
                     :player="stats.player"
-                    :season-start="settings.start"
+                    :season-start="start"
                     :rank="rank[stats.player.battleTag]" />
                   <versus-banner
                     v-else
@@ -602,7 +608,7 @@ onUnmounted(() => {
                     "
                     :challenger="challenger"
                     :player="stats.challengers[challenger!]"
-                    :season-start="settings.start"
+                    :season-start="start"
                     :rank="rank[challenger!]" />
                 </v-col>
                 <v-col
@@ -779,10 +785,16 @@ onUnmounted(() => {
                                   stats.ranking?.[stats.player.race]?.league
                                 ]?.name
                               }}
-                              {{
-                                stats.ranking?.[stats.player.race]?.division
-                              }}</span
-                            >
+                              <span
+                                v-if="
+                                  stats.ranking?.[stats.player.race]?.division >
+                                  0
+                                ">
+                                {{
+                                  stats.ranking?.[stats.player.race]?.division
+                                }}
+                              </span>
+                            </span>
                             <span style="vertical-align: middle"
                               >Rank
                               {{
@@ -910,6 +922,16 @@ onUnmounted(() => {
                 </v-card>
               </div>
             </v-sheet>
+            <v-progress-linear
+              class="season-progress"
+              :model-value="(days_since_start / duration) * 100"
+              color="purple"
+              :title="`The current season (${current_season}) is ${Math.round((days_since_start / duration) * 100)}% done - ${duration - days_since_start} day(s) left`">
+            </v-progress-linear>
+            <span class="season-progress-label"
+              >{{ duration - days_since_start }} day(s) left of the current
+              season</span
+            >
           </v-col>
 
           <v-col cols="12">
@@ -982,14 +1004,32 @@ onUnmounted(() => {
 
 <style>
 :root {
-  --level-start-color: rgb(237 0 0 / 87%);
-  --level-end-color: rgb(255 180 0 / 77%);
+  --level-start-color: rgba(110, 47, 145, 0.87);
+  --level-end-color: rgba(29, 91, 131, 0.77);
+}
+
+.season-progress-label {
+  bottom: 21px;
+  left: 2px;
+  display: block;
+  height: 0;
+  position: relative;
+  font-size: 11px;
+  color: var(--level-start-color);
+  filter: brightness(2);
+}
+
+.season-progress {
+  transition: border-color 1.5s ease-in-out;
+  &:hover {
+    border: 1px solid var(--level-start-color);
+  }
 }
 
 .level-progress {
-  border: 1px solid goldenrod;
+  border: 1px solid transparent;
   background-color: transparent;
-  border-radius: 5px;
+  border-radius: 3px;
 
   .v-progress-linear__determinate {
     background-image: linear-gradient(
@@ -1003,9 +1043,10 @@ onUnmounted(() => {
   }
 
   .v-progress-linear__buffer {
-    box-shadow: 0px 0px 15px 5px gold !important;
+    box-shadow: 0px 0px 15px 10px var(--level-end-color) !important;
+    filter: brightness(1.5);
     animation: pulse 3s infinite ease-in-out;
-    opacity: 0.8;
+    opacity: 0.9;
   }
 }
 
@@ -1030,7 +1071,7 @@ onUnmounted(() => {
   font-weight: bold;
   position: relative;
   left: 0px;
-  bottom: 23px;
+  bottom: 22px;
 }
 
 @keyframes pulse {

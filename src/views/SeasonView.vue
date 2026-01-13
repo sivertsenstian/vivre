@@ -3,17 +3,17 @@ import ResultChart from "@/components/ResultChart.vue";
 import { useSettingsStore } from "@/stores/settings";
 import { useSeasonStore } from "@/stores/season";
 import { Race, raceIcon } from "@/stores/races";
+import {
+  start,
+  end,
+  days_since_start,
+  duration,
+  current_season,
+} from "@/utilities/constants.ts";
 
 const settings = useSettingsStore();
 const store = useSeasonStore();
 
-const start = moment("06.10.25", "DD.MM.YYYY");
-const end = moment(start).add(15, "weeks");
-
-const today = moment();
-const days = today.diff(start, "days");
-
-import moment from "moment/moment";
 import Performance from "@/components/Performance.vue";
 import Banner from "@/components/Banner.vue";
 import MapLink from "@/components/MapLink.vue";
@@ -31,7 +31,7 @@ const races = [Race.Human, Race.Orc, Race.NightElf, Race.Undead, Race.Random];
               <v-row>
                 <v-col>
                   <div class="text-h4 text-center">
-                    Season: {{ store.latest }} //
+                    Season: {{ current_season }} //
                     {{ start.format("DD.MM.YY") }} to
                     {{ end.format("DD.MM.YY") }}
                   </div>
@@ -48,7 +48,8 @@ const races = [Race.Human, Race.Orc, Race.NightElf, Race.Undead, Race.Random];
                   <div class="text-h5">
                     {{
                       Math.ceil(
-                        store.player.season.summary.total / Math.max(days, 1),
+                        store.player.season.summary.total /
+                          Math.max(days_since_start, 1),
                       )
                     }}
                     game(s) per day on average
@@ -70,7 +71,7 @@ const races = [Race.Human, Race.Orc, Race.NightElf, Race.Undead, Race.Random];
                   >
                 </v-col>
               </v-row>
-              <v-row class="mt-10">
+              <v-row class="my-10">
                 <v-col
                   cols="12"
                   class="text-center"
@@ -114,6 +115,7 @@ const races = [Race.Human, Race.Orc, Race.NightElf, Race.Undead, Race.Random];
                       variant="solo"
                       item-title="battleTag"
                       item-value="battleTag"
+                      hide-details
                       auto-select-first />
                   </v-card>
                 </div>
@@ -138,6 +140,26 @@ const races = [Race.Human, Race.Orc, Race.NightElf, Race.Undead, Race.Random];
                 </v-col>
               </v-row>
             </v-fade-transition>
+            <v-row>
+              <v-col cols="12" class="mt-3">
+                <v-progress-linear
+                  height="15"
+                  class="season-progress"
+                  :model-value="(days_since_start / duration) * 100"
+                  color="purple"
+                  :title="`The current season (${current_season}) is ${Math.round((days_since_start / duration) * 100)}% done - ${duration - days_since_start} day(s) left`">
+                  <span style="font-size: 12px"
+                    >{{
+                      Math.round((days_since_start / duration) * 100)
+                    }}%</span
+                  >
+                </v-progress-linear>
+                <span class="season-progress-label"
+                  >{{ duration - days_since_start }} day(s) left of the current
+                  season</span
+                >
+              </v-col>
+            </v-row>
           </v-sheet>
         </v-col>
       </v-row>
@@ -262,9 +284,23 @@ const races = [Race.Human, Race.Orc, Race.NightElf, Race.Undead, Race.Random];
   </main>
 </template>
 
-<style>
-.v-stepper-item {
-  opacity: 1;
+<style scoped>
+.season-progress-label {
+  bottom: 33px;
+  left: 2px;
+  display: block;
+  height: 0;
+  position: relative;
+  font-size: 12px;
+  color: var(--level-start-color);
+  filter: brightness(2);
+}
+
+.season-progress {
+  transition: border-color 1.5s ease-in-out;
+  &:hover {
+    border: 1px solid var(--level-start-color);
+  }
 }
 
 .loss .v-stepper-item__avatar {

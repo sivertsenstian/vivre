@@ -1,12 +1,9 @@
 <script setup lang="ts">
-import { useTheme } from "vuetify";
 import { computed, onMounted } from "vue";
 import { teamKLIndexBanner, useKreisLigaStore } from "@/stores/kreisliga.ts";
 import { Race } from "@/stores/races";
 import VueCountdown from "@chenfengyuan/vue-countdown";
 import kreis_logo from "@/assets/kreisliga/logo_Kreisliga.png";
-
-const theme = useTheme();
 
 const router = useRouter();
 const store = useKreisLigaStore();

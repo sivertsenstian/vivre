@@ -43,78 +43,27 @@ const drawer = ref(!mobile.value);
         <v-list-item
           color="green"
           prepend-icon="mdi-crown"
-          title="Live"
+          title="Ladder Profile"
           router
           to="/" />
         <v-list-item
           color="green"
-          prepend-icon="mdi-account-group"
-          title="Challengers Ladder"
-          router
-          to="/challengers" />
-        <v-list-item
-          color="green"
           prepend-icon="mdi-flag"
-          title="Season"
+          title="Season Profile"
           router
-          to="/season"></v-list-item>
+          to="/season" />
         <v-list-item
           color="green"
           prepend-icon="mdi-vector-polyline"
           title="Creep Routes"
           router
-          to="/creeproutes"></v-list-item>
-        <v-list-group>
-          <template v-slot:activator="{ props }">
-            <v-list-item
-              color="green"
-              v-bind="props"
-              prepend-icon="mdi-podcast"
-              title="Events"></v-list-item>
-          </template>
-          <v-list-item
-            prepend-icon="mdi-robot-happy"
-            title="Happy tracker"
-            color="green-lighten-3"
-            router
-            to="/events/happy-tracker"></v-list-item>
-          <v-list-item
-            prepend-icon="mdi-trophy"
-            title="Happy: 3000 MMR"
-            color="green-lighten-3"
-            router
-            to="/events/road-to-3000"></v-list-item>
-          <v-list-item
-            prepend-icon="mdi-trophy"
-            title="Tyler1: 2000 MMR"
-            color="green-lighten-3"
-            router
-            to="/events/road-to-2000"></v-list-item>
-          <v-list-item
-            prepend-icon="mdi-run"
-            title="The Great Escape"
-            color="green-lighten-3"
-            router
-            to="/events/the-great-escape" />
-          <v-list-item
-            prepend-icon="mdi-twitch"
-            title="Grubbys Streamer Ladder"
-            color="purple-lighten-1"
-            router
-            to="/events/grubbys-invitational" />
-          <v-list-item
-            prepend-icon="mdi-fire"
-            title="DACH Ladder Challenge"
-            color="orange-lighten-1"
-            router
-            to="/events/dach-ladder" />
-        </v-list-group>
+          to="/creeproutes" />
         <v-list-item
           color="green"
           prepend-icon="mdi-castle"
           title="Build Orders"
           router
-          to="/buildorders"></v-list-item>
+          to="/buildorders" />
         <v-list-group>
           <template v-slot:activator="{ props }">
             <v-list-item
