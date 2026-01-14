@@ -15,6 +15,7 @@ import {
   getAllSeasonGames,
   getInfo,
   getloss,
+  getplayer,
   getPlayerInformation,
   getRaceStatistics,
   getwins,
@@ -266,30 +267,17 @@ export const useStatsStore = defineStore("stats", () => {
         current_season,
         100,
       );
-      const last = _take(
-        season
-          .filter((m) => m.durationInSeconds > 4 * 60)
-          .filter((m) => isRace(opponent.battleTag, m, opponent.race))
-          .filter((m) => opponentIsRace(opponent.battleTag, m, player.race)),
-        10,
-      );
-
-      let m: any[] = [];
-      for (let i = 0; i < last.length; i++) {
-        const { data: ma } = await axios.get(getMatchUrl(last[i].id));
-        m.push(ma);
-      }
+      const relevant_matches = season
+        .filter((m) => m.durationInSeconds > 4 * 60)
+        .filter((m) => isRace(opponent.battleTag, m, opponent.race))
+        .filter((m) => opponentIsRace(opponent.battleTag, m, player.race));
 
       let heroes: any = {};
-      for (let i = 0; i < m.length; i++) {
-        const score = m[i].playerScores.find(
-          (s: any) =>
-            s.battleTag.toLowerCase() === opponent.battleTag.toLowerCase(),
-        );
-        const key = score.heroes
-          .map((h: any) => h.icon)
-          // .sort()
-          .join(",");
+      const getOpponent = getplayer(opponent.battleTag);
+      for (let i = 0; i < relevant_matches.length; i++) {
+        const m = relevant_matches[i];
+        const score = getOpponent(m)?.players[0];
+        const key = score.heroes.map((h: any) => h.icon).join(",");
 
         if (heroes[key]) {
           heroes[key] += 1;
@@ -298,10 +286,10 @@ export const useStatsStore = defineStore("stats", () => {
         }
       }
 
-      const wins = m
+      const wins = relevant_matches
         .map((m: any) => m.match)
         .filter((x: any) => getwins(opponent.battleTag, x));
-      const loss = m
+      const loss = relevant_matches
         .map((m: any) => m.match)
         .filter((x: any) => getloss(opponent.battleTag, x));
 
