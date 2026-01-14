@@ -3,7 +3,7 @@ import live_explain_dark from "@/assets/live_help_dark.png";
 import live_explain from "@/assets/live_help.png";
 import { computed, onMounted, onUnmounted, ref } from "vue";
 import NumberAnimation from "vue-number-animation";
-import moment, { type Moment } from "moment";
+import moment from "moment";
 import _round from "lodash/round";
 import _capitalize from "lodash/capitalize";
 import _fromPairs from "lodash/fromPairs";
@@ -22,6 +22,7 @@ import {
   heroIcon,
   CreepRouteCategory,
   category,
+  raceName,
 } from "@/stores/races";
 
 const settings = useSettingsStore();
@@ -43,7 +44,10 @@ import {
   duration,
   days_since_start,
   start,
+  races,
 } from "@/utilities/constants";
+import { getPlayerInformation } from "@/utilities/matchcalculator.ts";
+import w3ciconDark from "@/assets/w3c_dark.png";
 
 const raceBanner: any = {
   [Race.Human]: hu_banner,
@@ -64,6 +68,12 @@ const ranks = [
   { name: "Bronze", icon: "mdi-gold", color: "#CD7F32" },
   { name: "Grass", icon: "mdi-grass", color: "#136d15" },
 ];
+
+const openw3cprofile = (battleTag: string) =>
+  window.open(
+    `https://www.w3champions.com/player/${encodeURIComponent(battleTag)}`,
+    "_blank",
+  );
 
 const numberOfGames = (target: number, avg: number) =>
   Math.abs(Math.ceil(target / avg));
@@ -637,20 +647,68 @@ onUnmounted(() => {
             <v-sheet class="pa-5" :elevation="5">
               <div class="text-h6 text-center">
                 <v-card elevation="0">
-                  <v-autocomplete
-                    :items="stats.searchResults"
-                    :loading="stats.searching"
-                    @input="(e: any) => stats.getBattleTag(e.target.value)"
-                    clearable
-                    v-model="settings.data.battleTag as any"
-                    class="mx-auto"
-                    density="comfortable"
-                    placeholder="Search W3C for player..."
-                    prepend-inner-icon="mdi-magnify"
-                    variant="solo"
-                    item-title="battleTag"
-                    item-value="battleTag"
-                    auto-select-first />
+                  <v-row>
+                    <v-col cols="9">
+                      <v-autocomplete
+                        :items="stats.searchResults"
+                        :loading="stats.searching"
+                        @input="(e: any) => stats.getBattleTag(e.target.value)"
+                        @update:model-value="
+                          async (value: any) => {
+                            console.log('UPDATING VALUE => ' + value);
+                            if (_isNil(value)) {
+                              settings.data.race = undefined;
+                            } else {
+                              const information = await getPlayerInformation(
+                                value,
+                                current_season,
+                              );
+                              settings.data.race =
+                                information?.race ?? Race.Random;
+                            }
+                          }
+                        "
+                        clearable
+                        v-model="settings.data.battleTag as any"
+                        class="mx-auto"
+                        density="comfortable"
+                        placeholder="Search W3C for player..."
+                        prepend-inner-icon="mdi-magnify"
+                        variant="solo"
+                        item-title="battleTag"
+                        item-value="battleTag"
+                        auto-select-first />
+                    </v-col>
+                    <v-col cols="3">
+                      <v-select
+                        variant="plain"
+                        hide-details
+                        :items="
+                          races.map((r) => ({
+                            text: r === 0 ? 'Random' : raceName[r],
+                            value: r,
+                          }))
+                        "
+                        density="compact"
+                        item-title="text"
+                        item-value="value"
+                        v-model="settings.data.race">
+                        <template v-slot:selection="{ item }">
+                          <div class="text-center mt-1">
+                            <img :width="35" :src="raceIcon[item.value]" />
+                          </div>
+                        </template>
+                        <template v-slot:item="{ props: itemProps, item }">
+                          <v-list-item
+                            v-bind="itemProps"
+                            class="text-center"
+                            title="">
+                            <img :width="40" :src="raceIcon[item.value]" />
+                          </v-list-item>
+                        </template>
+                      </v-select>
+                    </v-col>
+                  </v-row>
                   <v-card-item>
                     <v-card-title>
                       <span
@@ -779,7 +837,15 @@ onUnmounted(() => {
                                   stats.ranking?.[stats.player.race]?.league
                                 ]?.color
                               " />
-                            <span style="vertical-align: middle" class="mx-1"
+                            <span
+                              :style="{
+                                'vertical-align': 'middle',
+                                color:
+                                  ranks?.[
+                                    stats.ranking?.[stats.player.race]?.league
+                                  ]?.color,
+                              }"
+                              class="mx-1 mt-1 d-inline-block"
                               >{{
                                 ranks?.[
                                   stats.ranking?.[stats.player.race]?.league
@@ -795,9 +861,10 @@ onUnmounted(() => {
                                 }}
                               </span>
                             </span>
-                            <span style="vertical-align: middle"
-                              >Rank
-                              {{
+                            <span
+                              style="vertical-align: middle; color: #eee"
+                              class="mt-1 d-inline-block">
+                              #{{
                                 stats.ranking?.[stats.player.race]?.rank
                               }}</span
                             >
@@ -915,6 +982,18 @@ onUnmounted(() => {
                               </div>
                             </v-col>
                           </v-row>
+                        </v-col>
+                        <v-col cols="12" class="pa-0 ma-0">
+                          <v-btn
+                            title="Open W3Champions Profile Page"
+                            color="transparent"
+                            block
+                            variant="flat"
+                            @click="
+                              () => openw3cprofile(settings.data.battleTag)
+                            "
+                            ><img :src="w3ciconDark" height="22px"
+                          /></v-btn>
                         </v-col>
                       </v-row>
                     </v-card-text>

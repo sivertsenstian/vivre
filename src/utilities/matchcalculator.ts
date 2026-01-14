@@ -278,6 +278,13 @@ const url = (
     tag,
   )}&gateway=20&offset=${offset}&pageSize=${size}&gameMode=1&season=${season}`;
 
+export const getPlayerInformation = async (tag: string, season: number) => {
+  if (!_isNil(tag) && tag.includes("#")) {
+    const { data: response } = await axios.get(url(tag, 0, 1, season));
+    return getInfo(tag, response.matches);
+  }
+};
+
 export const getAllSeasonGames = async (
   tag: string,
   season: number,

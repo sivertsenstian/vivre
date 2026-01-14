@@ -15,6 +15,7 @@ import {
   getAllSeasonGames,
   getInfo,
   getloss,
+  getPlayerInformation,
   getRaceStatistics,
   getwins,
   isRace,
@@ -24,14 +25,20 @@ import _round from "lodash/round";
 import { search } from "@/utilities/api.ts";
 import _groupBy from "lodash/groupBy";
 import _forEach from "lodash/forEach";
+import {
+  current_season,
+  current_week,
+  current_month,
+  today,
+} from "@/utilities/constants.ts";
 
 export const useStatsStore = defineStore("stats", () => {
   const settings = useSettingsStore();
-  const tag = computed(() => settings.data.battleTag);
+  const settings_battleTag = computed(() => settings.data.battleTag);
+  const settings_race = computed(() => settings.data.race);
 
   const searchResults = ref([]);
   const searching = ref(false);
-  const latest = 23;
 
   const currentUrl = (tag: string) =>
     `https://website-backend.w3champions.com/api/matches/ongoing/${encodeURIComponent(
@@ -43,7 +50,7 @@ export const useStatsStore = defineStore("stats", () => {
       tag,
     )}&opponentId=${encodeURIComponent(
       opponent,
-    )}&pageSize=100&season=${latest}`;
+    )}&pageSize=100&season=${current_season}`;
 
   const getMatchUrl = (id: string) =>
     `https://website-backend.w3champions.com/api/matches/${id}`;
@@ -68,10 +75,6 @@ export const useStatsStore = defineStore("stats", () => {
     matches: [],
   });
   const maps = ref<string[]>([]);
-
-  const today = moment().startOf("day");
-  const weekRule = moment().startOf("isoWeek");
-  const monthRule = moment().startOf("month");
 
   const player = ref<IStatistics>();
   const ranking = ref<any>();
@@ -98,10 +101,14 @@ export const useStatsStore = defineStore("stats", () => {
 
   const getLeagueAndRanking = async () => {
     let result: any = {};
-    ranking.value = { ...ranking.value, tag, loading: true };
+    ranking.value = {
+      ...ranking.value,
+      tag: settings_battleTag,
+      loading: true,
+    };
     try {
       const { data: stats } = await axios.get(
-        gameModeStatsUrl(tag.value, latest),
+        gameModeStatsUrl(settings_battleTag.value, current_season),
       );
       const g = _groupBy(
         stats.filter((s: any) => s.gameMode === 1 && s.race !== null),
@@ -115,7 +122,7 @@ export const useStatsStore = defineStore("stats", () => {
         ) {
           const progress = s.rankingPoints - Math.floor(s.rankingPoints);
           const previous =
-            ranking.value.tag === tag
+            ranking.value.tag === settings_battleTag
               ? (ranking.value?.[s.race]?.levelProgress ?? progress)
               : progress;
 
@@ -133,7 +140,7 @@ export const useStatsStore = defineStore("stats", () => {
             losses: s.losses,
             winrate: s.winrate,
             quantile: s.quantile,
-            season: latest,
+            season: current_season,
           };
         }
       });
@@ -142,7 +149,7 @@ export const useStatsStore = defineStore("stats", () => {
     }
   };
 
-  const getMatches = async (btag: string) => {
+  const getMatches = async (battleTag: string, race: Race) => {
     let result: IStatistics = {} as any;
     let seasonActual = [];
     let monthActual = [];
@@ -150,59 +157,63 @@ export const useStatsStore = defineStore("stats", () => {
     let dayActual = [];
 
     try {
-      let all = await getAllSeasonGames(btag, latest);
+      let all = await getAllSeasonGames(battleTag, current_season);
       seasonActual = all;
-      const info = getInfo(btag, seasonActual);
-      const race = info.race ?? Race.Random;
 
       monthActual = all
-        .filter((m: any) => moment(m.endTime).isAfter(monthRule))
-        .filter((m: any) => isRace(btag, m, race));
+        .filter((m: any) => moment(m.endTime).isAfter(current_month))
+        .filter((m: any) => isRace(battleTag, m, race));
       weekActual = all
-        .filter((m: any) => moment(m.endTime).isAfter(weekRule))
-        .filter((m: any) => isRace(btag, m, race));
+        .filter((m: any) => moment(m.endTime).isAfter(current_week))
+        .filter((m: any) => isRace(battleTag, m, race));
       dayActual = all
         .filter((m: any) => moment(m.endTime).isAfter(today))
-        .filter((m: any) => isRace(btag, m, race));
+        .filter((m: any) => isRace(battleTag, m, race));
 
       const season = {
-        [Race.Human]: seasonActual.filter((m) => isRace(btag, m, Race.Human)),
-        [Race.Orc]: seasonActual.filter((m) => isRace(btag, m, Race.Orc)),
-        [Race.Undead]: seasonActual.filter((m) => isRace(btag, m, Race.Undead)),
-        [Race.NightElf]: seasonActual.filter((m) =>
-          isRace(btag, m, Race.NightElf),
+        [Race.Human]: seasonActual.filter((m) =>
+          isRace(battleTag, m, Race.Human),
         ),
-        [Race.Random]: seasonActual.filter((m) => isRace(btag, m, Race.Random)),
+        [Race.Orc]: seasonActual.filter((m) => isRace(battleTag, m, Race.Orc)),
+        [Race.Undead]: seasonActual.filter((m) =>
+          isRace(battleTag, m, Race.Undead),
+        ),
+        [Race.NightElf]: seasonActual.filter((m) =>
+          isRace(battleTag, m, Race.NightElf),
+        ),
+        [Race.Random]: seasonActual.filter((m) =>
+          isRace(battleTag, m, Race.Random),
+        ),
       };
 
       result = {
-        battleTag: info.battleTag ?? btag,
+        battleTag: battleTag,
         race: race,
-        day: getRaceStatistics(btag, dayActual),
-        week: getRaceStatistics(btag, weekActual),
-        month: getRaceStatistics(btag, monthActual),
+        day: getRaceStatistics(battleTag, dayActual),
+        week: getRaceStatistics(battleTag, weekActual),
+        month: getRaceStatistics(battleTag, monthActual),
         season: {
           summary: {
-            ...getRaceStatistics(btag, seasonActual),
+            ...getRaceStatistics(battleTag, seasonActual),
             suspiciousGames: {
               total:
                 seasonActual.filter((m) => m?.durationInSeconds <= 120)
                   ?.length ?? 0,
               wins:
                 seasonActual
-                  .filter((m) => getwins(btag, m))
+                  .filter((m) => getwins(battleTag, m))
                   .filter((m) => m?.durationInSeconds <= 120)?.length ?? 0,
               loss:
                 seasonActual
-                  .filter((m) => getloss(btag, m))
+                  .filter((m) => getloss(battleTag, m))
                   .filter((m) => m?.durationInSeconds <= 120)?.length ?? 0,
             },
           },
-          [Race.Random]: getRaceStatistics(btag, season[Race.Random]),
-          [Race.Human]: getRaceStatistics(btag, season[Race.Human]),
-          [Race.Orc]: getRaceStatistics(btag, season[Race.Orc]),
-          [Race.Undead]: getRaceStatistics(btag, season[Race.Undead]),
-          [Race.NightElf]: getRaceStatistics(btag, season[Race.NightElf]),
+          [Race.Random]: getRaceStatistics(battleTag, season[Race.Random]),
+          [Race.Human]: getRaceStatistics(battleTag, season[Race.Human]),
+          [Race.Orc]: getRaceStatistics(battleTag, season[Race.Orc]),
+          [Race.Undead]: getRaceStatistics(battleTag, season[Race.Undead]),
+          [Race.NightElf]: getRaceStatistics(battleTag, season[Race.NightElf]),
         },
       };
     } catch (error) {
@@ -239,7 +250,7 @@ export const useStatsStore = defineStore("stats", () => {
 
     try {
       const { data: historyResponse } = await axios.get(
-        opponentHistoryUrl(tag.value, opponent.battleTag),
+        opponentHistoryUrl(settings_battleTag.value, opponent.battleTag),
       );
 
       const matches = historyResponse?.matches ?? [];
@@ -250,7 +261,11 @@ export const useStatsStore = defineStore("stats", () => {
       );
 
       // Find hero usage from last 100 games in the season
-      const season = await getAllSeasonGames(opponent.battleTag, latest, 100);
+      const season = await getAllSeasonGames(
+        opponent.battleTag,
+        current_season,
+        100,
+      );
       const last = _take(
         season
           .filter((m) => m.durationInSeconds > 4 * 60)
@@ -341,19 +356,23 @@ export const useStatsStore = defineStore("stats", () => {
     };
 
     try {
-      if (!_isNil(tag.value)) {
+      if (!_isNil(settings_battleTag.value)) {
         const { data: onGoingResponse } = await axios.get(
-          currentUrl(tag.value),
+          currentUrl(settings_battleTag.value),
         );
         if (!_isNil(onGoingResponse?.id)) {
           const player = onGoingResponse.teams?.find((t: any) =>
             t.players.some(
-              (p: any) => p.battleTag.toLowerCase() === tag.value.toLowerCase(),
+              (p: any) =>
+                p.battleTag.toLowerCase() ===
+                settings_battleTag.value.toLowerCase(),
             ),
           )?.players?.[0];
           const opponent = onGoingResponse.teams?.find((t: any) =>
             t.players.some(
-              (p: any) => p.battleTag.toLowerCase() != tag.value.toLowerCase(),
+              (p: any) =>
+                p.battleTag.toLowerCase() !=
+                settings_battleTag.value.toLowerCase(),
             ),
           )?.players?.[0];
 
@@ -393,7 +412,10 @@ export const useStatsStore = defineStore("stats", () => {
   };
 
   watchEffect(async () => {
-    const results = await getMatches(tag.value);
+    const results = await getMatches(
+      settings_battleTag.value,
+      settings_race?.value ?? Race.Random,
+    );
     player.value = results.player;
     daily.value = results.day;
     weekly.value = results.week;
@@ -401,13 +423,19 @@ export const useStatsStore = defineStore("stats", () => {
     season.value = results.season;
     maps.value = await getMaps();
 
-    void getOngoing(true);
-    void getLeagueAndRanking();
+    if (player.value?.battleTag?.length) {
+      void getOngoing(true);
+      void getLeagueAndRanking();
+    }
 
     for (const challenger of settings.data.challengers.filter(
       (v) => !_isNil(v),
     )) {
-      const c = await getMatches(challenger);
+      const challenger_information = await getPlayerInformation(
+        challenger,
+        current_season,
+      );
+      const c = await getMatches(challenger, challenger_information.race);
       challengers.value[challenger] = c.player;
     }
   });
@@ -417,20 +445,29 @@ export const useStatsStore = defineStore("stats", () => {
   const subscribe = () => {
     if (subscription.value === null) {
       subscription.value = setInterval(async () => {
-        const results = await getMatches(tag.value);
+        const results = await getMatches(
+          settings_battleTag.value,
+          settings_race.value ?? Race.Random,
+        );
         player.value = results.player;
         daily.value = results.day;
         weekly.value = results.week;
         monthly.value = results.month;
         season.value = results.season;
 
-        void getOngoing();
-        void getLeagueAndRanking();
+        if (player.value?.battleTag?.length) {
+          void getOngoing(true);
+          void getLeagueAndRanking();
+        }
 
         for (const challenger of settings.data.challengers.filter(
           (v) => !_isNil(v),
         )) {
-          const c = await getMatches(challenger);
+          const challenger_information = await getPlayerInformation(
+            challenger,
+            current_season,
+          );
+          const c = await getMatches(challenger, challenger_information.race);
           challengers.value[challenger] = c.player;
         }
       }, 10000);
@@ -454,7 +491,6 @@ export const useStatsStore = defineStore("stats", () => {
     getBattleTag,
     searchResults,
     searching,
-    latest,
     maps,
     subscribe,
     unsubscribe,

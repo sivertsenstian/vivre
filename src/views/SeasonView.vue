@@ -9,6 +9,7 @@ import {
   days_since_start,
   duration,
   current_season,
+  races,
 } from "@/utilities/constants.ts";
 
 const settings = useSettingsStore();
@@ -17,8 +18,6 @@ const store = useSeasonStore();
 import Performance from "@/components/Performance.vue";
 import Banner from "@/components/Banner.vue";
 import MapLink from "@/components/MapLink.vue";
-
-const races = [Race.Human, Race.Orc, Race.NightElf, Race.Undead, Race.Random];
 </script>
 
 <template>
