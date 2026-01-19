@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import type { IGNLAccount, IGNLStatistics } from "@/utilities/types";
+import type { IGNLAccount, IGNLStatistics, IRaceStatistics } from "@/utilities/types";
 import moment from "moment";
 import type { Moment } from "moment";
 import {
@@ -10,7 +10,7 @@ import {
 } from "@/utilities/matchcalculator";
 import { computed, ref } from "vue";
 import { doc, setDoc } from "firebase/firestore";
-import { useDocument, useFirestore } from "vuefire";
+import { useFirestore } from "vuefire";
 import gnl_team_cok from "@assets/gnl/teams/cok-transparent.png";
 import gnl_team_index_cok from "@assets/gnl/teams/cok-transparent_index.png";
 import gnl_team_apelords from "@assets/gnl/teams/apelords.jpg";
@@ -40,6 +40,60 @@ import {
   season_achievements,
 } from "@/utilities/achievements.ts";
 
+const backendUrl = import.meta.env.VITE_BACKEND_URL || 'https://backend.warcraft-gym.com';
+
+// Convert backend race string to Race enum number
+const raceStringToEnum = (raceStr: string): Race | null => {
+  const raceMap: { [key: string]: Race } = {
+    'HU': Race.Human,
+    'OC': Race.Orc,
+    'NE': Race.NightElf,
+    'UD': Race.Undead,
+    'RANDOM': Race.Random
+  };
+  return raceMap[raceStr] ?? null;
+};
+
+// Get coach profile picture URL from W3Champions API
+const getCoachProfilePicture = async (battleTag: string): Promise<string | null> => {
+  try {
+    const { data } = await axios.get(`https://website-backend.w3champions.com/api/personal-settings/${encodeURIComponent(battleTag)}`);
+    const profilePicture = data?.profilePicture;
+    
+    if (!profilePicture) return null;
+    
+    const { race, pictureId, isClassic } = profilePicture;
+    const baseUrl = 'https://w3champions.wc3.tools/prod/integration/icons';
+    
+    // Special avatars (race 32)
+    if (race === 32) {
+      return `${baseUrl}/specialAvatars/SPECIAL_${pictureId}.jpg?v=2`;
+    }
+    
+    // Race-specific avatars
+    const raceNames: { [key: number]: string } = {
+      0: 'RANDOM',
+      1: 'HUMAN',
+      2: 'ORC',
+      4: 'NIGHTELF',
+      8: 'UNDEAD',
+      16: 'TOTAL'
+    };
+    
+    const raceName = raceNames[race] || 'RANDOM';
+    
+    // Reforged (default) doesn't have a subfolder, classic does
+    if (isClassic) {
+      return `${baseUrl}/raceAvatars/classic/${raceName}_${pictureId}.jpg?v=2`;
+    } else {
+      return `${baseUrl}/raceAvatars/${raceName}_${pictureId}.jpg?v=2`;
+    }
+  } catch (error) {
+    console.error(`Failed to fetch profile picture for ${battleTag}:`, error);
+    return null;
+  }
+};
+
 const gnlBanners: { [key: string]: string } = {
   ["cok"]: gnl_team_cok,
   ["fiends"]: gnl_team_fiends,
@@ -64,11 +118,27 @@ const gnlIndexBanners: { [key: string]: string } = {
 
 export const ladderGoal = 500;
 
-export const teamGnlBanner: any = (id: string) =>
-  gnlBanners?.[id] ?? gnl_team_missing;
+// Get team banner from backend API - uses generic missing image as fallback
+export const teamGnlBanner: any = (teamData: any) => {
+  // teamData can be the full team object or just an ID
+  const teamId = typeof teamData === 'object' ? teamData?.teamId : teamData;
+  
+  if (teamId) {
+    return `${backendUrl}/teams/${teamId}/image`;
+  }
+  
+  return gnl_team_missing;
+};
 
-export const teamGnlIndexBanner: any = (id: string) =>
-  gnlIndexBanners?.[id] ?? gnl_team_missing;
+export const teamGnlIndexBanner: any = (teamData: any) => {
+  const teamId = typeof teamData === 'object' ? teamData?.teamId : teamData;
+  
+  if (teamId) {
+    return `${backendUrl}/teams/${teamId}/image`;
+  }
+  
+  return gnl_team_missing;
+};
 
 const calculateStreak = (player: any) => {
   if (player === null) {
@@ -130,8 +200,17 @@ const calculateGamesOnDay = (player: any, date: Moment, key: string) => {
   return count;
 };
 
-const getData = async (account: IGNLAccount, start: Moment, end: Moment) => {
-  let result: IGNLStatistics = {} as any;
+const getData = async (account: IGNLAccount, start: Moment, end: Moment, w3cSeason: number) => {
+  // Default structure to ensure all properties exist
+  let result: IRaceStatistics = {
+    matches: [],
+    total: 0,
+    wins: 0,
+    loss: 0,
+    percentage: 0,
+    mmr: { current: 0, initial: 0, max: 0, min: 0, diff: 0 },
+    race: {}
+  } as any;
 
   try {
     const recent: any = _last(_sortBy(account.data?.matches, "endTime"));
@@ -139,7 +218,7 @@ const getData = async (account: IGNLAccount, start: Moment, end: Moment) => {
 
     const all = await getSeasonGamesBetween(
       account.battleTag,
-      [21],
+      [w3cSeason],
       actualStart,
       end,
     );
@@ -147,18 +226,26 @@ const getData = async (account: IGNLAccount, start: Moment, end: Moment) => {
     // Filter out free wins/loss and bugs
     const seasonActual = all.filter((m) => m.durationInSeconds > 2 * 60);
 
+    // account.race is already a Race enum number (converted in fetchCurrentSeasonData)
+    const raceEnum = account.race as Race;
+
+    // Filter matches by player's designated race
+    const raceFilteredMatches = seasonActual.filter((m) => isRace(account.battleTag, m, raceEnum));
+
+    let statsResult;
     if (recent === undefined) {
-      result = getRaceStatistics(
+      statsResult = getRaceStatistics(
         account.battleTag,
-        seasonActual.filter((m) => isRace(account.battleTag, m, account.race)),
-      ) as any;
+        raceFilteredMatches,
+      );
     } else {
-      result = getRaceStatistics(account.battleTag, [
-        ...seasonActual.filter((m) =>
-          isRace(account.battleTag, m, account.race),
-        ),
-        ...account.data.matches,
-      ]) as any;
+      const combinedMatches = [...raceFilteredMatches, ...account.data.matches];
+      statsResult = getRaceStatistics(account.battleTag, combinedMatches);
+    }
+
+    // Use statsResult if available, otherwise keep default
+    if (statsResult) {
+      result = statsResult;
     }
   } catch (error) {
     console.log(error);
@@ -207,7 +294,8 @@ export const useGNLStore = defineStore("gnl", () => {
   const end = ref<Moment>(moment());
 
   const initialized = ref<boolean>(false);
-  const current = ref<string>();
+  const current = ref<number>();
+  const currentW3CSeason = ref<number>(21); // Default fallback
 
   const achievementStats = ref<{ [key: string]: number }>({});
   const playerStats = ref<{ [key: string]: any }>({});
@@ -238,17 +326,86 @@ export const useGNLStore = defineStore("gnl", () => {
     timeRemaining: end.value.diff(moment(), "milliseconds"),
   }));
 
-  const db = useFirestore();
-  const id = "584d910b-5c71-45ee-9813-b8106696470c";
-  const { promise } = useDocument<any>(doc(db, "gnl", id));
+  const fetchCurrentSeasonData = async () => {
+    try {
+      // Fetch current W3C season from backend
+      try {
+        const { data: w3cConfig } = await axios.get(`${backendUrl}/config/settings/current_wc3_season`);
+        if (w3cConfig?.value) {
+          currentW3CSeason.value = parseInt(w3cConfig.value);
+        }
+      } catch (error) {
+        console.warn("Failed to fetch current W3C season from backend, using default:", currentW3CSeason.value);
+      }
+
+      // Fetch current season info from config
+      const { data: config } = await axios.get(`${backendUrl}/config/settings/current_gnl_season`);
+      const currentSeasonId = config.value;
+
+      // Fetch season details
+      const { data: season } = await axios.get(`${backendUrl}/seasons/${currentSeasonId}`);
+      
+      // Fetch teams for this season
+      const { data: teams } = await axios.get(`${backendUrl}/teams/season/${currentSeasonId}`);
+
+      // Transform backend data to match expected structure
+      return {
+        id: season.id,
+        season: season.name,
+        start: moment(season.start_date).format("DD.MM.YYYY"),
+        end: moment(season.end_date).format("DD.MM.YYYY"),
+        teams: await Promise.all(teams.map(async (team: any) => {
+          // Get players for current season from player_by_season object
+          const seasonPlayers = team.player_by_season?.[currentSeasonId] || [];
+          // Get coaches for current season from coaches_by_season object
+          const seasonCoaches = team.coaches_by_season?.[currentSeasonId] || [];
+          
+          // Fetch profile pictures for all coaches
+          const coachesWithPictures = await Promise.all(
+            seasonCoaches.map(async (coach: any) => {
+              const raceEnum = raceStringToEnum(coach.race);
+              return {
+                ...coach,
+                race: raceEnum, // Convert backend race string to Race enum
+                races: [raceEnum], // Expertise section expects an array of races
+                roles: ['Coach'], // Hardcoded role for now
+                profilePictureUrl: await getCoachProfilePicture(coach.battleTag)
+              };
+            })
+          );
+          
+          return {
+            id: team.name, // Use team short name as ID (matches existing logic)
+            teamId: team.id, // Backend team ID for image fetching
+            name: team.long_name || team.name,
+            prefix: team.name || "", // Team short name as prefix
+            coaches: coachesWithPictures,
+            players: seasonPlayers.map((player: any) => ({
+              battleTag: player.battleTag,
+              race: raceStringToEnum(player.race), // Convert backend race string to Race enum
+              prefix: player.prefix || undefined, // Only set if defined in backend
+              data: { matches: [] }, // Will be populated by getData()
+            })),
+          };
+        })),
+      };
+    } catch (error) {
+      console.error("Failed to fetch GNL season data from backend:", error);
+      throw error;
+    }
+  };
 
   const initialize = async () => {
-    const d = await promise.value;
+    const d = await fetchCurrentSeasonData();
     if (_isEmpty(data.value) || data.value.id !== d.id) {
       start.value = moment(d.start, "DD.MM.YYYY").utc(true).startOf("day");
       end.value = moment(d.end, "DD.MM.YYYY").utc(true).endOf("day");
       data.value = d;
     }
+
+    // Set initialized to true so the page renders with team structure
+    // Player data will populate progressively in all()
+    initialized.value = true;
 
     clearTimeout(timer.value);
     void all();
@@ -268,7 +425,7 @@ export const useGNLStore = defineStore("gnl", () => {
       current.value === undefined
         ? d.teams
         : d.teams.filter(
-            (t: any) => t.id.toLowerCase() === current.value?.toLowerCase(),
+            (t: any) => t.teamId === current.value,
           );
 
     let achievementCount = {};
@@ -294,7 +451,7 @@ export const useGNLStore = defineStore("gnl", () => {
       team.achievements = {};
       for (let p = 0; p < team.players.length; p++) {
         const player = team.players[p];
-        player.data = await getData(player, dates.value.start, dates.value.end);
+        player.data = await getData(player, dates.value.start, dates.value.end, currentW3CSeason.value);
         if (current.value !== undefined) {
           getOngoing(player.battleTag).then((r: any) => (player.ongoing = r));
         } else {
@@ -316,7 +473,6 @@ export const useGNLStore = defineStore("gnl", () => {
         player.totalPoints = player.points + player.achievementPoints;
 
         if (current.value === undefined) {
-          player.prefix = team.prefix;
           // stats
           countAchievements(team.achievements, player.achievements);
           countAchievements(achievementCount, player.achievements);

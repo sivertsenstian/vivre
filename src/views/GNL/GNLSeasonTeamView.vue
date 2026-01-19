@@ -16,11 +16,11 @@ const router = useRouter();
 
 const store = useGNLStore();
 
-store.current = String(route.params.team).toLowerCase();
+store.current = Number(route.params.team);
 
-const current = computed(
-  () => store.data.teams?.find((t: any) => t.id === store.current) ?? {},
-);
+const current = computed(() => {
+  return store.data?.teams?.find((t: any) => t.teamId === store.current) ?? {};
+});
 
 onBeforeRouteLeave(() => {
   store.current = undefined;
@@ -203,7 +203,7 @@ onMounted(() => {
         elevation="10"
         style="min-height: 90vh"
         transition="fade-transition"
-        v-if="_isEmpty(current)">
+        v-if="!store.initialized || !current.name">
         <v-row>
           <v-col cols="12" class="text-center">
             <div class="text-h2">GNL Season {{ store.data?.season }}</div>
@@ -275,7 +275,7 @@ onMounted(() => {
             <v-card>
               <v-img
                 height="380"
-                :src="teamGnlBanner(current.id)"
+                :src="teamGnlBanner(current.teamId)"
                 class="align-end"
                 gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
                 cover>
@@ -362,7 +362,7 @@ onMounted(() => {
         </v-row>
         <v-row class="justify-center">
           <v-col cols="12" md="3" v-for="coach in current.coaches">
-            <GNLCoachBanner :prefix="current.prefix" :coach="coach" />
+            <GNLCoachBanner :coach="coach" />
           </v-col>
         </v-row>
         <v-row>
@@ -601,7 +601,7 @@ onMounted(() => {
             <GNLPlayerBanner
               :dates="store.dates"
               :rank="rank"
-              :prefix="current.prefix"
+              :prefix="player.prefix"
               :player="player" />
           </v-col>
         </v-row>
