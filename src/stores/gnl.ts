@@ -383,6 +383,7 @@ export const useGNLStore = defineStore("gnl", () => {
             players: seasonPlayers.map((player: any) => ({
               battleTag: player.battleTag,
               race: raceStringToEnum(player.race), // Convert backend race string to Race enum
+              prefix: player.prefix || undefined, // Only set if defined in backend
               data: { matches: [] }, // Will be populated by getData()
             })),
           };
@@ -472,7 +473,6 @@ export const useGNLStore = defineStore("gnl", () => {
         player.totalPoints = player.points + player.achievementPoints;
 
         if (current.value === undefined) {
-          player.prefix = team.prefix;
           // stats
           countAchievements(team.achievements, player.achievements);
           countAchievements(achievementCount, player.achievements);
