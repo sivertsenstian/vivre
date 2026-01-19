@@ -13,6 +13,7 @@ import GNLSeasonIndexView from "@/views/GNL/GNLSeasonIndexView.vue";
 import GNLSeasonTeamView from "@/views/GNL/GNLSeasonTeamView.vue";
 import KLSeasonTeamView from "@/views/KL/KLSeasonTeamView.vue";
 import KLSeasonIndexView from "@/views/KL/KLSeasonIndexView.vue";
+import ChallengersView from "@/views/ChallengersView.vue";
 
 const router = createRouter({
   history: createWebHashHistory(import.meta.env.BASE_URL),
@@ -89,6 +90,11 @@ const router = createRouter({
           component: MakruraAdminView,
         },
       ],
+    },
+    {
+      path: "/challengers",
+      name: "W3C Challengers",
+      component: ChallengersView,
     },
     {
       path: "/about",

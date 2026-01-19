@@ -171,6 +171,12 @@ const drawer = ref(!mobile.value);
           router
           to="/makrura"></v-list-item>
         <v-list-item
+          color="red"
+          prepend-icon="mdi-account-group"
+          title="Challengers Ladder"
+          router
+          to="/challengers"></v-list-item>
+        <v-list-item
           color="green"
           prepend-icon="mdi-handshake-outline"
           title="About"
