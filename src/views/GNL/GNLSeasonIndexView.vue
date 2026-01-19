@@ -1,14 +1,9 @@
 <script setup lang="ts">
-import { useTheme } from "vuetify";
 import { computed, onMounted } from "vue";
 import { teamGnlIndexBanner, useGNLStore } from "@/stores/gnl";
-import { Race } from "@/stores/races";
 import VueCountdown from "@chenfengyuan/vue-countdown";
 
 import gnl_logo from "@/assets/gnl/logo.png";
-
-const theme = useTheme();
-const isDark = computed(() => theme.global.current.value.dark);
 
 const router = useRouter();
 const store = useGNLStore();
@@ -28,19 +23,14 @@ import {
 } from "chart.js";
 import "chartjs-adapter-moment";
 import ChartDataLabels from "chartjs-plugin-datalabels";
-import { v4 as uuidv4 } from "uuid";
-import moment from "moment/moment";
 import { useRouter } from "vue-router";
 import _round from "lodash/round";
 import MarkdownViewer from "@/components/MarkdownViewer.vue";
 import _range from "lodash/range";
 import _isEmpty from "lodash/isEmpty";
 import _take from "lodash/take";
-import _skip from "lodash/drop";
-import GNLCoachBanner from "@/components/gnl/GNLCoachBanner.vue";
 import GNLPlayerBanner from "@/components/gnl/GNLPlayerBanner.vue";
 import _capitalize from "lodash/capitalize";
-import _first from "lodash/first";
 
 ChartJS.register(
   LineController,
@@ -110,6 +100,10 @@ const players = computed(() => {
       return [...s, ...t.players];
     }, [])
     .sort((a: any, b: any) => b.totalPoints - a.totalPoints);
+});
+
+const columns = computed(() => {
+  return Math.round(Math.sqrt(store.data?.teams?.length ?? 6) * 1.1618) + 1;
 });
 
 // Text
@@ -216,8 +210,8 @@ onMounted(() => {
               <v-col
                 v-for="team in store.data?.teams ?? []"
                 cols="6"
-                sm="4"
-                md="3">
+                :sm="columns - 1"
+                :md="columns">
                 <v-card
                   :class="`team ${leader?.id === team.id ? 'gold' : ''}`"
                   @click="() => router.push(`/gnl/${team.teamId}`)">
@@ -229,7 +223,8 @@ onMounted(() => {
                       class="team-image">
                     </v-img>
                   </div>
-                  <v-card-title class="text-body-2 text-sm-body-1 pa-2 justify-center">
+                  <v-card-title
+                    class="text-body-2 text-sm-body-1 pa-2 justify-center">
                     <span
                       :style="{
                         verticalAlign: 'middle',
@@ -241,7 +236,7 @@ onMounted(() => {
                         color="goldenrod"
                         size="small"
                         class="mr-1" />
-                      {{ team.name }}
+                      {{ team.name }} columns: {{ columns }}
                     </span>
                   </v-card-title>
                 </v-card>
