@@ -86,7 +86,7 @@ const open = (battleTag: string) =>
     <v-img
       class="rounded portrait"
       height="250"
-      :src="coachGnlBanner?.[coach.battleTag] ?? gnl_coach_missing"
+      :src="coach.profilePictureUrl ?? coachGnlBanner?.[coach.battleTag] ?? gnl_coach_missing"
       cover></v-img>
 
     <v-card-item>
