@@ -236,7 +236,7 @@ onMounted(() => {
                         color="goldenrod"
                         size="small"
                         class="mr-1" />
-                      {{ team.name }} columns: {{ columns }}
+                      {{ team.name }}
                     </span>
                   </v-card-title>
                 </v-card>
