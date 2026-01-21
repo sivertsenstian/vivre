@@ -21,6 +21,9 @@ const options = {
   animation: false,
   responsive: true,
   maintainAspectRatio: false,
+  plugins: {
+    legend: false,
+  },
   scales: {
     x: { stacked: true, grid: { display: false } },
     y: { stacked: true, beginAtZero: true, grid: { display: false } },

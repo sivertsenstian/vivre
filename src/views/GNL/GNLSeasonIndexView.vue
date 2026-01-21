@@ -48,6 +48,9 @@ const options = computed<any>(() => {
   return {
     responsive: true,
     maintainAspectRatio: false,
+    plugins: {
+      legend: false,
+    },
     scales: {
       x: {
         grid: { display: false },

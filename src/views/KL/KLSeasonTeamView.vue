@@ -93,6 +93,9 @@ ChartJS.register(
 const options = {
   responsive: true,
   maintainAspectRatio: false,
+  plugins: {
+    legend: false,
+  },
   scales: {
     x: {
       grid: { display: false },
