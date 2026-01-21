@@ -93,6 +93,7 @@ const options = {
     },
   },
   plugins: {
+    legend: false,
     tooltip: {
       callbacks: {
         label: function (context: any) {

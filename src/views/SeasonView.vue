@@ -25,8 +25,8 @@ import {
 import RaceIcon from "@/components/RaceIcon.vue";
 import MapLink from "@/components/MapLink.vue";
 import MapPreview from "@/components/MapPreview.vue";
+import { Line } from "vue-chartjs";
 import {
-  CategoryScale,
   Chart as ChartJS,
   Legend,
   LinearScale,
@@ -36,7 +36,6 @@ import {
   Title,
   Tooltip,
 } from "chart.js";
-import { Line } from "vue-chartjs";
 import { Race, raceNameWithRandom as raceName } from "@/stores/races.ts";
 import _reduce from "lodash/reduce";
 import _isEmpty from "lodash/isEmpty";
@@ -52,6 +51,16 @@ const stats = useStatsStore();
 const theme = useTheme();
 const isDark = computed(() => theme.global.current.value.dark);
 
+// Graph stuff
+ChartJS.register(
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+  TimeScale,
+);
 onMounted(() => {
   stats.subscribe();
   season.subscribe();
@@ -119,18 +128,6 @@ const opponents = computed(() => {
   );
 });
 
-// Graph stuff
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend,
-  TimeScale,
-);
-
 const raceColor: any = {
   [Race.Human]: "#e8b453",
   [Race.NightElf]: "#6a5693",
@@ -172,6 +169,9 @@ const options: any = {
   maintainAspectRatio: true,
   plugins: {
     legend: { position: "bottom" },
+    datalabels: {
+      display: false,
+    },
   },
   scales: {
     x: {
