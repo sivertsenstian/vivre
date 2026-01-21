@@ -13,6 +13,8 @@ import WeeklyGoalChart from "@/components/WeeklyGoalChart.vue";
 import WeeklyResultChart from "@/components/WeeklyResultChart.vue";
 import Performance from "@/components/Performance.vue";
 import VersusBanner from "@/components/versus/VersusBanner.vue";
+import PlayerSearch from "@/components/PlayerSearch.vue";
+import PlayerRace from "@/components/PlayerRace.vue";
 import { useSettingsStore } from "@/stores/settings";
 import { useStatsStore } from "@/stores/stats";
 import {
@@ -22,7 +24,6 @@ import {
   heroIcon,
   CreepRouteCategory,
   category,
-  raceName,
 } from "@/stores/races";
 
 const settings = useSettingsStore();
@@ -44,9 +45,7 @@ import {
   duration,
   days_since_start,
   start,
-  races,
 } from "@/utilities/constants";
-import { getPlayerInformation } from "@/utilities/matchcalculator.ts";
 import w3ciconDark from "@/assets/w3c_dark.png";
 
 const raceBanner: any = {
@@ -644,69 +643,15 @@ onUnmounted(() => {
         </v-col>
         <v-col cols="12" md="4" class="order-md-last order-first">
           <v-col cols="12">
-            <v-sheet class="pa-5" :elevation="5">
+            <v-sheet class="pa-4" :elevation="5">
               <div class="text-h6 text-center">
                 <v-card elevation="0">
                   <v-row>
                     <v-col cols="9">
-                      <v-autocomplete
-                        :items="stats.searchResults"
-                        :loading="stats.searching"
-                        @input="(e: any) => stats.getBattleTag(e.target.value)"
-                        @update:model-value="
-                          async (value: any) => {
-                            console.log('UPDATING VALUE => ' + value);
-                            if (_isNil(value)) {
-                              settings.data.race = undefined;
-                            } else {
-                              const information = await getPlayerInformation(
-                                value,
-                                current_season,
-                              );
-                              settings.data.race =
-                                information?.race ?? Race.Random;
-                            }
-                          }
-                        "
-                        clearable
-                        v-model="settings.data.battleTag as any"
-                        class="mx-auto"
-                        density="comfortable"
-                        placeholder="Search W3C for player..."
-                        prepend-inner-icon="mdi-magnify"
-                        variant="solo"
-                        item-title="battleTag"
-                        item-value="battleTag"
-                        auto-select-first />
+                      <player-search />
                     </v-col>
                     <v-col cols="3">
-                      <v-select
-                        variant="plain"
-                        hide-details
-                        :items="
-                          races.map((r) => ({
-                            text: r === 0 ? 'Random' : raceName[r],
-                            value: r,
-                          }))
-                        "
-                        density="compact"
-                        item-title="text"
-                        item-value="value"
-                        v-model="settings.data.race">
-                        <template v-slot:selection="{ item }">
-                          <div class="text-center mt-1">
-                            <img :width="35" :src="raceIcon[item.value]" />
-                          </div>
-                        </template>
-                        <template v-slot:item="{ props: itemProps, item }">
-                          <v-list-item
-                            v-bind="itemProps"
-                            class="text-center"
-                            title="">
-                            <img :width="40" :src="raceIcon[item.value]" />
-                          </v-list-item>
-                        </template>
-                      </v-select>
+                      <player-race />
                     </v-col>
                   </v-row>
                   <v-card-item>

@@ -32,7 +32,7 @@ export const getInfo = (tag: string, matches: any[]) => {
   const first = _first<any>(matches)?.teams?.reduce(
     (r: any, t: any) =>
       t.players.some(
-        (p: any) => p.battleTag.toLowerCase() === tag.toLowerCase(),
+        (p: any) => p.battleTag.toLowerCase() === tag?.toLowerCase(),
       )
         ? t.players[0]
         : r,
@@ -54,7 +54,7 @@ export const getInfo = (tag: string, matches: any[]) => {
   const last = _last<any>(matches)?.teams?.reduce(
     (r: any, t: any) =>
       t.players.some(
-        (p: any) => p.battleTag.toLowerCase() === tag.toLowerCase(),
+        (p: any) => p.battleTag.toLowerCase() === tag?.toLowerCase(),
       )
         ? t.players[0]
         : r,
@@ -75,7 +75,7 @@ export const iswin = (m: any, ...tags: string[]) => {
       (t: any) =>
         t.won &&
         t.players.some(
-          (p: any) => p.battleTag.toLowerCase() === tag.toLowerCase(),
+          (p: any) => p.battleTag.toLowerCase() === tag?.toLowerCase(),
         ),
     ),
   );
@@ -86,7 +86,7 @@ export const getwins = (tag: string, m: any) =>
     (t: any) =>
       t.won &&
       t.players.some(
-        (p: any) => p.battleTag.toLowerCase() === tag.toLowerCase(),
+        (p: any) => p.battleTag.toLowerCase() === tag?.toLowerCase(),
       ),
   );
 export const getloss = (tag: string, m: any) =>
@@ -94,7 +94,7 @@ export const getloss = (tag: string, m: any) =>
     (t: any) =>
       !t.won &&
       t.players.some(
-        (p: any) => p.battleTag.toLowerCase() === tag.toLowerCase(),
+        (p: any) => p.battleTag.toLowerCase() === tag?.toLowerCase(),
       ),
   );
 
@@ -102,7 +102,7 @@ export const getplayer = (tag: string) => (m: any) => {
   return {
     ...m?.teams?.find((t: any) =>
       t.players.find(
-        (p: any) => p.battleTag.toLowerCase() === tag.toLowerCase(),
+        (p: any) => p.battleTag.toLowerCase() === tag?.toLowerCase(),
       ),
     ),
     match: m,
@@ -113,7 +113,7 @@ export const getopponent = (tag: string) => (m: any) => {
   return {
     ...m?.teams?.find((t: any) =>
       t.players.find(
-        (p: any) => p.battleTag.toLowerCase() !== tag.toLowerCase(),
+        (p: any) => p.battleTag.toLowerCase() !== tag?.toLowerCase(),
       ),
     ),
     match: m,
@@ -187,6 +187,11 @@ export const getRaceStatistics = (tag: string, m: any[]): IRaceStatistics => {
         total: (r?.[m.mapName]?.total ?? 0) + 1,
         wins: (r?.[m.mapName]?.wins ?? 0) + (iswin(m, tag) ? 1 : 0),
         loss: (r?.[m.mapName]?.loss ?? 0) + (iswin(m, tag) ? 0 : 1),
+        percentage:
+          (((r?.[m.mapName]?.wins ?? 0) + (iswin(m, tag) ? 1 : 0)) /
+            ((r?.[m.mapName]?.total ?? 0) + 1)) *
+          100,
+        matches: [...(r?.[m.mapName]?.matches ?? []), m],
       },
     };
   }, {});
@@ -229,30 +234,62 @@ export const getRaceStatistics = (tag: string, m: any[]): IRaceStatistics => {
         percentage: getPercentage(race, Race.Random),
         wins: race?.wins?.[Race.Random]?.length ?? 0,
         loss: race?.loss?.[Race.Random]?.length ?? 0,
+        matches: _sortBy(
+          [
+            ...(race.wins?.[Race.Random] ?? []),
+            ...(race.loss?.[Race.Random] ?? []),
+          ],
+          "endTime",
+        ),
       },
       [Race.Human]: {
         total: getTotal(race, Race.Human),
         percentage: getPercentage(race, Race.Human),
         wins: race?.wins?.[Race.Human]?.length ?? 0,
         loss: race?.loss?.[Race.Human]?.length ?? 0,
+        matches: _sortBy(
+          [
+            ...(race.wins?.[Race.Human] ?? []),
+            ...(race.loss?.[Race.Human] ?? []),
+          ],
+          "endTime",
+        ),
       },
       [Race.Orc]: {
         total: getTotal(race, Race.Orc),
         percentage: getPercentage(race, Race.Orc),
         wins: race?.wins?.[Race.Orc]?.length ?? 0,
         loss: race?.loss?.[Race.Orc]?.length ?? 0,
+        matches: _sortBy(
+          [...(race.wins?.[Race.Orc] ?? []), ...(race.loss?.[Race.Orc] ?? [])],
+          "endTime",
+        ),
       },
       [Race.NightElf]: {
         total: getTotal(race, Race.NightElf),
         percentage: getPercentage(race, Race.NightElf),
         wins: race?.wins?.[Race.NightElf]?.length ?? 0,
         loss: race?.loss?.[Race.NightElf]?.length ?? 0,
+        matches: _sortBy(
+          [
+            ...(race.wins?.[Race.NightElf] ?? []),
+            ...(race.loss?.[Race.NightElf] ?? []),
+          ],
+          "endTime",
+        ),
       },
       [Race.Undead]: {
         total: getTotal(race, Race.Undead),
         percentage: getPercentage(race, Race.Undead),
         wins: race?.wins?.[Race.Undead]?.length ?? 0,
         loss: race?.loss?.[Race.Undead]?.length ?? 0,
+        matches: _sortBy(
+          [
+            ...(race.wins?.[Race.Undead] ?? []),
+            ...(race.loss?.[Race.Undead] ?? []),
+          ],
+          "endTime",
+        ),
       },
     },
   };
@@ -277,13 +314,6 @@ const url = (
   `https://website-backend.w3champions.com/api/matches/search?playerId=${encodeURIComponent(
     tag,
   )}&gateway=20&offset=${offset}&pageSize=${size}&gameMode=1&season=${season}`;
-
-export const getPlayerInformation = async (tag: string, season: number) => {
-  if (!_isNil(tag) && tag.includes("#")) {
-    const { data: response } = await axios.get(url(tag, 0, 1, season));
-    return getInfo(tag, response.matches);
-  }
-};
 
 export const getAllSeasonGames = async (
   tag: string,

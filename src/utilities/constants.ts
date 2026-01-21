@@ -23,3 +23,15 @@ export const races = [
 
 export const end_color = "rgb(29 91 131)";
 export const start_color = "rgb(110 46 145)";
+
+export const ranks = [
+  { name: "Grandmaster", icon: "mdi-trophy-award", color: "#FFD700" },
+  { name: "Master", icon: "mdi-trophy", color: "#CB3A1F" },
+  { name: "Adept", icon: "mdi-trophy-outline", color: "#EB42EF" },
+  { name: "Diamond", icon: "mdi-diamond", color: "#b9f2ff" },
+  { name: "Platinum", icon: "mdi-gold", color: "#e5e4e2" },
+  { name: "Gold", icon: "mdi-gold", color: "#FFD700" },
+  { name: "Silver", icon: "mdi-gold", color: "#C0C0C0" },
+  { name: "Bronze", icon: "mdi-gold", color: "#CD7F32" },
+  { name: "Grass", icon: "mdi-grass", color: "#136d15" },
+];

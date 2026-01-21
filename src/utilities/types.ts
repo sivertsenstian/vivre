@@ -5,6 +5,7 @@ export interface IVSRaceStatistics {
   wins: number;
   loss: number;
   percentage: number;
+  matches: any[];
 }
 
 export interface IRaceStatisticsSummary extends IRaceStatistics {

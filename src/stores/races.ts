@@ -16,6 +16,14 @@ export const raceName: any = {
   [Race.Random]: "Any",
 };
 
+export const raceNameWithRandom: any = {
+  [Race.Human]: "Human",
+  [Race.Orc]: "Orc",
+  [Race.Undead]: "Undead",
+  [Race.NightElf]: "Night Elf",
+  [Race.Random]: "Random",
+};
+
 export enum CreepRouteCategory {
   Standard = 0,
   Beginner = 1,
