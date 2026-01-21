@@ -16,7 +16,7 @@ const options = {
     legend: false,
   },
   cutout: "80%",
-};
+} as any;
 </script>
 
 <template>
