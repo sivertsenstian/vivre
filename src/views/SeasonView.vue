@@ -341,7 +341,6 @@ const options: any = {
                                       ? 'visible'
                                       : 'hidden',
                                   }"
-                                  ,
                                   @click="
                                     season.current.additional =
                                       !season.current.additional
@@ -437,7 +436,6 @@ const options: any = {
                                   ? 'visible'
                                   : 'hidden',
                               }"
-                              ,
                               @click="rank.additional = !rank.additional"
                               size="x-small"
                               :icon="
@@ -658,12 +656,12 @@ const options: any = {
                           </td>
                           <td class="text-center">vs</td>
                           <td class="text-left">
-                            <spanG
+                            <span
                               class="text-grey"
                               :title="`(${player(match)?.players?.[0]?.mmrGain > 0 ? '+' : ''}${opponent(match)?.players?.[0]?.mmrGain}) mmr`"
                               >{{
                                 opponent(match)?.players?.[0]?.currentMmr ?? "-"
-                              }}</spanG
+                              }}</span
                             >
                           </td>
                           <td class="text-right text-no-wrap">

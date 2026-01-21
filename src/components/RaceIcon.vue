@@ -2,7 +2,7 @@
 import { type Race, raceIcon, raceName } from "@/stores/races.ts";
 
 interface Props {
-  race: Race;
+  race: any;
   size?: number;
 }
 defineProps<Props>();
