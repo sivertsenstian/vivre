@@ -669,7 +669,8 @@ const options: any = {
                               :battle-tag="
                                 opponent(match)?.players?.[0]?.battleTag
                               "
-                              :won="opponent(match)?.players?.[0]?.won" />
+                              :won="opponent(match)?.players?.[0]?.won"
+                              left />
                             <race-icon
                               :race="opponent(match)?.players?.[0]?.race"
                               :size="35" />
