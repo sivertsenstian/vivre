@@ -128,6 +128,25 @@ const opponents = computed(() => {
   );
 });
 
+const getMedianTime = (matches: any[]) => {
+  const d = _sortBy(matches, "durationInSeconds").map(
+    (v) => v.durationInSeconds,
+  );
+
+  // even
+  if (matches.length % 2 == 0) {
+    const a = Math.round(d[matches.length / 2]);
+    const b = Math.round(d[matches.length / 2 + 1]);
+
+    return moment.duration(a + b / 2, "seconds").minutes();
+  } // odd
+  else {
+    return moment
+      .duration(d[Math.round(matches.length / 2)], "seconds")
+      .minutes();
+  }
+};
+
 const raceColor: any = {
   [Race.Human]: "#e8b453",
   [Race.NightElf]: "#6a5693",
@@ -754,18 +773,7 @@ const options: any = {
                           </td>
                           <td class="text-center">
                             {{
-                              moment
-                                .duration(
-                                  stats.player?.season[race].matches
-                                    .map((m) => m.durationInSeconds)
-                                    .sort()?.[
-                                    Math.floor(
-                                      stats.player?.season[race].total / 2,
-                                    )
-                                  ],
-                                  "seconds",
-                                )
-                                .minutes()
+                              getMedianTime(stats.player?.season[race].matches)
                             }}
                             min
                           </td>
@@ -835,21 +843,9 @@ const options: any = {
                           </td>
                           <td class="text-center">
                             {{
-                              moment
-                                .duration(
-                                  stats.player?.season.summary.race[
-                                    race
-                                  ].matches
-                                    .map((m) => m.durationInSeconds)
-                                    .sort()?.[
-                                    Math.floor(
-                                      stats.player?.season.summary.race[race]
-                                        .total / 2,
-                                    )
-                                  ],
-                                  "seconds",
-                                )
-                                .minutes()
+                              getMedianTime(
+                                stats.player?.season.summary.race[race].matches,
+                              )
                             }}
                             min
                           </td>
@@ -934,23 +930,10 @@ const options: any = {
                                   ?.matches.length
                               ">
                               {{
-                                moment
-                                  .duration(
-                                    (
-                                      stats.player?.season.summary.maps?.[map]
-                                        ?.matches ?? []
-                                    )
-                                      .map((m: any) => m.durationInSeconds)
-                                      .sort()?.[
-                                      Math.floor(
-                                        (stats.player?.season.summary.maps?.[
-                                          map
-                                        ]?.total ?? 0) / 2,
-                                      )
-                                    ],
-                                    "seconds",
-                                  )
-                                  .minutes()
+                                getMedianTime(
+                                  stats.player?.season.summary.maps?.[map]
+                                    ?.matches ?? [],
+                                )
                               }}
                               min
                             </span>
@@ -1046,16 +1029,7 @@ const options: any = {
                             </span>
                           </td>
                           <td class="text-center">
-                            {{
-                              moment
-                                .duration(
-                                  data.matches
-                                    .map((m: any) => m.durationInSeconds)
-                                    .sort()?.[Math.floor(data.total / 2)],
-                                  "seconds",
-                                )
-                                .minutes()
-                            }}
+                            {{ getMedianTime(data.matches) }}
                             min
                           </td>
                           <td class="text-center">
