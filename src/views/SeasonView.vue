@@ -134,7 +134,11 @@ const getMedianTime = (matches: any[]) => {
   );
 
   // even
-  if (matches.length % 2 == 0) {
+  if (matches.length <= 2) {
+    return moment
+      .duration(d.reduce((r, v) => r + v, 0) / d.length, "seconds")
+      .minutes();
+  } else if (matches.length % 2 == 0) {
     const a = Math.round(d[matches.length / 2]);
     const b = Math.round(d[matches.length / 2 + 1]);
 
