@@ -12,6 +12,8 @@ import mv from "@/assets/maps/MV.jpg";
 import bv from "@/assets/maps/BV.jpg";
 import ts from "@/assets/maps/TS.jpg";
 import sm from "@/assets/maps/SM.jpg";
+import tr from "@/assets/maps/TR.jpg";
+import ei from "@/assets/maps/EI.jpg";
 import not_found from "@/assets/maps/not_found.jpg";
 
 export const ladder_1v1: any = {
@@ -29,6 +31,8 @@ export const ladder_1v1: any = {
   "Boulder Vale": bv,
   "Terenas Stand v2": ts,
   Scrimmage: sm,
+  "Turtle Rock v2": tr,
+  "Echo Isles": ei,
 };
 
 export const missing = not_found;
