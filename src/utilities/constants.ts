@@ -1,9 +1,9 @@
 import moment from "moment";
 import { Race } from "@/stores/races.ts";
 
-export const current_season = 23;
+export const current_season = 24;
 export const seasonDurationInWeeks = 16;
-export const start = moment("06.10.25", "DD.MM.YYYY");
+export const start = moment("26.01.26", "DD.MM.YYYY");
 export const end = moment(start).add(seasonDurationInWeeks, "weeks");
 export const duration = Math.abs(end.diff(start, "days"));
 export const today = moment().startOf("day");
@@ -21,8 +21,8 @@ export const races = [
   Race.Random,
 ];
 
-export const end_color = "rgb(29 91 131)";
-export const start_color = "rgb(110 46 145)";
+export const start_color = "rgb(192 110 72)";
+export const end_color = "rgb(247 203 94)";
 
 export const ranks = [
   { name: "Grandmaster", icon: "mdi-trophy-award", color: "#FFD700" },
