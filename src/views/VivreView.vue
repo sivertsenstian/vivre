@@ -45,6 +45,8 @@ import {
   duration,
   days_since_start,
   start,
+  start_color,
+  end_color,
 } from "@/utilities/constants";
 import w3ciconDark from "@/assets/w3c_dark.png";
 
@@ -391,8 +393,8 @@ onUnmounted(() => {
                       style="border: 1px solid gray"
                       :color="
                         stats.player.day.total >= goal.perDay
-                          ? 'teal'
-                          : 'purple'
+                          ? end_color
+                          : start_color
                       "
                       :model-value="stats.player.day.total"
                       :max="goal.perDay"
@@ -949,7 +951,7 @@ onUnmounted(() => {
             <v-progress-linear
               class="season-progress"
               :model-value="(days_since_start / duration) * 100"
-              color="purple"
+              :color="start_color"
               :title="`The current season (${current_season}) is ${Math.round((days_since_start / duration) * 100)}% done - ${duration - days_since_start} day(s) left`">
             </v-progress-linear>
             <span class="season-progress-label"
@@ -1028,8 +1030,8 @@ onUnmounted(() => {
 
 <style>
 :root {
-  --level-start-color: rgba(110, 47, 145, 0.87);
-  --level-end-color: rgba(29, 91, 131, 0.77);
+  --level-start-color: rgb(192 110 72);
+  --level-end-color: rgb(247 203 94);
 }
 
 .season-progress-label {

@@ -10,8 +10,10 @@ import {
   current_season,
   days_since_start,
   duration,
+  end_color,
   races,
   ranks,
+  start_color,
 } from "@/utilities/constants.ts";
 import { useStatsStore } from "@/stores/stats.ts";
 import { computed, onMounted, onUnmounted } from "vue";
@@ -276,7 +278,7 @@ const options: any = {
                   :height="2"
                   class="season-progress"
                   :model-value="(days_since_start / duration) * 100"
-                  color="purple"
+                  :color="start_color"
                   :title="`The current season (${current_season}) is ${Math.round((days_since_start / duration) * 100)}% done - ${duration - days_since_start} day(s) left`">
                 </v-progress-linear>
                 <span class="season-progress-label"
