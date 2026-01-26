@@ -385,7 +385,7 @@ export const getMatches = async (battleTag: string, race: Race) => {
 
     result = {
       battleTag: battleTag,
-      race: race,
+      race: race ?? Race.Random,
       day: getRaceStatistics(battleTag, dayActual),
       week: getRaceStatistics(battleTag, weekActual),
       month: getRaceStatistics(battleTag, monthActual),
