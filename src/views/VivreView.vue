@@ -111,7 +111,7 @@ const getPoints = (v: IStatistics) => {
   if (_isNil(v)) {
     return 0;
   }
-  return v.season[v.race].totalPoints;
+  return v.season?.[v.race]?.totalPoints ?? 0;
 };
 
 const rank = computed(() => {
