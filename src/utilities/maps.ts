@@ -14,6 +14,7 @@ import ts from "@/assets/maps/TS.jpg";
 import sm from "@/assets/maps/SM.jpg";
 import tr from "@/assets/maps/TR.jpg";
 import ei from "@/assets/maps/EI.jpg";
+import ei2 from "@/assets/maps/EI2.jpg";
 import not_found from "@/assets/maps/not_found.jpg";
 
 export const ladder_1v1: any = {
@@ -33,6 +34,7 @@ export const ladder_1v1: any = {
   Scrimmage: sm,
   "Turtle Rock v2": tr,
   "Echo Isles": ei,
+  "Echo Isles v2": ei2,
 };
 
 export const missing = not_found;
