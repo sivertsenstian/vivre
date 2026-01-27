@@ -191,7 +191,7 @@ const data = computed(() => {
 
 const options: any = {
   responsive: true,
-  maintainAspectRatio: true,
+  maintainAspectRatio: false,
   plugins: {
     legend: { position: "bottom" },
     datalabels: {
@@ -226,10 +226,13 @@ const options: any = {
             <v-row>
               <v-col cols="12" lg="8">
                 <v-row class="my-0">
-                  <v-col cols="2" class="mt-1 py-0">
+                  <v-col
+                    cols="12"
+                    lg="2"
+                    class="mt-1 py-0 text-center text-lg-left">
                     <img :src="settings.profilePicture" :width="150" />
                   </v-col>
-                  <v-col cols>
+                  <v-col cols="12" lg class="text-center text-lg-left">
                     <v-row>
                       <v-col cols="12">
                         <player-w3c-link
@@ -312,8 +315,7 @@ const options: any = {
                     <hr />
                   </v-col>
                   <v-col
-                    cols="6"
-                    lg="12"
+                    cols="12"
                     v-if="!season.loading && season.current?.highest">
                     <v-row class="my-0">
                       <v-col cols="3" class="text-center">
@@ -441,13 +443,16 @@ const options: any = {
                     <v-progress-linear indeterminate />
                   </v-col>
                   <v-col
-                    cols="6"
-                    lg="12"
+                    cols="12"
                     v-if="!season.loading && season.ranking.length">
                     <v-table density="compact">
                       <thead>
                         <tr>
-                          <th class="text-grey text-left">SEASON</th>
+                          <th
+                            class="text-grey text-left"
+                            style="min-width: 50px">
+                            SEASON
+                          </th>
                           <th class="text-grey text-left">RACE</th>
                           <th class="text-grey text-left">RANK</th>
                           <th class="text-grey text-left">MMR</th>
@@ -456,7 +461,7 @@ const options: any = {
                       </thead>
                       <tbody v-for="rank in season.ranking">
                         <tr>
-                          <td>
+                          <td class="text-no-wrap">
                             <v-icon
                               :style="{
                                 visibility: !_isEmpty(rank.others)
@@ -744,8 +749,11 @@ const options: any = {
                           v-for="race in races.filter(
                             (r) => (stats.player?.season[r].total ?? 0) > 0,
                           )">
-                          <td>
-                            <race-icon :race="race" /> {{ raceName[race] }}
+                          <td class="text-no-wrap">
+                            <race-icon :race="race" />
+                            <span class="d-none d-lg-inline-block">{{
+                              raceName[race]
+                            }}</span>
                           </td>
                           <td class="text-center">
                             <span
@@ -823,8 +831,11 @@ const options: any = {
                               (stats.player?.season.summary.race[r].total ??
                                 0) > 0,
                           )">
-                          <td>
-                            <race-icon :race="race" /> {{ raceName[race] }}
+                          <td class="text-no-wrap">
+                            <race-icon :race="race" />
+                            <span class="d-none d-lg-inline-block">{{
+                              raceName[race]
+                            }}</span>
                           </td>
                           <td class="text-center">
                             <span
@@ -882,7 +893,7 @@ const options: any = {
                         <tr>
                           <th
                             class="text-grey text-left"
-                            style="min-width: 260px">
+                            style="min-width: 300px">
                             MAP
                           </th>
                           <th class="text-grey text-center">WIN RATE</th>
@@ -1023,12 +1034,17 @@ const options: any = {
                             },
                             {} as any,
                           )">
-                          <td>
-                            <race-icon :race="race" /> {{ raceName[race] }}
+                          <td class="text-no-wrap">
+                            <race-icon :race="race" />
+                            <span class="d-none d-lg-inline-block">{{
+                              raceName[race]
+                            }}</span>
                           </td>
                           <td>
                             <race-icon :race="opponentRace" />
-                            {{ raceName[opponentRace] }}
+                            <span class="d-none d-lg-inline-block">
+                              {{ raceName[opponentRace] }}
+                            </span>
                           </td>
                           <td class="text-center">
                             <span
