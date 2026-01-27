@@ -224,7 +224,7 @@ const options: any = {
         <v-col cols="12">
           <v-sheet class="pa-4" elevation="5" style="min-height: 356px">
             <v-row>
-              <v-col cols="8">
+              <v-col cols="12" lg="8">
                 <v-row class="my-0">
                   <v-col cols="2" class="mt-1 py-0">
                     <img :src="settings.profilePicture" :width="150" />
@@ -270,7 +270,7 @@ const options: any = {
                   </v-col>
                 </v-row>
               </v-col>
-              <v-col cols="4"> <player-search /> </v-col>
+              <v-col cols="12" lg="4"> <player-search /> </v-col>
             </v-row>
             <v-row>
               <v-col cols="12">
@@ -296,7 +296,7 @@ const options: any = {
               </v-col>
             </v-row>
             <v-row v-else>
-              <v-col cols="4">
+              <v-col cols="12" lg="4">
                 <v-row>
                   <v-col cols="12" class="pb-0">
                     <v-row>
@@ -312,7 +312,8 @@ const options: any = {
                     <hr />
                   </v-col>
                   <v-col
-                    cols="12"
+                    cols="6"
+                    lg="12"
                     v-if="!season.loading && season.current?.highest">
                     <v-row class="my-0">
                       <v-col cols="3" class="text-center">
@@ -440,7 +441,8 @@ const options: any = {
                     <v-progress-linear indeterminate />
                   </v-col>
                   <v-col
-                    cols="12"
+                    cols="6"
+                    lg="12"
                     v-if="!season.loading && season.ranking.length">
                     <v-table density="compact">
                       <thead>
@@ -569,12 +571,13 @@ const options: any = {
                 </v-row>
               </v-col>
               <v-col
-                cols="8"
+                cols="12"
+                lg="8"
                 v-if="!stats.player?.season.summary.total"
                 class="text-center mt-7">
                 <h2 class="font-weight-bold">No activity this season...</h2>
               </v-col>
-              <v-col cols="8" v-else>
+              <v-col cols="12" lg="8" v-else>
                 <v-row>
                   <v-col cols="12" class="pb-0">
                     <h2 class="font-weight-bold">Recent Games</h2>
@@ -584,7 +587,9 @@ const options: any = {
                     <v-table fixed-header density="compact">
                       <thead>
                         <tr>
-                          <th class="text-grey text-left text-no-wrap">
+                          <th
+                            class="text-grey text-left text-no-wrap"
+                            style="min-width: 265px">
                             MAP / MODE / DURATION
                           </th>
                           <th class="text-grey text-left">DATE</th>
@@ -593,7 +598,9 @@ const options: any = {
                           </th>
                           <th class="text-grey text-left">PLAYER</th>
                           <th class="text-grey text-right">RATING</th>
-                          <th class="text-grey text-center"></th>
+                          <th
+                            class="text-grey text-center"
+                            style="width: 15px"></th>
                           <th class="text-grey text-left">RATING</th>
                           <th class="text-grey text-right">OPPONENT</th>
                         </tr>
@@ -605,9 +612,9 @@ const options: any = {
                             5,
                           )"
                           :key="match.id">
-                          <td>
+                          <td class="text-no-wrap">
                             <v-row class="my-0">
-                              <v-col cols="3" class="mt-1 py-0">
+                              <v-col class="mt-1 py-0" cols="4">
                                 <map-preview :name="match.mapName" />
                               </v-col>
                               <v-col class="my-auto">
@@ -710,7 +717,7 @@ const options: any = {
                     <h2 class="font-weight-bold">Rating History</h2>
                     <hr />
                   </v-col>
-                  <v-col cols="12">
+                  <v-col cols="12" style="min-height: 400px">
                     <Line :data="data" :options="options" />
                   </v-col>
                 </v-row>
@@ -873,7 +880,11 @@ const options: any = {
                     <v-table fixed-header density="compact">
                       <thead>
                         <tr>
-                          <th class="text-grey text-left">MAP</th>
+                          <th
+                            class="text-grey text-left"
+                            style="min-width: 260px">
+                            MAP
+                          </th>
                           <th class="text-grey text-center">WIN RATE</th>
                           <th class="text-grey text-center">
                             DURATION (MEDIAN)
