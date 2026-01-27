@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import season_explain_dark from "@/assets/season_help_dark.png";
 import season_explain from "@/assets/season_help.png";
+import * as parser from "@/utilities/buildorderparser";
 
 import moment from "moment";
 import PlayerSearch from "@/components/PlayerSearch.vue";
@@ -45,6 +46,7 @@ import _groupBy from "lodash/groupBy";
 import PlayerW3cLink from "@/components/PlayerW3cLink.vue";
 import _sortBy from "lodash/sortBy";
 import { useTheme } from "vuetify";
+import axios from "axios";
 
 const settings = useSettingsStore();
 const season = useSeasonStore();
@@ -72,6 +74,25 @@ onUnmounted(() => {
   stats.unsubscribe();
   season.unsubscribe();
 });
+
+const doTest = async (match: any) => {
+  const replay = await axios.get(
+    `https://website-backend.w3champions.com/api/replays/${match.id}`,
+    { responseType: "blob" },
+  );
+  const response = await axios.postForm(
+    "https://w3tools.hexcoding.de/api/replay/parse",
+    { file: replay.data },
+  );
+
+  console.log({
+    raw: response.data,
+    order: response.data.playerBuildOrders.map((b: any) => ({
+      player: b.playerName,
+      items: parser.parse(10, b.buildOrderItems),
+    })),
+  });
+};
 
 const player = computed(() => getplayer(settings.battleTag));
 const opponent = computed(() => getopponent(settings.battleTag));
@@ -641,9 +662,14 @@ const options: any = {
                             </v-row>
                           </td>
                           <td>
-                            <span class="text-grey text-no-wrap">{{
-                              moment(match.endTime).fromNow()
-                            }}</span>
+                            <div class="text-grey text-no-wrap">
+                              {{ moment(match.endTime).fromNow() }}
+                            </div>
+                            <div
+                              class="text-no-wrap"
+                              @click="() => doTest(match)">
+                              View summary
+                            </div>
                           </td>
                           <td>
                             <span
