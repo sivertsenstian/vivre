@@ -226,10 +226,13 @@ const options: any = {
             <v-row>
               <v-col cols="12" lg="8">
                 <v-row class="my-0">
-                  <v-col cols="12" class="mt-1 py-0 text-center">
+                  <v-col
+                    cols="12"
+                    lg="2"
+                    class="mt-1 py-0 text-center text-lg-left">
                     <img :src="settings.profilePicture" :width="150" />
                   </v-col>
-                  <v-col cols="12" class="text-center">
+                  <v-col cols="12" lg class="text-center text-lg-left">
                     <v-row>
                       <v-col cols="12">
                         <player-w3c-link
