@@ -15,6 +15,7 @@ enum BuildOrderType {
   Hire = "Hire",
   Buy = "Buy",
   Upgrade = "Upgrade",
+  Unsummon = "Unsummon",
 }
 
 interface IReplayBuildOrderItem {
@@ -148,6 +149,81 @@ export const parse = (
             return {
               ...base,
               instructions: `Buy ${aan(item.obj)} ${item.obj}`,
+            };
+          default:
+            return { ...base, instructions: `[${item.type}] ${item.obj}` };
+        }
+      }) ?? [];
+
+  return steps;
+};
+
+export const summarize = (
+  replayBuildOrderItems: IReplayBuildOrderItem[],
+): any[] => {
+  let steps =
+    replayBuildOrderItems
+      .filter((item, index, array) => {
+        if (index > 0) {
+          const prev = array[index - 1];
+          const p = (moment.duration(prev.timeSpan) as any).format("mm:ss", {
+            trim: false,
+          });
+          const c = (moment.duration(item.timeSpan) as any).format("mm:ss", {
+            trim: false,
+          });
+
+          return prev.type !== item.type || prev.obj !== item.obj || p !== c;
+        }
+        return true;
+      })
+      .map((item) => {
+        const base = {
+          id: uuidv4(),
+          type: item.type,
+          time: duration(item.timeSpan),
+          timespan: item.timeSpan,
+          timing: false,
+          separator: false,
+        };
+
+        switch (item.type) {
+          case BuildOrderType.Build:
+            return {
+              ...base,
+              instructions: `Built ${aan(item.obj)} ${item.obj}`,
+            };
+          case BuildOrderType.Cancel:
+            return { ...base, instructions: `Cancelled ${item.obj}` };
+          case BuildOrderType.Tech:
+          case BuildOrderType.Upgrade:
+            return {
+              ...base,
+              instructions: `Upgraded ${item.obj}`,
+              timing: true,
+            };
+          case BuildOrderType.Learn:
+            return { ...base, instructions: `Trained ${item.obj}` };
+          case BuildOrderType.Research:
+            return {
+              ...base,
+              instructions: `Researched ${item.obj}`,
+              timing: true,
+            };
+          case BuildOrderType.Hire:
+            return {
+              ...base,
+              instructions: `Hired ${aan(item.obj)} ${item.obj}`,
+            };
+          case BuildOrderType.Buy:
+            return {
+              ...base,
+              instructions: `Bought ${aan(item.obj)} ${item.obj}`,
+            };
+          case BuildOrderType.Unsummon:
+            return {
+              ...base,
+              instructions: `Unsummoned ${aan(item.obj)} ${item.obj}`,
             };
           default:
             return { ...base, instructions: `[${item.type}] ${item.obj}` };
