@@ -37,6 +37,9 @@ const gameModeStatsUrl = (tag: string, season: number) =>
 const getMapsUrl = () =>
   "https://website-backend.w3champions.com/api/ladder/active-modes";
 
+const getMatchUrl = (id: string) =>
+  `https://website-backend.w3champions.com/api/matches/${id}`;
+
 const opponentHistoryUrl = (tag: string, opponent: string) =>
   `https://website-backend.w3champions.com/api/matches/search?playerId=${encodeURIComponent(
     tag,
@@ -343,6 +346,15 @@ export const getOngoing = async (battleTag: string, reset: boolean = false) => {
     console.log(error);
   } finally {
     return result;
+  }
+};
+
+export const getMatch = async (id: string) => {
+  try {
+    const { data } = await axios.get(getMatchUrl(id));
+    return { match: data.match, scores: data.playerScores };
+  } catch (e) {
+    return null;
   }
 };
 

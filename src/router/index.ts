@@ -5,6 +5,7 @@ import MakruraAdminView from "@/views/MakruraAdminView.vue";
 import AboutView from "@/views/AboutView.vue";
 import CreepRoutesView from "@/views/CreepRoutesView.vue";
 import SeasonView from "@/views/SeasonView.vue";
+import SeasonMatchSummaryView from "@/views/SeasonMatchSummaryView.vue";
 import BuildOrdersIndexView from "@/views/BuildOrders/BuildOrdersIndexView.vue";
 import NewBuildOrderView from "@/views/BuildOrders/NewBuildOrderView.vue";
 import ShowBuildOrderView from "@/views/BuildOrders/ShowBuildOrderView.vue";
@@ -25,8 +26,14 @@ const router = createRouter({
     },
     {
       path: "/season",
-      name: "Season Overview",
-      component: SeasonView,
+      children: [
+        { path: "", name: "Season Overview", component: SeasonView },
+        {
+          path: ":id/summary",
+          name: "Match Summary",
+          component: SeasonMatchSummaryView,
+        },
+      ],
     },
     {
       path: "/creeproutes",
