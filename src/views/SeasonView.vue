@@ -219,6 +219,11 @@ const options: any = {
       display: false,
     },
   },
+  elements: {
+    line: {
+      tension: 0.3,
+    },
+  },
   scales: {
     x: {
       type: "time",
@@ -615,7 +620,7 @@ const options: any = {
                         <tr>
                           <th
                             class="text-grey text-left text-no-wrap"
-                            style="min-width: 265px">
+                            style="min-width: 300px">
                             MAP / MODE / DURATION
                           </th>
                           <th class="text-grey text-left">DATE</th>
@@ -665,11 +670,12 @@ const options: any = {
                             <div class="text-grey text-no-wrap">
                               {{ moment(match.endTime).fromNow() }}
                             </div>
-                            <div
+                            <a
+                              :href="`#/season/${match.id}/summary`"
                               class="text-no-wrap"
-                              @click="() => doTest(match)">
+                              style="font-size: 13px">
                               View summary
-                            </div>
+                            </a>
                           </td>
                           <td>
                             <span

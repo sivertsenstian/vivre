@@ -1,34 +1,22 @@
 <script setup lang="ts">
-import season_explain_dark from "@/assets/season_help_dark.png";
-import season_explain from "@/assets/season_help.png";
 import * as parser from "@/utilities/buildorderparser";
+import _has from "lodash/has";
+import _take from "lodash/take";
+import _keys from "lodash/keys";
+import _values from "lodash/values";
 
 import moment from "moment";
-import PlayerSearch from "@/components/PlayerSearch.vue";
 import { useSettingsStore } from "@/stores/settings";
-import { useSeasonStore } from "@/stores/season";
-import {
-  current_season,
-  days_since_start,
-  duration,
-  end_color,
-  races,
-  ranks,
-  start_color,
-} from "@/utilities/constants.ts";
+import { races, heroes } from "@/utilities/constants.ts";
 import { useStatsStore } from "@/stores/stats.ts";
-import { computed, onMounted, onUnmounted, ref, watchEffect } from "vue";
-import _take from "lodash/take";
-import {
-  getloss,
-  getopponent,
-  getplayer,
-  getwins,
-} from "@/utilities/matchcalculator.ts";
+import { computed, onMounted, onUnmounted, ref } from "vue";
+import { getopponent, getplayer } from "@/utilities/matchcalculator.ts";
 import RaceIcon from "@/components/RaceIcon.vue";
 import MapLink from "@/components/MapLink.vue";
 import MapPreview from "@/components/MapPreview.vue";
+import ChartAnnotation from "chartjs-plugin-annotation";
 import { Line } from "vue-chartjs";
+
 import {
   Chart as ChartJS,
   Legend,
@@ -47,13 +35,12 @@ import { useTheme } from "vuetify";
 import axios from "axios";
 import { useRoute } from "vue-router";
 import { getMatch } from "@/utilities/api.ts";
+import _sample from "lodash/sample";
 
 const settings = useSettingsStore();
-const season = useSeasonStore();
 const stats = useStatsStore();
 
 const theme = useTheme();
-const isDark = computed(() => theme.global.current.value.dark);
 
 // Graph stuff
 ChartJS.register(
@@ -64,6 +51,7 @@ ChartJS.register(
   Tooltip,
   Legend,
   TimeScale,
+  ChartAnnotation,
 );
 
 const route = useRoute();
@@ -71,7 +59,11 @@ const loading = ref(false);
 const match = ref<any>(null);
 const buildOrders = ref<any>(null);
 
-const doTest = async (id: any) => {
+const doTest = async (id: string) => {
+  if (_has(settings.replays, id)) {
+    return settings.replays[id];
+  }
+
   const match = await getMatch(id);
   const replay = await axios.get(
     `https://website-backend.w3champions.com/api/replays/${id}`,
@@ -82,21 +74,28 @@ const doTest = async (id: any) => {
     { file: replay.data },
   );
 
-  return {
+  const result: any = {
     ...match,
     buildOrders: response.data.playerBuildOrders.map((b: any) => ({
       player: b.playerName,
-      items: parser.parse(10, b.buildOrderItems),
+      items: parser.summarize(b.buildOrderItems),
     })),
   };
+
+  if (_keys(settings.replays).length > 100) {
+    const unlucky: any = _sample(settings.replays);
+    delete settings.replays[unlucky.match.id];
+  }
+
+  (settings.replays as any)[id] = result;
+
+  return result;
 };
 
 onMounted(async () => {
   try {
     loading.value = true;
-    const r = await doTest(route.params.id);
-
-    console.log({ r });
+    const r = await doTest(String(route.params.id));
 
     match.value = r.match;
     buildOrders.value = r.buildOrders;
@@ -136,33 +135,170 @@ const mainlyPlays = computed(() => {
 
 const data = computed(() => {
   return {
-    datasets: _reduce(
-      stats.player?.season,
-      (s: any[], v, k: string) => {
-        if (v.matches.length && k !== "summary") {
-          return [
-            ...s,
-            {
-              label: raceName[k],
-              borderColor: "red",
-              backgroundColor: "red",
-              data: v?.matches.map((m) => {
-                return {
-                  x: m.endTime,
-                  y: player.value(m)?.players?.[0]?.currentMmr,
-                };
-              }),
-            },
-          ];
-        }
-        return s;
-      },
-      [],
-    ),
+    datasets: (buildOrders?.value ?? []).map((b: any, i: number) => {
+      return {
+        label: b.player,
+        borderColor: i === 1 ? "red" : "blue",
+        backgroundColor: i === 1 ? "red" : "blue",
+        data: b.items.map((v: any, j: number) => {
+          return {
+            x: moment(match.value.startTime).add(moment.duration(v.timespan)), //moment.duration(v.timespan).asSeconds(),
+            y: j,
+            item: v,
+          };
+        }),
+      };
+    }),
   };
 });
 
-const options: any = {
+const annotations = computed(() => {
+  if (!match.value) {
+    return {};
+  }
+
+  const result = {
+    ..._reduce(
+      buildOrders?.value?.[0]?.items ?? [],
+      (a, v, p) => {
+        if (v.type === "Tech") {
+          const res = {
+            ...a,
+            [v.id]: {
+              type: "line",
+              display: (ctx: any) => {
+                return ctx.chart.isDatasetVisible(0);
+              },
+              borderColor: "blue",
+              borderWidth: 2,
+              borderDash: [6, 6],
+              borderDashOffset: 0,
+              label: {
+                drawTime: "afterDraw",
+                position: "end",
+                backgroundColor: "rgba(0, 0, 255, 0.8)",
+                content: v.instructions,
+                display: true,
+              },
+              scaleID: "x",
+              value: moment(match.value.startTime).add(
+                moment.duration(v.timespan),
+              ),
+            },
+          };
+
+          return res;
+        }
+        if (
+          v.type === "Build" &&
+          _values(heroes).some((h) => v.instructions.includes(h))
+        ) {
+          const res = {
+            ...a,
+            [v.id]: {
+              type: "line",
+              display: (ctx: any) => {
+                return ctx.chart.isDatasetVisible(0);
+              },
+              borderColor: "cornflowerblue",
+              borderWidth: 2,
+              borderDash: [6, 6],
+              borderDashOffset: 0,
+              label: {
+                drawTime: "afterDraw",
+                position: "middle",
+                yAdjust: 20,
+                backgroundColor: "rgba(100, 149, 237, 0.8)",
+                content: v.instructions,
+                display: true,
+              },
+              scaleID: "x",
+              value: moment(match.value.startTime).add(
+                moment.duration(v.timespan),
+              ),
+            },
+          };
+
+          return res;
+        }
+        return a;
+      },
+      {},
+    ),
+    ..._reduce(
+      buildOrders?.value?.[1]?.items ?? [],
+      (a, v, p) => {
+        if (v.type === "Tech") {
+          const res = {
+            ...a,
+            [v.id]: {
+              type: "line",
+              display: (ctx: any) => {
+                return ctx.chart.isDatasetVisible(1);
+              },
+              borderColor: "red",
+              borderWidth: 2,
+              borderDash: [6, 6],
+              borderDashOffset: 0,
+              label: {
+                drawTime: "afterDraw",
+                position: "start",
+                backgroundColor: "rgba(255,0,0,0.8)",
+                content: v.instructions,
+                display: true,
+              },
+              scaleID: "x",
+              value: moment(match.value.startTime).add(
+                moment.duration(v.timespan),
+              ),
+            },
+          };
+
+          return res;
+        }
+
+        if (
+          v.type === "Build" &&
+          _values(heroes).some((h) => v.instructions.includes(h))
+        ) {
+          const res = {
+            ...a,
+            [v.id]: {
+              type: "line",
+              display: (ctx: any) => {
+                return ctx.chart.isDatasetVisible(1);
+              },
+              borderColor: "crimson",
+              borderWidth: 2,
+              borderDash: [6, 6],
+              borderDashOffset: 0,
+              label: {
+                drawTime: "afterDraw",
+                position: "middle",
+                yAdjust: -20,
+                backgroundColor: "rgba(220, 20, 60,0.8)",
+                content: v.instructions,
+                display: true,
+              },
+              scaleID: "x",
+              value: moment(match.value.startTime).add(
+                moment.duration(v.timespan),
+              ),
+            },
+          };
+
+          return res;
+        }
+        return a;
+      },
+      {},
+    ),
+  };
+
+  return result;
+});
+
+const options: any = computed(() => ({
   responsive: true,
   maintainAspectRatio: false,
   plugins: {
@@ -170,24 +306,46 @@ const options: any = {
     datalabels: {
       display: false,
     },
+    tooltip: {
+      callbacks: {
+        label: function (context: any) {
+          let label = context.dataset.label || "";
+
+          if (label) {
+            label += ": ";
+          }
+          if (context.parsed.y !== null) {
+            label += context.raw.item?.instructions;
+          }
+          return label;
+        },
+      },
+    },
+    annotation: { annotations: annotations.value },
+  },
+  elements: {
+    line: {
+      tension: 0.3,
+    },
   },
   scales: {
     x: {
       type: "time",
       time: {
-        unit: "day",
+        unit: "minute",
       },
       grid: {
         color: "rgba(255, 255, 255, 0.05)",
       },
     },
     y: {
+      display: false,
       grid: {
         color: "rgba(255, 255, 255, 0.05)",
       },
     },
   },
-};
+}));
 </script>
 
 <template>
@@ -256,7 +414,9 @@ const options: any = {
               <v-col cols="12">
                 <v-row>
                   <v-col cols="12" class="pb-0">
-                    <h2 class="font-weight-bold">Game {{ match?.id }}</h2>
+                    <h2 class="font-weight-bold">
+                      Game <span class="text-grey">{{ match?.id }}</span>
+                    </h2>
                     <hr />
                   </v-col>
                   <v-col v-if="false" cols="12">
@@ -386,67 +546,79 @@ const options: any = {
                     </v-table>
                   </v-col>
                 </v-row>
-                <v-row>
+
+                <v-row v-if="loading" style="min-width: 600px">
+                  <v-col cols="12" class="pb-0 text-center">
+                    <h3 class="font-weight-bold">Loading summary...</h3>
+                  </v-col>
+                </v-row>
+
+                <v-row v-if="!loading">
                   <v-col cols="12" class="pb-0">
                     <h2 class="font-weight-bold">Match History</h2>
                     <hr />
                   </v-col>
-                  <v-col cols="12" style="min-height: 400px">
+                  <v-col
+                    cols="11"
+                    class="mx-auto mt-2"
+                    style="min-height: 400px">
                     <Line :data="data" :options="options" />
                   </v-col>
                 </v-row>
 
-                <v-row>
+                <v-row v-if="!loading">
                   <v-col cols="12" class="pb-0">
                     <h2 class="font-weight-bold">Build Order</h2>
                     <hr />
                   </v-col>
-                  <v-col cols="6">
+
+                  <v-col cols="12" lg="6" v-for="(bo, i) in buildOrders">
                     <v-row>
-                      <v-col cols="12"
-                        ><v-icon size="small" color="blue" icon="mdi-circle" />
-                        {{ buildOrders?.[0]?.player }}
-                        <race-icon :race="Race.Human"
-                      /></v-col>
+                      <v-col
+                        cols="12"
+                        lg="8"
+                        :offset-lg="i === 0 ? 4 : 0"
+                        class="text-center"
+                        ><v-icon
+                          style="margin-top: 2px"
+                          size="small"
+                          :color="i === 0 ? 'blue' : 'red'"
+                          icon="mdi-circle" />
+                        <span
+                          class="font-weight-bold mx-1"
+                          style="vertical-align: middle; font-size: 22px"
+                          >{{ bo?.player }}</span
+                        >
+                        <race-icon
+                          :race="
+                            getplayer(bo.player)(match)?.players?.[0]?.race ??
+                            Race.Random
+                          " />
+                      </v-col>
                     </v-row>
+
                     <v-row>
-                      <v-table>
-                        <thead></thead>
-                        <tbody>
-                          <tr v-for="step in buildOrders?.[0]?.items">
-                            <td>{{ step.time }}</td>
-                            <td>{{ step.instructions }}</td>
-                          </tr>
-                        </tbody>
-                      </v-table>
+                      <v-col cols="12" lg="8" :offset-lg="i === 0 ? 4 : 0">
+                        <v-table class="summary-build-order" density="compact">
+                          <tbody>
+                            <tr v-for="step in bo?.items">
+                              <td :class="step.type">
+                                <span
+                                  class="ml-1 font-weight-bold text-grey"
+                                  style="vertical-align: middle"
+                                  >{{ step.time }}</span
+                                >
+                              </td>
+                              <td :class="step.type">
+                                <span class="font-weight-bold">{{
+                                  step.instructions
+                                }}</span>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </v-table>
+                      </v-col>
                     </v-row>
-                    <pre>{{ buildOrders?.[0] }}</pre>
-                  </v-col>
-                  <v-col cols="6">
-                    <v-row>
-                      <v-col cols="12"
-                        ><v-icon size="small" color="red" icon="mdi-circle" />
-                        {{ buildOrders?.[1]?.player }}
-                        <race-icon :race="Race.Human"
-                      /></v-col>
-                    </v-row>
-                    <v-row>
-                      <v-table>
-                        <thead>
-                          <tr>
-                            <td style="width: 10%" />
-                            <td style="width: 90%" />
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr v-for="step in buildOrders?.[1]?.items">
-                            <td>{{ step.time }}</td>
-                            <td>{{ step.instructions }}</td>
-                          </tr>
-                        </tbody>
-                      </v-table>
-                    </v-row>
-                    <pre>{{ buildOrders?.[1] }}</pre>
                   </v-col>
                 </v-row>
               </v-col>
@@ -458,37 +630,59 @@ const options: any = {
   </main>
 </template>
 
-<style scoped>
-tbody.separated:not(:first-of-type) {
-  tr:first-of-type > td {
-    border-top: 2px solid rgba(255, 255, 255, 0.25);
-  }
-}
+<style>
+.summary-build-order {
+  table {
+    border-spacing: 0 3px !important;
+    tbody {
+      tr {
+        td:first-of-type {
+          border-top-left-radius: 8px;
+          border-bottom-left-radius: 8px;
+        }
+        td:last-of-type {
+          border-top-right-radius: 8px;
+          border-bottom-right-radius: 8px;
+        }
 
-tbody.separated {
-  tr:first-of-type > td {
-    padding-top: 10px;
-  }
-  tr:last-of-type > td {
-    padding-bottom: 10px;
-  }
-}
+        td.Buy {
+          background-color: rgba(60, 138, 43, 0.5);
+        }
 
-.season-progress-label {
-  bottom: 21px;
-  left: 2px;
-  display: block;
-  height: 0;
-  position: relative;
-  font-size: 11px;
-  color: var(--level-start-color);
-  filter: brightness(3);
-}
+        td.Learn {
+          background-color: rgba(43, 138, 114, 0.5);
+        }
 
-.season-progress {
-  transition: border-color 1.5s ease-in-out;
-  &:hover {
-    border: 1px solid var(--level-start-color);
+        td.Tech {
+          &:first-of-type {
+            border-left: 1px solid goldenrod;
+            border-top: 1px solid goldenrod;
+            border-bottom: 1px solid goldenrod;
+          }
+          &:last-of-type {
+            border-right: 1px solid goldenrod;
+            border-top: 1px solid goldenrod;
+            border-bottom: 1px solid goldenrod;
+          }
+          background-color: rgba(155, 144, 46, 0.66);
+        }
+
+        td.Research,
+        td.Upgrade {
+          background-color: rgba(114, 43, 138, 0.5);
+        }
+
+        td.Build,
+        td.Hire {
+          background-color: rgb(84, 75, 75);
+        }
+
+        td.Cancel,
+        td.Unsummon {
+          background-color: rgba(183, 52, 63, 0.5);
+        }
+      }
+    }
   }
 }
 </style>

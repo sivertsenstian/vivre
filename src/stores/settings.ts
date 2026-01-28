@@ -17,6 +17,8 @@ export const useSettingsStore = defineStore("settings", () => {
     ladder: "",
   });
 
+  const replays = useStorage<any>("vivre/replays", {} as any);
+
   const battleTag = computed(() => data.value.battleTag);
   const race = computed(() => data.value.race);
   const profilePicture = computed(() => data.value.profilePicture);
@@ -28,5 +30,5 @@ export const useSettingsStore = defineStore("settings", () => {
     }
   });
 
-  return { data, modes, battleTag, race, profilePicture };
+  return { data, modes, battleTag, race, profilePicture, replays };
 });
