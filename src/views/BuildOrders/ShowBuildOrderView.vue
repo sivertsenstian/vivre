@@ -3,10 +3,7 @@ import moment from "moment";
 import { getVersionColor, useBuildsStore } from "@/stores/builds";
 import { raceName, raceIcon, raceUpkeep } from "@/stores/races";
 import { useRoute, useRouter } from "vue-router";
-import { useDocument, useFirestore } from "vuefire";
-import { doc } from "firebase/firestore";
 
-import type { IBuild } from "@/utilities/types";
 import { computed } from "vue";
 import ViabilitySlider from "@/components/ViabilitySlider.vue";
 
@@ -52,9 +49,10 @@ const route = useRoute();
 const router = useRouter();
 const builds = useBuildsStore();
 
-const db = useFirestore();
-const buildorder = useDocument<IBuild>(
-  doc(db, "buildorders", String(route.params.id)),
+const buildorder = computed(() =>
+  builds.buildorders.find(
+    (b) => b.slug === route.params.id || b.id === route.params.id,
+  ),
 );
 
 const order = computed(() => {

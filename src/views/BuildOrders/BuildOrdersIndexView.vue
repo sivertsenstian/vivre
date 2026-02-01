@@ -150,7 +150,7 @@ const weekly = computed(() => {
                   <v-card
                     v-if="weekly?.id"
                     link
-                    :href="`/#/buildorders/${weekly.id}`">
+                    :href="`/#/buildorders/${weekly.slug?.length ? weekly.slug : weekly.id}`">
                     <v-img
                       :src="buildOfTheWeek[weekly.player]"
                       position="top"
@@ -193,7 +193,7 @@ const weekly = computed(() => {
                   <v-card
                     v-if="popular?.id"
                     link
-                    :href="`/#/buildorders/${popular.id}`">
+                    :href="`/#/buildorders/${popular.slug?.length ? popular.slug : popular.id}`">
                     <v-img
                       :src="
                         _first(
@@ -312,7 +312,10 @@ const weekly = computed(() => {
               hover
               class="build-orders mt-3"
               @click:row="
-                (_: any, row: any) => router.push(`/buildorders/${row.item.id}`)
+                (_: any, row: any) =>
+                  router.push(
+                    `/buildorders/${row.item.slug?.length ? row.item.slug : row.item.id}`,
+                  )
               "
               :row-props="
                 (data) => ({
