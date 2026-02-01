@@ -289,7 +289,8 @@ const author = computed(() => {
                       <span class="text-grey"
                         >//
                         {{
-                          buildorder.steps.filter((s) => !s.separator).length
+                          buildorder.steps.filter((s: any) => !s.separator)
+                            .length
                         }}
                         steps</span
                       >
