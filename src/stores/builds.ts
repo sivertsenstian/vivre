@@ -23,6 +23,7 @@ import type {
 import moment from "moment";
 import { detectIncognito } from "detectincognitojs";
 import { version } from "@/utilities/constants.ts";
+import slugify from "@sindresorhus/slugify";
 
 export const getVersionColor = (v: string) => {
   if (v === undefined || !v.length || !v.includes(".")) {
@@ -70,6 +71,7 @@ export const useBuildsStore = defineStore("builds", () => {
 
   const build = (): IBuild => ({
     id: uuidv4(),
+    slug: "",
     author: "",
     originalAuthor: "",
     created: moment().toDate(),
@@ -95,8 +97,9 @@ export const useBuildsStore = defineStore("builds", () => {
     try {
       busy.value = true;
 
+      item.slug = slugify(`${item.name}-${item.id.substring(0, 3)}`);
       await setDoc(doc(db, "buildorders", item.id), item);
-      await router.push(`/buildorders/${item.id}`);
+      await router.push(`/buildorders/${item.slug}`);
 
       // mark it as owned to allow editing
       data.value.owns[item.id] = true;
@@ -123,8 +126,9 @@ export const useBuildsStore = defineStore("builds", () => {
       if (item.id) {
         const reference = doc(db, "buildorders", item.id);
         item.updated = moment().toDate();
+        item.slug = slugify(`${item.name}-${item.id.substring(0, 3)}`);
         await updateDoc(reference, item as any);
-        await router.push(`/buildorders/${item.id}`);
+        await router.push(`/buildorders/${item.slug}`);
         clear();
       }
     } catch (e) {

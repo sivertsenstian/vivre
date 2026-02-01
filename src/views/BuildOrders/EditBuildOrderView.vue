@@ -2,8 +2,7 @@
 import { useBuildsStore } from "@/stores/builds";
 import { Race, raceName } from "@/stores/races";
 import { useRoute, useRouter } from "vue-router";
-import { useDocument, useFirestore } from "vuefire";
-import { doc } from "firebase/firestore";
+import { useFirestore } from "vuefire";
 import { computed, ref } from "vue";
 import ViabilitySlider from "@/components/ViabilitySlider.vue";
 import MarkdownEditor from "@/components/MarkdownEditor.vue";
@@ -15,8 +14,12 @@ const builds = useBuildsStore();
 const route = useRoute();
 const router = useRouter();
 
-const db = useFirestore();
-const buildorder = useDocument(doc(db, "buildorders", String(route.params.id)));
+const buildorder = computed(() =>
+  builds.buildorders.find(
+    (b) => b.slug === route.params.id || b.id === route.params.id,
+  ),
+);
+
 builds.edit(buildorder);
 
 const secret = ref<string>("");

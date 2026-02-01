@@ -125,6 +125,7 @@ export interface ISampleGame {
 
 export interface IBuild {
   id: string;
+  slug: string;
   author: string;
   originalAuthor: string;
   created: any;

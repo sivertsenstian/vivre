@@ -34,7 +34,7 @@ export const current_week = moment().startOf("isoWeek");
 export const current_month = moment().startOf("month");
 
 export const days_since_start = today.diff(start, "days");
-export const version = { major: 2, minor: 0, patch: 3, full: "2.0.3" };
+export const version = { major: 2, minor: 0, patch: 4, full: "2.0.4" };
 
 export const races = [
   Race.Human,
