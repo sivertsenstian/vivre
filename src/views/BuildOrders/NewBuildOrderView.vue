@@ -16,6 +16,7 @@ import {
 } from "@/utilities/buildorderparser";
 import _last from "lodash/last";
 import moment from "moment";
+import _capitalize from "lodash/capitalize";
 
 const builds = useBuildsStore();
 
@@ -277,7 +278,7 @@ const onImportBuild = async (event: any) => {
           <v-row>
             <v-col cols="5">
               <v-row>
-                <v-col cols="12">
+                <v-col cols="8">
                   <v-text-field
                     hide-details
                     density="compact"
@@ -286,6 +287,20 @@ const onImportBuild = async (event: any) => {
                     label="Name"
                     required></v-text-field>
                 </v-col>
+                <v-col cols="4">
+                  <v-select
+                    hide-details
+                    :items="
+                      builds.types.map((t) => ({
+                        title: _capitalize(t),
+                        value: t,
+                      }))
+                    "
+                    density="compact"
+                    label="Type"
+                    v-model="builds.data.new.type"></v-select>
+                </v-col>
+
                 <v-col cols="6">
                   <v-select
                     hide-details
@@ -423,12 +438,31 @@ const onImportBuild = async (event: any) => {
                     </v-col>
                   </v-row>
                 </v-col>
-                <v-col cols="12" style="height: auto">
+                <v-col
+                  cols="12"
+                  :class="{
+                    fade: true,
+                    disabled: builds.data.new.type === 'steps',
+                  }"
+                  ><div class="text-h6 font-weight-bold">Guide</div>
+                </v-col>
+                <v-col
+                  cols="12"
+                  :class="{
+                    fade: true,
+                    disabled: builds.data.new.type === 'steps',
+                  }"
+                  style="height: auto">
                   <markdown-editor v-model="builds.data.new.description" />
                 </v-col>
               </v-row>
             </v-col>
-            <v-col cols="7">
+            <v-col
+              cols="7"
+              :class="{
+                fade: true,
+                disabled: builds.data.new.type === 'guide',
+              }">
               <v-row>
                 <v-col cols="12"
                   ><div class="text-h6 font-weight-bold">Build order steps</div>
@@ -563,5 +597,20 @@ const onImportBuild = async (event: any) => {
 }
 .ghost {
   background: rgba(var(--v-theme-primary), 0.1);
+}
+
+.fade {
+  transition:
+    opacity 300ms,
+    color 300ms;
+}
+
+.disabled {
+  pointer-events: none;
+  opacity: 0.5;
+
+  * {
+    color: grey !important;
+  }
 }
 </style>

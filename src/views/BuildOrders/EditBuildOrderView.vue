@@ -2,12 +2,12 @@
 import { useBuildsStore } from "@/stores/builds";
 import { Race, raceName } from "@/stores/races";
 import { useRoute, useRouter } from "vue-router";
-import { useFirestore } from "vuefire";
 import { computed, ref } from "vue";
 import ViabilitySlider from "@/components/ViabilitySlider.vue";
 import MarkdownEditor from "@/components/MarkdownEditor.vue";
 import draggable from "vuedraggable";
 import UpsertStepAnnotation from "@/components/UpsertStepAnnotation.vue";
+import _capitalize from "lodash/capitalize";
 
 const builds = useBuildsStore();
 
@@ -102,13 +102,27 @@ const updateFood = (race: Race) => {
           <v-row>
             <v-col cols="5">
               <v-row>
-                <v-col cols="12">
+                <v-col cols="8">
                   <v-text-field
                     hide-details
                     density="compact"
                     v-model="builds.data.edit.name"
                     label="Name"></v-text-field>
                 </v-col>
+                <v-col cols="4">
+                  <v-select
+                    hide-details
+                    :items="
+                      builds.types.map((t) => ({
+                        title: _capitalize(t),
+                        value: t,
+                      }))
+                    "
+                    density="compact"
+                    label="Type"
+                    v-model="builds.data.edit.type"></v-select>
+                </v-col>
+
                 <v-col cols="6">
                   <v-select
                     hide-details
@@ -264,12 +278,31 @@ const updateFood = (race: Race) => {
                     </v-col>
                   </v-row>
                 </v-col>
-                <v-col cols="12" style="height: auto">
+                <v-col
+                  cols="12"
+                  :class="{
+                    fade: true,
+                    disabled: builds.data.edit.type === 'steps',
+                  }"
+                  ><div class="text-h6 font-weight-bold">Guide</div>
+                </v-col>
+                <v-col
+                  cols="12"
+                  style="height: auto"
+                  :class="{
+                    fade: true,
+                    disabled: builds.data.edit.type === 'steps',
+                  }">
                   <markdown-editor v-model="builds.data.edit.description" />
                 </v-col>
               </v-row>
             </v-col>
-            <v-col cols="7">
+            <v-col
+              cols="7"
+              :class="{
+                fade: true,
+                disabled: builds.data.edit.type === 'guide',
+              }">
               <v-row>
                 <v-col cols="12"
                   ><div class="text-h6 font-weight-bold">Build order steps</div>
@@ -494,5 +527,14 @@ const updateFood = (race: Race) => {
 }
 .ghost {
   background: rgba(var(--v-theme-primary), 0.1);
+}
+
+.disabled {
+  pointer-events: none;
+  opacity: 0.5;
+
+  * {
+    color: grey !important;
+  }
 }
 </style>

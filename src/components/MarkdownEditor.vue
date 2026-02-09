@@ -6,6 +6,7 @@ const model = defineModel<string>({ default: "" });
 
 <template>
   <md-editor
+    style="min-height: 60vh"
     v-model="model"
     placeholder="Guide (optional) - Markdown is supported - click the icon on the far right to preview how it will end up!"
     language="en-US"
@@ -30,6 +31,7 @@ const model = defineModel<string>({ default: "" });
       'orderedList',
       '-',
       'link',
+      'image',
       'table',
       '=',
       'revoke',
@@ -37,8 +39,7 @@ const model = defineModel<string>({ default: "" });
       'pageFullscreen',
       'previewOnly',
     ]"
-    :footers="[]"
-  />
+    :footers="[]" />
 </template>
 
 <style scoped></style>

@@ -60,6 +60,8 @@ export const useBuildsStore = defineStore("builds", () => {
 
   const difficulties = ["Beginner", "Amateur", "Pro"];
 
+  const types = ["guide", "steps", "hybrid"];
+
   const step = (food: string = "0/10"): IStep => ({
     id: uuidv4(),
     time: "00:00",
@@ -75,6 +77,7 @@ export const useBuildsStore = defineStore("builds", () => {
     author: "",
     originalAuthor: "",
     created: moment().toDate(),
+    type: "hybrid",
     workInProgress: false,
     name: "",
     description: "",
@@ -126,6 +129,7 @@ export const useBuildsStore = defineStore("builds", () => {
       if (item.id) {
         const reference = doc(db, "buildorders", item.id);
         item.updated = moment().toDate();
+        item.type = item.type?.length ? item.type : "hybrid";
         item.slug = slugify(`${item.name}-${item.id.substring(0, 3)}`);
         await updateDoc(reference, item as any);
         await router.push(`/buildorders/${item.slug}`);
@@ -236,6 +240,7 @@ export const useBuildsStore = defineStore("builds", () => {
     removeGame,
     canEdit,
     difficulties,
+    types,
     claim,
   };
 });
