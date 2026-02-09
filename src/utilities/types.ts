@@ -123,6 +123,8 @@ export interface ISampleGame {
   name?: string;
 }
 
+export type IBuildOrderType = "guide" | "steps" | "hybrid";
+
 export interface IBuild {
   id: string;
   slug: string;
@@ -130,6 +132,7 @@ export interface IBuild {
   originalAuthor: string;
   created: any;
   updated?: any;
+  type: IBuildOrderType;
   workInProgress: boolean;
   name: string;
   secret?: string;

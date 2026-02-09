@@ -4,13 +4,16 @@ import { getVersionColor, useBuildsStore } from "@/stores/builds";
 import { raceName, raceIcon, raceUpkeep } from "@/stores/races";
 import { useRoute, useRouter } from "vue-router";
 
-import { computed } from "vue";
+import { computed, ref, useTemplateRef } from "vue";
 import ViabilitySlider from "@/components/ViabilitySlider.vue";
 
 import MarkdownViewer from "@/components/MarkdownViewer.vue";
 import StepAnnotation from "@/components/StepAnnotation.vue";
 import _isNil from "lodash/isNil";
 import _isEmpty from "lodash/isEmpty";
+import type { IStep } from "@/utilities/types.ts";
+import _first from "lodash/first";
+import _last from "lodash/last";
 
 const open = (path: string) => window.open(path, "_blank");
 
@@ -84,6 +87,91 @@ const author = computed(() => {
 
   return { original: b, writtenBy: a, hasOriginal: true };
 });
+
+const showSteps = ref(true);
+const showGuide = ref(true);
+
+const showAsGuide = computed(() => {
+  return (
+    buildorder.value?.type === "guide" ||
+    ((!buildorder.value?.type?.length || buildorder.value?.type === "hybrid") &&
+      showGuide.value &&
+      !showSteps.value)
+  );
+});
+
+const showAsSteps = computed(() => {
+  return (
+    buildorder.value?.type === "steps" ||
+    ((!buildorder.value?.type?.length || buildorder.value?.type === "hybrid") &&
+      showSteps.value &&
+      !showGuide.value)
+  );
+});
+
+const interactive = ref({
+  active: false,
+  state: "paused",
+  steps: [] as any,
+  delay: 1000,
+  seconds: -3,
+  interval: 0,
+});
+const stepsRef = useTemplateRef("steps");
+
+const play = () => {
+  clearInterval(interactive.value.interval);
+  interactive.value.active = true;
+  interactive.value.state = "play";
+
+  const actual: IStep[] = buildorder.value?.steps ?? [];
+  const end = moment.duration(`00:${_last(actual)?.time ?? 0}`).asSeconds();
+
+  if (interactive.value.seconds === end) {
+    interactive.value.seconds = -3;
+    interactive.value.steps = [];
+  }
+
+  interactive.value.interval = setInterval(() => {
+    if (interactive.value.state === "play" && interactive.value.seconds < end) {
+      interactive.value.seconds++;
+
+      const steps = actual.filter(
+        (s: any) =>
+          moment.duration(`00:${s.time}`).asSeconds() ===
+          interactive.value.seconds,
+      );
+
+      if (steps.length) {
+        interactive.value.steps = steps;
+        const l = _first(steps);
+        const i = actual.findIndex((s) => s.id === l?.id);
+
+        const item = (stepsRef.value as any)?.[i] as any;
+        if (item) {
+          item.scrollIntoView({
+            behavior: "smooth",
+            block: "center",
+          });
+        }
+      }
+    } else {
+      interactive.value.state = "paused";
+    }
+  }, interactive.value.delay);
+};
+
+const pause = () => {
+  interactive.value.state =
+    interactive.value.state === "paused" ? "play" : "paused";
+};
+
+const reset = () => {
+  interactive.value.active = true;
+  interactive.value.state = "paused";
+  interactive.value.seconds = -3;
+  interactive.value.steps = [];
+};
 </script>
 
 <template>
@@ -105,7 +193,7 @@ const author = computed(() => {
         <v-form>
           <v-row
             ><v-col cols="12">
-              <div class="text-h3 font-weight-bold">
+              <div class="text-h4 font-weight-bold">
                 <span style="vertical-align: middle">{{
                   buildorder.name
                 }}</span>
@@ -115,6 +203,17 @@ const author = computed(() => {
                   title="Work In Progress - This build order is still being worked on"
                   color="warning"
                   icon="mdi-hard-hat" />
+                <span
+                  class="ml-3 text-subtitle-2 text-grey"
+                  style="position: relative; top: 25px; right: 100px">
+                  {{
+                    buildorder.type === "guide"
+                      ? "Build Order Guide"
+                      : buildorder.type === "steps"
+                        ? "Build Order Steps"
+                        : "Build Order Guide & Steps"
+                  }}
+                </span>
               </div>
             </v-col>
             <v-col cols="8">
@@ -188,6 +287,20 @@ const author = computed(() => {
               >
             </v-col>
             <v-col cols="4" class="text-right">
+              <v-btn-group
+                density="compact"
+                v-if="!buildorder.type?.length || buildorder.type === 'hybrid'">
+                <v-btn
+                  @click="showGuide = !showGuide"
+                  icon="mdi-text-box"
+                  :class="{ hide: !showGuide }"
+                  :title="`${showGuide ? 'Hide' : 'Show'} build order guide`" />
+                <v-btn
+                  @click="showSteps = !showSteps"
+                  icon="mdi-view-list"
+                  :class="{ hide: !showSteps }"
+                  :title="`${showSteps ? 'Hide' : 'Show'} build order steps`" />
+              </v-btn-group>
               <v-btn
                 prepend-icon="mdi-pen"
                 variant="text"
@@ -205,7 +318,7 @@ const author = computed(() => {
               <hr />
             </v-col>
 
-            <v-col cols="6">
+            <v-col :cols="showAsGuide ? 12 : 6">
               <v-row>
                 <v-col cols="6" v-if="buildorder.games?.length">
                   <div class="text-subtitle-2 font-weight-bold">
@@ -224,7 +337,6 @@ const author = computed(() => {
                     >
                   </template>
                 </v-col>
-                <v-col cols="6" v-else />
                 <v-col cols="3" v-if="buildorder.viability">
                   <viability-slider readonly v-model="buildorder.viability"
                 /></v-col>
@@ -261,7 +373,7 @@ const author = computed(() => {
                   </v-chip-group>
                 </v-col>
               </v-row>
-              <v-row v-if="buildorder.description?.length">
+              <v-row v-if="buildorder.description?.length && !showAsSteps">
                 <v-col cols="12">
                   <div class="text-subtitle-2 font-weight-bold">
                     Description
@@ -269,22 +381,20 @@ const author = computed(() => {
                   <hr />
                 </v-col>
                 <v-col cols="12">
-                  <section class="description">
+                  <section
+                    :class="showAsGuide ? 'description' : 'hybrid-description'">
                     <markdown-viewer v-model="buildorder.description" />
                   </section>
                 </v-col>
               </v-row>
-              <v-row v-else>
-                <v-col cols="12">
-                  <section class="text-grey">No description..</section>
-                </v-col>
-              </v-row>
             </v-col>
-            <v-col cols="6">
+            <v-col
+              :cols="showAsSteps ? 12 : 6"
+              :class="{ 'd-none': showAsGuide }">
               <v-row>
                 <v-col cols="12">
-                  <v-sheet elevation="10" border class="py-5 px-8">
-                    <div class="text-h5 font-weight-bold">
+                  <v-sheet elevation="10" border class="py-1 px-8">
+                    <div class="text-h5 font-weight-bold mt-2">
                       Build Order
                       <span class="text-grey"
                         >//
@@ -294,6 +404,46 @@ const author = computed(() => {
                         }}
                         steps</span
                       >
+                      <v-btn-group density="compact" class="ml-4">
+                        <div
+                          :class="{
+                            'mx-2 my-auto': true,
+                            'text-green':
+                              interactive.state === 'play' &&
+                              interactive.seconds >= 0,
+                            'text-red':
+                              interactive.state === 'play' &&
+                              interactive.seconds < 0,
+                            'text-grey': interactive.state !== 'play',
+                          }"
+                          style="font-size: 13px">
+                          {{
+                            (
+                              moment.duration(
+                                interactive.seconds,
+                                "seconds",
+                              ) as any
+                            ).format("mm:ss", { trim: false })
+                          }}
+                        </div>
+                        <v-btn
+                          title="Restart live steps"
+                          icon="mdi-restart"
+                          class="text-grey"
+                          @click="reset" />
+                        <v-btn
+                          title="Pause live steps"
+                          v-if="interactive.state === 'play'"
+                          icon="mdi-pause"
+                          @click="pause"
+                          class="text-grey" />
+                        <v-btn
+                          title="Start a counter that highlights each step based on the time column from start to finish"
+                          v-else
+                          icon="mdi-play"
+                          @click="play"
+                          class="text-grey" />
+                      </v-btn-group>
                       <div
                         class="text-subtitle-2 ml-auto"
                         style="display: inline-block; float: right">
@@ -314,7 +464,7 @@ const author = computed(() => {
                     <v-table
                       class="steps-table"
                       hover
-                      height="70vh"
+                      :height="showAsSteps ? '100%' : '70vh'"
                       fixed-header>
                       <thead>
                         <tr>
@@ -328,9 +478,15 @@ const author = computed(() => {
                       <tbody>
                         <tr
                           v-for="(step, i) in buildorder.steps"
+                          ref="steps"
                           :class="{
                             timing: step.timing,
                             separator: step.separator,
+                            active:
+                              interactive.active &&
+                              interactive.steps.some(
+                                (v: IStep) => v.id === step.id,
+                              ),
                           }"
                           :title="
                             step.timing ? 'This is an important timing!' : ''
@@ -417,10 +573,25 @@ const author = computed(() => {
     }
     background: rgba(var(--v-theme-primary), 0.1);
   }
+
+  tbody tr.active {
+    background: rgba(255, 215, 0, 0.2);
+    * {
+      font-weight: bold;
+    }
+  }
+}
+
+.hybrid-description {
+  max-height: 60vh;
+  overflow-y: auto;
 }
 
 .description {
-  max-height: 60vh;
-  overflow-y: auto;
+}
+
+.hide {
+  color: grey;
+  opacity: 0.8;
 }
 </style>
