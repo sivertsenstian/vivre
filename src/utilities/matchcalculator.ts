@@ -14,7 +14,7 @@ import {
   calculateAchievementPoints,
   calculateLadderPoints,
 } from "@/utilities/achievements.ts";
-import { current_season } from "@/utilities/constants.ts";
+import { current_season, heroes } from "@/utilities/constants.ts";
 
 export const getPercentage = (data: any, race: Race) => {
   return _round(
@@ -135,6 +135,13 @@ export const opponentIsRace = (tag: string, m: any, r: Race) =>
         p.battleTag.toLowerCase() !== tag.toLowerCase() && p.race === r,
     ),
   );
+
+export const gethero = (tag: string, hero: string) => (m: any) => {
+  const player = getplayer(tag)(m);
+  return player?.players?.[0]?.heroes.find(
+    (h: any) => heroes?.[h.name].toLowerCase() === hero.toLowerCase(),
+  );
+};
 
 const getPerformance = (tag: string, matches: any[]) => {
   return matches.map(

@@ -3,14 +3,18 @@ import * as parser from "@/utilities/buildorderparser";
 import _has from "lodash/has";
 import _take from "lodash/take";
 import _keys from "lodash/keys";
-import _values from "lodash/values";
+import _uniqBy from "lodash/uniqBy";
 
 import moment from "moment";
 import { useSettingsStore } from "@/stores/settings";
 import { races, heroes } from "@/utilities/constants.ts";
-import { useStatsStore } from "@/stores/stats.ts";
+import { useSeasonStore } from "@/stores/season.ts";
 import { computed, onMounted, onUnmounted, ref } from "vue";
-import { getopponent, getplayer } from "@/utilities/matchcalculator.ts";
+import {
+  gethero,
+  getopponent,
+  getplayer,
+} from "@/utilities/matchcalculator.ts";
 import RaceIcon from "@/components/RaceIcon.vue";
 import MapLink from "@/components/MapLink.vue";
 import MapPreview from "@/components/MapPreview.vue";
@@ -31,16 +35,14 @@ import { Race, raceNameWithRandom as raceName } from "@/stores/races.ts";
 import _reduce from "lodash/reduce";
 import PlayerW3cLink from "@/components/PlayerW3cLink.vue";
 import _sortBy from "lodash/sortBy";
-import { useTheme } from "vuetify";
 import axios from "axios";
 import { useRoute } from "vue-router";
 import { getMatch } from "@/utilities/api.ts";
 import _sample from "lodash/sample";
+import { BuildOrderType } from "@/utilities/buildorderparser";
 
 const settings = useSettingsStore();
-const stats = useStatsStore();
-
-const theme = useTheme();
+const season = useSeasonStore();
 
 // Graph stuff
 ChartJS.register(
@@ -78,7 +80,7 @@ const doTest = async (id: string) => {
     ...match,
     buildOrders: response.data.playerBuildOrders.map((b: any) => ({
       player: b.playerName,
-      items: parser.summarize(b.buildOrderItems),
+      items: b.buildOrderItems,
     })),
   };
 
@@ -98,7 +100,10 @@ onMounted(async () => {
     const r = await doTest(String(route.params.id));
 
     match.value = r.match;
-    buildOrders.value = r.buildOrders;
+    buildOrders.value = r.buildOrders.map((b: any) => ({
+      ...b,
+      ...parser.summarize(b.items),
+    }));
   } finally {
     loading.value = false;
   }
@@ -113,8 +118,8 @@ const mainlyPlays = computed(() => {
   const ranks = races.map((r) => ({
     race: r,
     pickrate:
-      ((stats.player?.season[r]?.total ?? 0) /
-        (stats.player?.season.summary.total ?? 1)) *
+      ((season.player?.season[r]?.total ?? 0) /
+        (season.player?.season.summary.total ?? 1)) *
       100,
   }));
 
@@ -161,7 +166,7 @@ const annotations = computed(() => {
     ..._reduce(
       buildOrders?.value?.[0]?.items ?? [],
       (a, v, p) => {
-        if (v.type === "Tech") {
+        if (v.type === BuildOrderType.Tech) {
           const res = {
             ...a,
             [v.id]: {
@@ -189,10 +194,7 @@ const annotations = computed(() => {
 
           return res;
         }
-        if (
-          v.type === "Build" &&
-          _values(heroes).some((h) => v.instructions.includes(h))
-        ) {
+        if (v.type === BuildOrderType.BuildHero) {
           const res = {
             ...a,
             [v.id]: {
@@ -257,10 +259,7 @@ const annotations = computed(() => {
           return res;
         }
 
-        if (
-          v.type === "Build" &&
-          _values(heroes).some((h) => v.instructions.includes(h))
-        ) {
+        if (v.type === BuildOrderType.BuildHero) {
           const res = {
             ...a,
             [v.id]: {
@@ -349,7 +348,7 @@ const options: any = computed(() => ({
 </script>
 
 <template>
-  <main v-if="stats.player" style="height: 100vh; overflow-y: auto">
+  <main v-if="season.player" style="height: 100vh; overflow-y: auto">
     <v-container fluid style="opacity: 0.9">
       <v-row>
         <v-col cols="12">
@@ -418,9 +417,6 @@ const options: any = computed(() => ({
                       Game <span class="text-grey">{{ match?.id }}</span>
                     </h2>
                     <hr />
-                  </v-col>
-                  <v-col v-if="false" cols="12">
-                    <pre>{{ match }}</pre>
                   </v-col>
                   <v-col cols="12" v-if="match">
                     <v-table fixed-header density="compact">
@@ -599,20 +595,210 @@ const options: any = computed(() => ({
 
                     <v-row>
                       <v-col cols="12" lg="8" :offset-lg="i === 0 ? 4 : 0">
+                        <div
+                          style="
+                            background-color: rgb(84, 75, 75);
+                            border-radius: 6px;
+                          ">
+                          <v-col cols="12" class="text-center">
+                            <div
+                              class="d-inline-flex"
+                              :title="step.id"
+                              v-for="step in _uniqBy<any>(
+                                bo?.items.filter(
+                                  (i: any) =>
+                                    i.type === BuildOrderType.BuildHero,
+                                ),
+                                'id',
+                              )">
+                              <img :src="step.icon" />
+                              <span
+                                class="font-weight-bold ml-1 mr-4 mt-1"
+                                style="color: gold">
+                                Level
+                                {{ gethero(bo.player, step.id)(match)?.level }}
+                              </span>
+                            </div>
+                          </v-col>
+                          <v-col cols="12" class="text-center pa-0">
+                            <div
+                              class="d-inline-flex"
+                              :title="step.id"
+                              v-for="step in _uniqBy<any>(
+                                bo?.items
+                                  .filter(
+                                    (i: any) => i.type === BuildOrderType.Learn,
+                                  )
+                                  .sort((a: any, b: any) =>
+                                    a.id.localeCompare(b.name),
+                                  ),
+                                'id',
+                              )">
+                              <div
+                                class="text-center mr-2"
+                                :title="step.instruction">
+                                <img :src="step.icon" />
+                                <div
+                                  class="font-weight-bold"
+                                  style="margin-top: -7px">
+                                  {{ bo?.count[step.id] - 1 }}
+                                </div>
+                              </div>
+                            </div>
+                          </v-col>
+                          <v-col cols="12">
+                            <div
+                              class="d-inline-flex"
+                              :title="step.id"
+                              v-for="step in _uniqBy<any>(
+                                bo?.items
+                                  .filter(
+                                    (i: any) =>
+                                      i.type === BuildOrderType.BuildUnit &&
+                                      bo?.count[i.id] - 1 > 0,
+                                  )
+                                  .sort((a: any, b: any) =>
+                                    a.id.localeCompare(b.name),
+                                  ),
+                                'id',
+                              )">
+                              <div
+                                class="text-center mr-2"
+                                :title="step.instruction">
+                                <img :src="step.icon" />
+                                <div
+                                  class="font-weight-bold"
+                                  style="margin-top: -7px">
+                                  {{ bo?.count[step.id] - 1 }}
+                                </div>
+                              </div>
+                            </div>
+                          </v-col>
+                        </div>
+                      </v-col>
+                      <v-col cols="12" lg="8" :offset-lg="i === 0 ? 4 : 0">
+                        <div
+                          style="
+                            padding: 10px;
+                            background-color: rgb(71, 57, 57);
+                            border-radius: 6px;
+                          ">
+                          <div
+                            class="d-inline-flex"
+                            :title="step.id"
+                            v-for="step in _uniqBy<any>(
+                              bo?.items
+                                .filter(
+                                  (i: any) =>
+                                    i.type === BuildOrderType.BuildBuilding &&
+                                    bo?.count[i.id] - 1 > 0,
+                                )
+                                .sort((a: any, b: any) =>
+                                  a.id.localeCompare(b.name),
+                                ),
+                              'id',
+                            )">
+                            <div class="text-center mr-2">
+                              <img :src="step.icon" />
+                              <div
+                                class="font-weight-bold"
+                                style="margin-top: -7px">
+                                {{ bo?.count[step.id] - 1 }}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </v-col>
+                    </v-row>
+
+                    <v-row>
+                      <v-col cols="12" lg="8" :offset-lg="i === 0 ? 4 : 0">
                         <v-table class="summary-build-order" density="compact">
                           <tbody>
                             <tr v-for="step in bo?.items">
-                              <td :class="step.type">
+                              <td
+                                :class="{
+                                  [step.class]: true,
+                                  expansion: step.expansion,
+                                }">
                                 <span
                                   class="ml-1 font-weight-bold text-grey"
                                   style="vertical-align: middle"
                                   >{{ step.time }}</span
                                 >
                               </td>
-                              <td :class="step.type">
-                                <span class="font-weight-bold">{{
-                                  step.instructions
-                                }}</span>
+                              <td
+                                :class="{
+                                  [step.class]: true,
+                                  expansion: step.expansion,
+                                }">
+                                <img
+                                  :src="step.icon"
+                                  width="24"
+                                  style="
+                                    vertical-align: middle;
+                                    margin-right: 5px;
+                                  " />
+                                <span
+                                  class="font-weight-bold"
+                                  style="vertical-align: middle"
+                                  >{{ step.instructions }}
+                                </span>
+
+                                <v-badge
+                                  v-if="step.showCount"
+                                  style="
+                                    vertical-align: middle;
+                                    float: right;
+                                    margin-top: 3px;
+                                  "
+                                  :content="step.count"
+                                  :color="i === 0 ? 'blue' : 'red'"
+                                  inline>
+                                </v-badge>
+                                <v-chip
+                                  v-if="step.type === BuildOrderType.Tech"
+                                  style="
+                                    float: right;
+                                    margin-top: 2px;
+                                    margin-right: 3px;
+                                  "
+                                  size="x-small"
+                                  append-icon="mdi-home-sound-out"
+                                  variant="text"
+                                  ><span class="font-weight-bold"
+                                    >TECH</span
+                                  ></v-chip
+                                >
+                                <v-chip
+                                  v-if="step.type === BuildOrderType.BuildHero"
+                                  style="
+                                    float: right;
+                                    margin-top: 2px;
+                                    margin-right: 3px;
+                                  "
+                                  size="x-small"
+                                  append-icon="mdi-crown"
+                                  color="#ffd700"
+                                  variant="text"
+                                  ><span class="font-weight-bold"
+                                    >HERO</span
+                                  ></v-chip
+                                >
+                                <v-chip
+                                  v-if="step.expansion"
+                                  style="
+                                    float: right;
+                                    margin-top: 2px;
+                                    margin-right: 3px;
+                                  "
+                                  size="x-small"
+                                  append-icon="mdi-castle"
+                                  variant="text"
+                                  ><span class="font-weight-bold"
+                                    >EXPANSION</span
+                                  ></v-chip
+                                >
                               </td>
                             </tr>
                           </tbody>
@@ -664,7 +850,7 @@ const options: any = computed(() => ({
             border-top: 1px solid goldenrod;
             border-bottom: 1px solid goldenrod;
           }
-          background-color: rgba(155, 144, 46, 0.66);
+          background-color: rgba(166, 158, 95, 0.66);
         }
 
         td.Research,
@@ -672,12 +858,46 @@ const options: any = computed(() => ({
           background-color: rgba(114, 43, 138, 0.5);
         }
 
-        td.Build,
+        td.BuildUnit,
         td.Hire {
           background-color: rgb(84, 75, 75);
         }
 
-        td.Cancel,
+        td.BuildBuilding {
+          background-color: rgb(72, 57, 57);
+
+          &.expansion {
+            &:first-of-type {
+              border-left: 1px solid goldenrod;
+              border-top: 1px solid goldenrod;
+              border-bottom: 1px solid goldenrod;
+            }
+            &:last-of-type {
+              border-right: 1px solid goldenrod;
+              border-top: 1px solid goldenrod;
+              border-bottom: 1px solid goldenrod;
+            }
+          }
+        }
+
+        td.BuildHero {
+          background-color: rgba(29, 91, 131, 0.77);
+
+          &:first-of-type {
+            border-left: 1px solid goldenrod;
+            border-top: 1px solid goldenrod;
+            border-bottom: 1px solid goldenrod;
+          }
+          &:last-of-type {
+            border-right: 1px solid goldenrod;
+            border-top: 1px solid goldenrod;
+            border-bottom: 1px solid goldenrod;
+          }
+        }
+
+        td.CancelUnit,
+        td.CancelBuilding,
+        td.CancelHero,
         td.Unsummon {
           background-color: rgba(183, 52, 63, 0.5);
         }

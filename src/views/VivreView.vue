@@ -16,18 +16,13 @@ import VersusBanner from "@/components/versus/VersusBanner.vue";
 import PlayerSearch from "@/components/PlayerSearch.vue";
 import PlayerRace from "@/components/PlayerRace.vue";
 import { useSettingsStore } from "@/stores/settings";
-import { useStatsStore } from "@/stores/stats";
-import {
-  Race,
-  creeproutes,
-  raceIcon,
-  heroIcon,
-  CreepRouteCategory,
-  category,
-} from "@/stores/races";
+import { useLiveStore } from "@/stores/live";
+import { useSeasonStore } from "@/stores/season";
+import { Race, raceIcon } from "@/stores/races";
 
 const settings = useSettingsStore();
-const stats = useStatsStore();
+const live = useLiveStore();
+const season = useSeasonStore();
 
 import hu_banner from "@/assets/take_a_look_at_banner_michael.png";
 import r_banner from "@/assets/take_a_look_at_banner_random.png";
@@ -49,6 +44,7 @@ import {
   end_color,
 } from "@/utilities/constants";
 import w3ciconDark from "@/assets/w3c_dark.png";
+import OngoingMatch from "@/components/live/OngoingMatch.vue";
 
 const raceBanner: any = {
   [Race.Human]: hu_banner,
@@ -79,28 +75,19 @@ const openw3cprofile = (battleTag: string) =>
 const numberOfGames = (target: number, avg: number) =>
   Math.abs(Math.ceil(target / avg));
 
-let ongoing_game_duration = ref(
-  moment.utc(moment().diff(stats?.ongoing?.start)).format("mm:ss"),
-);
-setInterval(() => {
-  ongoing_game_duration.value = moment
-    .utc(moment().diff(stats?.ongoing?.start))
-    .format("mm:ss");
-}, 1000);
-
 const data = computed<Partial<IRaceStatistics>>(() => {
   let d: Partial<IRaceStatistics> = { wins: 0, loss: 0, total: 0 };
-  if (!_isNil(stats.player)) {
+  if (!_isNil(season.player)) {
     if (settings.data.mode === "week") {
-      d = stats.player.week;
+      d = season.player.week;
     } else if (settings.data.mode === "month") {
-      d = stats.player.month;
+      d = season.player.month;
     } else if (settings.data.mode === "season") {
-      d = stats.player.season[stats.player.race];
+      d = season.player.season[season.player.race];
     }
 
     if (d.mmr?.current === 0) {
-      d.mmr = stats.player.season[stats.player.race]?.mmr ?? {};
+      d.mmr = season.player.season[season.player.race]?.mmr ?? {};
     }
   }
 
@@ -118,17 +105,17 @@ const rank = computed(() => {
   let points: any[] = [];
   let rank: Record<string, number> = {};
 
-  if (!_isNil(stats.player?.battleTag)) {
+  if (!_isNil(season.player?.battleTag)) {
     points.push({
-      id: stats.player.battleTag,
-      points: getPoints(stats.player),
+      id: season.player.battleTag,
+      points: getPoints(season.player),
     });
     for (const challenger of settings.data.challengers.filter(
       (v) => !_isNil(v),
     )) {
       points.push({
         id: challenger,
-        points: getPoints(stats.challengers[challenger]),
+        points: getPoints(live.challengers[challenger]),
       });
     }
     return _fromPairs(
@@ -146,7 +133,7 @@ const goal = computed(() => {
 
   const setGoalPerDay = settings.data.goal;
 
-  if (!_isNil(stats.player)) {
+  if (!_isNil(season.player)) {
     if (settings.data.mode === "week") {
       total = settings.data.goal * 7;
     } else if (settings.data.mode === "month") {
@@ -162,25 +149,8 @@ const goal = computed(() => {
   };
 });
 
-const getRoute = (
-  race: Race,
-  category: CreepRouteCategory,
-  opponent: Race,
-  map: string,
-) => {
-  const r = creeproutes[race]?.[category]?.[opponent]?.[map];
-  if (_isNil(r?.img) || r?.img.includes("missing")) {
-    return (
-      creeproutes[race]?.[CreepRouteCategory.Beginner]?.[Race.Random]?.[map] ??
-      {}
-    );
-  }
-
-  return r;
-};
-
 const challengers = computed(() => {
-  return [stats.player?.battleTag, ...settings.data.challengers].sort(
+  return [season.player?.battleTag, ...settings.data.challengers].sort(
     (a, b) => (rank.value?.[a ?? ""] ?? 0) - (rank.value[b ?? ""] ?? 0),
   );
 });
@@ -189,181 +159,22 @@ const theme = useTheme();
 const isDark = computed(() => theme.global.current.value.dark);
 
 onMounted(() => {
-  stats.subscribe();
+  live.subscribe();
+  season.subscribe();
 });
 
 onUnmounted(() => {
-  stats.unsubscribe();
+  live.unsubscribe();
+  season.unsubscribe();
 });
 </script>
 
 <template>
-  <main v-if="stats.player" style="height: 100vh; overflow-y: auto">
-    <v-container fluid style="opacity: 0.9">
+  <main v-if="season.player" style="height: 100vh; overflow-y: auto">
+    <v-container fluid>
       <v-row>
         <v-col cols="12" md="8">
-          <v-col cols="12" v-if="stats?.ongoing?.active">
-            <v-sheet class="pa-4" :elevation="5">
-              <v-row>
-                <v-col cols="12" md="8" class="text-center">
-                  <v-col cols="12">
-                    <span class="text-h6 font-weight-bold"
-                      >Playing on '<map-link :name="stats.ongoing?.map" />' :
-                      {{ ongoing_game_duration }}</span
-                    >
-                  </v-col>
-                  <v-col cols="12">
-                    <span class="text-h5" style="vertical-align: text-top"
-                      >Vs.
-                    </span>
-                    <img
-                      class="mx-6"
-                      style="vertical-align: middle"
-                      width="100px"
-                      :src="raceIcon[stats.ongoing.opponent.race]" />
-                    <span class="text-h5" style="vertical-align: text-top">
-                      {{ stats.ongoing.opponent?.name }} ({{
-                        stats.ongoing.opponent?.oldMmr
-                      }})</span
-                    >
-                  </v-col>
-                  <v-col cols="12" md="10" class="mx-auto">
-                    <ResultChart :result="stats.ongoing.history" />
-                  </v-col>
-                </v-col>
-
-                <v-col cols="12" md="4">
-                  <v-col
-                    cols="12"
-                    :class="{
-                      'text-right': stats.ongoing.history.last.length,
-                      'text-center': !stats.ongoing.history.last.length,
-                    }">
-                    <div>
-                      <span
-                        class="text-caption font-weight-bold"
-                        v-if="stats.ongoing.history.last.length"
-                        >Last {{ stats.ongoing.history.last.length }}:
-                      </span>
-                      <span class="text-caption font-weight-bold" v-else>
-                        First Game This Season vs Opponent!
-                      </span>
-                      <template v-for="result in stats.ongoing.history.last">
-                        <v-chip
-                          v-if="result"
-                          size="x-small"
-                          variant="tonal"
-                          color="green"
-                          label
-                          class="rounded-0">
-                          <v-icon icon="mdi-shield-crown" />
-                        </v-chip>
-                        <v-chip
-                          v-else
-                          size="x-small"
-                          variant="tonal"
-                          color="red"
-                          label
-                          class="rounded-0">
-                          <v-icon icon="mdi-shield-crown-outline" />
-                        </v-chip>
-                      </template>
-                    </div>
-                  </v-col>
-                  <v-col
-                    cols="12"
-                    class="text-center"
-                    v-if="
-                      getRoute(
-                        stats.ongoing.player?.race,
-                        category,
-                        stats.ongoing.opponent?.race,
-                        stats.ongoing.map,
-                      )?.img
-                    ">
-                    <span class="caption">Suggested Creep Route</span>
-                    <img
-                      :src="
-                        getRoute(
-                          stats.ongoing.player?.race,
-                          category,
-                          stats.ongoing.opponent?.race,
-                          stats.ongoing.map,
-                        )?.img
-                      "
-                      width="100%" />
-                  </v-col>
-                </v-col>
-              </v-row>
-              <v-row>
-                <v-col cols="12" md="8">
-                  <v-row v-if="stats.ongoing.history.heroes.length">
-                    <v-col cols="12">
-                      <div class="text-h5">
-                        Heroes used in recent games vs
-                        <img
-                          style="vertical-align: middle"
-                          width="50"
-                          :src="raceIcon[stats.ongoing.player.race]" />
-                        <hr />
-                      </div>
-                    </v-col>
-                  </v-row>
-                  <v-row
-                    v-for="([heroes, n], i) in stats.ongoing.history.heroes">
-                    <div class="text-h5 ml-5" style="align-self: center">
-                      #{{ i + 1 }}
-                    </div>
-                    <v-col cols="2" v-for="hero in heroes?.split(',')">
-                      <img width="70" :src="heroIcon[hero]" :alt="hero" />
-                    </v-col>
-                    <div class="text-h5 ml-5" style="align-self: center">
-                      // {{ n }} time(s)
-                    </div>
-                  </v-row>
-                </v-col>
-                <v-col
-                  cols="12"
-                  md="4"
-                  class="d-flex align-center text-center"
-                  v-if="
-                    stats.ongoing.history.games.winDuration > 0 &&
-                    stats.ongoing.history.games.lossDuration > 0
-                  ">
-                  <v-row>
-                    <v-col cols="12">
-                      <section>
-                        Avg. duration per win:
-                        <span class="font-weight-bold"
-                          >{{ stats.ongoing.history.games.winDuration }}
-                        </span>
-                        minute(s)
-                      </section>
-                      <section>
-                        Avg. duration per loss:
-                        <span class="font-weight-bold">{{
-                          stats.ongoing.history.games.lossDuration
-                        }}</span>
-                        minute(s)
-                      </section>
-                      <section class="mt-4">
-                        <div
-                          v-if="stats.ongoing.history.games.isLamer"
-                          class="text-red font-weight-bold text-h5">
-                          MIGHT BE A LAMER
-                        </div>
-                        <div v-else class="text-green font-weight-bold">
-                          MOST LIKELY NOT A LAMER
-                        </div>
-                      </section>
-                    </v-col>
-                  </v-row>
-                </v-col>
-              </v-row>
-            </v-sheet>
-          </v-col>
-
-          <v-col cols="12" v-if="!stats?.ongoing?.active">
+          <v-col cols="12">
             <v-sheet class="pa-8" elevation="5" v-if="settings.data.battleTag">
               <v-row>
                 <v-col cols="12" md="6">
@@ -377,8 +188,8 @@ onUnmounted(() => {
                       :stageHeight="2000"
                       v-if="
                         settings.data.goal > 0 &&
-                        stats.player.day.total > 0 &&
-                        stats.player.day.total === goal.perDay
+                        season.player.day.total > 0 &&
+                        season.player.day.total === goal.perDay
                       " />
                     <hr />
                   </v-col>
@@ -386,23 +197,25 @@ onUnmounted(() => {
                     <v-progress-linear
                       :class="{
                         'disable-animation': true,
-                        'text-white': stats.player.day.total >= goal.perDay,
-                        'text-gray': stats.player.day.total < goal.perDay,
+                        'text-white': season.player.day.total >= goal.perDay,
+                        'text-gray': season.player.day.total < goal.perDay,
                       }"
                       striped
                       style="border: 1px solid gray"
                       :color="
-                        stats.player.day.total >= goal.perDay
+                        season.player.day.total >= goal.perDay
                           ? end_color
                           : start_color
                       "
-                      :model-value="stats.player.day.total"
+                      :model-value="season.player.day.total"
                       :max="goal.perDay"
                       :height="50">
                       <template v-slot:default="{ value }">
                         <span class="text-gray text-h6"
                           >{{
-                            _round((stats.player.day.total / goal.perDay) * 100)
+                            _round(
+                              (season.player.day.total / goal.perDay) * 100,
+                            )
                           }}
                           %</span
                         >
@@ -412,10 +225,10 @@ onUnmounted(() => {
                   <v-col
                     cols="12"
                     class="text-center mt-5"
-                    v-if="stats.player.day.total < goal.perDay">
+                    v-if="season.player.day.total < goal.perDay">
                     <div class="text-h6">
                       Only
-                      {{ goal.perDay - stats.player.day.total }}
+                      {{ goal.perDay - season.player.day.total }}
                       game(s) left today - Go ladder!
                     </div>
                   </v-col>
@@ -426,6 +239,9 @@ onUnmounted(() => {
                   </v-col>
                 </v-col>
                 <v-col cols="12" md="5">
+                  <div style="float: right">
+                    <ongoing-match :game="live.ongoing" />
+                  </div>
                   <WeeklyGoalChart
                     :played="Number(data.total)"
                     :mode="settings.data.mode"
@@ -450,11 +266,11 @@ onUnmounted(() => {
                 </v-col>
               </v-row>
               <v-row>
-                <v-col cols="12" v-if="stats.player.day.total">
+                <v-col cols="12" v-if="season.player.day.total">
                   <span class="title"
-                    >Today ({{ stats.player.day.total }}):</span
+                    >Today ({{ season.player.day.total }}):</span
                   >
-                  <ResultChart :result="stats.player.day" />
+                  <ResultChart :result="season.player.day" />
                 </v-col>
               </v-row>
               <v-row>
@@ -575,7 +391,7 @@ onUnmounted(() => {
                 </v-col>
               </v-row>
 
-              <v-row v-if="stats.player.battleTag">
+              <v-row v-if="season.player.battleTag">
                 <v-col cols="12" class="text-center">
                   <span style="vertical-align: middle; font-weight: bold">
                     Earn
@@ -599,14 +415,14 @@ onUnmounted(() => {
                   v-for="(challenger, i) in challengers.filter(
                     (c) =>
                       !_isNil(c) &&
-                      (!_isNil(stats.challengers[c]?.battleTag) ||
-                        c === stats.player?.battleTag),
+                      (!_isNil(live.challengers[c]?.battleTag) ||
+                        c === season.player?.battleTag),
                   )">
                   <versus-banner
-                    v-if="challenger === stats.player.battleTag"
-                    :player="stats.player"
+                    v-if="challenger === season.player.battleTag"
+                    :player="season.player"
                     :season-start="start"
-                    :rank="rank[stats.player.battleTag]" />
+                    :rank="rank[season.player.battleTag]" />
                   <versus-banner
                     v-else
                     :on-remove="
@@ -618,7 +434,7 @@ onUnmounted(() => {
                       }
                     "
                     :challenger="challenger"
-                    :player="stats.challengers[challenger!]"
+                    :player="live.challengers[challenger!]"
                     :season-start="start"
                     :rank="rank[challenger!]" />
                 </v-col>
@@ -626,12 +442,12 @@ onUnmounted(() => {
                   cols="12"
                   md="4"
                   v-for="(challenger, i) in settings.data.challengers.filter(
-                    (c) => _isNil(c) || _isNil(stats.challengers[c]?.battleTag),
+                    (c) => _isNil(c) || _isNil(live.challengers[c]?.battleTag),
                   )">
                   <versus-challenger
                     :loading="
                       !_isNil(challenger) &&
-                      _isNil(stats.challengers[challenger]?.battleTag)
+                      _isNil(live.challengers[challenger]?.battleTag)
                     "
                     v-model="
                       settings.data.challengers[
@@ -667,7 +483,7 @@ onUnmounted(() => {
                         <img
                           style="vertical-align: middle"
                           width="135px"
-                          :src="raceBanner[stats.player.race]" />
+                          :src="raceBanner[season.player.race]" />
                         <span
                           style="
                             opacity: 0.87;
@@ -680,7 +496,7 @@ onUnmounted(() => {
                           <img
                             style="vertical-align: middle"
                             width="75px"
-                            :src="raceIcon[stats.player.race]" />
+                            :src="raceIcon[season.player.race]" />
                         </span>
                         <span
                           v-if="
@@ -696,7 +512,9 @@ onUnmounted(() => {
                             width: 0;
                           ">
                           <NumberAnimation
-                            :from="data.mmr.current + stats.player.day.mmr.diff"
+                            :from="
+                              data.mmr.current + season.player.day.mmr.diff
+                            "
                             :to="data.mmr.current"
                             :format="_round"
                             :duration="1"
@@ -726,21 +544,16 @@ onUnmounted(() => {
                           <span class="ml-2 text-h6">
                             <span
                               :class="{
-                                'text-green': stats.player?.day?.mmr.diff > 0,
-                                'text-red': stats.player?.day?.mmr.diff < 0,
+                                'text-green': season.player?.day?.mmr.diff > 0,
+                                'text-red': season.player?.day?.mmr.diff < 0,
                               }">
-                              <span v-if="stats.player?.day?.mmr.diff > 0"
+                              <span v-if="season.player?.day?.mmr.diff > 0"
                                 >+</span
                               >
-                              {{ stats.player?.day?.mmr.diff }}
+                              {{ season.player?.day?.mmr.diff }}
                             </span>
                             Today
                           </span>
-                        </v-col>
-                        <v-col cols="12" v-if="false">
-                          <pre>{{
-                            JSON.stringify(stats?.ranking, null, 2)
-                          }}</pre>
                         </v-col>
                         <v-col cols="12" md="6" class="pa-0">
                           <span class="ml-2 text-h6">
@@ -760,14 +573,14 @@ onUnmounted(() => {
                             Highest this season:
                             <strong style="font-size: 18px">
                               {{
-                                stats.player?.season?.[stats.player.race]?.mmr
+                                season.player?.season?.[season.player.race]?.mmr
                                   .max
                               }}
                               MMR</strong
                             >
                           </div>
                           <div
-                            v-if="stats.ranking?.[stats.player.race]?.rank"
+                            v-if="live.ranking?.[season.player.race]?.rank"
                             class="fade-in"
                             style="vertical-align: middle; font-weight: bold">
                             <v-icon
@@ -776,12 +589,12 @@ onUnmounted(() => {
                               size="x-large"
                               :icon="
                                 ranks?.[
-                                  stats.ranking?.[stats.player.race]?.league
+                                  live.ranking?.[season.player.race]?.league
                                 ]?.icon
                               "
                               :color="
                                 ranks?.[
-                                  stats.ranking?.[stats.player.race]?.league
+                                  live.ranking?.[season.player.race]?.league
                                 ]?.color
                               " />
                             <span
@@ -789,22 +602,22 @@ onUnmounted(() => {
                                 'vertical-align': 'middle',
                                 color:
                                   ranks?.[
-                                    stats.ranking?.[stats.player.race]?.league
+                                    live.ranking?.[season.player.race]?.league
                                   ]?.color,
                               }"
                               class="mx-1 mt-1 d-inline-block"
                               >{{
                                 ranks?.[
-                                  stats.ranking?.[stats.player.race]?.league
+                                  live.ranking?.[season.player.race]?.league
                                 ]?.name
                               }}
                               <span
                                 v-if="
-                                  stats.ranking?.[stats.player.race]?.division >
+                                  live.ranking?.[season.player.race]?.division >
                                   0
                                 ">
                                 {{
-                                  stats.ranking?.[stats.player.race]?.division
+                                  live.ranking?.[season.player.race]?.division
                                 }}
                               </span>
                             </span>
@@ -812,7 +625,7 @@ onUnmounted(() => {
                               style="vertical-align: middle; color: #eee"
                               class="mt-1 d-inline-block">
                               #{{
-                                stats.ranking?.[stats.player.race]?.rank
+                                live.ranking?.[season.player.race]?.rank
                               }}</span
                             >
                           </div>
@@ -820,7 +633,7 @@ onUnmounted(() => {
                         <v-col
                           class="fade-in"
                           cols="12"
-                          v-if="stats.ranking?.[stats.player.race]?.level">
+                          v-if="live.ranking?.[season.player.race]?.level">
                           <v-row>
                             <v-col cols="12" class="py-0" style="height: 40px">
                               <v-progress-linear
@@ -831,17 +644,17 @@ onUnmounted(() => {
                                 buffer-color="#FFD700"
                                 buffer-opacity="1"
                                 :buffer-value="
-                                  stats.ranking?.[stats.player.race]
+                                  live.ranking?.[season.player.race]
                                     ?.levelProgressRecent ?? 0
                                 "
                                 :model-value="
-                                  stats.ranking?.[stats.player.race]
+                                  live.ranking?.[season.player.race]
                                     ?.levelProgress ?? 0
                                 " />
                               <span class="level-label" style="height: 0"
                                 >Level
                                 {{
-                                  stats.ranking?.[stats.player.race]
+                                  live.ranking?.[season.player.race]
                                     ?.levelLabel ?? 0
                                 }}</span
                               >
@@ -853,9 +666,9 @@ onUnmounted(() => {
                                   height: 0;
                                 "
                                 v-if="
-                                  stats.ranking?.[stats.player.race]
+                                  live.ranking?.[season.player.race]
                                     ?.levelProgressRecent >
-                                  stats.ranking?.[stats.player.race]
+                                  live.ranking?.[season.player.race]
                                     ?.levelProgress
                                 ">
                                 <ConfettiExplosion
@@ -868,9 +681,9 @@ onUnmounted(() => {
                               </div>
                               <div
                                 v-if="
-                                  stats.ranking?.[stats.player.race]
+                                  live.ranking?.[season.player.race]
                                     ?.levelProgressRecent >
-                                  stats.ranking?.[stats.player.race]
+                                  live.ranking?.[season.player.race]
                                     ?.levelProgress
                                 "
                                 class="gained"
@@ -883,10 +696,10 @@ onUnmounted(() => {
                                 <h1 class="my-0 font-weight-bold">
                                   {{
                                     (
-                                      stats.ranking[stats.player.race]
+                                      live.ranking[season.player.race]
                                         .levelProgressRecent *
                                         100 -
-                                      stats.ranking[stats.player.race]
+                                      live.ranking[season.player.race]
                                         .levelProgress *
                                         100
                                     ).toFixed(1)
@@ -904,7 +717,7 @@ onUnmounted(() => {
                                 Progress
                                 {{
                                   (
-                                    stats.ranking?.[stats.player.race]
+                                    live.ranking?.[season.player.race]
                                       ?.levelProgressRecent * 100
                                   ).toFixed(1)
                                 }}%
@@ -912,16 +725,16 @@ onUnmounted(() => {
                               <div
                                 style="color: gold"
                                 v-if="
-                                  stats.ranking?.[stats.player.race]
+                                  live.ranking?.[season.player.race]
                                     ?.levelProgressRecent >
-                                  stats.ranking?.[stats.player.race]
+                                  live.ranking?.[season.player.race]
                                     ?.levelProgress
                                 ">
                                 +{{
                                   (
-                                    (stats.ranking?.[stats.player.race]
+                                    (live.ranking?.[season.player.race]
                                       ?.levelProgressRecent -
-                                      stats.ranking?.[stats.player.race]
+                                      live.ranking?.[season.player.race]
                                         ?.levelProgress) *
                                     100
                                   ).toFixed(1)
@@ -997,7 +810,7 @@ onUnmounted(() => {
                   <Performance
                     :visible="Number(data.total) > 0"
                     :performance="data.performance ?? []"
-                    :today="stats.player.day.total" />
+                    :today="season.player.day.total" />
                 </v-col>
                 <v-col cols="12">
                   <v-table density="compact">

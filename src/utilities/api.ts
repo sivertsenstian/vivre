@@ -242,7 +242,7 @@ export const getOpponentHistory = async (player: any, opponent: any) => {
     const relevant_matches = season
       .filter((m) => m.durationInSeconds > 4 * 60)
       .filter((m) => isRace(opponent.battleTag, m, opponent.race))
-      .filter((m) => opponentIsRace(opponent.battleTag, m, player.race));
+      .filter((m) => opponentIsRace(player.battleTag, m, player.race));
 
     let heroes: any = {};
     const getOpponent = getplayer(opponent.battleTag);
@@ -258,12 +258,12 @@ export const getOpponentHistory = async (player: any, opponent: any) => {
       }
     }
 
-    const wins = relevant_matches
-      .map((m: any) => m.match)
-      .filter((x: any) => getwins(opponent.battleTag, x));
-    const loss = relevant_matches
-      .map((m: any) => m.match)
-      .filter((x: any) => getloss(opponent.battleTag, x));
+    const wins = relevant_matches.filter((x: any) =>
+      getwins(opponent.battleTag, x),
+    );
+    const loss = relevant_matches.filter((x: any) =>
+      getloss(opponent.battleTag, x),
+    );
 
     const winDuration = _round(
       wins.reduce((s, m) => s + m.durationInSeconds, 0) / wins.length / 60,
@@ -358,7 +358,7 @@ export const getMatch = async (id: string) => {
   }
 };
 
-export const getMatches = async (battleTag: string, race: Race) => {
+export const getMatches = async (s: number, battleTag: string, race: Race) => {
   let result: IStatistics = {} as any;
   let seasonActual = [];
   let monthActual = [];
@@ -366,7 +366,7 @@ export const getMatches = async (battleTag: string, race: Race) => {
   let dayActual = [];
 
   try {
-    let all = await getAllSeasonGames(battleTag, current_season);
+    let all = await getAllSeasonGames(battleTag, s);
     seasonActual = all;
 
     monthActual = all

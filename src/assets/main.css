@@ -22,4 +22,8 @@ a,
 body {
   display: flex;
   flex-direction: column;
+
+  div.v-sheet {
+    background: rgba(var(--v-theme-surface), 0.9);
+  }
 }
