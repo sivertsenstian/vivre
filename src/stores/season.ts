@@ -1,79 +1,77 @@
 import { defineStore } from "pinia";
-import { ref, watchEffect } from "vue";
+import { computed, ref, watchEffect } from "vue";
 import { useSettingsStore } from "./settings";
-import { getLeaguesAndRankings } from "@/utilities/api.ts";
+import { Race } from "@/stores/races";
+import type { IStatistics } from "@/utilities/types";
+import { getMaps, getMatches, getLeaguesAndRankings } from "@/utilities/api.ts";
 import { current_season } from "@/utilities/constants.ts";
-import _maxBy from "lodash/maxBy";
 import _values from "lodash/values";
+import _maxBy from "lodash/maxBy";
 
 export const useSeasonStore = defineStore("season", () => {
   const settings = useSettingsStore();
-  const ranking = ref<any[]>([]);
-  const current = ref<any>({});
-  const loading = ref(false);
+  const maps = ref<string[]>([]);
+  const player = ref<IStatistics>();
+  const initializing = ref(false);
+  const season_offset = ref(0);
+  const actual_season = computed(() => current_season - season_offset.value);
+  const actual_season_ranking = ref<any>({});
+  const season_rankings = ref<any[]>([]);
+
+  const update = async () => {
+    const results = await getMatches(
+      actual_season.value,
+      settings.battleTag,
+      settings.race ?? Race.Random,
+    );
+    player.value = results.player;
+    maps.value = await getMaps();
+
+    if (settings.battleTag?.length) {
+      const ranks = await getLeaguesAndRankings(
+        settings.battleTag,
+        current_season,
+      );
+
+      // find current rank
+      const v = ranks.find((r) => _values(r)[0].season === actual_season.value);
+      const values = _values(v);
+      const highest = _maxBy(values, "level");
+      actual_season_ranking.value = {
+        highest,
+        others: values.filter((v) => v.race !== highest.race),
+        additional: true,
+      };
+
+      // process ranks and find the highest ranked for each season
+      season_rankings.value =
+        ranks
+          .filter((r) => _values(r)[0].season !== actual_season.value)
+          .map((r) => {
+            const values = _values(r);
+            const highest = _maxBy(values, "level");
+            return {
+              highest,
+              others: values.filter((v) => v.race !== highest.race),
+            };
+          }) ?? [];
+    }
+  };
 
   watchEffect(async () => {
-    loading.value = true;
-    const ranks = await getLeaguesAndRankings(
-      settings.battleTag,
-      current_season,
-    );
-
-    // find current rank
-    const v = ranks.find((r) => _values(r)[0].season === current_season);
-    const values = _values(v);
-    const highest = _maxBy(values, "level");
-    current.value = {
-      highest,
-      others: values.filter((v) => v.race !== highest.race),
-    };
-
-    // process ranks and find the highest ranked for each season
-    ranking.value =
-      ranks
-        .filter((r) => _values(r)[0].season !== current_season)
-        .map((r) => {
-          const values = _values(r);
-          const highest = _maxBy(values, "level");
-          return {
-            highest,
-            others: values.filter((v) => v.race !== highest.race),
-          };
-        }) ?? [];
-    loading.value = false;
+    try {
+      initializing.value = true;
+      await update();
+    } finally {
+      initializing.value = false;
+    }
   });
+
   const subscription = ref<number | null>(null);
 
-  const subscribe = () => {
+  const subscribe = (interval = 30000) => {
     if (subscription.value === null) {
-      subscription.value = setInterval(async () => {
-        const ranks = await getLeaguesAndRankings(
-          settings.battleTag,
-          current_season,
-        );
-
-        // find current rank
-        const v = ranks.find((r) => _values(r)[0].season === current_season);
-        const values = _values(v);
-        const highest = _maxBy(values, "level");
-        current.value = {
-          highest,
-          others: values.filter((v) => v.race !== highest.race),
-        };
-
-        // process ranks and find the highest ranked for each season
-        ranking.value =
-          ranks
-            .filter((r) => _values(r)[0].season !== current_season)
-            .map((r) => {
-              const values = _values(r);
-              const highest = _maxBy(values, "level");
-              return {
-                highest,
-                others: values.filter((v) => v.race !== highest.race),
-              };
-            }) ?? [];
-      }, 30000);
+      subscription.value = setInterval(update, interval);
     }
   };
 
@@ -81,8 +79,19 @@ export const useSeasonStore = defineStore("season", () => {
     if (subscription.value !== null) {
       clearInterval(subscription.value);
       subscription.value = null;
+      season_offset.value = 0;
     }
   };
 
-  return { current, ranking, loading, subscribe, unsubscribe };
+  return {
+    initializing,
+    player,
+    maps,
+    subscribe,
+    unsubscribe,
+    season_offset,
+    actual_season,
+    actual_season_ranking,
+    season_rankings,
+  };
 });

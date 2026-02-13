@@ -59,7 +59,7 @@ export const ranks = [
   { name: "Grass", icon: "mdi-grass", color: "#136d15" },
 ];
 
-export const heroes = {
+export const heroes: { [key: string]: string } = {
   alchemist: "Alchemist",
   archmage: "Archmage",
   avatarofflame: "Firelord",

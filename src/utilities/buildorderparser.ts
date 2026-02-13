@@ -4,13 +4,20 @@ import moment from "moment";
 import type { Duration } from "moment";
 import momentDurationSetup from "moment-duration-format";
 import { Race } from "@/stores/races.ts";
+import _has from "lodash/has";
+import _includes from "lodash/includes";
+import _capitalize from "lodash/capitalize";
 momentDurationSetup(moment);
 
-enum BuildOrderType {
-  Build = "Build",
+export enum BuildOrderType {
+  BuildUnit = "Build unit",
+  BuildBuilding = "Build building",
+  BuildHero = "Build hero",
   Learn = "Learn",
   Tech = "Tech",
-  Cancel = "Cancel",
+  CancelUnit = "Cancel unit",
+  CancelBuilding = "Cancel building",
+  CancelHero = "Cancel hero",
   Research = "Research",
   Hire = "Hire",
   Buy = "Buy",
@@ -84,6 +91,14 @@ export const formatTimeSpanDuration = (d: Duration): string => {
   return (d as any)?.format("mm:ss", { trim: false }) ?? "00:00";
 };
 
+const toImg = (instruction: string) => {
+  return `/icons/btn${String(instruction ?? "")
+    .replace(/ /g, "")
+    .replace(/\//g, "")
+    .replace(/’/g, "")
+    .toLowerCase()}.jpg`;
+};
+
 export const parse = (
   minutes: number,
   replayBuildOrderItems: IReplayBuildOrderItem[],
@@ -118,12 +133,16 @@ export const parse = (
         };
 
         switch (item.type) {
-          case BuildOrderType.Build:
+          case BuildOrderType.BuildUnit:
+          case BuildOrderType.BuildHero:
+          case BuildOrderType.BuildBuilding:
             return {
               ...base,
               instructions: `Build ${aan(item.obj)} ${item.obj}`,
             };
-          case BuildOrderType.Cancel:
+          case BuildOrderType.CancelUnit:
+          case BuildOrderType.CancelBuilding:
+          case BuildOrderType.CancelHero:
             return { ...base, instructions: `Cancel the ${item.obj}` };
           case BuildOrderType.Tech:
           case BuildOrderType.Upgrade:
@@ -160,7 +179,9 @@ export const parse = (
 
 export const summarize = (
   replayBuildOrderItems: IReplayBuildOrderItem[],
-): any[] => {
+): { items: any[]; count: { [key: string]: number } } => {
+  let count: { [key: string]: number } = {};
+
   let steps =
     replayBuildOrderItems
       .filter((item, index, array) => {
@@ -179,21 +200,50 @@ export const summarize = (
       })
       .map((item) => {
         const base = {
-          id: uuidv4(),
+          id: item.obj,
           type: item.type,
+          class: item.type.split(" ").map(_capitalize).join(""),
           time: duration(item.timeSpan),
           timespan: item.timeSpan,
           timing: false,
           separator: false,
+          icon: toImg(item.obj),
+          count: count?.[item.obj] ?? 1,
+          showCount: false,
         };
 
+        if (
+          [
+            BuildOrderType.CancelUnit,
+            BuildOrderType.CancelBuilding,
+            BuildOrderType.CancelHero,
+          ].some((e) => e === item.type)
+        ) {
+          count[item.obj] = _has(count, item.obj) ? count[item.obj] - 1 : 0;
+        } else {
+          count[item.obj] = _has(count, item.obj) ? count[item.obj] + 1 : 2;
+        }
+
         switch (item.type) {
-          case BuildOrderType.Build:
+          case BuildOrderType.BuildUnit:
+          case BuildOrderType.BuildBuilding:
+          case BuildOrderType.BuildHero:
             return {
               ...base,
               instructions: `Built ${aan(item.obj)} ${item.obj}`,
+              showCount: item.type === BuildOrderType.BuildUnit,
+              expansion:
+                item.type === BuildOrderType.BuildBuilding &&
+                [
+                  "town hall",
+                  "great hall",
+                  "haunted goldmine",
+                  "tree of ages",
+                ].some((m) => item.obj.toLowerCase() === m),
             };
-          case BuildOrderType.Cancel:
+          case BuildOrderType.CancelUnit:
+          case BuildOrderType.CancelBuilding:
+          case BuildOrderType.CancelHero:
             return { ...base, instructions: `Cancelled ${item.obj}` };
           case BuildOrderType.Tech:
           case BuildOrderType.Upgrade:
@@ -203,11 +253,87 @@ export const summarize = (
               timing: true,
             };
           case BuildOrderType.Learn:
-            return { ...base, instructions: `Trained ${item.obj}` };
-          case BuildOrderType.Research:
             return {
               ...base,
-              instructions: `Researched ${item.obj}`,
+              instructions: `Trained ${item.obj} Level ${base.count}`,
+            };
+          case BuildOrderType.Research:
+            // General caster upgrades
+            let obj = _includes(item.obj.toLowerCase(), "training")
+              ? item.obj.replace(
+                  "Training",
+                  base.count === 1 ? "Adept Training" : "Master Training",
+                )
+              : item.obj;
+
+            // Human upgrades
+            obj = _includes(item.obj.toLowerCase(), "lumber harvesting")
+              ? item.obj.replace(
+                  "Lumber",
+                  base.count === 1 ? "Improved Lumber" : "Advanced Lumber",
+                )
+              : obj;
+
+            obj =
+              ["iron plating", "iron forged swords"].some((v) =>
+                _includes(item.obj.toLowerCase(), v),
+              ) && base.count > 1
+                ? item.obj.replace(
+                    "Iron",
+                    base.count === 2 ? "Steel" : "Mithril",
+                  )
+                : obj;
+
+            obj =
+              _includes(item.obj.toLowerCase(), "black gunpowder") &&
+              base.count > 1
+                ? item.obj.replace(
+                    "Black",
+                    base.count === 2 ? "Refined" : "Imbued",
+                  )
+                : obj;
+
+            obj =
+              _includes(item.obj.toLowerCase(), "studded leather") &&
+              base.count > 1
+                ? item.obj.replace(
+                    "Studded Leather",
+                    base.count === 2 ? "Reinforced Leather" : "Dragonhide",
+                  )
+                : obj;
+
+            // Orc upgrades
+            obj =
+              ["steel melee", "steel armor", "steel ranged"].some((v) =>
+                _includes(item.obj.toLowerCase(), v),
+              ) && base.count > 1
+                ? item.obj.replace(
+                    "Steel",
+                    base.count === 2 ? "Thorium" : "Arcanite",
+                  )
+                : obj;
+
+            // Night elf & undead upgrades
+            obj =
+              [
+                "strength of the",
+                "moon armor",
+                "reinforced hides",
+                "unholy armor",
+                "creature carapace",
+                "unholy strength",
+                "creature attack",
+              ].some((v) => _includes(item.obj.toLowerCase(), v)) &&
+              base.count > 1
+                ? base.count === 2
+                  ? `Improved ${item.obj}`
+                  : `Advanced ${item.obj}`
+                : obj;
+
+            return {
+              ...base,
+              instructions: `Researched ${obj}`,
+              icon: toImg(obj),
               timing: true,
             };
           case BuildOrderType.Hire:
@@ -230,5 +356,5 @@ export const summarize = (
         }
       }) ?? [];
 
-  return steps;
+  return { items: steps, count };
 };

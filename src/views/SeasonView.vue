@@ -1,22 +1,20 @@
 <script setup lang="ts">
 import season_explain_dark from "@/assets/season_help_dark.png";
 import season_explain from "@/assets/season_help.png";
-import * as parser from "@/utilities/buildorderparser";
 
 import moment from "moment";
 import PlayerSearch from "@/components/PlayerSearch.vue";
 import { useSettingsStore } from "@/stores/settings";
-import { useSeasonStore } from "@/stores/season";
+import { useLiveStore } from "@/stores/live.ts";
 import {
   current_season,
   days_since_start,
   duration,
-  end_color,
   races,
   ranks,
   start_color,
 } from "@/utilities/constants.ts";
-import { useStatsStore } from "@/stores/stats.ts";
+import { useSeasonStore } from "@/stores/season";
 import { computed, onMounted, onUnmounted } from "vue";
 import _take from "lodash/take";
 import {
@@ -46,11 +44,11 @@ import _groupBy from "lodash/groupBy";
 import PlayerW3cLink from "@/components/PlayerW3cLink.vue";
 import _sortBy from "lodash/sortBy";
 import { useTheme } from "vuetify";
-import axios from "axios";
+import OngoingMatch from "@/components/live/OngoingMatch.vue";
 
 const settings = useSettingsStore();
 const season = useSeasonStore();
-const stats = useStatsStore();
+const live = useLiveStore();
 
 const theme = useTheme();
 const isDark = computed(() => theme.global.current.value.dark);
@@ -66,33 +64,14 @@ ChartJS.register(
   TimeScale,
 );
 onMounted(() => {
-  stats.subscribe();
   season.subscribe();
+  live.subscribe();
 });
 
 onUnmounted(() => {
-  stats.unsubscribe();
   season.unsubscribe();
+  live.unsubscribe();
 });
-
-const doTest = async (match: any) => {
-  const replay = await axios.get(
-    `https://website-backend.w3champions.com/api/replays/${match.id}`,
-    { responseType: "blob" },
-  );
-  const response = await axios.postForm(
-    "https://w3tools.hexcoding.de/api/replay/parse",
-    { file: replay.data },
-  );
-
-  console.log({
-    raw: response.data,
-    order: response.data.playerBuildOrders.map((b: any) => ({
-      player: b.playerName,
-      items: parser.parse(10, b.buildOrderItems),
-    })),
-  });
-};
 
 const player = computed(() => getplayer(settings.battleTag));
 const opponent = computed(() => getopponent(settings.battleTag));
@@ -101,8 +80,8 @@ const mainlyPlays = computed(() => {
   const ranks = races.map((r) => ({
     race: r,
     pickrate:
-      ((stats.player?.season[r]?.total ?? 0) /
-        (stats.player?.season.summary.total ?? 1)) *
+      ((season.player?.season[r]?.total ?? 0) /
+        (season.player?.season.summary.total ?? 1)) *
       100,
   }));
 
@@ -126,7 +105,7 @@ const opponents = computed(() => {
     _sortBy(
       _reduce(
         _groupBy(
-          stats.player?.season.summary.matches,
+          season.player?.season.summary.matches,
           (m) => opponent.value(m).players[0].battleTag,
         ),
         (s: any[], d, o: string) => {
@@ -185,7 +164,7 @@ const raceColor: any = {
 const data = computed(() => {
   return {
     datasets: _reduce(
-      stats.player?.season,
+      season.player?.season,
       (s: any[], v, k: string) => {
         if (v.matches.length && k !== "summary") {
           return [
@@ -244,7 +223,7 @@ const options: any = {
 </script>
 
 <template>
-  <main v-if="stats.player" style="height: 100vh; overflow-y: auto">
+  <main v-if="season.player" style="height: 100vh; overflow-y: auto">
     <v-container fluid style="opacity: 0.9">
       <v-row>
         <v-col cols="12">
@@ -299,7 +278,9 @@ const options: any = {
                   </v-col>
                 </v-row>
               </v-col>
-              <v-col cols="12" lg="4"> <player-search /> </v-col>
+              <v-col cols="12" lg="4">
+                <player-search />
+              </v-col>
             </v-row>
             <v-row>
               <v-col cols="12">
@@ -332,26 +313,91 @@ const options: any = {
                       <v-col cols="6">
                         <h2 class="font-weight-bold">Solo Ranked</h2>
                       </v-col>
-                      <v-col cols="6" class="text-right"
-                        ><h3 class="font-weight-bold" style="margin-top: 7px">
-                          Season {{ current_season }}
-                        </h3></v-col
-                      >
+                      <v-col cols="6" class="d-inline-flex justify-end">
+                        <v-btn-group
+                          density="comfortable"
+                          class="mr-2"
+                          style="margin-top: 2px">
+                          <v-btn
+                            @click="
+                              () => {
+                                const current = season.actual_season;
+                                const next = season.season_rankings.find(
+                                  (v) => v.highest.season < current,
+                                );
+
+                                if (next) {
+                                  season.season_offset =
+                                    current_season - next.highest.season;
+                                }
+                              }
+                            "
+                            variant="plain"
+                            icon="mdi-chevron-left"
+                            size="small" />
+                          <v-btn
+                            @click="
+                              () => {
+                                const current = season.actual_season;
+                                const next = [...season.season_rankings]
+                                  .reverse()
+                                  .find((v) => v.highest.season > current);
+
+                                if (next) {
+                                  season.season_offset =
+                                    current_season - next.highest.season;
+                                }
+                              }
+                            "
+                            variant="plain"
+                            icon="mdi-chevron-right"
+                            size="small"
+                            :disabled="
+                              season.actual_season === current_season
+                            " />
+                        </v-btn-group>
+                        <h3 style="margin-top: 7px">
+                          <span
+                            :class="{
+                              'font-weight-bold': true,
+                              'text-grey':
+                                season.actual_season !== current_season,
+                            }"
+                            >Season {{ season.actual_season }}</span
+                          >
+                        </h3>
+                      </v-col>
                     </v-row>
                     <hr />
                   </v-col>
                   <v-col
                     cols="12"
-                    v-if="!season.loading && season.current?.highest">
+                    v-if="
+                      !season.initializing &&
+                      season.actual_season_ranking?.highest
+                    ">
+                    <v-row>
+                      <v-col cols="12">
+                        <span class="font-weight-bold"
+                          >Active Season Rank
+                        </span></v-col
+                      >
+                    </v-row>
                     <v-row class="my-0">
                       <v-col cols="3" class="text-center">
                         <v-icon
-                          :title="`${ranks?.[season.current?.highest?.league]?.name} ${season.current?.highest?.division > 0 ? season.current?.highest?.division : ''}`"
+                          :title="`${ranks?.[season.actual_season_ranking?.highest?.league]?.name} ${season.actual_season_ranking?.highest?.division > 0 ? season.actual_season_ranking?.highest?.division : ''}`"
                           style="font-size: 60px"
                           size="x-large"
-                          :icon="ranks?.[season.current?.highest?.league]?.icon"
+                          :icon="
+                            ranks?.[
+                              season.actual_season_ranking?.highest?.league
+                            ]?.icon
+                          "
                           :color="
-                            ranks?.[season.current?.highest?.league]?.color
+                            ranks?.[
+                              season.actual_season_ranking?.highest?.league
+                            ]?.color
                           " />
                       </v-col>
                       <v-col
@@ -360,18 +406,21 @@ const options: any = {
                         <v-col cols="12" class="py-0 font-weight-bold"
                           >Highest MMR:
                           {{
-                            stats.player?.season?.[
-                              season.current?.highest?.race as Race
+                            season.player?.season?.[
+                              season.actual_season_ranking?.highest
+                                ?.race as Race
                             ]?.mmr?.max ?? "-"
                           }}</v-col
                         >
                         <v-col cols="12" class="py-0 text-yellow-lighten-1">
                           {{
-                            `${ranks?.[season.current?.highest?.league]?.name} ${season.current?.highest?.division > 0 ? season.current?.highest?.division : ""}`
+                            `${ranks?.[season.actual_season_ranking?.highest?.league]?.name} ${season.actual_season_ranking?.highest?.division > 0 ? season.actual_season_ranking?.highest?.division : ""}`
                           }}
                         </v-col>
                         <v-col cols="12" class="py-0 text-grey">
-                          Rank #{{ season.current?.highest?.rank }}
+                          Rank #{{
+                            season.actual_season_ranking?.highest?.rank
+                          }}
                         </v-col>
                       </v-col>
                     </v-row>
@@ -391,52 +440,63 @@ const options: any = {
                               <td class="text-center">
                                 <v-icon
                                   :style="{
-                                    visibility: !_isEmpty(season.current.others)
+                                    visibility: !_isEmpty(
+                                      season.actual_season_ranking.others,
+                                    )
                                       ? 'visible'
                                       : 'hidden',
                                   }"
                                   @click="
-                                    season.current.additional =
-                                      !season.current.additional
+                                    season.actual_season_ranking.additional =
+                                      !season.actual_season_ranking.additional
                                   "
                                   size="x-small"
                                   :icon="
-                                    season.current?.additional
+                                    season.actual_season_ranking?.additional
                                       ? 'mdi-minus'
                                       : 'mdi-plus'
                                   "
                                   color="grey" />
                                 <race-icon
-                                  :race="season?.current?.highest?.race" />
+                                  :race="
+                                    season.actual_season_ranking?.highest?.race
+                                  " />
                               </td>
                               <td class="text-center">
-                                {{ season.current.highest?.mmr }}
+                                {{ season.actual_season_ranking.highest?.mmr }}
                               </td>
                               <td class="text-center">
                                 {{
-                                  season.current.highest?.wins +
-                                  season.current.highest?.losses
+                                  season.actual_season_ranking.highest?.wins +
+                                  season.actual_season_ranking.highest?.losses
                                 }}
                               </td>
                               <td>
                                 <span
                                   >{{
                                     Number(
-                                      season.current?.highest?.winrate * 100,
+                                      season.actual_season_ranking?.highest
+                                        ?.winrate * 100,
                                     ).toFixed(1)
                                   }}%</span
                                 >
                                 <span class="text-green ml-2"
-                                  >{{ season.current?.highest?.wins }}W</span
+                                  >{{
+                                    season.actual_season_ranking?.highest?.wins
+                                  }}W</span
                                 >
                                 <span class="text-red ml-2"
-                                  >{{ season.current?.highest?.losses }}L</span
+                                  >{{
+                                    season.actual_season_ranking?.highest
+                                      ?.losses
+                                  }}L</span
                                 >
                               </td>
                             </tr>
                             <tr
-                              v-if="season.current.additional"
-                              v-for="data in season.current.others">
+                              v-if="season.actual_season_ranking.additional"
+                              v-for="data in season.actual_season_ranking
+                                .others">
                               <td class="text-center">
                                 <span class="ml-3"
                                   ><race-icon :race="data.race"
@@ -465,12 +525,17 @@ const options: any = {
                       </v-col>
                     </v-row>
                   </v-col>
-                  <v-col cols="12" v-if="season.loading">
+                  <v-col cols="12" v-else>
                     <v-progress-linear indeterminate />
                   </v-col>
-                  <v-col
-                    cols="12"
-                    v-if="!season.loading && season.ranking.length">
+                  <v-col cols="12" v-if="season.season_rankings.length">
+                    <v-row>
+                      <v-col cols="12">
+                        <span class="font-weight-bold"
+                          >Other Season Ranks
+                        </span></v-col
+                      >
+                    </v-row>
                     <v-table density="compact">
                       <thead>
                         <tr>
@@ -485,7 +550,7 @@ const options: any = {
                           <th class="text-grey text-left">WIN RATE</th>
                         </tr>
                       </thead>
-                      <tbody v-for="rank in season.ranking">
+                      <tbody v-for="rank in season.season_rankings">
                         <tr>
                           <td class="text-no-wrap">
                             <v-icon
@@ -604,14 +669,17 @@ const options: any = {
               <v-col
                 cols="12"
                 lg="8"
-                v-if="!stats.player?.season.summary.total"
+                v-if="!season.player?.season.summary.total"
                 class="text-center mt-7">
                 <h2 class="font-weight-bold">No activity this season...</h2>
               </v-col>
               <v-col cols="12" lg="8" v-else>
                 <v-row>
                   <v-col cols="12" class="pb-0">
-                    <h2 class="font-weight-bold">Recent Games</h2>
+                    <h2 class="font-weight-bold">
+                      Recent Games
+                      <ongoing-match :game="live.ongoing" />
+                    </h2>
                     <hr />
                   </v-col>
                   <v-col cols="12">
@@ -636,10 +704,10 @@ const options: any = {
                           <th class="text-grey text-right">OPPONENT</th>
                         </tr>
                       </thead>
-                      <tbody v-if="stats.player?.season.summary.matches">
+                      <tbody v-if="season.player?.season.summary.matches">
                         <tr
                           v-for="match in _take(
-                            stats.player?.season.summary.matches,
+                            season.player?.season.summary.matches,
                             5,
                           )"
                           :key="match.id">
@@ -779,7 +847,7 @@ const options: any = {
                       <tbody>
                         <tr
                           v-for="race in races.filter(
-                            (r) => (stats.player?.season[r].total ?? 0) > 0,
+                            (r) => (season.player?.season[r].total ?? 0) > 0,
                           )">
                           <td class="text-no-wrap">
                             <race-icon :race="race" />
@@ -791,26 +859,26 @@ const options: any = {
                             <span
                               :class="{
                                 'text-green':
-                                  (stats.player?.season[race].percentage ??
+                                  (season.player?.season[race].percentage ??
                                     0) >= 0.75,
                                 'text-yellow':
-                                  (stats.player?.season[race].percentage ??
+                                  (season.player?.season[race].percentage ??
                                     0) >= 0.5 &&
-                                  (stats.player?.season[race].percentage ?? 0) <
-                                    0.75,
+                                  (season.player?.season[race].percentage ??
+                                    0) < 0.75,
                                 'text-orange':
-                                  (stats.player?.season[race].percentage ??
+                                  (season.player?.season[race].percentage ??
                                     0) >= 0.25 &&
-                                  (stats.player?.season[race].percentage ?? 0) <
-                                    0.5,
+                                  (season.player?.season[race].percentage ??
+                                    0) < 0.5,
                                 'text-red':
-                                  (stats.player?.season[race].percentage ?? 0) <
-                                  0.25,
+                                  (season.player?.season[race].percentage ??
+                                    0) < 0.25,
                               }">
                               {{
                                 Number(
-                                  (stats.player?.season[race].percentage ?? 0) *
-                                    100,
+                                  (season.player?.season[race].percentage ??
+                                    0) * 100,
                                 ).toFixed(1)
                               }}%
                             </span>
@@ -818,20 +886,20 @@ const options: any = {
                           <td class="text-center">
                             {{
                               Number(
-                                ((stats.player?.season[race].total ?? 0) /
-                                  (stats.player?.season.summary.total ?? 1)) *
+                                ((season.player?.season[race].total ?? 0) /
+                                  (season.player?.season.summary.total ?? 1)) *
                                   100,
                               ).toFixed(1)
                             }}%
                           </td>
                           <td class="text-center">
                             {{
-                              getMedianTime(stats.player?.season[race].matches)
+                              getMedianTime(season.player?.season[race].matches)
                             }}
                             min
                           </td>
                           <td class="text-center">
-                            {{ stats.player?.season[race].total }}
+                            {{ season.player?.season[race].total }}
                           </td>
                         </tr>
                       </tbody>
@@ -860,7 +928,7 @@ const options: any = {
                         <tr
                           v-for="race in races.filter(
                             (r) =>
-                              (stats.player?.season.summary.race[r].total ??
+                              (season.player?.season.summary.race[r].total ??
                                 0) > 0,
                           )">
                           <td class="text-no-wrap">
@@ -873,25 +941,25 @@ const options: any = {
                             <span
                               :class="{
                                 'text-green':
-                                  (stats.player?.season.summary.race[race]
+                                  (season.player?.season.summary.race[race]
                                     .percentage ?? 0) >= 75,
                                 'text-yellow':
-                                  (stats.player?.season.summary.race[race]
+                                  (season.player?.season.summary.race[race]
                                     .percentage ?? 0) >= 50 &&
-                                  (stats.player?.season.summary.race[race]
+                                  (season.player?.season.summary.race[race]
                                     .percentage ?? 0) < 75,
                                 'text-orange':
-                                  (stats.player?.season.summary.race[race]
+                                  (season.player?.season.summary.race[race]
                                     .percentage ?? 0) >= 25 &&
-                                  (stats.player?.season.summary.race[race]
+                                  (season.player?.season.summary.race[race]
                                     .percentage ?? 0) < 50,
                                 'text-red':
-                                  (stats.player?.season.summary.race[race]
+                                  (season.player?.season.summary.race[race]
                                     .percentage ?? 0) < 25,
                               }">
                               {{
                                 Number(
-                                  stats.player?.season.summary.race[race]
+                                  season.player?.season.summary.race[race]
                                     .percentage ?? 0,
                                 ).toFixed(1)
                               }}%
@@ -900,13 +968,14 @@ const options: any = {
                           <td class="text-center">
                             {{
                               getMedianTime(
-                                stats.player?.season.summary.race[race].matches,
+                                season.player?.season.summary.race[race]
+                                  .matches,
                               )
                             }}
                             min
                           </td>
                           <td class="text-center">
-                            {{ stats.player?.season.summary.race[race].total }}
+                            {{ season.player?.season.summary.race[race].total }}
                           </td>
                         </tr>
                       </tbody>
@@ -937,7 +1006,7 @@ const options: any = {
                         </tr>
                       </thead>
                       <tbody>
-                        <tr v-for="map in stats.maps">
+                        <tr v-for="map in season.maps">
                           <td>
                             <v-row class="my-0">
                               <v-col cols="3" class="mt-1 py-0">
@@ -953,30 +1022,30 @@ const options: any = {
                           <td class="text-center">
                             <span
                               v-if="
-                                stats.player?.season.summary.maps?.[map]
+                                season.player?.season.summary.maps?.[map]
                                   ?.matches.length
                               "
                               :class="{
                                 'text-green':
-                                  (stats.player?.season.summary.maps[map]
+                                  (season.player?.season.summary.maps[map]
                                     ?.percentage ?? 0) >= 75,
                                 'text-yellow':
-                                  (stats.player?.season.summary.maps[map]
+                                  (season.player?.season.summary.maps[map]
                                     ?.percentage ?? 0) >= 50 &&
-                                  (stats.player?.season.summary.maps[map]
+                                  (season.player?.season.summary.maps[map]
                                     ?.percentage ?? 0) < 75,
                                 'text-orange':
-                                  (stats.player?.season.summary.maps[map]
+                                  (season.player?.season.summary.maps[map]
                                     ?.percentage ?? 0) >= 25 &&
-                                  (stats.player?.season.summary.maps[map]
+                                  (season.player?.season.summary.maps[map]
                                     ?.percentage ?? 0) < 50,
                                 'text-red':
-                                  (stats.player?.season.summary.maps[map]
+                                  (season.player?.season.summary.maps[map]
                                     ?.percentage ?? 0) < 25,
                               }">
                               {{
                                 Number(
-                                  stats.player?.season.summary.maps[map]
+                                  season.player?.season.summary.maps[map]
                                     ?.percentage ?? 0,
                                 ).toFixed(1)
                               }}%
@@ -986,12 +1055,12 @@ const options: any = {
                           <td class="text-center">
                             <span
                               v-if="
-                                stats.player?.season.summary.maps?.[map]
+                                season.player?.season.summary.maps?.[map]
                                   ?.matches.length
                               ">
                               {{
                                 getMedianTime(
-                                  stats.player?.season.summary.maps?.[map]
+                                  season.player?.season.summary.maps?.[map]
                                     ?.matches ?? [],
                                 )
                               }}
@@ -1002,11 +1071,11 @@ const options: any = {
                           <td class="text-center">
                             <span
                               v-if="
-                                stats.player?.season.summary.maps?.[map]
+                                season.player?.season.summary.maps?.[map]
                                   ?.matches.length
                               ">
                               {{
-                                stats.player?.season.summary.maps?.[map]
+                                season.player?.season.summary.maps?.[map]
                                   ?.total ?? 0
                               }}
                             </span>
@@ -1018,7 +1087,7 @@ const options: any = {
                               icon="mdi-thumb-up"
                               color="green"
                               v-if="
-                                stats.player?.season.summary.maps?.[map]
+                                season.player?.season.summary.maps?.[map]
                                   ?.total ?? 0
                               " />
                             <v-icon
@@ -1053,11 +1122,11 @@ const options: any = {
                       <tbody
                         class="separated"
                         v-for="race in races.filter(
-                          (r) => (stats.player?.season[r].total ?? 0) > 0,
+                          (r) => (season.player?.season[r].total ?? 0) > 0,
                         )">
                         <tr
                           v-for="(data, opponentRace) in _reduce(
-                            stats.player?.season[race].race,
+                            season.player?.season[race].race,
                             (s, v, k) => {
                               if (v.total > 0) {
                                 return { ...s, [k]: v };
