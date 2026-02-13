@@ -61,7 +61,7 @@ const loading = ref(false);
 const match = ref<any>(null);
 const buildOrders = ref<any>(null);
 
-const doTest = async (id: string) => {
+const fetchData = async (id: string) => {
   if (_has(settings.replays, id)) {
     return settings.replays[id];
   }
@@ -97,7 +97,7 @@ const doTest = async (id: string) => {
 onMounted(async () => {
   try {
     loading.value = true;
-    const r = await doTest(String(route.params.id));
+    const r = await fetchData(String(route.params.id));
 
     match.value = r.match;
     buildOrders.value = r.buildOrders.map((b: any) => ({
@@ -109,10 +109,17 @@ onMounted(async () => {
   }
 });
 
-onUnmounted(() => {});
-
-const player = computed(() => getplayer(settings.battleTag));
-const opponent = computed(() => getopponent(settings.battleTag));
+const player = computed(() => {
+  let r = getplayer(settings.battleTag)(match.value);
+  if (!r?.players?.length) {
+    // if the match does not include the active player - just get the first player from the build order data
+    r = getplayer(buildOrders.value?.[0].player)(match.value);
+  }
+  return r?.players?.[0];
+});
+const opponent = computed(
+  () => getopponent(player.value?.battleTag)(match.value)?.players?.[0],
+);
 
 const mainlyPlays = computed(() => {
   const ranks = races.map((r) => ({
@@ -473,69 +480,52 @@ const options: any = computed(() => ({
                           <td>
                             <span
                               :class="{
-                                'text-green':
-                                  player(match)?.players?.[0]?.mmrGain > 0,
-                                'text-red':
-                                  player(match)?.players?.[0]?.mmrGain < 0,
-                                'text-grey':
-                                  player(match)?.players?.[0]?.mmrGain === 0,
+                                'text-green': player?.mmrGain > 0,
+                                'text-red': player?.mmrGain < 0,
+                                'text-grey': player?.mmrGain === 0,
                               }"
                               ><v-icon
                                 :icon="
-                                  player(match)?.players?.[0]?.mmrGain > 0
+                                  player?.mmrGain > 0
                                     ? 'mdi-arrow-up'
-                                    : player(match)?.players?.[0]?.mmrGain < 0
+                                    : player?.mmrGain < 0
                                       ? 'mdi-arrow-down'
                                       : 'mdi-minus'
                                 " />
                               <span
                                 class="font-weight-bold"
                                 style="vertical-align: middle"
-                                >{{
-                                  player(match)?.players?.[0]?.mmrGain
-                                }}</span
+                                >{{ player?.mmrGain }}</span
                               ></span
                             >
                           </td>
                           <td class="text-no-wrap">
-                            <race-icon
-                              :race="player(match)?.players?.[0]?.race"
-                              :size="35" />
+                            <race-icon :race="player?.race" :size="35" />
                             <player-w3c-link
-                              :battle-tag="
-                                player(match)?.players?.[0]?.battleTag
-                              "
-                              :won="player(match)?.players?.[0]?.won" />
+                              :battle-tag="player?.battleTag"
+                              :won="player?.won" />
                           </td>
                           <td class="text-right">
                             <span
                               class="text-grey"
-                              :title="`(${player(match)?.players?.[0]?.mmrGain > 0 ? '+' : ''}${player(match)?.players?.[0]?.mmrGain}) mmr`"
-                              >{{
-                                player(match)?.players?.[0]?.currentMmr ?? "-"
-                              }}</span
+                              :title="`(${player?.mmrGain > 0 ? '+' : ''}${player?.mmrGain}) mmr`"
+                              >{{ player?.currentMmr ?? "-" }}</span
                             >
                           </td>
                           <td class="text-center">vs</td>
                           <td class="text-left">
                             <span
                               class="text-grey"
-                              :title="`(${player(match)?.players?.[0]?.mmrGain > 0 ? '+' : ''}${opponent(match)?.players?.[0]?.mmrGain}) mmr`"
-                              >{{
-                                opponent(match)?.players?.[0]?.currentMmr ?? "-"
-                              }}</span
+                              :title="`(${player?.mmrGain > 0 ? '+' : ''}${opponent?.mmrGain}) mmr`"
+                              >{{ opponent?.currentMmr ?? "-" }}</span
                             >
                           </td>
                           <td class="text-right text-no-wrap">
                             <player-w3c-link
-                              :battle-tag="
-                                opponent(match)?.players?.[0]?.battleTag
-                              "
-                              :won="opponent(match)?.players?.[0]?.won"
+                              :battle-tag="opponent?.battleTag"
+                              :won="opponent?.won"
                               left />
-                            <race-icon
-                              :race="opponent(match)?.players?.[0]?.race"
-                              :size="35" />
+                            <race-icon :race="opponent?.race" :size="35" />
                           </td>
                         </tr>
                       </tbody>
