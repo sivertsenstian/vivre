@@ -14,8 +14,8 @@ const theme = useTheme();
 const isDark = computed(() => theme.global.current.value.dark);
 
 interface Props {
-  battleTag: string;
-  won?: boolean;
+  battleTag?: string;
+  won?: boolean | undefined;
   left?: boolean;
 }
 const props = withDefaults(defineProps<Props>(), { won: undefined });
@@ -28,7 +28,7 @@ const name = computed(() => props.battleTag?.split("#") ?? ["", ""]);
       v-if="left"
       class="mr-1"
       style="align-self: center"
-      :href="`https://www.w3champions.com/player/${encodeURIComponent(battleTag)}`"
+      :href="`https://www.w3champions.com/player/${encodeURIComponent(battleTag ?? '')}`"
       title="Open w3c profile in a new tab"
       target="_blank">
       <v-img :src="isDark ? w3ciconDarkSmall : w3ciconSmall" :width="22" />
@@ -36,12 +36,14 @@ const name = computed(() => props.battleTag?.split("#") ?? ["", ""]);
     <div
       @click="
         async () => {
-          const information = await api.getPlayerInformation(
-            battleTag,
-            current_season,
-          );
-          settings.data.battleTag = battleTag;
-          settings.data.race = information?.race ?? Race.Random;
+          if (battleTag) {
+            const information = await api.getPlayerInformation(
+              battleTag,
+              current_season,
+            );
+            settings.data.battleTag = battleTag;
+            settings.data.race = information?.race ?? Race.Random;
+          }
         }
       "
       title="Open season stats for this player"
@@ -57,7 +59,7 @@ const name = computed(() => props.battleTag?.split("#") ?? ["", ""]);
       v-if="!left"
       class="ml-1"
       style="align-self: center"
-      :href="`https://www.w3champions.com/player/${encodeURIComponent(battleTag)}`"
+      :href="`https://www.w3champions.com/player/${encodeURIComponent(battleTag ?? '')}`"
       title="Open w3c profile in a new tab"
       target="_blank">
       <v-img :src="isDark ? w3ciconDarkSmall : w3ciconSmall" :width="22" />
