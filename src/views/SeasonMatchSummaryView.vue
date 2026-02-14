@@ -7,9 +7,9 @@ import _uniqBy from "lodash/uniqBy";
 
 import moment from "moment";
 import { useSettingsStore } from "@/stores/settings";
-import { races, heroes } from "@/utilities/constants.ts";
+import { races } from "@/utilities/constants.ts";
 import { useSeasonStore } from "@/stores/season.ts";
-import { computed, onMounted, onUnmounted, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import {
   gethero,
   getopponent,
@@ -295,6 +295,7 @@ const annotations = computed(() => {
 
           return res;
         }
+
         return a;
       },
       {},
@@ -314,6 +315,15 @@ const options: any = computed(() => ({
     },
     tooltip: {
       callbacks: {
+        title: function (context: any) {
+          let label = "";
+          if (context?.[0].label?.length) {
+            label += moment
+              .utc(moment(context?.[0].label).diff(match.value.startTime))
+              .format("mm:ss");
+          }
+          return label;
+        },
         label: function (context: any) {
           let label = context.dataset.label || "";
 
@@ -342,6 +352,16 @@ const options: any = computed(() => ({
       },
       grid: {
         color: "rgba(255, 255, 255, 0.05)",
+      },
+      ticks: {
+        callback: (value: any, index: any, ticks: any) => {
+          if (match.value) {
+            return moment
+              .utc(moment(value).diff(match.value.startTime))
+              .format("mm:ss");
+          }
+          return moment(value).format("HH:mm:ss");
+        },
       },
     },
     y: {

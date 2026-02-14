@@ -259,12 +259,14 @@ export const summarize = (
             };
           case BuildOrderType.Research:
             // General caster upgrades
-            let obj = _includes(item.obj.toLowerCase(), "training")
-              ? item.obj.replace(
-                  "Training",
-                  base.count === 1 ? "Adept Training" : "Master Training",
-                )
-              : item.obj;
+            let obj =
+              _includes(item.obj.toLowerCase(), "training") &&
+              !_includes(item.obj.toLowerCase(), "animal war")
+                ? item.obj.replace(
+                    "Training",
+                    base.count === 1 ? "Adept Training" : "Master Training",
+                  )
+                : item.obj;
 
             // Human upgrades
             obj = _includes(item.obj.toLowerCase(), "lumber harvesting")
