@@ -183,6 +183,13 @@ export const summarize = (
   replayBuildOrderItems: IReplayBuildOrderItem[],
 ): { items: any[]; count: { [key: string]: number } } => {
   let count: { [key: string]: number } = {};
+  const initialcount: { [key: string]: number } = {
+    Peasant: 6,
+    Peon: 6,
+    Acolyte: 4,
+    Ghoul: 2,
+    Wisp: 6,
+  };
 
   let steps =
     replayBuildOrderItems
@@ -210,7 +217,7 @@ export const summarize = (
           timing: false,
           separator: false,
           icon: toImg(item.obj),
-          count: count?.[item.obj] ?? 1,
+          count: count?.[item.obj] ?? initialcount?.[item.obj] ?? 1,
           showCount: false,
         };
 
@@ -221,9 +228,13 @@ export const summarize = (
             BuildOrderType.CancelHero,
           ].some((e) => e === item.type)
         ) {
-          count[item.obj] = _has(count, item.obj) ? count[item.obj] - 1 : 0;
+          count[item.obj] = _has(count, item.obj)
+            ? count[item.obj] - 1
+            : (initialcount?.[item.obj] ?? 1);
         } else {
-          count[item.obj] = _has(count, item.obj) ? count[item.obj] + 1 : 2;
+          count[item.obj] = _has(count, item.obj)
+            ? count[item.obj] + 1
+            : (initialcount?.[item.obj] ?? 1) + 1;
         }
 
         switch (item.type) {
