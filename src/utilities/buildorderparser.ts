@@ -5,6 +5,7 @@ import type { Duration } from "moment";
 import momentDurationSetup from "moment-duration-format";
 import { Race } from "@/stores/races.ts";
 import _has from "lodash/has";
+import _keys from "lodash/keys";
 import _includes from "lodash/includes";
 import _capitalize from "lodash/capitalize";
 momentDurationSetup(moment);
@@ -96,6 +97,7 @@ const toImg = (instruction: string) => {
     .replace(/ /g, "")
     .replace(/\//g, "")
     .replace(/’/g, "")
+    .replace(/'/g, "")
     .toLowerCase()}.jpg`;
 };
 
@@ -232,6 +234,16 @@ export const summarize = (
               ...base,
               instructions: `Built ${aan(item.obj)} ${item.obj}`,
               showCount: item.type === BuildOrderType.BuildUnit,
+              icon:
+                _includes(item.obj.toLowerCase(), "barracks") &&
+                _keys(count).some(
+                  (k) =>
+                    k.toLowerCase() === "peasant" ||
+                    k.toLowerCase() === "altar of kings" ||
+                    k.toLowerCase() === "farm",
+                )
+                  ? base.icon.replace("barracks", "humanbarracks")
+                  : base.icon,
               expansion:
                 item.type === BuildOrderType.BuildBuilding &&
                 [
