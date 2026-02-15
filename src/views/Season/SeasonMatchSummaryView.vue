@@ -36,7 +36,7 @@ import _reduce from "lodash/reduce";
 import PlayerW3cLink from "@/components/PlayerW3cLink.vue";
 import _sortBy from "lodash/sortBy";
 import axios from "axios";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import { getMatch } from "@/utilities/api.ts";
 import _sample from "lodash/sample";
 import { BuildOrderType } from "@/utilities/buildorderparser";
@@ -372,6 +372,8 @@ const options: any = computed(() => ({
     },
   },
 }));
+
+const router = useRouter();
 </script>
 
 <template>

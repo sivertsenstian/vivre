@@ -4,8 +4,9 @@ import MakruraView from "@/views/MakruraView.vue";
 import MakruraAdminView from "@/views/MakruraAdminView.vue";
 import AboutView from "@/views/AboutView.vue";
 import CreepRoutesView from "@/views/CreepRoutesView.vue";
-import SeasonView from "@/views/SeasonView.vue";
-import SeasonMatchSummaryView from "@/views/SeasonMatchSummaryView.vue";
+import SeasonView from "@/views/Season/SeasonView.vue";
+import SeasonGamesView from "@/views/Season/SeasonGamesView.vue";
+import SeasonMatchSummaryView from "@/views/Season/SeasonMatchSummaryView.vue";
 import BuildOrdersIndexView from "@/views/BuildOrders/BuildOrdersIndexView.vue";
 import NewBuildOrderView from "@/views/BuildOrders/NewBuildOrderView.vue";
 import ShowBuildOrderView from "@/views/BuildOrders/ShowBuildOrderView.vue";
@@ -28,6 +29,11 @@ const router = createRouter({
       path: "/season",
       children: [
         { path: "", name: "Season Overview", component: SeasonView },
+        {
+          path: ":season/games",
+          name: "Season Games",
+          component: SeasonGamesView,
+        },
         {
           path: ":id/summary",
           name: "Match Summary",

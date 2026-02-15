@@ -15,7 +15,8 @@ import {
   start_color,
 } from "@/utilities/constants.ts";
 import { useSeasonStore } from "@/stores/season";
-import { computed, onMounted, onUnmounted } from "vue";
+import { computed, onMounted, onUnmounted, ref } from "vue";
+import { useRouter } from "vue-router";
 import _take from "lodash/take";
 import {
   getloss,
@@ -220,6 +221,9 @@ const options: any = {
     },
   },
 };
+
+const tab = ref("overview");
+const router = useRouter();
 </script>
 
 <template>
@@ -283,10 +287,24 @@ const options: any = {
               </v-col>
             </v-row>
             <v-row>
-              <v-col cols="12">
+              <v-col cols="2" class="pt-0 pb-3">
+                <v-tabs model-value="tab" :color="start_color">
+                  <v-tab value="overview" @click="() => router.push('/season')"
+                    >Overview</v-tab
+                  >
+                  <v-tab
+                    value="games"
+                    @click="
+                      () => router.push(`/season/${season.actual_season}/games`)
+                    "
+                    >Games</v-tab
+                  >
+                </v-tabs>
+              </v-col>
+              <v-col cols>
                 <v-progress-linear
                   :height="2"
-                  class="season-progress"
+                  class="season-progress mt-8"
                   :model-value="(days_since_start / duration) * 100"
                   :color="start_color"
                   :title="`The current season (${current_season}) is ${Math.round((days_since_start / duration) * 100)}% done - ${duration - days_since_start} day(s) left`">
@@ -688,19 +706,25 @@ const options: any = {
                         <tr>
                           <th
                             class="text-grey text-left text-no-wrap"
-                            style="min-width: 300px">
+                            style="min-width: 280px">
                             MAP / MODE / DURATION
                           </th>
-                          <th class="text-grey text-left">DATE</th>
-                          <th class="text-grey text-left text-no-wrap">
-                            RATING Δ
+                          <th class="text-grey text-center">DATE</th>
+                          <th
+                            class="text-grey text-center text-no-wrap"
+                            title="RATING Δ">
+                            Δ
                           </th>
                           <th class="text-grey text-left">PLAYER</th>
-                          <th class="text-grey text-right">RATING</th>
+                          <th
+                            class="text-grey text-right"
+                            title="PLAYER RATING" />
                           <th
                             class="text-grey text-center"
                             style="width: 15px"></th>
-                          <th class="text-grey text-left">RATING</th>
+                          <th
+                            class="text-grey text-left"
+                            title="OPPONENT RATING" />
                           <th class="text-grey text-right">OPPONENT</th>
                         </tr>
                       </thead>
@@ -716,11 +740,11 @@ const options: any = {
                               <v-col class="mt-1 py-0" cols="4">
                                 <map-preview :name="match.mapName" />
                               </v-col>
-                              <v-col class="my-auto">
-                                <v-col cols="12" class="py-0">
+                              <v-col class="my-auto px-0">
+                                <v-col cols="12" class="pa-0">
                                   <map-link :name="match.mapName" />
                                 </v-col>
-                                <v-col cols="12" class="py-0 pl-4 text-grey">
+                                <v-col cols="12" class="pa-0 pl-1 text-grey">
                                   Ranked 1v1
                                   {{
                                     moment
@@ -734,7 +758,7 @@ const options: any = {
                               </v-col>
                             </v-row>
                           </td>
-                          <td>
+                          <td class="text-right">
                             <div class="text-grey text-no-wrap">
                               {{ moment(match.endTime).fromNow() }}
                             </div>
@@ -745,7 +769,7 @@ const options: any = {
                               View summary
                             </a>
                           </td>
-                          <td>
+                          <td class="text-center text-no-wrap">
                             <span
                               :class="{
                                 'text-green':
@@ -756,6 +780,8 @@ const options: any = {
                                   player(match)?.players?.[0]?.mmrGain === 0,
                               }"
                               ><v-icon
+                                style="margin-top: 2px"
+                                size="sm"
                                 :icon="
                                   player(match)?.players?.[0]?.mmrGain > 0
                                     ? 'mdi-arrow-up'
@@ -782,20 +808,20 @@ const options: any = {
                               "
                               :won="player(match)?.players?.[0]?.won" />
                           </td>
-                          <td class="text-right">
+                          <td class="text-right px-1">
                             <span
                               class="text-grey"
-                              :title="`(${player(match)?.players?.[0]?.mmrGain > 0 ? '+' : ''}${player(match)?.players?.[0]?.mmrGain}) mmr`"
+                              :title="`${player(match)?.players?.[0]?.mmrGain > 0 ? '+' : ''}${player(match)?.players?.[0]?.mmrGain} mmr`"
                               >{{
                                 player(match)?.players?.[0]?.currentMmr ?? "-"
                               }}</span
                             >
                           </td>
-                          <td class="text-center">vs</td>
-                          <td class="text-left">
+                          <td class="text-center pa-0">vs</td>
+                          <td class="text-left px-1">
                             <span
                               class="text-grey"
-                              :title="`(${player(match)?.players?.[0]?.mmrGain > 0 ? '+' : ''}${opponent(match)?.players?.[0]?.mmrGain}) mmr`"
+                              :title="`${opponent(match)?.players?.[0]?.mmrGain > 0 ? '+' : ''}${opponent(match)?.players?.[0]?.mmrGain} mmr`"
                               >{{
                                 opponent(match)?.players?.[0]?.currentMmr ?? "-"
                               }}</span
@@ -814,6 +840,23 @@ const options: any = {
                           </td>
                         </tr>
                       </tbody>
+                      <tfoot>
+                        <tr>
+                          <td colspan="8" class="text-center pt-3">
+                            <v-btn
+                              color="secondary"
+                              variant="tonal"
+                              @click="
+                                () =>
+                                  router.push(
+                                    `/season/${season.actual_season}/games`,
+                                  )
+                              "
+                              >Show more games</v-btn
+                            >
+                          </td>
+                        </tr>
+                      </tfoot>
                     </v-table>
                   </v-col>
                 </v-row>
