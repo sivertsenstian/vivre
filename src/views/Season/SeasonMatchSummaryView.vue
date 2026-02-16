@@ -4,12 +4,13 @@ import _has from "lodash/has";
 import _take from "lodash/take";
 import _keys from "lodash/keys";
 import _uniqBy from "lodash/uniqBy";
+import _flatten from "lodash/flatten";
 
 import moment from "moment";
 import { useSettingsStore } from "@/stores/settings";
 import { races } from "@/utilities/constants.ts";
 import { useSeasonStore } from "@/stores/season.ts";
-import { computed, onMounted, ref } from "vue";
+import { computed, onMounted, ref, useTemplateRef } from "vue";
 import {
   gethero,
   getopponent,
@@ -19,6 +20,7 @@ import RaceIcon from "@/components/RaceIcon.vue";
 import MapLink from "@/components/MapLink.vue";
 import MapPreview from "@/components/MapPreview.vue";
 import ChartAnnotation from "chartjs-plugin-annotation";
+import Zoom from "chartjs-plugin-zoom";
 import { Line } from "vue-chartjs";
 
 import {
@@ -36,10 +38,11 @@ import _reduce from "lodash/reduce";
 import PlayerW3cLink from "@/components/PlayerW3cLink.vue";
 import _sortBy from "lodash/sortBy";
 import axios from "axios";
-import { useRoute, useRouter } from "vue-router";
+import { useRoute } from "vue-router";
 import { getMatch } from "@/utilities/api.ts";
 import _sample from "lodash/sample";
 import { BuildOrderType } from "@/utilities/buildorderparser";
+import _fromPairs from "lodash/fromPairs";
 
 const settings = useSettingsStore();
 const season = useSeasonStore();
@@ -54,6 +57,7 @@ ChartJS.register(
   Legend,
   TimeScale,
   ChartAnnotation,
+  Zoom,
 );
 
 const route = useRoute();
@@ -145,17 +149,23 @@ const mainlyPlays = computed(() => {
   }
 });
 
+const p1 = "#2196F3";
+const p2 = "#F44336";
+
+const s1 = 20000;
+const s2 = 60000;
+
 const data = computed(() => {
   return {
     datasets: (buildOrders?.value ?? []).map((b: any, i: number) => {
       return {
         label: b.player,
-        borderColor: i === 1 ? "red" : "blue",
-        backgroundColor: i === 1 ? "red" : "blue",
-        data: b.items.map((v: any, j: number) => {
+        borderColor: i === 1 ? p2 : p1,
+        backgroundColor: i === 1 ? "red" : "cornflowerblue",
+        data: b.items.map((v: any, j: number, z: any, x: any) => {
           return {
             x: moment(match.value.startTime).add(moment.duration(v.timespan)), //moment.duration(v.timespan).asSeconds(),
-            y: j,
+            y: i === 1 ? s1 : s2,
             item: v,
           };
         }),
@@ -164,216 +174,246 @@ const data = computed(() => {
   };
 });
 
-const annotations = computed(() => {
+function isValidImage(src: string) {
+  return new Promise((resolve) => {
+    const img = new Image();
+
+    img.onload = () => resolve(true);
+    img.onerror = () => resolve(false);
+
+    img.src = src;
+  });
+}
+
+const createAnnotation = async (player: number, v: any, adjust = 0) => {
+  const icon = async () => {
+    const valid = await isValidImage(v.icon);
+
+    const i = new Image();
+    i.src = valid ? v.icon : "/icons/btnlobstrokkred.jpg";
+    i.alt = v.id;
+    return i;
+  };
+
+  const content = await icon();
+
+  const a: any = {
+    id: `${v.id}_${v.count}`,
+    drawTime: "beforeDatasetsDraw",
+    type: "line",
+    display: (ctx: any) => ctx.chart.isDatasetVisible(player),
+    borderColor: player === 1 ? p2 : p1,
+    borderWidth: 2,
+    yMin: player === 1 ? s1 : s2,
+    yMax: player === 1 ? s1 + adjust : s2 + adjust,
+    xMin: moment(match.value.startTime).add(moment.duration(v.timespan)),
+    xMax: moment(match.value.startTime).add(moment.duration(v.timespan)),
+    label: {
+      drawTime: "afterDatasetsDraw",
+      width: 28,
+      height: 28,
+      position: "end",
+      backgroundColor: player === 1 ? p2 : p1,
+      padding: 1,
+      content,
+      display: true,
+    },
+    yScaleID: "y",
+    xScaleID: "x",
+    value: moment(match.value.startTime).add(moment.duration(v.timespan)),
+  };
+
+  return a;
+};
+
+enum AnnotationOption {
+  Hero = "HERO",
+  Tech = "TECH",
+  Research = "RESEARCH",
+  Expansion = "EXPANSION",
+  Worker = "WORKER",
+  HeroSkill = "HEROSKILL",
+  Buy = "BUY",
+}
+
+const annotationoptions: any = {
+  [AnnotationOption.Hero]: {
+    name: "Heroes",
+    predicate: (v: any) => v.type === BuildOrderType.BuildHero,
+  },
+  [AnnotationOption.Tech]: {
+    name: "Tech Timings",
+    predicate: (v: any) => v.type === BuildOrderType.Tech,
+  },
+  [AnnotationOption.Expansion]: {
+    name: "Expansion Timings",
+    predicate: (v: any) =>
+      v.type === BuildOrderType.BuildBuilding &&
+      ["town hall", "great hall", "necropolis", "tree of eternity"].some(
+        (x) => x === v.id.toLowerCase(),
+      ),
+  },
+  [AnnotationOption.Worker]: {
+    name: "Workers",
+    predicate: (v: any) =>
+      v.type === BuildOrderType.BuildUnit &&
+      ["peasant", "peon", "acolyte", "wisp"].some(
+        (x) => x === v.id.toLowerCase(),
+      ),
+  },
+  [AnnotationOption.Research]: {
+    name: "Research",
+    predicate: (v: any) => v.type === BuildOrderType.Research,
+  },
+  [AnnotationOption.HeroSkill]: {
+    name: "Hero Skills",
+    predicate: (v: any) => v.type === BuildOrderType.Learn,
+  },
+  [AnnotationOption.Buy]: {
+    name: "Items Bought",
+    predicate: (v: any) => v.type === BuildOrderType.Buy,
+  },
+};
+
+const predicates = ref([
+  AnnotationOption.Hero,
+  AnnotationOption.Tech,
+  AnnotationOption.Expansion,
+]);
+
+const annotations = computed(async () => {
   if (!match.value) {
     return {};
   }
 
+  const result = buildOrders?.value.map((b: any, i: number) =>
+    _reduce(
+      b?.items ?? [],
+      (a: any, v: any) => {
+        predicates.value.forEach((p, x) => {
+          if (annotationoptions[p].predicate(v)) {
+            try {
+              a = [
+                ...a,
+                createAnnotation(
+                  i,
+                  v,
+                  x % 2 == 0 ? -1 * ((x / 2) * 7500) : ((x + 1) / 2) * 7500,
+                ),
+              ];
+            } catch (e) {
+              console.log(e);
+            }
+          }
+        });
+        return a;
+      },
+      [],
+    ),
+  );
+
+  const all = await Promise.all(_flatten(result));
+  return _fromPairs(all.reverse().map((v: any) => [v.id, v]));
+});
+
+const input = useTemplateRef("myChart");
+
+const options: any = computed(() => {
   const result = {
-    ..._reduce(
-      buildOrders?.value?.[0]?.items ?? [],
-      (a, v, p) => {
-        if (v.type === BuildOrderType.Tech) {
-          const res = {
-            ...a,
-            [v.id]: {
-              type: "line",
-              display: (ctx: any) => {
-                return ctx.chart.isDatasetVisible(0);
-              },
-              borderColor: "blue",
-              borderWidth: 2,
-              borderDash: [6, 6],
-              borderDashOffset: 0,
-              label: {
-                drawTime: "afterDraw",
-                position: "end",
-                backgroundColor: "rgba(0, 0, 255, 0.8)",
-                content: v.instructions,
-                display: true,
-              },
-              scaleID: "x",
-              value: moment(match.value.startTime).add(
-                moment.duration(v.timespan),
-              ),
-            },
-          };
-
-          return res;
-        }
-        if (v.type === BuildOrderType.BuildHero) {
-          const res = {
-            ...a,
-            [v.id]: {
-              type: "line",
-              display: (ctx: any) => {
-                return ctx.chart.isDatasetVisible(0);
-              },
-              borderColor: "cornflowerblue",
-              borderWidth: 2,
-              borderDash: [6, 6],
-              borderDashOffset: 0,
-              label: {
-                drawTime: "afterDraw",
-                position: "middle",
-                yAdjust: 20,
-                backgroundColor: "rgba(100, 149, 237, 0.8)",
-                content: v.instructions,
-                display: true,
-              },
-              scaleID: "x",
-              value: moment(match.value.startTime).add(
-                moment.duration(v.timespan),
-              ),
-            },
-          };
-
-          return res;
-        }
-        return a;
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { position: "bottom" },
+      datalabels: {
+        display: false,
       },
-      {},
-    ),
-    ..._reduce(
-      buildOrders?.value?.[1]?.items ?? [],
-      (a, v, p) => {
-        if (v.type === "Tech") {
-          const res = {
-            ...a,
-            [v.id]: {
-              type: "line",
-              display: (ctx: any) => {
-                return ctx.chart.isDatasetVisible(1);
-              },
-              borderColor: "red",
-              borderWidth: 2,
-              borderDash: [6, 6],
-              borderDashOffset: 0,
-              label: {
-                drawTime: "afterDraw",
-                position: "start",
-                backgroundColor: "rgba(255,0,0,0.8)",
-                content: v.instructions,
-                display: true,
-              },
-              scaleID: "x",
-              value: moment(match.value.startTime).add(
-                moment.duration(v.timespan),
-              ),
-            },
-          };
-
-          return res;
-        }
-
-        if (v.type === BuildOrderType.BuildHero) {
-          const res = {
-            ...a,
-            [v.id]: {
-              type: "line",
-              display: (ctx: any) => {
-                return ctx.chart.isDatasetVisible(1);
-              },
-              borderColor: "crimson",
-              borderWidth: 2,
-              borderDash: [6, 6],
-              borderDashOffset: 0,
-              label: {
-                drawTime: "afterDraw",
-                position: "middle",
-                yAdjust: -20,
-                backgroundColor: "rgba(220, 20, 60,0.8)",
-                content: v.instructions,
-                display: true,
-              },
-              scaleID: "x",
-              value: moment(match.value.startTime).add(
-                moment.duration(v.timespan),
-              ),
-            },
-          };
-
-          return res;
-        }
-
-        return a;
+      zoom: {
+        pan: {
+          modifierKey: "ctrl",
+          enabled: true,
+          mode: "xy",
+        },
+        zoom: {
+          wheel: {
+            modifierKey: "ctrl",
+            enabled: true,
+          },
+          pinch: {
+            enabled: true,
+          },
+          mode: "xy",
+        },
       },
-      {},
-    ),
+      annotation: { annotations: {} },
+      tooltip: {
+        callbacks: {
+          title: function (context: any) {
+            let label = "";
+            if (context?.[0].label?.length) {
+              label += moment
+                .utc(moment(context?.[0].label).diff(match.value.startTime))
+                .format("mm:ss");
+            }
+            return label;
+          },
+          label: function (context: any) {
+            let label = context.dataset.label || "";
+            if (label) {
+              label += ": ";
+            }
+            if (context.parsed.y !== null) {
+              label += context.raw.item?.instructions;
+            }
+            return label;
+          },
+        },
+      },
+    },
+    elements: {
+      line: {
+        tension: 0.3,
+      },
+    },
+    scales: {
+      x: {
+        type: "time",
+        time: {
+          unit: "minute",
+        },
+        grid: {
+          color: "rgba(255, 255, 255, 0.05)",
+        },
+        ticks: {
+          callback: (value: any, index: any, ticks: any) => {
+            if (match.value) {
+              return moment
+                .utc(moment(value).diff(match.value.startTime))
+                .format("mm:ss");
+            }
+            return moment(value).format("HH:mm:ss");
+          },
+        },
+      },
+      y: {
+        display: false,
+        min: 0,
+        max: 80000,
+        grid: {
+          color: "rgba(255, 255, 255, 0.05)",
+        },
+      },
+    },
   };
+
+  annotations.value.then((v) => {
+    result.plugins.annotation = { annotations: v };
+    setTimeout(() => {
+      (input?.value?.chart as any)?.update();
+    }, 100);
+  });
 
   return result;
 });
-
-const options: any = computed(() => ({
-  responsive: true,
-  maintainAspectRatio: false,
-  plugins: {
-    legend: { position: "bottom" },
-    datalabels: {
-      display: false,
-    },
-    tooltip: {
-      callbacks: {
-        title: function (context: any) {
-          let label = "";
-          if (context?.[0].label?.length) {
-            label += moment
-              .utc(moment(context?.[0].label).diff(match.value.startTime))
-              .format("mm:ss");
-          }
-          return label;
-        },
-        label: function (context: any) {
-          let label = context.dataset.label || "";
-
-          if (label) {
-            label += ": ";
-          }
-          if (context.parsed.y !== null) {
-            label += context.raw.item?.instructions;
-          }
-          return label;
-        },
-      },
-    },
-    annotation: { annotations: annotations.value },
-  },
-  elements: {
-    line: {
-      tension: 0.3,
-    },
-  },
-  scales: {
-    x: {
-      type: "time",
-      time: {
-        unit: "minute",
-      },
-      grid: {
-        color: "rgba(255, 255, 255, 0.05)",
-      },
-      ticks: {
-        callback: (value: any, index: any, ticks: any) => {
-          if (match.value) {
-            return moment
-              .utc(moment(value).diff(match.value.startTime))
-              .format("mm:ss");
-          }
-          return moment(value).format("HH:mm:ss");
-        },
-      },
-    },
-    y: {
-      display: false,
-      grid: {
-        color: "rgba(255, 255, 255, 0.05)",
-      },
-    },
-  },
-}));
-
-const router = useRouter();
 </script>
 
 <template>
@@ -563,14 +603,39 @@ const router = useRouter();
 
                 <v-row v-if="!loading">
                   <v-col cols="12" class="pb-0">
-                    <h2 class="font-weight-bold">Match History</h2>
+                    <div class="d-flex">
+                      <h2 class="font-weight-bold justify-start mr-auto">
+                        Match History
+                        <span
+                          class="text-grey"
+                          style="font-size: 10px; vertical-align: middle"
+                          >Hold CTRL to zoom in graph</span
+                        >
+                      </h2>
+                      <v-btn-toggle
+                        multiple
+                        v-model="predicates"
+                        variant="outlined"
+                        color="secondary"
+                        rounded="0"
+                        density="compact"
+                        class="justify-end">
+                        <v-btn
+                          v-for="(annotation, key) in annotationoptions"
+                          :value="key"
+                          ><span style="font-weight: bold; font-size: 12px">{{
+                            annotation.name
+                          }}</span></v-btn
+                        >
+                      </v-btn-toggle>
+                    </div>
                     <hr />
                   </v-col>
                   <v-col
                     cols="11"
                     class="mx-auto mt-2"
                     style="min-height: 400px">
-                    <Line :data="data" :options="options" />
+                    <Line :data="data" :options="options" ref="myChart" />
                   </v-col>
                 </v-row>
 
