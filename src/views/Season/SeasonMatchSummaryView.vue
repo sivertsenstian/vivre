@@ -198,7 +198,7 @@ const createAnnotation = async (player: number, v: any, adjust = 0) => {
   const content = await icon();
 
   const a: any = {
-    id: `${v.id}_${v.count}`,
+    id: `${player}_${v.id}_${v.count}`,
     drawTime: "beforeDatasetsDraw",
     type: "line",
     display: (ctx: any) => ctx.chart.isDatasetVisible(player),
