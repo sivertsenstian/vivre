@@ -16,6 +16,7 @@ import GNLSeasonTeamView from "@/views/GNL/GNLSeasonTeamView.vue";
 import KLSeasonTeamView from "@/views/KL/KLSeasonTeamView.vue";
 import KLSeasonIndexView from "@/views/KL/KLSeasonIndexView.vue";
 import ChallengersView from "@/views/ChallengersView.vue";
+import HotkeyStormView from "@/games/hotkeystorm/HotkeyStormView.vue";
 
 const router = createRouter({
   history: createWebHashHistory(import.meta.env.BASE_URL),
@@ -102,6 +103,12 @@ const router = createRouter({
           name: "Makrura Admin",
           component: MakruraAdminView,
         },
+      ],
+    },
+    {
+      path: "/games",
+      children: [
+        { path: "storm", name: "Hotkey Storm", component: HotkeyStormView },
       ],
     },
     {
