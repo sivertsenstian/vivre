@@ -1,78 +1,104 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from "vue";
-import _sample from "lodash/sample";
-import ConfettiExplosion from "vue-confetti-explosion";
-import _keys from "lodash/keys";
+import { computed, onMounted, ref } from 'vue';
+import _sample from 'lodash/sample';
+import ConfettiExplosion from 'vue-confetti-explosion';
+import _keys from 'lodash/keys';
+import moment from 'moment';
 
 const toImg = (instruction: string) => {
-  return `/icons/btn${String(instruction ?? "")
-    .replace(/ /g, "")
-    .replace(/\//g, "")
-    .replace(/’/g, "")
-    .replace(/'/g, "")
+  return `/icons/btn${String(instruction ?? '')
+    .replace(/ /g, '')
+    .replace(/\//g, '')
+    .replace(/’/g, '')
+    .replace(/'/g, '')
     .toLowerCase()}.jpg`;
 };
 
 const toInstruction = (puzzle: string[]) => {
-  return puzzle?.join(" ") ?? "";
+  return puzzle?.join(' ') ?? '';
 };
 
 const hotkeys: any = {
+  TargetDummy: 'TargetDummy',
   Wisp: {
-    NightElfBuild: "Q",
-    "Moon Well": "Q",
-    "Hunters Hall": "E",
-    "Ancient Of War": "W",
-    "Altar Of Elders": "S",
-    "Tree Of Life": "Z",
-    "Ancient Protector": "A",
-    "Ancient Of Lore": "D",
-    "Ancient Of Wind": "F",
-    "Chimaera Roost": "X",
-    "Ancient Of Wonders": "C",
+    Renew: 'R',
+    Detonate: 'E',
+    NightElfBuild: 'Q',
+    'Moon Well': 'Q',
+    'Hunters Hall': 'E',
+    'Ancient Of War': 'W',
+    'Altar Of Elders': 'S',
+    'Tree Of Life': 'Z',
+    'Ancient Protector': 'A',
+    'Ancient Of Lore': 'D',
+    'Ancient Of Wind': 'F',
+    'Chimaera Roost': 'X',
+    'Ancient Of Wonders': 'C',
   },
-  "Ancient Of War": {
-    Archer: "Q",
-    Huntress: "W",
-    "Glaive Thrower": "E",
-    Marksmanship: "Z",
-    "Moon Glaive": "X",
-    "Improved Bows": "A",
-    Sentinel: "S",
-    "Vorpal Blades": "D",
-    Uproot: "R",
+  'Ancient Of War': {
+    Archer: 'Q',
+    Huntress: 'W',
+    'Glaive Thrower': 'E',
+    Marksmanship: 'Z',
+    'Moon Glaive': 'X',
+    'Improved Bows': 'A',
+    Sentinel: 'S',
+    'Vorpal Blades': 'D',
+    Uproot: 'R',
   },
-  "Druid Of The Claw": {
-    Roar: "R",
-    Rejuvenation: "Q",
-    "Bear Form": "W",
+  'Druid Of The Claw': {
+    Roar: 'R',
+    Rejuvenation: 'Q',
+    'Bear Form': 'W',
+  },
+  Dryad: { 'Abolish Magic': 'Q' },
+  'Keeper Of The Grove': {
+    'Entangling Roots': 'Q',
+    'Force Of Nature': 'W',
+    Tranquility: 'R',
   },
 };
 
 const tests = [
   ..._keys(hotkeys.Wisp)
-    .filter((k) => k !== "NightElfBuild")
+    .filter((k) => k !== 'NightElfBuild')
     .map((k) => ({
-      target: "Wisp",
-      puzzle: ["NightElfBuild", k],
+      target: 'Wisp',
+      puzzle:
+        k === 'Renew' || k === 'Detonate'
+          ? [k, 'TargetDummy']
+          : ['NightElfBuild', k],
     })),
-  ..._keys(hotkeys["Ancient Of War"]).map((k) => ({
-    target: "Ancient Of War",
+  ..._keys(hotkeys['Ancient Of War']).map((k) => ({
+    target: 'Ancient Of War',
     puzzle: [k],
   })),
-  ..._keys(hotkeys["Druid Of The Claw"]).map((k) => ({
-    target: "Druid Of The Claw",
-    puzzle: [k],
+  ..._keys(hotkeys['Druid Of The Claw']).map((k) => ({
+    target: 'Druid Of The Claw',
+    puzzle: k === 'Rejuvenation' ? [k, 'TargetDummy'] : [k],
+  })),
+  ..._keys(hotkeys['Dryad']).map((k) => ({
+    target: 'Dryad',
+    puzzle: [k, 'TargetDummy'],
+  })),
+  ..._keys(hotkeys['Keeper Of The Grove']).map((k) => ({
+    target: 'Keeper Of The Grove',
+    puzzle: k === 'Tranquility' ? [k] : [k, 'TargetDummy'],
   })),
 ];
 
+const timer = ref(moment.duration(3, 'minutes'));
+
 const test = ref<any>({});
+const history = ref<any[]>([]);
 
 const highscore = ref(0);
 const points = ref(0);
 const combo = ref(0);
 const comboGoal = ref(5);
+const comboStreak = ref(0);
 const solved = ref(false);
+const reward = ref(0);
 
 const queue = ref<string[]>([]);
 const captured = ref<string>();
@@ -85,21 +111,31 @@ const next = () => {
 
 const answer = computed(
   () =>
-    test.value?.puzzle.map((p: string) => hotkeys[test.value.target][p]) ?? [],
+    test.value?.puzzle?.map(
+      (p: string) => hotkeys[test.value.target]?.[p] ?? hotkeys[p],
+    ) ?? [],
 );
 
-const captureInput = (event: KeyboardEvent) => {
-  event.preventDefault();
+const showTarget = computed(() => {
+  return (
+    queue.value?.every((q, i) => q === answer.value?.[i]) &&
+    answer.value?.[queue.value?.length] === 'TargetDummy'
+  );
+});
 
-  captured.value = event.key.toUpperCase();
-  queue.value.push(event.key.toUpperCase());
-
+const step = () => {
   // SOLVED
   if (
     answer.value.length === queue.value.length &&
     queue.value.every((v, i) => v === answer.value[i])
   ) {
     solved.value = true;
+    history.value.push({
+      success: true,
+      puzzle: test.value,
+      actual: queue.value,
+      answer: answer.value,
+    });
     setTimeout(() => {
       points.value += 1;
       captured.value = undefined;
@@ -116,29 +152,126 @@ const captureInput = (event: KeyboardEvent) => {
 
   // INCORRECT
   if (queue.value.some((v, i) => v !== answer.value[i])) {
+    history.value.push({
+      success: false,
+      puzzle: test.value,
+      actual: answer.value,
+      answer: queue.value,
+    });
+
     setTimeout(() => {
       points.value = 0;
       captured.value = undefined;
       queue.value = [];
       combo.value = 0;
       comboGoal.value = 5;
-
+      comboStreak.value = 0;
       next();
     }, 500);
+    timer.value.subtract(10, 'seconds');
+    reward.value = -10;
+    setTimeout(() => {
+      reward.value = 0;
+    }, 1000);
   } else {
     // CORRECT
     combo.value++;
 
     if (combo.value === comboGoal.value) {
-      points.value *= 2;
+      comboStreak.value++;
+      let seconds;
+      switch (comboStreak.value) {
+        case 1:
+          seconds = 3;
+          comboGoal.value = 12;
+          break;
+        case 2:
+          seconds = 5;
+          comboGoal.value = 20;
+          break;
+        case 3:
+          seconds = 7;
+          comboGoal.value = 30;
+          break;
+        case 4:
+          seconds = 7;
+          comboGoal.value = 10;
+          break;
+        default:
+          seconds = 10;
+          comboGoal.value = 10;
+          break;
+      }
+      reward.value = seconds;
+      setTimeout(() => {
+        reward.value = 0;
+      }, 1000);
       combo.value = 0;
-      comboGoal.value *= 2;
+      timer.value.add(seconds, 'seconds');
     }
   }
 };
 
-window.addEventListener("keydown", (event) => event.preventDefault());
-window.addEventListener("keyup", captureInput);
+const captureInput = (event: KeyboardEvent) => {
+  event.preventDefault();
+
+  if (!interval.value) {
+    start();
+  }
+
+  captured.value = event.key.toUpperCase();
+  queue.value.push(event.key.toUpperCase());
+
+  step();
+};
+
+window.addEventListener('keydown', (event) => event.preventDefault());
+window.addEventListener('keyup', captureInput);
+window.addEventListener('click', (event) => {
+  event.preventDefault();
+  event.stopImmediatePropagation();
+  queue.value.push('Miss');
+  step();
+});
+
+const interval = ref();
+const stop = () => {
+  clearInterval(interval.value);
+  history.value = [];
+  test.value = {};
+  timer.value = moment.duration(3, 'minutes');
+  next();
+};
+
+const start = () => {
+  clearInterval(interval.value);
+  timer.value = moment.duration(3, 'minutes');
+  interval.value = setInterval(() => {
+    timer.value.subtract(1, 'second');
+    if (timer.value.asSeconds() <= 0) {
+      stop();
+    }
+  }, 1000);
+};
+
+const hit = (event: PointerEvent) => {
+  event.preventDefault();
+  event.stopImmediatePropagation();
+  // Get the position of the element relative to the viewport
+  const rect = (event.target as any)?.getBoundingClientRect();
+
+  // Calculate the relative coordinates
+  const x = event.clientX - rect.left;
+  const y = event.clientY - rect.top;
+
+  if (x >= 40 && x <= 60 && y >= 30 && y <= 50) {
+    queue.value.push('TargetDummy');
+  } else {
+    queue.value.push('Miss');
+  }
+
+  step();
+};
 
 onMounted(() => {
   next();
@@ -146,7 +279,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <main style="height: 100vh; overflow-y: auto">
+  <main style="height: 100vh; overflow-y: auto" class="game">
     <v-container fluid style="opacity: 0.9">
       <v-sheet class="pa-6" elevation="10" style="min-height: 90vh">
         <v-row>
@@ -186,11 +319,32 @@ onMounted(() => {
                 class="ml-4"
                 :style="{
                   filter:
-                    hotkeys?.[test.target]?.[command]?.toLowerCase() !==
-                    queue?.[i]?.toLowerCase()
+                    (
+                      hotkeys?.[test.target]?.[command] ?? hotkeys?.[command]
+                    )?.toLowerCase() !== queue?.[i]?.toLowerCase()
                       ? 'brightness(1.0)'
                       : 'brightness(1.5)',
                 }" />
+            </div>
+            <div
+              v-if="showTarget"
+              @click="(e: any) => hit(e)"
+              :style="
+                Math.random() < 0.5
+                  ? {
+                      position: 'fixed',
+                      display: 'block',
+                      left: `${Math.floor(Math.random() * (500 - 250 + 1)) + 250}px`,
+                      bottom: `calc(100vh - ${Math.floor(Math.random() * (500 - 250 + 1)) + 100}px`,
+                    }
+                  : {
+                      position: 'fixed',
+                      display: 'block',
+                      right: `${Math.floor(Math.random() * (500 - 250 + 1)) + 250}px`,
+                      top: `${Math.floor(Math.random() * (500 - 250 + 1)) + 100}px`,
+                    }
+              ">
+              <v-img src="/target.png" width="96" />
             </div>
           </v-col>
         </v-row>
@@ -208,7 +362,12 @@ onMounted(() => {
                   'text-error wrong': key !== answer[i],
                   'font-weight-bold ml-2': true,
                 }">
-                {{ key }}
+                <v-icon
+                  style="font-size: 24px"
+                  v-if="key === 'TargetDummy' || key === 'Miss'"
+                  icon="mdi-bullseye-arrow"
+                  :color="key === 'TargetDummy' ? 'success' : 'error'" />
+                <template v-else>{{ key }}</template>
               </h2>
             </div>
           </v-col>
@@ -232,6 +391,32 @@ onMounted(() => {
           </v-col>
           <v-col cols="12">
             <v-row>
+              <v-col offset="8" cols="4" class="text-center">
+                <span style="font-family: fantasy; font-size: 64px">
+                  {{ (timer as any).format('mm : ss', { trim: false }) }}
+                </span>
+                <span
+                  v-if="reward !== 0"
+                  :class="{
+                    'fade-out': true,
+                    'text-success': reward > 0,
+                    'text-error': reward < 0,
+                  }"
+                  style="
+                    height: 0;
+                    display: block;
+                    font-size: 96px;
+                    font-weight: bold;
+                    font-family: fantasy;
+                    position: relative;
+                    right: 10px;
+                    bottom: 210px;
+                  ">
+                  {{ reward < 0 ? '-' : '+' }}{{ reward }}
+                </span>
+              </v-col>
+            </v-row>
+            <v-row>
               <v-col offset="8" cols="4">
                 <span class="text-grey font-weight-bold mr-2">{{ combo }}</span>
                 <span class="text-grey">COMBO</span>
@@ -247,13 +432,13 @@ onMounted(() => {
                   style="margin-top: 5px"
                   :height="10"
                   color="green"
-                  :model-value="comboGoal / 5 - 1"
+                  :model-value="comboStreak"
                   :max="4" />
               </v-col>
             </v-row>
           </v-col>
           <v-col cols="12"> (TEST) Current Available Key Bindings (TEST)</v-col>
-          <v-col cols="12">
+          <v-col cols="6">
             <pre>{{ hotkeys }}</pre>
           </v-col>
         </v-row>
@@ -262,6 +447,10 @@ onMounted(() => {
   </main>
 </template>
 <style>
+.game {
+  cursor: crosshair;
+}
+
 .wrong {
   position: relative;
   animation: pulse 0.2s infinite;
@@ -295,6 +484,18 @@ onMounted(() => {
 
 @keyframes fadeinout {
   50% {
+    opacity: 1;
+  }
+}
+
+.fade-out {
+  -webkit-animation: fadeinout 1s linear 1;
+  animation: fadeinout 1s linear 1;
+  opacity: 0;
+}
+
+@-webkit-keyframes fadeout {
+  100% {
     opacity: 1;
   }
 }
