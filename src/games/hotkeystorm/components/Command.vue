@@ -30,7 +30,9 @@ interface Props {
 }
 const props = defineProps<Props>();
 
-const missile = computed(() => _sample(missiles) ?? _first(missiles));
+const missile = computed(
+  () => _sample(missiles) ?? _first(missiles) ?? 'Death Coil',
+);
 
 onMounted(() => {
   if (props.command === 'MissileDodge') {

@@ -5,6 +5,7 @@ import ConfettiExplosion from 'vue-confetti-explosion';
 import _keys from 'lodash/keys';
 import moment from 'moment';
 import Command from './components/Command.vue';
+import _range from 'lodash/range';
 
 const toImg = (instruction: string) => {
   return `/icons/btn${String(instruction ?? '')
@@ -121,11 +122,11 @@ const tests = [
     position: k,
     puzzle: getItemPuzzle(_sample(items?.[k])),
   })),
-  {
+  ..._range(0, 3).map(() => ({
     target: 'Inventory',
-    position: 'R1',
+    position: Math.random() < 0.5 ? 'R1' : 'R2',
     puzzle: ['MissileDodge', 'Potion of Lesser Invulnerability'],
-  },
+  })),
 ];
 
 const timer = ref(moment.duration(3, 'minutes'));
@@ -168,16 +169,16 @@ const showTarget = computed(() => {
 });
 
 const step = () => {
+  // Cancel Dodge MISS event on step
+  if (dodgetimeout.value) {
+    clearTimeout(dodgetimeout.value);
+  }
+
   // SOLVED
   if (
     answer.value.length === queue.value.length &&
     queue.value.every((v, i) => v === answer.value[i])
   ) {
-    // Cancel MISS event on success!
-    if (dodgetimeout.value) {
-      clearTimeout(dodgetimeout.value);
-    }
-
     solved.value = true;
     history.value.push({
       success: true,
@@ -361,9 +362,9 @@ const dodge = () => {
       dodgetimeout.value = setTimeout(() => {
         queue.value.push('Miss');
         setTimeout(step, 750);
-      }, 500);
+      }, 750);
     },
-    Math.floor(Math.random() * (2500 - 250 + 1)) + 250,
+    Math.floor(Math.random() * (2000 - 500 + 1)) + 500,
   );
 };
 
