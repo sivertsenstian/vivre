@@ -4,6 +4,7 @@ import _sample from 'lodash/sample';
 import ConfettiExplosion from 'vue-confetti-explosion';
 import _keys from 'lodash/keys';
 import moment from 'moment';
+import Command from './components/Command.vue';
 
 const toImg = (instruction: string) => {
   return `/icons/btn${String(instruction ?? '')
@@ -20,12 +21,17 @@ const toInstruction = (puzzle: string[]) => {
 
 const items: any = {
   L1: ['Scroll Of Town Portal'],
-  R1: ['Staff Of Preservation', 'Rod Of Necromancy'],
+  R1: [
+    'Staff Of Preservation',
+    'Rod Of Necromancy',
+    'Potion of Lesser Invulnerability',
+  ],
   R2: ['Potion Of Healing', 'Scroll Of Healing'],
 };
 
 const hotkeys: any = {
   TargetDummy: 'TargetDummy',
+  MissileDodge: 'MissileDodge',
   Inventory: {
     L1: 'ALT + Q',
     // L2: 'ALT + A',
@@ -39,25 +45,25 @@ const hotkeys: any = {
     Detonate: 'E',
     NightElfBuild: 'Q',
     'Moon Well': 'Q',
-    'Hunters Hall': 'E',
+    // 'Hunters Hall': 'E',
     'Ancient Of War': 'W',
     'Altar Of Elders': 'S',
-    'Tree Of Life': 'Z',
-    'Ancient Protector': 'A',
+    // 'Tree Of Life': 'Z',
+    // 'Ancient Protector': 'A',
     'Ancient Of Lore': 'D',
-    'Ancient Of Wind': 'F',
-    'Chimaera Roost': 'X',
+    // 'Ancient Of Wind': 'F',
+    // 'Chimaera Roost': 'X',
     'Ancient Of Wonders': 'C',
   },
   'Ancient Of War': {
     Archer: 'Q',
     Huntress: 'W',
-    'Glaive Thrower': 'E',
-    Marksmanship: 'Z',
-    'Moon Glaive': 'X',
-    'Improved Bows': 'A',
-    Sentinel: 'S',
-    'Vorpal Blades': 'D',
+    // 'Glaive Thrower': 'E',
+    // Marksmanship: 'Z',
+    // 'Moon Glaive': 'X',
+    // 'Improved Bows': 'A',
+    // Sentinel: 'S',
+    // 'Vorpal Blades': 'D',
     Uproot: 'R',
   },
   'Druid Of The Claw': {
@@ -94,10 +100,10 @@ const tests = [
           ? [k, 'TargetDummy']
           : ['NightElfBuild', k],
     })),
-  ..._keys(hotkeys['Ancient Of War']).map((k) => ({
-    target: 'Ancient Of War',
-    puzzle: [k],
-  })),
+  // ..._keys(hotkeys['Ancient Of War']).map((k) => ({
+  //   target: 'Ancient Of War',
+  //   puzzle: [k],
+  // })),
   ..._keys(hotkeys['Druid Of The Claw']).map((k) => ({
     target: 'Druid Of The Claw',
     puzzle: k === 'Rejuvenation' ? [k, 'TargetDummy'] : [k],
@@ -115,6 +121,11 @@ const tests = [
     position: k,
     puzzle: getItemPuzzle(_sample(items?.[k])),
   })),
+  {
+    target: 'Inventory',
+    position: 'R1',
+    puzzle: ['MissileDodge', 'Potion of Lesser Invulnerability'],
+  },
 ];
 
 const timer = ref(moment.duration(3, 'minutes'));
@@ -162,6 +173,11 @@ const step = () => {
     answer.value.length === queue.value.length &&
     queue.value.every((v, i) => v === answer.value[i])
   ) {
+    // Cancel MISS event on success!
+    if (dodgetimeout.value) {
+      clearTimeout(dodgetimeout.value);
+    }
+
     solved.value = true;
     history.value.push({
       success: true,
@@ -333,6 +349,24 @@ const hit = (event: PointerEvent) => {
   step();
 };
 
+const dodgetimeout = ref();
+const dodge = () => {
+  if (dodgetimeout.value) {
+    clearTimeout(dodgetimeout.value);
+  }
+
+  dodgetimeout.value = setTimeout(
+    () => {
+      queue.value.push('MissileDodge');
+      dodgetimeout.value = setTimeout(() => {
+        queue.value.push('Miss');
+        setTimeout(step, 750);
+      }, 500);
+    },
+    Math.floor(Math.random() * (2500 - 250 + 1)) + 250,
+  );
+};
+
 onMounted(() => {
   next();
 });
@@ -379,7 +413,11 @@ onMounted(() => {
             <div v-for="(command, i) in test.puzzle" class="d-inline-flex">
               <v-table
                 class="pa-0"
-                v-if="test.target === 'Inventory' && command !== 'TargetDummy'">
+                v-if="
+                  test.target === 'Inventory' &&
+                  command !== 'TargetDummy' &&
+                  command !== 'MissileDodge'
+                ">
                 <tbody>
                   <tr>
                     <td
@@ -493,19 +531,14 @@ onMounted(() => {
                   </tr>
                 </tbody>
               </v-table>
-              <v-img
+              <command
                 v-else
-                :src="toImg(command)"
-                width="42"
-                class="ml-4 my-auto"
-                :style="{
-                  filter:
-                    (
-                      hotkeys?.[test.target]?.[command] ?? hotkeys?.[command]
-                    )?.toLowerCase() !== queue?.[i]?.toLowerCase()
-                      ? 'brightness(1.0)'
-                      : 'brightness(1.5)',
-                }" />
+                :action="dodge"
+                :command="command"
+                :queue="queue"
+                :hotkeys="hotkeys"
+                :i="i"
+                :test="test" />
             </div>
             <div
               v-if="showTarget"
@@ -548,6 +581,11 @@ onMounted(() => {
                   v-if="key === 'TargetDummy' || key === 'Miss'"
                   icon="mdi-bullseye-arrow"
                   :color="key === 'TargetDummy' ? 'success' : 'error'" />
+                <v-icon
+                  style="font-size: 24px"
+                  v-else-if="key === 'MissileDodge'"
+                  icon="mdi-clock"
+                  color="success" />
                 <template v-else>{{ key }}</template>
               </h2>
             </div>
