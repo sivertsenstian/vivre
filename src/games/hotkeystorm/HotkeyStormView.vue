@@ -18,8 +18,22 @@ const toInstruction = (puzzle: string[]) => {
   return puzzle?.join(' ') ?? '';
 };
 
+const items: any = {
+  L1: ['Scroll Of Town Portal'],
+  R1: ['Staff Of Preservation', 'Rod Of Necromancy'],
+  R2: ['Potion Of Healing', 'Scroll Of Healing'],
+};
+
 const hotkeys: any = {
   TargetDummy: 'TargetDummy',
+  Inventory: {
+    L1: 'ALT + Q',
+    // L2: 'ALT + A',
+    // L3: 'ALT + Z',
+    R1: 'ALT + W',
+    R2: 'ALT + S',
+    // R3: 'ALT + X',
+  },
   Wisp: {
     Renew: 'R',
     Detonate: 'E',
@@ -59,6 +73,17 @@ const hotkeys: any = {
   },
 };
 
+const getItemPuzzle = (item: string) => {
+  switch (item) {
+    case 'Scroll Of Town Portal':
+    case 'Rod Of Necromancy':
+    case 'Staff Of Preservation':
+      return [item, 'TargetDummy'];
+    default:
+      return [item];
+  }
+};
+
 const tests = [
   ..._keys(hotkeys.Wisp)
     .filter((k) => k !== 'NightElfBuild')
@@ -84,6 +109,11 @@ const tests = [
   ..._keys(hotkeys['Keeper Of The Grove']).map((k) => ({
     target: 'Keeper Of The Grove',
     puzzle: k === 'Tranquility' ? [k] : [k, 'TargetDummy'],
+  })),
+  ..._keys(hotkeys['Inventory']).map((k) => ({
+    target: 'Inventory',
+    position: k,
+    puzzle: getItemPuzzle(_sample(items?.[k])),
   })),
 ];
 
@@ -112,7 +142,10 @@ const next = () => {
 const answer = computed(
   () =>
     test.value?.puzzle?.map(
-      (p: string) => hotkeys[test.value.target]?.[p] ?? hotkeys[p],
+      (p: string) =>
+        hotkeys[test.value.target]?.[p] ??
+        hotkeys[p] ??
+        hotkeys.Inventory[test.value?.position],
     ) ?? [],
 );
 
@@ -214,18 +247,45 @@ const step = () => {
 
 const captureInput = (event: KeyboardEvent) => {
   event.preventDefault();
+  event.stopPropagation();
+  event.stopImmediatePropagation();
+
+  if (['Control', 'Alt', 'Shift'].some((v) => v === event.key)) {
+    return;
+  }
 
   if (!interval.value) {
     start();
   }
 
-  captured.value = event.key.toUpperCase();
-  queue.value.push(event.key.toUpperCase());
+  let capture = '';
+
+  if (event.ctrlKey) {
+    capture += 'CTRL + ';
+  }
+
+  if (event.altKey) {
+    capture += 'ALT + ';
+  }
+
+  if (event.shiftKey) {
+    capture += 'SHIFT + ';
+  }
+
+  capture += event.key.toUpperCase();
+
+  captured.value = capture;
+  queue.value.push(capture);
 
   step();
 };
 
-window.addEventListener('keydown', (event) => event.preventDefault());
+window.addEventListener('keydown', (event) => {
+  event.preventDefault();
+  event.stopPropagation();
+  event.stopImmediatePropagation();
+});
+
 window.addEventListener('keyup', captureInput);
 window.addEventListener('click', (event) => {
   event.preventDefault();
@@ -297,13 +357,14 @@ onMounted(() => {
         </v-row>
         <v-row>
           <v-col cols="4" offset="4" class="text-center">
-            <h2>
+            <h2 class="text-no-wrap">
               Use <span class="text-primary">{{ test.target }}</span> to
               <span class="text-secondary">{{
                 toInstruction(test.puzzle)
               }}</span>
             </h2>
             <v-img
+              v-if="test.target !== 'Inventory'"
               :src="toImg(test.target)"
               width="48"
               class="mx-auto mt-5"
@@ -311,12 +372,132 @@ onMounted(() => {
           </v-col>
         </v-row>
         <v-row>
-          <v-col cols="4" offset="4" class="text-center">
+          <v-col
+            cols="4"
+            offset="4"
+            class="text-center d-inline-flex justify-center align-center">
             <div v-for="(command, i) in test.puzzle" class="d-inline-flex">
+              <v-table
+                class="pa-0"
+                v-if="test.target === 'Inventory' && command !== 'TargetDummy'">
+                <tbody>
+                  <tr>
+                    <td
+                      style="border: 1px solid black; height: 42px; width: 42px"
+                      class="pa-0 ma-0">
+                      <v-img
+                        v-if="test.position === 'L1'"
+                        :src="toImg(command)"
+                        width="42"
+                        :style="{
+                          filter:
+                            (
+                              hotkeys?.[test.target]?.[command] ??
+                              hotkeys?.[command]
+                            )?.toLowerCase() !== queue?.[i]?.toLowerCase()
+                              ? 'brightness(1.0)'
+                              : 'brightness(1.5)',
+                        }" />
+                      <v-img
+                        v-else
+                        src="/empty_inventory.jpg"
+                        width="42"
+                        height="42" />
+                    </td>
+                    <td
+                      style="border: 1px solid black; height: 42px; width: 42px"
+                      class="pa-0 ma-0">
+                      <v-img
+                        v-if="test.position === 'R1'"
+                        :src="toImg(command)"
+                        width="42"
+                        :style="{
+                          filter:
+                            (
+                              hotkeys?.[test.target]?.[command] ??
+                              hotkeys?.[command]
+                            )?.toLowerCase() !== queue?.[i]?.toLowerCase()
+                              ? 'brightness(1.0)'
+                              : 'brightness(1.5)',
+                        }" />
+                      <v-img
+                        v-else
+                        src="/empty_inventory.jpg"
+                        width="42"
+                        height="42" />
+                    </td>
+                  </tr>
+                  <tr>
+                    <td
+                      style="border: 1px solid black; height: 42px; width: 42px"
+                      class="pa-0 ma-0">
+                      <v-img
+                        v-if="test.position === 'L2'"
+                        :src="toImg(command)"
+                        width="42"
+                        :style="{
+                          filter:
+                            (
+                              hotkeys?.[test.target]?.[command] ??
+                              hotkeys?.[command]
+                            )?.toLowerCase() !== queue?.[i]?.toLowerCase()
+                              ? 'brightness(1.0)'
+                              : 'brightness(1.5)',
+                        }" />
+                      <v-img
+                        v-else
+                        src="/empty_inventory.jpg"
+                        width="42"
+                        height="42" />
+                    </td>
+                    <td
+                      style="border: 1px solid black; height: 42px; width: 42px"
+                      class="pa-0 ma-0">
+                      <v-img
+                        v-if="test.position === 'R2'"
+                        :src="toImg(command)"
+                        width="42"
+                        :style="{
+                          filter:
+                            (
+                              hotkeys?.[test.target]?.[command] ??
+                              hotkeys?.[command]
+                            )?.toLowerCase() !== queue?.[i]?.toLowerCase()
+                              ? 'brightness(1.0)'
+                              : 'brightness(1.5)',
+                        }" />
+                      <v-img
+                        v-else
+                        src="/empty_inventory.jpg"
+                        width="42"
+                        height="42" />
+                    </td>
+                  </tr>
+                  <tr>
+                    <td
+                      style="border: 1px solid black; height: 42px; width: 42px"
+                      class="pa-0 ma-0">
+                      <v-img
+                        src="/empty_inventory.jpg"
+                        width="42"
+                        height="42" />
+                    </td>
+                    <td
+                      style="border: 1px solid black; height: 42px; width: 42px"
+                      class="pa-0 ma-0">
+                      <v-img
+                        src="/empty_inventory.jpg"
+                        width="42"
+                        height="42" />
+                    </td>
+                  </tr>
+                </tbody>
+              </v-table>
               <v-img
+                v-else
                 :src="toImg(command)"
                 width="42"
-                class="ml-4"
+                class="ml-4 my-auto"
                 :style="{
                   filter:
                     (
