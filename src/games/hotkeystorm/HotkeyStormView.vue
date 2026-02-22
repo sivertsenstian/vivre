@@ -9,6 +9,7 @@ import {
   Basic,
   createPuzzles,
   night_elf_actions,
+  undead_actions,
 } from './utilities/actions';
 import { layouts } from './utilities/data';
 import { useHotKeyStormStore } from '@/games/hotkeystorm/store.ts';
@@ -26,9 +27,9 @@ import EditInventoryInput from '@/games/hotkeystorm/components/EditInventoryInpu
 
 const store = useHotKeyStormStore();
 
-const toInstruction = (actions: string[]) => {
-  const a = actions?.map(actionToName).join(' ') ?? '';
-  if (actions?.some((a) => a === 'TARGETDUMMY')) {
+const toInstruction = (puzzle: any) => {
+  const a = puzzle?.actions?.map(actionToName).join(' ') ?? '';
+  if (puzzle?.actions?.some((a: string) => a === 'TARGETDUMMY')) {
     return `Cast ${a}`;
   }
 
@@ -43,7 +44,7 @@ const audio = {
   start: new Audio(startAudio),
 };
 
-const puzzles = _keys(night_elf_actions).map(createPuzzles).flat();
+const puzzles = ref<any[]>([]);
 const timer = ref(moment.duration(2, 'minutes'));
 
 enum Status {
@@ -80,7 +81,7 @@ const captured = ref<string>();
 const next = () => {
   hint.value = false;
   puzzle.value = _sample(
-    puzzles.filter((t) =>
+    puzzles.value.filter((t) =>
       t.actions?.some(
         (p: string, i: number) => p !== puzzle.value?.actions?.[i],
       ),
@@ -379,7 +380,7 @@ const dodge = () => {
                       >{{ puzzle.name }}:
                     </span>
                     <span class="text-secondary">{{
-                      toInstruction(puzzle.actions)
+                      toInstruction(puzzle)
                     }}</span>
                   </h2>
                 </v-col>
@@ -482,7 +483,7 @@ const dodge = () => {
                     >HINT:
                   </span>
                   <div
-                    v-for="key in answer.filter((a) =>
+                    v-for="key in answer.filter((a: any) =>
                       [Basic.TargetDummy, Basic.Miss, Basic.MissileDodge].every(
                         (v) => a !== v,
                       ),
@@ -610,7 +611,14 @@ const dodge = () => {
                       <tr>
                         <td style="width: 64px; height: 64px">
                           <v-btn
-                            @click="start"
+                            @click="
+                              () => {
+                                puzzles = _keys(night_elf_actions)
+                                  .map(createPuzzles)
+                                  .flat();
+                                start();
+                              }
+                            "
                             rounded="0"
                             variant="tonal"
                             style="width: 100%; height: 100%">
@@ -619,10 +627,17 @@ const dodge = () => {
                         </td>
                         <td style="width: 64px; height: 64px">
                           <v-btn
+                            @click="
+                              () => {
+                                puzzles = _keys(undead_actions)
+                                  .map(createPuzzles)
+                                  .flat();
+                                start();
+                              }
+                            "
                             rounded="0"
                             variant="tonal"
-                            style="width: 100%; height: 100%"
-                            disabled>
+                            style="width: 100%; height: 100%">
                             <race-icon :race="Race.Undead" :size="84" />
                           </v-btn>
                         </td>
@@ -840,7 +855,7 @@ const dodge = () => {
     </v-container>
   </main>
 </template>
-<style>
+<style scoped>
 .game-container {
   height: auto;
   width: 100%;
