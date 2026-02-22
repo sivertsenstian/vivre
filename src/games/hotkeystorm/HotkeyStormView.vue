@@ -8,6 +8,7 @@ import {
   actionToName,
   Basic,
   createPuzzles,
+  HotKeyType,
   night_elf_actions,
   undead_actions,
 } from './utilities/actions';
@@ -27,13 +28,30 @@ import EditInventoryInput from '@/games/hotkeystorm/components/EditInventoryInpu
 
 const store = useHotKeyStormStore();
 
+const toName = (puzzle: any) => {
+  if (puzzle.name.toLowerCase().startsWith('item')) {
+    return 'Inventory';
+  }
+  return puzzle.name;
+};
+
 const toInstruction = (puzzle: any) => {
   const a = puzzle?.actions?.map(actionToName).join(' ') ?? '';
-  if (puzzle?.actions?.some((a: string) => a === 'TARGETDUMMY')) {
-    return `Cast ${a}`;
+  switch (puzzle.type) {
+    case HotKeyType.BasicAbility:
+    case HotKeyType.Target:
+      return `Cast ${a}`;
+    case HotKeyType.BasicUpgrade:
+      return `Research ${a}`;
+    case HotKeyType.BasicBuy:
+      return `Purchase ${a}`;
+    case HotKeyType.BasicItem:
+      return `Use ${a}`;
+    case HotKeyType.BasicBuild:
+      return `Build ${a}`;
+    default:
+      return a;
   }
-
-  return a;
 };
 
 const audio = {
@@ -377,7 +395,7 @@ const dodge = () => {
                       class="mx-auto mb-2"
                       style="left: 8px" />
                     <span class="text-primary font-weight-bold"
-                      >{{ puzzle.name }}:
+                      >{{ toName(puzzle) }}:
                     </span>
                     <span class="text-secondary">{{
                       toInstruction(puzzle)
@@ -850,6 +868,11 @@ const dodge = () => {
               </v-col>
             </v-row>
           </v-col>
+          <v-row>
+            <v-col cols="12">
+              <pre>{{ puzzle }}</pre>
+            </v-col>
+          </v-row>
         </v-row>
       </v-sheet>
     </v-container>

@@ -3,7 +3,12 @@ import _flatten from 'lodash/flatten';
 import _merge from 'lodash/merge';
 
 export enum HotKeyType {
-  Basic = 'Basic',
+  BasicBuild = 'BasicBuild',
+  BasicAbility = 'BasicAbility',
+  BasicBuy = 'BasicBuy',
+  BasicUpgrade = 'BasicUpgrade',
+  BasicItem = 'BasicItem',
+
   Target = 'Target',
   Use = 'Use',
   Dodge = 'Dodge',
@@ -13,9 +18,9 @@ export enum HotKeyType {
 }
 
 export const Basic: any = {
-  HeroAbilities: { code: 'cmdselectskill', types: [HotKeyType.Basic] },
-  NightElfBuild: { code: 'cmdbuildnightelf', types: [HotKeyType.Basic] },
-  UndeadBuild: { code: 'cmdbuildundead', types: [HotKeyType.Basic] },
+  HeroAbilities: { code: 'cmdselectskill', types: [HotKeyType.BasicAbility] },
+  NightElfBuild: { code: 'cmdbuildnightelf', types: [HotKeyType.BasicBuild] },
+  UndeadBuild: { code: 'cmdbuildundead', types: [HotKeyType.BasicBuild] },
   TargetDummy: 'TARGETDUMMY',
   MissileDodge: 'MISSILEDODGE',
   Miss: 'MISS',
@@ -31,43 +36,43 @@ const BasicInventory: any = {
   Item2: {
     'Potion of Lesser Invulnerability': {
       code: 'itm2',
-      types: [HotKeyType.Basic, HotKeyType.Dodge],
+      types: [HotKeyType.BasicItem, HotKeyType.Dodge],
     },
     'Potion of Greater Invulnerability': {
       code: 'itm2',
-      types: [HotKeyType.Basic, HotKeyType.Dodge],
+      types: [HotKeyType.BasicItem, HotKeyType.Dodge],
     },
     'Potion of Healing': {
       code: 'itm2',
-      types: [HotKeyType.Basic],
+      types: [HotKeyType.BasicItem],
     },
     'Potion of Greater Healing': {
       code: 'itm2',
-      types: [HotKeyType.Basic],
+      types: [HotKeyType.BasicItem],
     },
     Healthstone: {
       code: 'itm2',
-      types: [HotKeyType.Basic],
+      types: [HotKeyType.BasicItem],
     },
   },
   Item3: {
     'Potion of Mana': {
       code: 'itm3',
-      types: [HotKeyType.Basic],
+      types: [HotKeyType.BasicItem],
     },
     'Potion of Greater Mana': {
       code: 'itm3',
-      types: [HotKeyType.Basic],
+      types: [HotKeyType.BasicItem],
     },
   },
   Item4: {
     'Potion of Lesser Invulnerability': {
       code: 'itm4',
-      types: [HotKeyType.Basic, HotKeyType.Dodge],
+      types: [HotKeyType.BasicItem, HotKeyType.Dodge],
     },
     'Scroll Of Healing': {
       code: 'itm4',
-      types: [HotKeyType.Basic],
+      types: [HotKeyType.BasicItem],
     },
   },
 };
@@ -80,11 +85,14 @@ export const NightElfInventory: any = {
 export const NightElf: any = {
   'Demon Hunter': {
     'Mana Burn': { code: 'aemb', types: [HotKeyType.Target, HotKeyType.Train] },
-    Immolation: { code: 'aeim', types: [HotKeyType.Basic, HotKeyType.Train] },
+    Immolation: {
+      code: 'aeim',
+      types: [HotKeyType.BasicAbility, HotKeyType.Train],
+    },
     Evasion: { code: 'aeev', types: [HotKeyType.Train] },
     Metamorphosis: {
       code: 'aeme',
-      types: [HotKeyType.Basic, HotKeyType.Train],
+      types: [HotKeyType.BasicAbility, HotKeyType.Train],
     },
   },
   'Keeper Of The Grove': {
@@ -97,27 +105,33 @@ export const NightElf: any = {
       types: [HotKeyType.Target, HotKeyType.Train],
     },
     'Thorns Aura': { code: 'aeah', types: [HotKeyType.Train] },
-    Tranquility: { code: 'aetq', types: [HotKeyType.Basic, HotKeyType.Train] },
+    Tranquility: {
+      code: 'aetq',
+      types: [HotKeyType.BasicAbility, HotKeyType.Train],
+    },
   },
   'Priestess of the Moon': {
-    Scout: { code: 'aest', types: [HotKeyType.Basic, HotKeyType.Train] },
+    Scout: { code: 'aest', types: [HotKeyType.BasicAbility, HotKeyType.Train] },
     'Searing Arrows': { code: 'ahfa', types: [HotKeyType.Train] },
     'Trueshot Aura': { code: 'aear', types: [HotKeyType.Train] },
-    Starfall: { code: 'aesf', types: [HotKeyType.Basic] },
-    Shadowmeld: { code: 'ashm', types: [HotKeyType.Basic] },
+    Starfall: { code: 'aesf', types: [HotKeyType.BasicAbility] },
+    Shadowmeld: { code: 'ashm', types: [HotKeyType.BasicAbility] },
   },
   Warden: {
     'Fan of Knives': {
       code: 'aefk',
-      types: [HotKeyType.Basic, HotKeyType.Train],
+      types: [HotKeyType.BasicAbility, HotKeyType.Train],
     },
     Blink: { code: 'aebl', types: [HotKeyType.Target, HotKeyType.Train] },
     'Shadow Strike': {
       code: 'aesh',
       types: [HotKeyType.Target, HotKeyType.Train],
     },
-    Vengeance: { code: 'aesv', types: [HotKeyType.Basic, HotKeyType.Train] },
-    Shadowmeld: { code: 'ashm', types: [HotKeyType.Basic] },
+    Vengeance: {
+      code: 'aesv',
+      types: [HotKeyType.BasicAbility, HotKeyType.Train],
+    },
+    Shadowmeld: { code: 'ashm', types: [HotKeyType.BasicAbility] },
   },
 
   Wisp: {
@@ -135,149 +149,152 @@ export const NightElf: any = {
     'Ancient Of Wonders': { code: 'eden', types: [HotKeyType.NightElfBuild] },
   },
   Archer: {
-    'Mount Hippogryph': { code: 'aco2', types: [HotKeyType.Basic] },
-    Shadowmeld: { code: 'ashm', types: [HotKeyType.Basic] },
+    'Mount Hippogryph': { code: 'aco2', types: [HotKeyType.BasicAbility] },
+    Shadowmeld: { code: 'ashm', types: [HotKeyType.BasicAbility] },
   },
   Huntress: {
     Sentinel: { code: 'aesn', types: [HotKeyType.Target] },
-    Shadowmeld: { code: 'ashm', types: [HotKeyType.Basic] },
+    Shadowmeld: { code: 'ashm', types: [HotKeyType.BasicAbility] },
   },
   'Glaive Thrower': {
     'Attack Ground': { code: 'cmdattackground', types: [HotKeyType.Target] },
   },
   Dryad: { 'Abolish Magic': { code: 'aadm', types: [HotKeyType.Target] } },
   'Druid Of The Claw': {
-    Roar: { code: 'aroa', types: [HotKeyType.Basic] },
+    Roar: { code: 'aroa', types: [HotKeyType.BasicAbility] },
     Rejuvenation: { code: 'arej', types: [HotKeyType.Target] },
-    'Bear Form': { code: 'abrf', types: [HotKeyType.Basic] },
+    'Bear Form': { code: 'abrf', types: [HotKeyType.BasicAbility] },
   },
   'Mountain Giant': {
-    Taunt: { code: 'atau', types: [HotKeyType.Basic] },
+    Taunt: { code: 'atau', types: [HotKeyType.BasicAbility] },
     'War Club': { code: 'agra', types: [HotKeyType.Target] },
   },
   Hippogryph: {
-    'Pick up Archer': { code: 'aco3', types: [HotKeyType.Basic] },
+    'Pick up Archer': { code: 'aco3', types: [HotKeyType.BasicAbility] },
   },
   'Hippogryph Rider': {
-    'Dismount Archer': { code: 'adec', types: [HotKeyType.Basic] },
+    'Dismount Archer': { code: 'adec', types: [HotKeyType.BasicAbility] },
   },
   'Druid Of The Talon': {
     Cyclone: { code: 'acyc', types: [HotKeyType.Target] },
     'Faerie Fire': { code: 'afae', types: [HotKeyType.Target] },
-    'Storm Crow Form': { code: 'arav', types: [HotKeyType.Basic] },
+    'Storm Crow Form': { code: 'arav', types: [HotKeyType.BasicAbility] },
   },
   'Faerie Dragon': {
-    'Mana Flare': { code: 'amfl', types: [HotKeyType.Basic] },
-    'Phase Shift': { code: 'apsh', types: [HotKeyType.Basic] },
+    'Mana Flare': { code: 'amfl', types: [HotKeyType.BasicAbility] },
+    'Phase Shift': { code: 'apsh', types: [HotKeyType.BasicAbility] },
   },
 
   'Tree of Life': {
-    Wisp: { code: 'ewsp', types: [HotKeyType.Basic] },
-    'Nature’s Blessing': { code: 'renb', types: [HotKeyType.Basic] },
-    Backpack: { code: 'repm', types: [HotKeyType.Basic] },
-    'Tree of Ages': { code: 'etoa', types: [HotKeyType.Basic] },
+    Wisp: { code: 'ewsp', types: [HotKeyType.BasicBuild] },
+    'Nature’s Blessing': { code: 'renb', types: [HotKeyType.BasicUpgrade] },
+    Backpack: { code: 'repm', types: [HotKeyType.BasicUpgrade] },
+    'Tree of Ages': { code: 'etoa', types: [HotKeyType.BasicUpgrade] },
     'Entangle Gold Mine': { code: 'aent', types: [HotKeyType.Target] },
-    Uproot: { code: 'aro1', types: [HotKeyType.Basic] },
-    Root: { code: 'aro1', types: [HotKeyType.Basic] },
+    Uproot: { code: 'aro1', types: [HotKeyType.BasicAbility] },
+    Root: { code: 'aro1', types: [HotKeyType.BasicAbility] },
     'Eat Tree': { code: 'aeat', types: [HotKeyType.Target] },
   },
   'Tree of Ages': {
-    'Tree of Life': { code: 'etoa', types: [HotKeyType.Basic] },
+    'Tree of Life': { code: 'etoa', types: [HotKeyType.BasicUpgrade] },
   },
   'Entangled Gold Mine': {
-    'Load Wisp': { code: 'slo2', types: [HotKeyType.Basic] },
-    'Unload All': { code: 'adri', types: [HotKeyType.Basic] },
+    'Load Wisp': { code: 'slo2', types: [HotKeyType.BasicAbility] },
+    'Unload All': { code: 'adri', types: [HotKeyType.BasicAbility] },
   },
   'Ancient Of War': {
-    Archer: { code: 'earc', types: [HotKeyType.Basic] },
-    Huntress: { code: 'esen', types: [HotKeyType.Basic] },
-    'Glaive Thrower': { code: 'ebal', types: [HotKeyType.Basic] },
-    Marksmanship: { code: 'remk', types: [HotKeyType.Basic] },
-    'Moon Glaive': { code: 'remg', types: [HotKeyType.Basic] },
-    'Improved Bows': { code: 'reib', types: [HotKeyType.Basic] },
-    Sentinel: { code: 'resc', types: [HotKeyType.Basic] },
-    'Vorpal Blades': { code: 'repb', types: [HotKeyType.Basic] },
-    Uproot: { code: 'aro1', types: [HotKeyType.Basic] },
-    Root: { code: 'aro1', types: [HotKeyType.Basic] },
-    'Eat Tree': { code: 'aeat', types: [HotKeyType.Target] },
+    Archer: { code: 'earc', types: [HotKeyType.BasicBuild] },
+    Huntress: { code: 'esen', types: [HotKeyType.BasicBuild] },
+    'Glaive Thrower': { code: 'ebal', types: [HotKeyType.BasicBuild] },
+    Marksmanship: { code: 'remk', types: [HotKeyType.BasicUpgrade] },
+    'Moon Glaive': { code: 'remg', types: [HotKeyType.BasicUpgrade] },
+    'Improved Bows': { code: 'reib', types: [HotKeyType.BasicUpgrade] },
+    Sentinel: { code: 'resc', types: [HotKeyType.BasicUpgrade] },
+    'Vorpal Blades': { code: 'repb', types: [HotKeyType.BasicUpgrade] },
+    Uproot: { code: 'aro1', types: [HotKeyType.BasicAbility] },
+    Root: { code: 'aro1', types: [HotKeyType.BasicAbility] },
+    'Eat Tree': { code: 'aeat', types: [HotKeyType.BasicAbility] },
   },
   'Hunter’s Hall': {
-    'Strength of the Moon': { code: 'resm', types: [HotKeyType.Basic] },
-    'Strength of the Wild': { code: 'resw', types: [HotKeyType.Basic] },
-    'Moon Armor': { code: 'rema', types: [HotKeyType.Basic] },
-    'Reinforced Hides': { code: 'rerh', types: [HotKeyType.Basic] },
-    Ultravision: { code: 'reuv', types: [HotKeyType.Basic] },
-    'Well Spring': { code: 'rews', types: [HotKeyType.Basic] },
+    'Strength of the Moon': { code: 'resm', types: [HotKeyType.BasicUpgrade] },
+    'Strength of the Wild': { code: 'resw', types: [HotKeyType.BasicUpgrade] },
+    'Moon Armor': { code: 'rema', types: [HotKeyType.BasicUpgrade] },
+    'Reinforced Hides': { code: 'rerh', types: [HotKeyType.BasicUpgrade] },
+    Ultravision: { code: 'reuv', types: [HotKeyType.BasicUpgrade] },
+    'Well Spring': { code: 'rews', types: [HotKeyType.BasicUpgrade] },
   },
   'Moon Well': {
-    'Replenish Mana and Life': { code: 'ambt', types: [HotKeyType.Basic] },
+    'Replenish Mana and Life': {
+      code: 'ambt',
+      types: [HotKeyType.BasicAbility],
+    },
   },
   'Altar of Elders': {
-    'Demon Hunter': { code: 'edem', types: [HotKeyType.Basic] },
-    'Keeper of the Grove': { code: 'ekee', types: [HotKeyType.Basic] },
-    'Priestess of the Moon': { code: 'emoo', types: [HotKeyType.Basic] },
-    Warden: { code: 'ewar', types: [HotKeyType.Basic] },
+    'Demon Hunter': { code: 'edem', types: [HotKeyType.BasicBuild] },
+    'Keeper of the Grove': { code: 'ekee', types: [HotKeyType.BasicBuild] },
+    'Priestess of the Moon': { code: 'emoo', types: [HotKeyType.BasicBuild] },
+    Warden: { code: 'ewar', types: [HotKeyType.BasicBuild] },
   },
   'Ancient of Lore': {
-    Dryad: { code: 'edry', types: [HotKeyType.Basic] },
-    'Druid of the Claw': { code: 'edoc', types: [HotKeyType.Basic] },
-    'Mountain Giant': { code: 'emtg', types: [HotKeyType.Basic] },
-    'Abolish Magic': { code: 'resi', types: [HotKeyType.Basic] },
+    Dryad: { code: 'edry', types: [HotKeyType.BasicBuild] },
+    'Druid of the Claw': { code: 'edoc', types: [HotKeyType.BasicBuild] },
+    'Mountain Giant': { code: 'emtg', types: [HotKeyType.BasicBuild] },
+    'Abolish Magic': { code: 'resi', types: [HotKeyType.BasicUpgrade] },
     'Druid of the Claw Adept Training': {
       code: 'redc',
-      types: [HotKeyType.Basic],
+      types: [HotKeyType.BasicUpgrade],
     },
     'Druid of the Claw Master Training': {
       code: 'redc',
-      types: [HotKeyType.Basic],
+      types: [HotKeyType.BasicUpgrade],
     },
-    'Resistant Skin': { code: 'rers', types: [HotKeyType.Basic] },
-    'Hardened Skin': { code: 'rehs', types: [HotKeyType.Basic] },
-    'Mark of the Claw': { code: 'reeb', types: [HotKeyType.Basic] },
-    Uproot: { code: 'aro1', types: [HotKeyType.Basic] },
-    Root: { code: 'aro1', types: [HotKeyType.Basic] },
+    'Resistant Skin': { code: 'rers', types: [HotKeyType.BasicUpgrade] },
+    'Hardened Skin': { code: 'rehs', types: [HotKeyType.BasicUpgrade] },
+    'Mark of the Claw': { code: 'reeb', types: [HotKeyType.BasicUpgrade] },
+    Uproot: { code: 'aro1', types: [HotKeyType.BasicAbility] },
+    Root: { code: 'aro1', types: [HotKeyType.BasicAbility] },
     'Eat Tree': { code: 'aeat', types: [HotKeyType.Target] },
   },
   'Ancient of Wind': {
-    Hippogryph: { code: 'ehip', types: [HotKeyType.Basic] },
-    'Druid of the Talon': { code: 'edot', types: [HotKeyType.Basic] },
-    'Faerie Dragon': { code: 'efdr', types: [HotKeyType.Basic] },
+    Hippogryph: { code: 'ehip', types: [HotKeyType.BasicBuild] },
+    'Druid of the Talon': { code: 'edot', types: [HotKeyType.BasicBuild] },
+    'Faerie Dragon': { code: 'efdr', types: [HotKeyType.BasicBuild] },
     'Druid of the Talon Adept Training': {
       code: 'redt',
-      types: [HotKeyType.Basic],
+      types: [HotKeyType.BasicUpgrade],
     },
     'Druid of the Talon Master Training': {
       code: 'redt',
-      types: [HotKeyType.Basic],
+      types: [HotKeyType.BasicUpgrade],
     },
-    'Mark of the Talon': { code: 'reec', types: [HotKeyType.Basic] },
-    Uproot: { code: 'aro1', types: [HotKeyType.Basic] },
-    Root: { code: 'aro1', types: [HotKeyType.Basic] },
+    'Mark of the Talon': { code: 'reec', types: [HotKeyType.BasicUpgrade] },
+    Uproot: { code: 'aro1', types: [HotKeyType.BasicAbility] },
+    Root: { code: 'aro1', types: [HotKeyType.BasicAbility] },
     'Eat Tree': { code: 'aeat', types: [HotKeyType.Target] },
   },
   'Chimaera Roost': {
-    Chimaera: { code: 'echm', types: [HotKeyType.Basic] },
-    'Corrosive Breath': { code: 'recb', types: [HotKeyType.Basic] },
+    Chimaera: { code: 'echm', types: [HotKeyType.BasicBuild] },
+    'Corrosive Breath': { code: 'recb', types: [HotKeyType.BasicUpgrade] },
   },
   'Ancient of Wonders': {
-    Moonstone: { code: 'moon', types: [HotKeyType.Basic] },
-    'Lesser Clarity Potion': { code: 'plcl', types: [HotKeyType.Basic] },
-    'Dust of Appearance': { code: 'dust', types: [HotKeyType.Basic] },
-    'Potion of Healing': { code: 'phea', types: [HotKeyType.Basic] },
-    'Potion of Mana': { code: 'pman', types: [HotKeyType.Basic] },
-    'Scroll of Town Portal': { code: 'stwp', types: [HotKeyType.Basic] },
-    'Staff of Preservation': { code: 'spre', types: [HotKeyType.Basic] },
-    'Orb of Venom': { code: 'oven', types: [HotKeyType.Basic] },
-    'Anti-magic Potion': { code: 'pams', types: [HotKeyType.Basic] },
-    Uproot: { code: 'aro1', types: [HotKeyType.Basic] },
-    Root: { code: 'aro1', types: [HotKeyType.Basic] },
+    Moonstone: { code: 'moon', types: [HotKeyType.BasicBuy] },
+    'Lesser Clarity Potion': { code: 'plcl', types: [HotKeyType.BasicBuy] },
+    'Dust of Appearance': { code: 'dust', types: [HotKeyType.BasicBuy] },
+    'Potion of Healing': { code: 'phea', types: [HotKeyType.BasicBuy] },
+    'Potion of Mana': { code: 'pman', types: [HotKeyType.BasicBuy] },
+    'Scroll of Town Portal': { code: 'stwp', types: [HotKeyType.BasicBuy] },
+    'Staff of Preservation': { code: 'spre', types: [HotKeyType.BasicBuy] },
+    'Orb of Venom': { code: 'oven', types: [HotKeyType.BasicBuy] },
+    'Anti-magic Potion': { code: 'pams', types: [HotKeyType.BasicBuy] },
+    Uproot: { code: 'aro1', types: [HotKeyType.BasicAbility] },
+    Root: { code: 'aro1', types: [HotKeyType.BasicAbility] },
     'Eat Tree': { code: 'aeat', types: [HotKeyType.Target] },
   },
 };
 
 export const UndeadInventory: any = {
   Item2: {
-    'Rod Of Necromancy': { code: 'itm2', types: [HotKeyType.Basic] },
+    'Rod Of Necromancy': { code: 'itm2', types: [HotKeyType.BasicItem] },
   },
   Item3: {
     'Ritual Dagger': { code: 'itm3', types: [HotKeyType.Target] },
@@ -301,7 +318,7 @@ export const Undead: any = {
     'Unholy Aura': { code: 'auau', types: [HotKeyType.Train] },
     'Animate Dead': {
       code: 'auan',
-      types: [HotKeyType.Basic, HotKeyType.Train],
+      types: [HotKeyType.BasicAbility, HotKeyType.Train],
     },
   },
   Dreadlord: {
@@ -375,26 +392,26 @@ export const Undead: any = {
     'Tomb of Relics': { code: 'utom', types: [HotKeyType.UndeadBuild] },
   },
   Ghoul: {
-    Cannibalize: { code: 'acan', types: [HotKeyType.Basic] },
+    Cannibalize: { code: 'acan', types: [HotKeyType.BasicAbility] },
     Gather: { code: 'ahrl', types: [HotKeyType.Target] },
   },
   'Crypt Fiend': {
-    Burrow: { code: 'abur', types: [HotKeyType.Basic] },
+    Burrow: { code: 'abur', types: [HotKeyType.BasicAbility] },
     Web: { code: 'aweb', types: [HotKeyType.Target] },
   },
   Gargoyle: {
-    'Stone Form': { code: 'astn', types: [HotKeyType.Basic] },
+    'Stone Form': { code: 'astn', types: [HotKeyType.BasicAbility] },
   },
   Abomination: {
-    Cannibalize: { code: 'acan', types: [HotKeyType.Basic] },
+    Cannibalize: { code: 'acan', types: [HotKeyType.BasicAbility] },
   },
   'Meat Wagon': {
     'Attack Ground': { code: 'cmdattackground', types: [HotKeyType.Target] },
     'Load Corpse': { code: 'amel', types: [HotKeyType.Target] },
-    'Drop All Corpses': { code: 'amed', types: [HotKeyType.Basic] },
+    'Drop All Corpses': { code: 'amed', types: [HotKeyType.BasicAbility] },
   },
   Necromancer: {
-    'Raise Dead': { code: 'arai', types: [HotKeyType.Basic] },
+    'Raise Dead': { code: 'arai', types: [HotKeyType.BasicAbility] },
     'Unholy Frenzy': { code: 'auhf', types: [HotKeyType.Target] },
     Cripple: { code: 'acri', types: [HotKeyType.Target] },
   },
@@ -404,82 +421,94 @@ export const Undead: any = {
     Possession: { code: 'aps2', types: [HotKeyType.Target] },
   },
   'Obsidian Statue': {
-    'Essence Of Blight': { code: 'arpl', types: [HotKeyType.Basic] },
-    'Spirit Touch': { code: 'arpm', types: [HotKeyType.Basic] },
-    Destroyer: { code: 'ubsp', types: [HotKeyType.Basic] },
+    'Essence Of Blight': { code: 'arpl', types: [HotKeyType.BasicAbility] },
+    'Spirit Touch': { code: 'arpm', types: [HotKeyType.BasicAbility] },
+    Destroyer: { code: 'ubsp', types: [HotKeyType.BasicAbility] },
   },
   Destroyer: {
     'Devour Magic': { code: 'advm', types: [HotKeyType.Target] },
     'Absorb Mana': { code: 'aabs', types: [HotKeyType.Target] },
   },
   Necropolis: {
-    Acolyte: { code: 'uaco', types: [HotKeyType.Basic] },
-    Backpack: { code: 'rupm', types: [HotKeyType.Basic] },
-    'Halls Of The Dead': { code: 'unp1', types: [HotKeyType.Basic] },
+    Acolyte: { code: 'uaco', types: [HotKeyType.BasicBuild] },
+    Backpack: { code: 'rupm', types: [HotKeyType.BasicUpgrade] },
+    'Halls Of The Dead': { code: 'unp1', types: [HotKeyType.BasicUpgrade] },
   },
   'Halls Of The Dead': {
-    'Black Citadel': { code: 'unp2', types: [HotKeyType.Basic] },
+    'Black Citadel': { code: 'unp2', types: [HotKeyType.BasicUpgrade] },
   },
   Crypt: {
-    Ghoul: { code: 'ugho', types: [HotKeyType.Basic] },
-    'Crypt Fiend': { code: 'ucry', types: [HotKeyType.Basic] },
-    Gargoyle: { code: 'ugar', types: [HotKeyType.Basic] },
-    Cannibalize: { code: 'ruac', types: [HotKeyType.Basic] },
-    Web: { code: 'ruwb', types: [HotKeyType.Basic] },
-    'Ghoul Frenzy': { code: 'rugf', types: [HotKeyType.Basic] },
-    'Stone Form': { code: 'rusf', types: [HotKeyType.Basic] },
-    Burrow: { code: 'rubu', types: [HotKeyType.Basic] },
+    Ghoul: { code: 'ugho', types: [HotKeyType.BasicBuild] },
+    'Crypt Fiend': { code: 'ucry', types: [HotKeyType.BasicBuild] },
+    Gargoyle: { code: 'ugar', types: [HotKeyType.BasicBuild] },
+    Cannibalize: { code: 'ruac', types: [HotKeyType.BasicUpgrade] },
+    Web: { code: 'ruwb', types: [HotKeyType.BasicUpgrade] },
+    'Ghoul Frenzy': { code: 'rugf', types: [HotKeyType.BasicUpgrade] },
+    'Stone Form': { code: 'rusf', types: [HotKeyType.BasicUpgrade] },
+    Burrow: { code: 'rubu', types: [HotKeyType.BasicUpgrade] },
   },
   Graveyard: {
-    'Unholy Strength': { code: 'rume', types: [HotKeyType.Basic] },
-    'Unholy Armor': { code: 'ruar', types: [HotKeyType.Basic] },
-    'Creature Attack': { code: 'rura', types: [HotKeyType.Basic] },
-    'Creature Carapace': { code: 'rucr', types: [HotKeyType.Basic] },
+    'Unholy Strength': { code: 'rume', types: [HotKeyType.BasicUpgrade] },
+    'Unholy Armor': { code: 'ruar', types: [HotKeyType.BasicUpgrade] },
+    'Creature Attack': { code: 'rura', types: [HotKeyType.BasicUpgrade] },
+    'Creature Carapace': { code: 'rucr', types: [HotKeyType.BasicUpgrade] },
   },
   Ziggurat: {
-    'Spirit Tower': { code: 'uzg1', types: [HotKeyType.Basic] },
-    'Nerubian Tower': { code: 'uzg2', types: [HotKeyType.Basic] },
+    'Spirit Tower': { code: 'uzg1', types: [HotKeyType.BasicUpgrade] },
+    'Nerubian Tower': { code: 'uzg2', types: [HotKeyType.BasicUpgrade] },
   },
   'Altar of Darkness': {
-    'Death Knight': { code: 'udea', types: [HotKeyType.Basic] },
-    Lich: { code: 'ulic', types: [HotKeyType.Basic] },
-    Dreadlord: { code: 'udre', types: [HotKeyType.Basic] },
-    'Crypt Lord': { code: 'ucrl', types: [HotKeyType.Basic] },
+    'Death Knight': { code: 'udea', types: [HotKeyType.BasicBuild] },
+    Lich: { code: 'ulic', types: [HotKeyType.BasicBuild] },
+    Dreadlord: { code: 'udre', types: [HotKeyType.BasicBuild] },
+    'Crypt Lord': { code: 'ucrl', types: [HotKeyType.BasicBuild] },
   },
   'Temple of the Damned': {
-    Necromancer: { code: 'unec', types: [HotKeyType.Basic] },
-    Banshee: { code: 'uban', types: [HotKeyType.Basic] },
-    'Necromancer Adept Training': { code: 'rune', types: [HotKeyType.Basic] },
-    'Necromancer Master Training': { code: 'rune', types: [HotKeyType.Basic] },
-    'Banshee Adept Training': { code: 'ruba', types: [HotKeyType.Basic] },
-    'Banshee Master Training': { code: 'ruba', types: [HotKeyType.Basic] },
-    'Skeletal Mastery': { code: 'rusm', types: [HotKeyType.Basic] },
+    Necromancer: { code: 'unec', types: [HotKeyType.BasicBuild] },
+    Banshee: { code: 'uban', types: [HotKeyType.BasicBuild] },
+    'Necromancer Adept Training': {
+      code: 'rune',
+      types: [HotKeyType.BasicUpgrade],
+    },
+    'Necromancer Master Training': {
+      code: 'rune',
+      types: [HotKeyType.BasicUpgrade],
+    },
+    'Banshee Adept Training': {
+      code: 'ruba',
+      types: [HotKeyType.BasicUpgrade],
+    },
+    'Banshee Master Training': {
+      code: 'ruba',
+      types: [HotKeyType.BasicUpgrade],
+    },
+    'Skeletal Mastery': { code: 'rusm', types: [HotKeyType.BasicUpgrade] },
   },
   Slaughterhouse: {
-    'Meat Wagon': { code: 'umtw', types: [HotKeyType.Basic] },
-    Abomination: { code: 'uabo', types: [HotKeyType.Basic] },
-    'Obsidian Statue': { code: 'uobs', types: [HotKeyType.Basic] },
-    'Disease Cloud': { code: 'rupc', types: [HotKeyType.Basic] },
-    'Destroyer Form': { code: 'rusp', types: [HotKeyType.Basic] },
-    'Exhume Corpses': { code: 'ruex', types: [HotKeyType.Basic] },
+    'Meat Wagon': { code: 'umtw', types: [HotKeyType.BasicBuild] },
+    Abomination: { code: 'uabo', types: [HotKeyType.BasicBuild] },
+    'Obsidian Statue': { code: 'uobs', types: [HotKeyType.BasicBuild] },
+    'Disease Cloud': { code: 'rupc', types: [HotKeyType.BasicUpgrade] },
+    'Destroyer Form': { code: 'rusp', types: [HotKeyType.BasicUpgrade] },
+    'Exhume Corpses': { code: 'ruex', types: [HotKeyType.BasicUpgrade] },
   },
   'Sacrificial Pit': {
     Sacrifice: { code: 'asac', types: [HotKeyType.Target] },
   },
   Boneyard: {
-    'Frost Wyrm': { code: 'ufro', types: [HotKeyType.Basic] },
-    'Freezing Breath': { code: 'rufb', types: [HotKeyType.Basic] },
+    'Frost Wyrm': { code: 'ufro', types: [HotKeyType.BasicBuild] },
+    'Freezing Breath': { code: 'rufb', types: [HotKeyType.BasicUpgrade] },
   },
   'Tomb of Relics': {
-    'Rod of Necromancy': { code: 'rnec', types: [HotKeyType.Basic] },
-    'Ritual Dagger': { code: 'ritd', types: [HotKeyType.Basic] },
-    'Sacrificial Skull': { code: 'skul', types: [HotKeyType.Basic] },
-    'Dust of Appearance': { code: 'dust', types: [HotKeyType.Basic] },
-    'Potion of Healing': { code: 'phea', types: [HotKeyType.Basic] },
-    'Potion of Mana': { code: 'pman', types: [HotKeyType.Basic] },
-    'Scroll of Town Portal': { code: 'stwp', types: [HotKeyType.Basic] },
-    'Orb of Corruption': { code: 'ocor', types: [HotKeyType.Basic] },
-    'Wand of Negation': { code: 'wneg', types: [HotKeyType.Basic] },
+    'Rod of Necromancy': { code: 'rnec', types: [HotKeyType.BasicBuy] },
+    'Ritual Dagger': { code: 'ritd', types: [HotKeyType.BasicBuy] },
+    'Sacrificial Skull': { code: 'skul', types: [HotKeyType.BasicBuy] },
+    'Dust of Appearance': { code: 'dust', types: [HotKeyType.BasicBuy] },
+    'Potion of Healing': { code: 'phea', types: [HotKeyType.BasicBuy] },
+    'Potion of Mana': { code: 'pman', types: [HotKeyType.BasicBuy] },
+    'Scroll of Town Portal': { code: 'stwp', types: [HotKeyType.BasicBuy] },
+    'Orb of Corruption': { code: 'ocor', types: [HotKeyType.BasicBuy] },
+    'Wand of Negation': { code: 'wneg', types: [HotKeyType.BasicBuy] },
   },
 };
 
@@ -512,7 +541,10 @@ export const getCodeFromAction = (name: string, action: string) => {
 
 export const createActions = (action: string, type: HotKeyType) => {
   switch (type) {
-    case HotKeyType.Basic:
+    case HotKeyType.BasicAbility:
+    case HotKeyType.BasicBuild:
+    case HotKeyType.BasicBuy:
+    case HotKeyType.BasicUpgrade:
       return [action];
     case HotKeyType.Use:
       return [action, action];
@@ -534,6 +566,7 @@ export const createPuzzles = (name: string) => {
     _map(actions?.[name], (data, action) => {
       return data.types.map((t: HotKeyType) => ({
         name,
+        type: t,
         actions: createActions(action, t),
       }));
     }),
