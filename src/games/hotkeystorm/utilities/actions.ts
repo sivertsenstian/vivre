@@ -277,7 +277,7 @@ export const NightElf: any = {
 
 export const UndeadInventory: any = {
   Item2: {
-    'Rod Of Necromancy': { code: 'itm2', types: [HotKeyType.Target] },
+    'Rod Of Necromancy': { code: 'itm2', types: [HotKeyType.Basic] },
   },
   Item3: {
     'Ritual Dagger': { code: 'itm3', types: [HotKeyType.Target] },
