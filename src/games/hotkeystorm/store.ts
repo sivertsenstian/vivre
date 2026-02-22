@@ -53,7 +53,7 @@ export const useHotKeyStormStore = defineStore('hotkeystorm', () => {
           data.value?.inventory?.[code] ??
           result?.[key] ??
           code;
-        return v.toUpperCase();
+        return v?.split(',')?.[0]?.toUpperCase();
       } catch (error) {
         console.error(error);
       }
