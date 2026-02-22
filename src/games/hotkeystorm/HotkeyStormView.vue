@@ -141,7 +141,6 @@ const step = () => {
     });
 
     setTimeout(() => {
-      points.value = 0;
       captured.value = undefined;
       queue.value = [];
       combo.value = 0;

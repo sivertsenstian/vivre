@@ -119,7 +119,7 @@ export const NightElf: any = {
     'War Club': { code: 'agra', types: [HotKeyType.Target] },
   },
   Hippogryph: {
-    'Pick up Archer': { code: 'aco3', types: [HotKeyType.Target] },
+    'Pick up Archer': { code: 'aco3', types: [HotKeyType.Basic] },
   },
   'Hippogryph Rider': {
     'Dismount Archer': { code: 'adec', types: [HotKeyType.Basic] },
@@ -138,11 +138,14 @@ export const NightElf: any = {
     Wisp: { code: 'ewsp', types: [HotKeyType.Basic] },
     'Nature’s Blessing': { code: 'renb', types: [HotKeyType.Basic] },
     Backpack: { code: 'repm', types: [HotKeyType.Basic] },
-    'Upgrade to Tree of Ages': { code: 'etoa', types: [HotKeyType.Basic] },
+    'Tree of Ages': { code: 'etoa', types: [HotKeyType.Basic] },
     'Entangle Gold Mine': { code: 'aent', types: [HotKeyType.Target] },
     Uproot: { code: 'aro1', types: [HotKeyType.Basic] },
     Root: { code: 'aro1', types: [HotKeyType.Basic] },
     'Eat Tree': { code: 'aeat', types: [HotKeyType.Target] },
+  },
+  'Tree of Ages': {
+    'Tree of Life': { code: 'etoa', types: [HotKeyType.Basic] },
   },
   'Entangled Gold Mine': {
     'Load Wisp': { code: 'slo2', types: [HotKeyType.Basic] },
