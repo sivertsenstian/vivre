@@ -2,136 +2,61 @@
 import { computed, onMounted, ref } from 'vue';
 import _sample from 'lodash/sample';
 import ConfettiExplosion from 'vue-confetti-explosion';
-import _keys from 'lodash/keys';
 import moment from 'moment';
 import Command from './components/Command.vue';
-import _range from 'lodash/range';
+import {
+  actionToName,
+  Basic,
+  createPuzzles,
+  night_elf_actions,
+} from './utilities/actions';
+import { layouts } from './utilities/data';
+import { useHotKeyStormStore } from '@/games/hotkeystorm/store.ts';
+import InventoryCommand from '@/games/hotkeystorm/components/InventoryCommand.vue';
+import { getIconUrl } from '@/utilities/api.ts';
+import _keys from 'lodash/keys';
+import RaceIcon from '@/components/RaceIcon.vue';
+import { Race } from '@/stores/races.ts';
+import correctAudio from './sounds/correct.mp3';
+import solvedAudio from './sounds/solved.mp3';
+import incorrectAudio from './sounds/incorrect.mp3';
+import doneAudio from './sounds/done.mp3';
+import startAudio from './sounds/start.mp3';
+import EditInventoryInput from '@/games/hotkeystorm/components/EditInventoryInput.vue';
 
-const toImg = (instruction: string) => {
-  return `/icons/btn${String(instruction ?? '')
-    .replace(/ /g, '')
-    .replace(/\//g, '')
-    .replace(/’/g, '')
-    .replace(/'/g, '')
-    .toLowerCase()}.jpg`;
-};
+const store = useHotKeyStormStore();
 
-const toInstruction = (puzzle: string[]) => {
-  return puzzle?.join(' ') ?? '';
-};
-
-const items: any = {
-  L1: ['Scroll Of Town Portal'],
-  R1: [
-    'Staff Of Preservation',
-    'Rod Of Necromancy',
-    'Potion of Lesser Invulnerability',
-  ],
-  R2: ['Potion Of Healing', 'Scroll Of Healing'],
-};
-
-const hotkeys: any = {
-  TargetDummy: 'TargetDummy',
-  MissileDodge: 'MissileDodge',
-  Inventory: {
-    L1: 'ALT + Q',
-    // L2: 'ALT + A',
-    // L3: 'ALT + Z',
-    R1: 'ALT + W',
-    R2: 'ALT + S',
-    // R3: 'ALT + X',
-  },
-  Wisp: {
-    Renew: 'R',
-    Detonate: 'E',
-    NightElfBuild: 'Q',
-    'Moon Well': 'Q',
-    // 'Hunters Hall': 'E',
-    'Ancient Of War': 'W',
-    'Altar Of Elders': 'S',
-    // 'Tree Of Life': 'Z',
-    // 'Ancient Protector': 'A',
-    'Ancient Of Lore': 'D',
-    // 'Ancient Of Wind': 'F',
-    // 'Chimaera Roost': 'X',
-    'Ancient Of Wonders': 'C',
-  },
-  'Ancient Of War': {
-    Archer: 'Q',
-    Huntress: 'W',
-    // 'Glaive Thrower': 'E',
-    // Marksmanship: 'Z',
-    // 'Moon Glaive': 'X',
-    // 'Improved Bows': 'A',
-    // Sentinel: 'S',
-    // 'Vorpal Blades': 'D',
-    Uproot: 'R',
-  },
-  'Druid Of The Claw': {
-    Roar: 'R',
-    Rejuvenation: 'Q',
-    'Bear Form': 'W',
-  },
-  Dryad: { 'Abolish Magic': 'Q' },
-  'Keeper Of The Grove': {
-    'Entangling Roots': 'Q',
-    'Force Of Nature': 'W',
-    Tranquility: 'R',
-  },
-};
-
-const getItemPuzzle = (item: string) => {
-  switch (item) {
-    case 'Scroll Of Town Portal':
-    case 'Rod Of Necromancy':
-    case 'Staff Of Preservation':
-      return [item, 'TargetDummy'];
-    default:
-      return [item];
+const toInstruction = (actions: string[]) => {
+  const a = actions?.map(actionToName).join(' ') ?? '';
+  if (actions?.some((a) => a === 'TARGETDUMMY')) {
+    return `Cast ${a}`;
   }
+
+  return a;
 };
 
-const tests = [
-  ..._keys(hotkeys.Wisp)
-    .filter((k) => k !== 'NightElfBuild')
-    .map((k) => ({
-      target: 'Wisp',
-      puzzle:
-        k === 'Renew' || k === 'Detonate'
-          ? [k, 'TargetDummy']
-          : ['NightElfBuild', k],
-    })),
-  // ..._keys(hotkeys['Ancient Of War']).map((k) => ({
-  //   target: 'Ancient Of War',
-  //   puzzle: [k],
-  // })),
-  ..._keys(hotkeys['Druid Of The Claw']).map((k) => ({
-    target: 'Druid Of The Claw',
-    puzzle: k === 'Rejuvenation' ? [k, 'TargetDummy'] : [k],
-  })),
-  ..._keys(hotkeys['Dryad']).map((k) => ({
-    target: 'Dryad',
-    puzzle: [k, 'TargetDummy'],
-  })),
-  ..._keys(hotkeys['Keeper Of The Grove']).map((k) => ({
-    target: 'Keeper Of The Grove',
-    puzzle: k === 'Tranquility' ? [k] : [k, 'TargetDummy'],
-  })),
-  ..._keys(hotkeys['Inventory']).map((k) => ({
-    target: 'Inventory',
-    position: k,
-    puzzle: getItemPuzzle(_sample(items?.[k])),
-  })),
-  ..._range(0, 3).map(() => ({
-    target: 'Inventory',
-    position: Math.random() < 0.5 ? 'R1' : 'R2',
-    puzzle: ['MissileDodge', 'Potion of Lesser Invulnerability'],
-  })),
-];
+const audio = {
+  correct: new Audio(correctAudio),
+  incorrect: new Audio(incorrectAudio),
+  solved: new Audio(solvedAudio),
+  done: new Audio(doneAudio),
+  start: new Audio(startAudio),
+};
 
-const timer = ref(moment.duration(3, 'minutes'));
+const puzzles = _keys(night_elf_actions).map(createPuzzles).flat();
+const timer = ref(moment.duration(2, 'minutes'));
 
-const test = ref<any>({});
+enum Status {
+  Play = 'Play',
+  Waiting = 'Waiting',
+  Finished = 'Finished',
+}
+
+const status = ref(Status.Waiting);
+
+const editInventory = ref(false);
+
+const puzzle = ref<any>({});
 const history = ref<any[]>([]);
 
 const highscore = ref(0);
@@ -146,25 +71,25 @@ const queue = ref<string[]>([]);
 const captured = ref<string>();
 
 const next = () => {
-  test.value = _sample(
-    tests.filter((t) => t.puzzle.some((p, i) => p !== test.value?.puzzle?.[i])),
+  puzzle.value = _sample(
+    puzzles.filter((t) =>
+      t.actions?.some((p, i) => p !== puzzle.value?.actions?.[i]),
+    ),
   );
 };
 
-const answer = computed(
-  () =>
-    test.value?.puzzle?.map(
-      (p: string) =>
-        hotkeys[test.value.target]?.[p] ??
-        hotkeys[p] ??
-        hotkeys.Inventory[test.value?.position],
-    ) ?? [],
-);
+const answer = computed(() => {
+  return (
+    puzzle.value?.actions?.map((a: string) =>
+      store.getHotkeyFromAction(puzzle.value.name, a),
+    ) ?? []
+  );
+});
 
 const showTarget = computed(() => {
   return (
     queue.value?.every((q, i) => q === answer.value?.[i]) &&
-    answer.value?.[queue.value?.length] === 'TargetDummy'
+    answer.value?.[queue.value?.length] === Basic.TargetDummy
   );
 });
 
@@ -179,10 +104,12 @@ const step = () => {
     answer.value.length === queue.value.length &&
     queue.value.every((v, i) => v === answer.value[i])
   ) {
+    audio.solved.play();
+
     solved.value = true;
     history.value.push({
       success: true,
-      puzzle: test.value,
+      puzzle: puzzle.value,
       actual: queue.value,
       answer: answer.value,
     });
@@ -202,9 +129,11 @@ const step = () => {
 
   // INCORRECT
   if (queue.value.some((v, i) => v !== answer.value[i])) {
+    audio.incorrect.play();
+
     history.value.push({
       success: false,
-      puzzle: test.value,
+      puzzle: puzzle.value,
       actual: answer.value,
       answer: queue.value,
     });
@@ -224,6 +153,7 @@ const step = () => {
       reward.value = 0;
     }, 1000);
   } else {
+    audio.correct.play();
     // CORRECT
     combo.value++;
 
@@ -267,6 +197,10 @@ const captureInput = (event: KeyboardEvent) => {
   event.stopPropagation();
   event.stopImmediatePropagation();
 
+  if (status.value !== Status.Play) {
+    return;
+  }
+
   if (['Control', 'Alt', 'Shift'].some((v) => v === event.key)) {
     return;
   }
@@ -289,7 +223,9 @@ const captureInput = (event: KeyboardEvent) => {
     capture += 'SHIFT + ';
   }
 
-  capture += event.key.toUpperCase();
+  capture += event.code.toLowerCase().startsWith('numpad')
+    ? event.code.toUpperCase()
+    : event.key.toUpperCase();
 
   captured.value = capture;
   queue.value.push(capture);
@@ -307,28 +243,51 @@ window.addEventListener('keyup', captureInput);
 window.addEventListener('click', (event) => {
   event.preventDefault();
   event.stopImmediatePropagation();
-  queue.value.push('Miss');
+  if (status.value !== Status.Play) {
+    return;
+  }
+
+  queue.value.push(Basic.Miss);
   step();
 });
 
 const interval = ref();
+
 const stop = () => {
+  // reset ?
+  points.value = 0;
+  captured.value = undefined;
+  queue.value = [];
+  combo.value = 0;
+  comboGoal.value = 5;
+  comboStreak.value = 0;
+
+  audio.done.play();
+  status.value = Status.Finished;
   clearInterval(interval.value);
   history.value = [];
-  test.value = {};
-  timer.value = moment.duration(3, 'minutes');
+  puzzle.value = {};
+  timer.value = moment.duration(2, 'minutes');
   next();
 };
 
 const start = () => {
+  audio.start.play();
+  status.value = Status.Play;
   clearInterval(interval.value);
-  timer.value = moment.duration(3, 'minutes');
+  timer.value = moment.duration(2, 'minutes');
+  next();
   interval.value = setInterval(() => {
     timer.value.subtract(1, 'second');
     if (timer.value.asSeconds() <= 0) {
       stop();
     }
   }, 1000);
+};
+
+const restart = () => {
+  stop();
+  start();
 };
 
 const hit = (event: PointerEvent) => {
@@ -342,9 +301,9 @@ const hit = (event: PointerEvent) => {
   const y = event.clientY - rect.top;
 
   if (x >= 40 && x <= 60 && y >= 30 && y <= 50) {
-    queue.value.push('TargetDummy');
+    queue.value.push(Basic.TargetDummy);
   } else {
-    queue.value.push('Miss');
+    queue.value.push(Basic.Miss);
   }
 
   step();
@@ -358,260 +317,380 @@ const dodge = () => {
 
   dodgetimeout.value = setTimeout(
     () => {
-      queue.value.push('MissileDodge');
+      queue.value.push(Basic.MissileDodge);
       dodgetimeout.value = setTimeout(() => {
-        queue.value.push('Miss');
+        queue.value.push(Basic.Miss);
         setTimeout(step, 750);
       }, 750);
     },
     Math.floor(Math.random() * (2000 - 500 + 1)) + 500,
   );
 };
-
-onMounted(() => {
-  next();
-});
 </script>
 
 <template>
-  <main style="height: 100vh; overflow-y: auto" class="game">
+  <main style="height: 100vh; overflow-y: auto">
     <v-container fluid style="opacity: 0.9">
-      <v-sheet class="pa-6" elevation="10" style="min-height: 90vh">
+      <v-sheet
+        class="pa-6"
+        elevation="10"
+        style="min-height: 85vh; overflow: hidden">
         <v-row>
-          <v-col cols="6" offset="3" class="text-center">
-            <h1>Hotkey Storm, Earth & Fire!</h1>
+          <v-col class="game-container" cols="8">
+            <template v-if="status === Status.Play">
+              <v-row>
+                <v-col cols="12" class="text-center">
+                  <h2 class="text-no-wrap">
+                    <v-img
+                      v-if="!puzzle.name?.toLowerCase().startsWith('item')"
+                      :src="getIconUrl(puzzle.name)"
+                      width="48"
+                      class="mx-auto mb-2"
+                      style="left: 8px" />
+                    <span class="text-primary font-weight-bold"
+                      >{{ puzzle.name }}:
+                    </span>
+                    <span class="text-secondary">{{
+                      toInstruction(puzzle.actions)
+                    }}</span>
+                  </h2>
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col
+                  cols="12"
+                  class="text-center d-inline-flex justify-center align-center">
+                  <div
+                    v-for="(action, i) in puzzle.actions"
+                    class="d-inline-flex">
+                    <inventory-command
+                      v-if="
+                        puzzle.name?.toLowerCase().startsWith('item') &&
+                        action !== Basic.TargetDummy &&
+                        action !== Basic.MissileDodge
+                      "
+                      :name="puzzle.name"
+                      :action="action"
+                      :current="queue?.[i]" />
+                    <command
+                      v-else
+                      :name="puzzle.name"
+                      :action="action"
+                      :current="queue?.[i]"
+                      :queue="queue"
+                      :callback="dodge" />
+                  </div>
+                  <div
+                    v-if="showTarget"
+                    @click="(e: any) => hit(e)"
+                    :style="
+                      Math.random() < 0.5
+                        ? {
+                            position: 'fixed',
+                            display: 'block',
+                            left: `${Math.floor(Math.random() * (400 - 100 + 1)) + 100}px`,
+                            bottom: `calc(100vh - ${Math.floor(Math.random() * (650 - 100 + 1)) + 100}px`,
+                          }
+                        : {
+                            position: 'fixed',
+                            display: 'block',
+                            left: `${Math.floor(Math.random() * (1050 - 750 + 1)) + 750}px`,
+                            bottom: `calc(100vh - ${Math.floor(Math.random() * (650 - 100 + 1)) + 100}px`,
+                          }
+                    ">
+                    <v-img src="/target.png" width="96" />
+                  </div>
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col cols="12" class="text-center">
+                  <div v-if="!queue.length">
+                    <h2 class="text-grey elementToFadeInAndOut">
+                      waiting for key...
+                    </h2>
+                  </div>
+                  <div v-for="(key, i) in queue" class="d-inline-flex" v-else>
+                    <h2
+                      :class="{
+                        'text-success': key === answer[i],
+                        'text-error wrong': key !== answer[i],
+                        'font-weight-bold ml-2': true,
+                      }">
+                      <v-icon
+                        style="font-size: 24px"
+                        v-if="key === Basic.TargetDummy || key === Basic.Miss"
+                        icon="mdi-bullseye-arrow"
+                        :color="
+                          key === Basic.TargetDummy ? 'success' : 'error'
+                        " />
+                      <v-icon
+                        style="font-size: 24px"
+                        v-else-if="key === Basic.MissileDodge"
+                        icon="mdi-clock"
+                        color="success" />
+                      <template v-else>{{ key }}</template>
+                    </h2>
+                  </div>
+                  <ConfettiExplosion
+                    v-if="solved"
+                    :particleCount="50"
+                    :particleSize="10"
+                    :duration="2000"
+                    :force="0.3"
+                    :stageWidth="350"
+                    :stageHeight="350"
+                    style="position: relative; left: 50%; top: 50px"
+                    :colors="[
+                      'goldenrod',
+                      'darkgoldenrod',
+                      'silver',
+                      'gold',
+                    ]" />
+                </v-col>
+              </v-row>
+            </template>
+            <template v-else>
+              <v-alert
+                color="primary"
+                class="text-center"
+                variant="tonal"
+                height="375">
+                <v-icon icon="mdi-weather-lightning" style="font-size: 128px" />
+                <h2 class="mt-2">
+                  Welcome to
+                  <span class="font-weight-bold text-orange">Hotkey Storm</span>
+                  - The Hotkey training game!
+                </h2>
+                <h2 class="mt-2">
+                  Can you reach the leaderboard and become APM king? Let's find
+                  out!
+                </h2>
+                <h2 class="mt-2">
+                  Configure your hotkeys and select a challenge on the right to
+                  start practicing!
+                </h2>
+              </v-alert>
+            </template>
           </v-col>
-          <v-col cols="3" class="text-right">
-            <h2 class="font-weight-bold">
-              Highscore:
-              <span class="text-orange font-weight-bold mt-2">{{
-                highscore
-              }}</span>
-            </h2>
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col cols="4" offset="4" class="text-center">
-            <h2 class="text-no-wrap">
-              Use <span class="text-primary">{{ test.target }}</span> to
-              <span class="text-secondary">{{
-                toInstruction(test.puzzle)
-              }}</span>
-            </h2>
-            <v-img
-              v-if="test.target !== 'Inventory'"
-              :src="toImg(test.target)"
-              width="48"
-              class="mx-auto mt-5"
-              style="left: 8px" />
-          </v-col>
-        </v-row>
-        <v-row>
           <v-col
             cols="4"
-            offset="4"
-            class="text-center d-inline-flex justify-center align-center">
-            <div v-for="(command, i) in test.puzzle" class="d-inline-flex">
-              <v-table
-                class="pa-0"
-                v-if="
-                  test.target === 'Inventory' &&
-                  command !== 'TargetDummy' &&
-                  command !== 'MissileDodge'
-                ">
-                <tbody>
-                  <tr>
-                    <td
-                      style="border: 1px solid black; height: 42px; width: 42px"
-                      class="pa-0 ma-0">
-                      <v-img
-                        v-if="test.position === 'L1'"
-                        :src="toImg(command)"
-                        width="42"
-                        :style="{
-                          filter:
-                            (
-                              hotkeys?.[test.target]?.[command] ??
-                              hotkeys?.[command]
-                            )?.toLowerCase() !== queue?.[i]?.toLowerCase()
-                              ? 'brightness(1.0)'
-                              : 'brightness(1.5)',
-                        }" />
-                      <v-img
-                        v-else
-                        src="/empty_inventory.jpg"
-                        width="42"
-                        height="42" />
-                    </td>
-                    <td
-                      style="border: 1px solid black; height: 42px; width: 42px"
-                      class="pa-0 ma-0">
-                      <v-img
-                        v-if="test.position === 'R1'"
-                        :src="toImg(command)"
-                        width="42"
-                        :style="{
-                          filter:
-                            (
-                              hotkeys?.[test.target]?.[command] ??
-                              hotkeys?.[command]
-                            )?.toLowerCase() !== queue?.[i]?.toLowerCase()
-                              ? 'brightness(1.0)'
-                              : 'brightness(1.5)',
-                        }" />
-                      <v-img
-                        v-else
-                        src="/empty_inventory.jpg"
-                        width="42"
-                        height="42" />
-                    </td>
-                  </tr>
-                  <tr>
-                    <td
-                      style="border: 1px solid black; height: 42px; width: 42px"
-                      class="pa-0 ma-0">
-                      <v-img
-                        v-if="test.position === 'L2'"
-                        :src="toImg(command)"
-                        width="42"
-                        :style="{
-                          filter:
-                            (
-                              hotkeys?.[test.target]?.[command] ??
-                              hotkeys?.[command]
-                            )?.toLowerCase() !== queue?.[i]?.toLowerCase()
-                              ? 'brightness(1.0)'
-                              : 'brightness(1.5)',
-                        }" />
-                      <v-img
-                        v-else
-                        src="/empty_inventory.jpg"
-                        width="42"
-                        height="42" />
-                    </td>
-                    <td
-                      style="border: 1px solid black; height: 42px; width: 42px"
-                      class="pa-0 ma-0">
-                      <v-img
-                        v-if="test.position === 'R2'"
-                        :src="toImg(command)"
-                        width="42"
-                        :style="{
-                          filter:
-                            (
-                              hotkeys?.[test.target]?.[command] ??
-                              hotkeys?.[command]
-                            )?.toLowerCase() !== queue?.[i]?.toLowerCase()
-                              ? 'brightness(1.0)'
-                              : 'brightness(1.5)',
-                        }" />
-                      <v-img
-                        v-else
-                        src="/empty_inventory.jpg"
-                        width="42"
-                        height="42" />
-                    </td>
-                  </tr>
-                  <tr>
-                    <td
-                      style="border: 1px solid black; height: 42px; width: 42px"
-                      class="pa-0 ma-0">
-                      <v-img
-                        src="/empty_inventory.jpg"
-                        width="42"
-                        height="42" />
-                    </td>
-                    <td
-                      style="border: 1px solid black; height: 42px; width: 42px"
-                      class="pa-0 ma-0">
-                      <v-img
-                        src="/empty_inventory.jpg"
-                        width="42"
-                        height="42" />
-                    </td>
-                  </tr>
-                </tbody>
-              </v-table>
-              <command
-                v-else
-                :action="dodge"
-                :command="command"
-                :queue="queue"
-                :hotkeys="hotkeys"
-                :i="i"
-                :test="test" />
-            </div>
-            <div
-              v-if="showTarget"
-              @click="(e: any) => hit(e)"
-              :style="
-                Math.random() < 0.5
-                  ? {
-                      position: 'fixed',
-                      display: 'block',
-                      left: `${Math.floor(Math.random() * (500 - 250 + 1)) + 250}px`,
-                      bottom: `calc(100vh - ${Math.floor(Math.random() * (500 - 250 + 1)) + 100}px`,
-                    }
-                  : {
-                      position: 'fixed',
-                      display: 'block',
-                      right: `${Math.floor(Math.random() * (500 - 250 + 1)) + 250}px`,
-                      top: `${Math.floor(Math.random() * (500 - 250 + 1)) + 100}px`,
-                    }
-              ">
-              <v-img src="/target.png" width="96" />
-            </div>
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col cols="4" offset="4" class="text-center">
-            <div v-if="!queue.length">
-              <h2 class="text-grey elementToFadeInAndOut">
-                waiting for key...
-              </h2>
-            </div>
-            <div v-for="(key, i) in queue" class="d-inline-flex" v-else>
-              <h2
-                :class="{
-                  'text-success': key === answer[i],
-                  'text-error wrong': key !== answer[i],
-                  'font-weight-bold ml-2': true,
-                }">
-                <v-icon
-                  style="font-size: 24px"
-                  v-if="key === 'TargetDummy' || key === 'Miss'"
-                  icon="mdi-bullseye-arrow"
-                  :color="key === 'TargetDummy' ? 'success' : 'error'" />
-                <v-icon
-                  style="font-size: 24px"
-                  v-else-if="key === 'MissileDodge'"
-                  icon="mdi-clock"
-                  color="success" />
-                <template v-else>{{ key }}</template>
-              </h2>
-            </div>
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col cols="12" class="text-center"
-            ><h1 style="font-weight: bold">
-              Points:
-              <span style="color: gold; font-weight: bold">{{ points }}</span>
-              <ConfettiExplosion
-                v-if="solved"
-                :particleCount="50"
-                :particleSize="10"
-                :duration="2000"
-                :force="0.3"
-                :stageWidth="350"
-                :stageHeight="350"
-                style="position: relative; left: 50%; bottom: 30px"
-                :colors="['goldenrod', 'darkgoldenrod', 'silver', 'gold']" />
-            </h1>
-          </v-col>
-          <v-col cols="12">
+            style="cursor: default; min-height: 90vh"
+            @click="
+              (e: any) => {
+                e.preventDefault();
+                e.stopImmediatePropagation();
+              }
+            ">
             <v-row>
-              <v-col offset="8" cols="4" class="text-center">
+              <template v-if="status === Status.Play">
+                <v-col cols="12" class="text-center"
+                  ><h1 style="font-weight: bold">
+                    <v-icon
+                      icon="mdi-weather-lightning"
+                      size="128"
+                      :class="{ 'mr-6': true, solved: solved }" />
+                    <span
+                      style="
+                        color: gold;
+                        font-weight: bold;
+                        font-size: 64px;
+                        vertical-align: middle;
+                      "
+                      >{{ points }}</span
+                    >
+                  </h1>
+                </v-col>
+              </template>
+              <template v-else>
+                <v-col cols="12" class="text-center"
+                  ><h1 style="font-weight: bold; color: orange">
+                    Hotkey Storm
+                  </h1>
+                </v-col>
+                <v-col cols="7">
+                  <v-select
+                    hide-details
+                    :items="layouts"
+                    density="compact"
+                    label="Hotkey layout"
+                    v-model="store.data.selected"></v-select>
+                </v-col>
+                <v-col cols="5">
+                  <v-btn
+                    block
+                    :variant="editInventory ? 'elevated' : 'tonal'"
+                    rounded="0"
+                    :color="editInventory ? 'success' : 'default'"
+                    class="py-5"
+                    @click="editInventory = !editInventory"
+                    >{{
+                      editInventory ? 'Save Changes' : 'Inventory Hotkeys'
+                    }}</v-btn
+                  >
+                </v-col>
+              </template>
+            </v-row>
+            <template v-if="!editInventory && status !== Status.Play">
+              <v-row style="margin-bottom: 10vh">
+                <v-col cols="6" class="text-center">
+                  <table>
+                    <tbody>
+                      <tr>
+                        <td style="width: 64px; height: 64px">
+                          <v-btn
+                            rounded="0"
+                            variant="tonal"
+                            style="width: 100%; height: 100%"
+                            disabled>
+                            <race-icon :race="Race.Human" :size="84" />
+                          </v-btn>
+                        </td>
+                        <td style="width: 64px; height: 64px">
+                          <v-btn
+                            rounded="0"
+                            variant="tonal"
+                            style="width: 100%; height: 100%"
+                            disabled>
+                            <race-icon :race="Race.Orc" :size="84" />
+                          </v-btn>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style="width: 64px; height: 64px">
+                          <v-btn
+                            @click="start"
+                            rounded="0"
+                            variant="tonal"
+                            style="width: 100%; height: 100%">
+                            <race-icon :race="Race.NightElf" :size="84" />
+                          </v-btn>
+                        </td>
+                        <td style="width: 64px; height: 64px">
+                          <v-btn
+                            rounded="0"
+                            variant="tonal"
+                            style="width: 100%; height: 100%"
+                            disabled>
+                            <race-icon :race="Race.Undead" :size="84" />
+                          </v-btn>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  <h3 style="font-weight: bold">Race Challenge</h3>
+                </v-col>
+                <v-col cols="6" class="text-center">
+                  <v-btn
+                    rounded="0"
+                    variant="tonal"
+                    style="width: 100%; height: 172px"
+                    disabled>
+                    <race-icon :race="Race.Random" :size="84" />
+                  </v-btn>
+                  <h3 class="font-weight-bold">Custom Challenge</h3>
+                </v-col>
+                <v-col cols="12" class="text-center mt-5">
+                  <h3 class="text-orange font-weight-bold">
+                    Select a challenge to begin
+                  </h3>
+                </v-col>
+              </v-row>
+            </template>
+            <template v-else-if="editInventory">
+              <v-row>
+                <v-col cols="12" class="text-center">
+                  <h3>Override Inventory Hotkeys</h3>
+                </v-col>
+                <v-col cols="12">
+                  <p style="color: grey; font-size: 11px">
+                    You can override any inventory keys to mirror an external
+                    app - and not by the customkeys hotkey layout file. Some
+                    keys may not function properly due to limitations in how the
+                    browser handles keyboard input.
+                  </p>
+                  <p style="color: grey; font-size: 11px" class="my-1">
+                    This can occur when specific keys are reserved by the
+                    browser itself - like CTRL + W (close tab), CTRL + T (open
+                    new tab) and others..
+                  </p>
+                  <p
+                    style="
+                      color: orange;
+                      font-size: 11px;
+                      font-weight: bold;
+                      text-align: center;
+                    ">
+                    There is currently no workaround for this - so avoid using
+                    these as your inventory keys!
+                  </p>
+                </v-col>
+                <v-col cols="12" class="text-center">
+                  <v-table>
+                    <thead>
+                      <tr>
+                        <td class="font-weight-bold">KEY</td>
+                        <td style="width: 100px"></td>
+                        <td class="font-weight-bold">KEY</td>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>
+                          <edit-inventory-input code="itm1" />
+                        </td>
+                        <td
+                          class="d-flex"
+                          style="justify-content: center; align-items: center">
+                          <v-img
+                            src="/empty_inventory.jpg"
+                            height="42"
+                            width="42" />
+                          <v-img
+                            src="/empty_inventory.jpg"
+                            height="42"
+                            width="42" />
+                        </td>
+                        <td><edit-inventory-input code="itm2" /></td>
+                      </tr>
+                      <tr>
+                        <td><edit-inventory-input code="itm3" /></td>
+                        <td
+                          class="d-flex"
+                          style="justify-content: center; align-items: center">
+                          <v-img
+                            src="/empty_inventory.jpg"
+                            height="42"
+                            width="42" />
+                          <v-img
+                            src="/empty_inventory.jpg"
+                            height="42"
+                            width="42" />
+                        </td>
+                        <td><edit-inventory-input code="itm4" /></td>
+                      </tr>
+                      <tr>
+                        <td><edit-inventory-input code="itm5" /></td>
+                        <td
+                          class="d-flex"
+                          style="justify-content: center; align-items: center">
+                          <v-img
+                            src="/empty_inventory.jpg"
+                            height="42"
+                            width="42" />
+                          <v-img
+                            src="/empty_inventory.jpg"
+                            height="42"
+                            width="42" />
+                        </td>
+                        <td><edit-inventory-input code="itm6" /></td>
+                      </tr>
+                    </tbody>
+                  </v-table>
+                </v-col>
+              </v-row>
+            </template>
+            <v-row>
+              <v-col cols="12" class="text-center">
                 <span style="font-family: fantasy; font-size: 64px">
                   {{ (timer as any).format('mm : ss', { trim: false }) }}
                 </span>
@@ -637,7 +716,7 @@ onMounted(() => {
               </v-col>
             </v-row>
             <v-row>
-              <v-col offset="8" cols="4">
+              <v-col cols="12">
                 <span class="text-grey font-weight-bold mr-2">{{ combo }}</span>
                 <span class="text-grey">COMBO</span>
                 <v-progress-linear
@@ -656,10 +735,16 @@ onMounted(() => {
                   :max="4" />
               </v-col>
             </v-row>
-          </v-col>
-          <v-col cols="12"> (TEST) Current Available Key Bindings (TEST)</v-col>
-          <v-col cols="6">
-            <pre>{{ hotkeys }}</pre>
+            <v-row v-if="status === Status.Play">
+              <v-col cols="12" class="text-center">
+                <v-btn-group class="mt-4" variant="outlined">
+                  <v-btn color="warning" size="large" @click="restart"
+                    >Restart</v-btn
+                  >
+                  <v-btn color="error" size="large" @click="stop">End</v-btn>
+                </v-btn-group>
+              </v-col>
+            </v-row>
           </v-col>
         </v-row>
       </v-sheet>
@@ -667,8 +752,15 @@ onMounted(() => {
   </main>
 </template>
 <style>
-.game {
-  cursor: crosshair;
+.game-container {
+  height: auto;
+  width: 100%;
+  position: relative;
+  top: 20vh;
+
+  * {
+    cursor: crosshair;
+  }
 }
 
 .wrong {
@@ -717,6 +809,28 @@ onMounted(() => {
 @-webkit-keyframes fadeout {
   100% {
     opacity: 1;
+  }
+}
+
+.v-alert__content {
+  overflow: visible;
+}
+
+.solved {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    color: gold;
+  }
+
+  50% {
+    color: inherit;
+  }
+
+  100% {
+    color: gold;
   }
 }
 </style>

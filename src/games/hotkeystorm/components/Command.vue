@@ -2,15 +2,11 @@
 import { computed, onMounted, onUpdated, ref } from 'vue';
 import _sample from 'lodash/sample';
 import _first from 'lodash/first';
+import { useHotKeyStormStore } from '@/games/hotkeystorm/store.ts';
+import { getIconUrl } from '@/utilities/api.ts';
+import { Basic } from '@/games/hotkeystorm/utilities/actions.ts';
 
-const toImg = (instruction: string) => {
-  return `/icons/btn${String(instruction ?? '')
-    .replace(/ /g, '')
-    .replace(/\//g, '')
-    .replace(/’/g, '')
-    .replace(/'/g, '')
-    .toLowerCase()}.jpg`;
-};
+const store = useHotKeyStormStore();
 
 const missiles: string[] = [
   'Death Coil',
@@ -21,12 +17,11 @@ const missiles: string[] = [
 ];
 
 interface Props {
-  i: number;
-  test: any;
-  command: any;
-  queue: any[];
-  hotkeys: any;
-  action: any;
+  name: string;
+  action: string;
+  current?: string;
+  queue: string[];
+  callback: any;
 }
 const props = defineProps<Props>();
 
@@ -35,45 +30,44 @@ const missile = computed(
 );
 
 onMounted(() => {
-  if (props.command === 'MissileDodge') {
-    props.action();
+  if (props.action === Basic.MissileDodge) {
+    props.callback();
   }
 });
 
 onUpdated(() => {
   const q = [...props.queue];
   if (
-    props.command === 'MissileDodge' &&
+    props.action === Basic.MissileDodge &&
     (q.length === 0 ||
-      (q.some((v: any) => v === 'Miss') &&
-        q.some((v: any) => v === 'MissileDodge')))
+      (q.some((v: any) => v === Basic.Miss) &&
+        q.some((v: any) => v === Basic.MissileDodge)))
   ) {
     setTimeout(() => {
-      props.action();
+      props.callback();
     }, 500);
   }
 });
 
-const active = computed(() => {
-  return (
-    (
-      props.hotkeys?.[props.test.target]?.[props.command] ??
-      props.hotkeys?.[props.command]
-    )?.toLowerCase() !== props.queue?.[props.i]?.toLowerCase()
-  );
-});
+const active = computed(
+  () =>
+    store.getHotkeyFromAction(props.name, props.action)?.toLowerCase() !==
+    props.current?.toLowerCase(),
+);
 </script>
 
 <template>
   <v-img
     :src="
-      command === 'MissileDodge' && !active ? toImg(missile) : toImg(command)
+      action === Basic.MissileDodge && !active
+        ? getIconUrl(missile)
+        : getIconUrl(action)
     "
     width="42"
     :class="{
       'mx-3 my-auto': true,
-      incoming: command === 'MissileDodge' && active,
-      dodge: command === 'MissileDodge' && !active,
+      incoming: action === Basic.MissileDodge && active,
+      dodge: action === Basic.MissileDodge && !active,
     }"
     :style="{
       filter: active ? 'brightness(1.0)' : 'brightness(1.5)',
