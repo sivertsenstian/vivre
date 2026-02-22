@@ -2959,6 +2959,11 @@ Tip=Purchase Wand of |cffffcc00N|regation
 Hotkey=N
 Buttonpos=3,1
 
+[ritd]
+Tip=Purchase Ritu|cffffcc00a|rl Dagger
+Hotkey=A
+Buttonpos=1,0
+
 [stel]
 Tip=(|cffffcc00F|r) Purchase Staff of Teleportation
 Hotkey=F
