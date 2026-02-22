@@ -2536,6 +2536,11 @@ Tip=Purchase Scroll of Protection (|cffffcc00A|r)
 Hotkey=S
 Tip=Purchase Potion of Invisibility (|cffffcc00S|r)
 
+[wneg]
+Tip=Purchase Wand of |cffffcc00N|regation
+Hotkey=N
+Buttonpos=3,1
+
 [stel]
 Hotkey=F
 Tip=Purchase Staff of Teleportation (|cffffcc00F|r)
