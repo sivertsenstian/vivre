@@ -73,7 +73,9 @@ const captured = ref<string>();
 const next = () => {
   puzzle.value = _sample(
     puzzles.filter((t) =>
-      t.actions?.some((p, i) => p !== puzzle.value?.actions?.[i]),
+      t.actions?.some(
+        (p: string, i: number) => p !== puzzle.value?.actions?.[i],
+      ),
     ),
   );
 };
