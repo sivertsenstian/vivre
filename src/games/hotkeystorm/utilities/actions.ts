@@ -392,7 +392,6 @@ export const Undead: any = {
     'Attack Ground': { code: 'cmdattackground', types: [HotKeyType.Target] },
     'Load Corpse': { code: 'amel', types: [HotKeyType.Target] },
     'Drop All Corpses': { code: 'amed', types: [HotKeyType.Basic] },
-    'Exhume Corpses': { code: 'aexh', types: [HotKeyType.Basic] },
   },
   Necromancer: {
     'Raise Dead': { code: 'arai', types: [HotKeyType.Basic] },
