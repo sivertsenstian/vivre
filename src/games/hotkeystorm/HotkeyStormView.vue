@@ -482,7 +482,7 @@ const dodge = () => {
                     >HINT:
                   </span>
                   <div
-                    v-for="key in answer.filter((a) =>
+                    v-for="key in answer.filter((a: any) =>
                       [Basic.TargetDummy, Basic.Miss, Basic.MissileDodge].every(
                         (v) => a !== v,
                       ),
