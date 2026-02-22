@@ -52,7 +52,14 @@ enum Status {
   Finished = 'Finished',
 }
 
+enum Mode {
+  Learning = 'Learning',
+  Challenge = 'Challenge',
+}
+
 const status = ref(Status.Waiting);
+const mode = ref(Mode.Challenge);
+const hint = ref(false);
 
 const editInventory = ref(false);
 
@@ -71,6 +78,7 @@ const queue = ref<string[]>([]);
 const captured = ref<string>();
 
 const next = () => {
+  hint.value = false;
   puzzle.value = _sample(
     puzzles.filter((t) =>
       t.actions?.some(
@@ -109,22 +117,27 @@ const step = () => {
     audio.solved.play();
 
     solved.value = true;
+
+    // Record for summary
     history.value.push({
       success: true,
       puzzle: puzzle.value,
       actual: queue.value,
       answer: answer.value,
     });
+
     setTimeout(() => {
-      points.value += 1;
       captured.value = undefined;
       queue.value = [];
       solved.value = false;
 
       next();
 
-      if (points.value > highscore.value) {
-        highscore.value = points.value;
+      if (mode.value === Mode.Challenge) {
+        points.value += 1;
+        if (points.value > highscore.value) {
+          highscore.value = points.value;
+        }
       }
     }, 500);
   }
@@ -140,55 +153,66 @@ const step = () => {
       answer: queue.value,
     });
 
-    setTimeout(() => {
-      captured.value = undefined;
-      queue.value = [];
-      combo.value = 0;
-      comboGoal.value = 5;
-      comboStreak.value = 0;
-      next();
-    }, 500);
-    timer.value.subtract(10, 'seconds');
-    reward.value = -10;
-    setTimeout(() => {
-      reward.value = 0;
-    }, 1000);
-  } else {
-    audio.correct.play();
-    // CORRECT
-    combo.value++;
+    if (mode.value === Mode.Challenge) {
+      setTimeout(() => {
+        captured.value = undefined;
+        queue.value = [];
+        combo.value = 0;
+        comboGoal.value = 5;
+        comboStreak.value = 0;
+        next();
+      }, 500);
 
-    if (combo.value === comboGoal.value) {
-      comboStreak.value++;
-      let seconds;
-      switch (comboStreak.value) {
-        case 1:
-          seconds = 3;
-          comboGoal.value = 12;
-          break;
-        case 2:
-          seconds = 5;
-          comboGoal.value = 20;
-          break;
-        case 3:
-          seconds = 7;
-          comboGoal.value = 30;
-          break;
-        case 4:
-          seconds = 7;
-          comboGoal.value = 10;
-          break;
-        default:
-          seconds = 10;
-          comboGoal.value = 10;
-          break;
-      }
-      reward.value = seconds;
+      timer.value.subtract(10, 'seconds');
+      reward.value = -10;
       setTimeout(() => {
         reward.value = 0;
       }, 1000);
-      combo.value = 0;
-      timer.value.add(seconds, 'seconds');
+    } else {
+      setTimeout(() => {
+        hint.value = true;
+        captured.value = undefined;
+        queue.value = [];
+      }, 500);
+    }
+  } else {
+    audio.correct.play();
+    // CORRECT
+    if (mode.value === Mode.Challenge) {
+      combo.value++;
+
+      if (combo.value === comboGoal.value) {
+        comboStreak.value++;
+        let seconds;
+        switch (comboStreak.value) {
+          case 1:
+            seconds = 3;
+            comboGoal.value = 12;
+            break;
+          case 2:
+            seconds = 5;
+            comboGoal.value = 20;
+            break;
+          case 3:
+            seconds = 7;
+            comboGoal.value = 30;
+            break;
+          case 4:
+            seconds = 7;
+            comboGoal.value = 10;
+            break;
+          default:
+            seconds = 10;
+            comboGoal.value = 10;
+            break;
+        }
+        reward.value = seconds;
+        setTimeout(() => {
+          reward.value = 0;
+        }, 1000);
+        combo.value = 0;
+        timer.value.add(seconds, 'seconds');
+      }
     }
   }
 };
@@ -206,7 +230,7 @@ const captureInput = (event: KeyboardEvent) => {
     return;
   }
 
-  if (!interval.value) {
+  if (!interval.value && mode.value === Mode.Challenge) {
     start();
   }
 
@@ -278,12 +302,15 @@ const start = () => {
   clearInterval(interval.value);
   timer.value = moment.duration(2, 'minutes');
   next();
-  interval.value = setInterval(() => {
-    timer.value.subtract(1, 'second');
-    if (timer.value.asSeconds() <= 0) {
-      stop();
-    }
-  }, 1000);
+
+  if (mode.value === Mode.Challenge) {
+    interval.value = setInterval(() => {
+      timer.value.subtract(1, 'second');
+      if (timer.value.asSeconds() <= 0) {
+        stop();
+      }
+    }, 1000);
+  }
 };
 
 const restart = () => {
@@ -448,6 +475,24 @@ const dodge = () => {
                       'gold',
                     ]" />
                 </v-col>
+                <v-col cols="12" class="text-center" v-if="hint">
+                  <span
+                    class="text-orange font-weight-bold"
+                    style="vertical-align: text-bottom"
+                    >HINT:
+                  </span>
+                  <div
+                    v-for="key in answer.filter((a) =>
+                      [Basic.TargetDummy, Basic.Miss, Basic.MissileDodge].every(
+                        (v) => a !== v,
+                      ),
+                    )"
+                    class="d-inline-flex">
+                    <h2 class="font-weight-bold ml-2 text-primary">
+                      {{ key }}
+                    </h2>
+                  </div>
+                </v-col>
               </v-row>
             </template>
             <template v-else>
@@ -484,7 +529,13 @@ const dodge = () => {
             ">
             <v-row>
               <template v-if="status === Status.Play">
-                <v-col cols="12" class="text-center"
+                <v-col
+                  cols="12"
+                  :class="{
+                    'text-center': true,
+                    challenge: mode === Mode.Challenge,
+                    learning: mode === Mode.Learning,
+                  }"
                   ><h1 style="font-weight: bold">
                     <v-icon
                       icon="mdi-weather-lightning"
@@ -578,7 +629,10 @@ const dodge = () => {
                       </tr>
                     </tbody>
                   </table>
-                  <h3 style="font-weight: bold">Race Challenge</h3>
+                  <h3 style="font-weight: bold">
+                    Race
+                    {{ mode === Mode.Challenge ? 'Challenge' : 'Practice' }}
+                  </h3>
                 </v-col>
                 <v-col cols="6" class="text-center">
                   <v-btn
@@ -588,12 +642,37 @@ const dodge = () => {
                     disabled>
                     <race-icon :race="Race.Random" :size="84" />
                   </v-btn>
-                  <h3 class="font-weight-bold">Custom Challenge</h3>
+                  <h3 class="font-weight-bold">
+                    Custom
+                    {{ mode === Mode.Challenge ? 'Challenge' : 'Practice' }}
+                  </h3>
                 </v-col>
                 <v-col cols="12" class="text-center mt-5">
-                  <h3 class="text-orange font-weight-bold">
-                    Select a challenge to begin
+                  <h3
+                    :class="{
+                      'text-orange': mode === Mode.Challenge,
+                      'text-success': mode === Mode.Learning,
+                      'font-weight-bold': true,
+                    }">
+                    Select a
+                    {{ mode === Mode.Challenge ? 'challenge' : 'practice' }} to
+                    begin
                   </h3>
+                </v-col>
+                <v-col cols="12" class="text-center">
+                  <v-btn
+                    @click="
+                      mode =
+                        mode === Mode.Learning ? Mode.Challenge : Mode.Learning
+                    "
+                    size="large"
+                    :color="mode === Mode.Learning ? 'warning' : 'success'"
+                    >{{
+                      mode === Mode.Learning
+                        ? 'Activate Challenge Mode'
+                        : 'Activate Practice Mode'
+                    }}</v-btn
+                  >
                 </v-col>
               </v-row>
             </template>
@@ -690,9 +769,14 @@ const dodge = () => {
                 </v-col>
               </v-row>
             </template>
-            <v-row>
+            <v-row
+              :class="{
+                challenge: mode === Mode.Challenge,
+                learning: mode === Mode.Learning,
+              }">
               <v-col cols="12" class="text-center">
-                <span style="font-family: fantasy; font-size: 64px">
+                <span
+                  style="font-family: fantasy; font-size: 64px; color: gold">
                   {{ (timer as any).format('mm : ss', { trim: false }) }}
                 </span>
                 <span
@@ -716,7 +800,11 @@ const dodge = () => {
                 </span>
               </v-col>
             </v-row>
-            <v-row>
+            <v-row
+              :class="{
+                challenge: mode === Mode.Challenge,
+                learning: mode === Mode.Learning,
+              }">
               <v-col cols="12">
                 <span class="text-grey font-weight-bold mr-2">{{ combo }}</span>
                 <span class="text-grey">COMBO</span>
@@ -766,10 +854,10 @@ const dodge = () => {
 
 .wrong {
   position: relative;
-  animation: pulse 0.2s infinite;
+  animation: wrong 0.2s infinite;
 }
 
-@keyframes pulse {
+@keyframes wrong {
   0% {
     bottom: 3px;
   }
@@ -818,10 +906,10 @@ const dodge = () => {
 }
 
 .solved {
-  animation: pulse 2s infinite;
+  animation: solved 2s infinite;
 }
 
-@keyframes pulse {
+@keyframes solved {
   0% {
     color: gold;
   }
@@ -833,5 +921,10 @@ const dodge = () => {
   100% {
     color: gold;
   }
+}
+
+.learning {
+  opacity: 0.2;
+  filter: grayscale(1);
 }
 </style>
