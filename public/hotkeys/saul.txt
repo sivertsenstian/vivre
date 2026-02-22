@@ -44,8 +44,8 @@ Hotkey=S
 Unhotkey=S
 
 [Abu3]
-Hotkey=B
-Unhotkey=B
+Hotkey=S
+Unhotkey=S
 
 [Abur]
 Hotkey=S
@@ -408,7 +408,7 @@ MerchantAvailable=1
 Hotkey=O
 
 [alcm]
-GameCommand=1,1
+GameCommand=1,1,1
 Hotkey=65
 Modifier=Alt
 
@@ -824,7 +824,7 @@ Hotkey=S
 Unhotkey=S
 
 [Asac]
-Hotkey=A
+Hotkey=O
 
 [asbl]
 Hotkey=A
@@ -992,7 +992,7 @@ MerchantAvailable=1
 Hotkey=Q
 
 [capt]
-CameraCommand=1,1
+CameraCommand=1,1,1
 Hotkey=67
 Modifier=Ctrl_or_Alt
 
@@ -1016,7 +1016,7 @@ Hotkey=F
 MerchantAvailable=1
 
 [clnt]
-CameraCommand=1,1
+CameraCommand=1,1,1
 Hotkey=32
 
 [clsd]
@@ -1089,52 +1089,52 @@ Hotkey=C
 MerchantAvailable=1
 
 [ctcr]
-CameraCommand=1,1
+CameraCommand=1,1,1
 Hotkey=8
 
 [Ctr0]
-CtrlGroupCommand=1,1
+CtrlGroupCommand=1,1,1
 Hotkey=48
 
 [Ctr1]
-CtrlGroupCommand=1,1
+CtrlGroupCommand=1,1,1
 Hotkey=49
 
 [Ctr2]
-CtrlGroupCommand=1,1
+CtrlGroupCommand=1,1,1
 Hotkey=50
 
 [Ctr3]
-CtrlGroupCommand=1,1
+CtrlGroupCommand=1,1,1
 Hotkey=51
 
 [Ctr4]
-CtrlGroupCommand=1,1
+CtrlGroupCommand=1,1,1
 Hotkey=52
 
 [Ctr5]
-CtrlGroupCommand=1,1
+CtrlGroupCommand=1,1,1
 Hotkey=53
 
 [Ctr6]
-CtrlGroupCommand=1,1
+CtrlGroupCommand=1,1,1
 Hotkey=54
 
 [Ctr7]
-CtrlGroupCommand=1,1
+CtrlGroupCommand=1,1,1
 Hotkey=55
 
 [Ctr8]
-CtrlGroupCommand=1,1
+CtrlGroupCommand=1,1,1
 Hotkey=56
 
 [Ctr9]
-CtrlGroupCommand=1,1
+CtrlGroupCommand=1,1,1
 Hotkey=57
 
 [DeGS]
 Hotkey=189
-ReplayCommand=1,1
+ReplayCommand=1,1,1
 
 [desc]
 Hotkey=E
@@ -1210,7 +1210,7 @@ Hotkey=
 Hotkey=D
 
 [egol]
-Hoktey=None,None
+Hoktey=None,None,None
 
 [ehip]
 Hotkey=A
@@ -1384,15 +1384,15 @@ MerchantAvailable=1
 Hotkey=A
 
 [her1]
-GameCommand=1,1
+GameCommand=1,1,1
 Hotkey=112
 
 [her2]
-GameCommand=1,1
+GameCommand=1,1,1
 Hotkey=113
 
 [her3]
-GameCommand=1,1
+GameCommand=1,1,1
 Hotkey=114
 
 [hfoo]
@@ -1483,34 +1483,34 @@ Hotkey=E
 
 [InGS]
 Hotkey=187
-ReplayCommand=1,1
+ReplayCommand=1,1,1
 
 [iotw]
 Hotkey=I
 MerchantAvailable=1
 
 [itm1]
-GameCommand=1,1
+GameCommand=1,1,1
 Hotkey=103
 
 [itm2]
-GameCommand=1,1
+GameCommand=1,1,1
 Hotkey=104
 
 [itm3]
-GameCommand=1,1
+GameCommand=1,1,1
 Hotkey=100
 
 [itm4]
-GameCommand=1,1
+GameCommand=1,1,1
 Hotkey=101
 
 [itm5]
-GameCommand=1,1
+GameCommand=1,1,1
 Hotkey=97
 
 [itm6]
-GameCommand=1,1
+GameCommand=1,1,1
 Hotkey=98
 
 [jpnt]
@@ -1588,7 +1588,7 @@ Modifier=Alt
 Hotkey=M
 
 [mpng]
-GameCommand=1,1
+GameCommand=1,1,1
 Hotkey=71
 Modifier=Alt
 
@@ -1598,19 +1598,19 @@ MenuCommand=1
 Modifier=Alt
 
 [mvcb]
-CameraCommand=1,1
+CameraCommand=1,1,1
 Hotkey=40
 
 [mvcf]
-CameraCommand=1,1
+CameraCommand=1,1,1
 Hotkey=38
 
 [mvcl]
-CameraCommand=1,1
+CameraCommand=1,1,1
 Hotkey=37
 
 [mvcr]
-CameraCommand=1,1
+CameraCommand=1,1,1
 Hotkey=39
 
 [nadk]
@@ -2312,7 +2312,7 @@ Hotkey=E
 Hotkey=Z
 
 [rezm]
-CameraCommand=1,1
+CameraCommand=1,1,1
 Hotkey=116
 
 [Rhac]
@@ -2431,11 +2431,11 @@ Hotkey=W
 Hotkey=Z
 
 [rocl]
-CameraCommand=1,1
+CameraCommand=1,1,1
 Hotkey=45
 
 [rocr]
-CameraCommand=1,1
+CameraCommand=1,1,1
 Hotkey=46
 
 [Roen]
@@ -2574,7 +2574,7 @@ Hotkey=C
 MerchantAvailable=1
 
 [sbgp]
-GameCommand=1,1
+GameCommand=1,1,1
 Hotkey=9
 
 [sbok]
@@ -2628,7 +2628,7 @@ Hotkey=H
 Hotkey=S
 
 [sidw]
-GameCommand=1,1
+GameCommand=1,1,1
 Hotkey=P
 
 [silk]
@@ -2685,7 +2685,7 @@ Hotkey=O
 [SPQM]
 Hotkey=80
 Modifier=Alt
-ObserverCommand=1,1
+ObserverCommand=1,1,1
 
 [spre]
 Hotkey=F
@@ -2742,19 +2742,19 @@ Hotkey=E
 [SULM]
 Hotkey=85
 Modifier=Alt
-ObserverCommand=1,1
+ObserverCommand=1,1,1
 
 [TAHb]
-GameCommand=1,1
+GameCommand=1,1,1
 Hotkey=219
 
 [TAll]
 Hotkey=65
-ObserverCommand=1,1
+ObserverCommand=1,1,1
 
 [TAuC]
 Hotkey=101
-ReplayCommand=1,1
+ReplayCommand=1,1,1
 
 [tbak]
 Hotkey=K
@@ -2772,7 +2772,7 @@ Hotkey=A
 Hotkey=A
 
 [TEHb]
-GameCommand=1,1
+GameCommand=1,1,1
 Hotkey=221
 
 [tels]
@@ -2785,13 +2785,13 @@ Hotkey=E
 Hotkey=F
 
 [TFmv]
-GameCommand=1,1
+GameCommand=1,1,1
 Hotkey=70
 Modifier=Alt
 
 [TFoW]
 Hotkey=100
-ReplayCommand=1,1
+ReplayCommand=1,1,1
 
 [tgrh]
 Hotkey=X
@@ -2801,7 +2801,7 @@ Hotkey=T
 
 [THer]
 Hotkey=72
-ObserverCommand=1,1
+ObserverCommand=1,1,1
 
 [tint]
 Hotkey=T
@@ -2814,10 +2814,10 @@ Hotkey=R
 
 [TMap]
 Hotkey=77
-ObserverCommand=1,1
+ObserverCommand=1,1,1
 
 [TMcd]
-GameCommand=1,1
+GameCommand=1,1,1
 Hotkey=82
 Modifier=Alt
 
@@ -2825,7 +2825,7 @@ Modifier=Alt
 Hotkey=T
 
 [TMtr]
-GameCommand=1,1
+GameCommand=1,1,1
 Hotkey=84
 Modifier=Alt
 
@@ -2836,25 +2836,25 @@ Modifier=Ctrl
 
 [TPPl]
 Hotkey=80
-ReplayCommand=1,1
+ReplayCommand=1,1,1
 
 [TPUQ]
 Hotkey=81
-ObserverCommand=1,1
+ObserverCommand=1,1,1
 
 [tret]
 Hotkey=Z
 
 [TRpl]
 Hotkey=82
-ReplayCommand=1,1
+ReplayCommand=1,1,1
 
 [tsct]
 Hotkey=F
 
 [TSel]
 Hotkey=83
-ObserverCommand=1,1
+ObserverCommand=1,1,1
 
 [TSFX]
 Hotkey=83
@@ -2863,14 +2863,14 @@ Modifier=Ctrl
 
 [TSta]
 Hotkey=84
-ObserverCommand=1,1
+ObserverCommand=1,1,1
 
 [tstr]
 Hotkey=S
 
 [TToD]
 Hotkey=68
-ObserverCommand=1,1
+ObserverCommand=1,1,1
 
 [uabo]
 Hotkey=D
@@ -3022,9 +3022,9 @@ MerchantAvailable=1
 Hotkey=L
 
 [zmin]
-CameraCommand=1,1
+CameraCommand=1,1,1
 Hotkey=33
 
 [zmou]
-CameraCommand=1,1
+CameraCommand=1,1,1
 Hotkey=34
