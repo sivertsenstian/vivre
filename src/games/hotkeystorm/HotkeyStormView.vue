@@ -868,11 +868,6 @@ const dodge = () => {
               </v-col>
             </v-row>
           </v-col>
-          <v-row>
-            <v-col cols="12">
-              <pre>{{ puzzle }}</pre>
-            </v-col>
-          </v-row>
         </v-row>
       </v-sheet>
     </v-container>
