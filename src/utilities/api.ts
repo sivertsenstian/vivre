@@ -1,5 +1,5 @@
-﻿import _isNil from "lodash/isNil";
-import axios from "axios";
+﻿import _isNil from 'lodash/isNil';
+import axios from 'axios';
 import {
   getAllSeasonGames,
   getInfo,
@@ -9,24 +9,24 @@ import {
   getwins,
   isRace,
   opponentIsRace,
-} from "@/utilities/matchcalculator.ts";
+} from '@/utilities/matchcalculator.ts';
 import {
   current_month,
   current_season,
   current_week,
   today,
-} from "@/utilities/constants.ts";
-import _groupBy from "lodash/groupBy";
-import _forEach from "lodash/forEach";
-import _isEmpty from "lodash/isEmpty";
-import _round from "lodash/round";
-import _take from "lodash/take";
-import _sortBy from "lodash/sortBy";
-import _toPairs from "lodash/toPairs";
-import _last from "lodash/last";
-import moment from "moment/moment";
-import { Race } from "@/stores/races.ts";
-import type { IStatistics } from "@/utilities/types.ts";
+} from '@/utilities/constants.ts';
+import _groupBy from 'lodash/groupBy';
+import _forEach from 'lodash/forEach';
+import _isEmpty from 'lodash/isEmpty';
+import _round from 'lodash/round';
+import _take from 'lodash/take';
+import _sortBy from 'lodash/sortBy';
+import _toPairs from 'lodash/toPairs';
+import _last from 'lodash/last';
+import moment from 'moment/moment';
+import { Race } from '@/stores/races.ts';
+import type { IStatistics } from '@/utilities/types.ts';
 
 // URLS
 const gameModeStatsUrl = (tag: string, season: number) =>
@@ -35,7 +35,7 @@ const gameModeStatsUrl = (tag: string, season: number) =>
   )}/game-mode-stats?gateway=20&season=${season}`;
 
 const getMapsUrl = () =>
-  "https://website-backend.w3champions.com/api/ladder/active-modes";
+  'https://website-backend.w3champions.com/api/ladder/active-modes';
 
 const getMatchUrl = (id: string) =>
   `https://website-backend.w3champions.com/api/matches/${id}`;
@@ -57,6 +57,16 @@ export const search = (name: string) =>
     name,
   )}&pageSize=20`;
 
+export const getIconUrl = (instruction: string) => {
+  return `/icons/btn${String(instruction ?? '')
+    .replace(/ /g, '')
+    .replace(/\//g, '')
+    .replace(/’/g, '')
+    .replace(/'/g, '')
+    .replace(/HeroAbilitiesTrain/, '')
+    .toLowerCase()}.jpg`;
+};
+
 const matchesUrl = (
   tag: string,
   offset: number = 0,
@@ -69,7 +79,7 @@ const matchesUrl = (
 
 // GET
 export const getPlayerInformation = async (tag: string, season: number) => {
-  if (!_isNil(tag) && tag.includes("#")) {
+  if (!_isNil(tag) && tag.includes('#')) {
     const { data: response } = await axios.get(matchesUrl(tag, 0, 1, season));
     return getInfo(tag, response.matches);
   }
@@ -249,7 +259,7 @@ export const getOpponentHistory = async (player: any, opponent: any) => {
     for (let i = 0; i < relevant_matches.length; i++) {
       const m = relevant_matches[i];
       const score = getOpponent(m)?.players[0];
-      const key = score.heroes.map((h: any) => h.icon).join(",");
+      const key = score.heroes.map((h: any) => h.icon).join(',');
 
       if (heroes[key]) {
         heroes[key] += 1;
@@ -296,9 +306,9 @@ export const getOngoing = async (battleTag: string, reset: boolean = false) => {
     id: null,
     start: null,
     active: false,
-    player: { name: "", race: 0, battleTag: "", oldMmr: 0 },
-    opponent: { name: "", race: 0, battleTag: "", oldMmr: 0 },
-    map: "",
+    player: { name: '', race: 0, battleTag: '', oldMmr: 0 },
+    opponent: { name: '', race: 0, battleTag: '', oldMmr: 0 },
+    map: '',
     server: {},
     history: {
       wins: 0,
@@ -451,7 +461,7 @@ export const getW3CProfilePicture = async (
     if (!profilePicture) return null;
 
     const { race, pictureId, isClassic } = profilePicture;
-    const baseUrl = "https://w3champions.wc3.tools/prod/integration/icons";
+    const baseUrl = 'https://w3champions.wc3.tools/prod/integration/icons';
 
     // Special avatars (race 32)
     if (race === 32) {
@@ -460,15 +470,15 @@ export const getW3CProfilePicture = async (
 
     // Race-specific avatars
     const raceNames: { [key: number]: string } = {
-      0: "RANDOM",
-      1: "HUMAN",
-      2: "ORC",
-      4: "NIGHTELF",
-      8: "UNDEAD",
-      16: "TOTAL",
+      0: 'RANDOM',
+      1: 'HUMAN',
+      2: 'ORC',
+      4: 'NIGHTELF',
+      8: 'UNDEAD',
+      16: 'TOTAL',
     };
 
-    const raceName = raceNames[race] || "RANDOM";
+    const raceName = raceNames[race] || 'RANDOM';
 
     // Reforged (default) doesn't have a subfolder, classic does
     if (isClassic) {
