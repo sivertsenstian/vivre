@@ -385,7 +385,7 @@ export const Undead: any = {
   Gargoyle: {
     'Stone Form': { code: 'astn', types: [HotKeyType.Basic] },
   },
-  Abomniation: {
+  Abomination: {
     Cannibalize: { code: 'acan', types: [HotKeyType.Basic] },
   },
   'Meat Wagon': {
