@@ -340,7 +340,7 @@ export const NightElf: any = {
     'Scroll of Town Portal': { code: 'stwp', types: [HotKeyType.BasicBuy] },
     'Staff of Preservation': { code: 'spre', types: [HotKeyType.BasicBuy] },
     'Orb of Venom': { code: 'oven', types: [HotKeyType.BasicBuy] },
-    'Anti-magic Potion': { code: 'pams', types: [HotKeyType.BasicBuy] },
+    'Anti magic Potion': { code: 'pams', types: [HotKeyType.BasicBuy] },
     Uproot: { code: 'aro1', types: [HotKeyType.BasicAbility] },
     Root: { code: 'aro1', types: [HotKeyType.BasicAbility] },
     'Eat Tree': { code: 'aeat', types: [HotKeyType.Target] },
