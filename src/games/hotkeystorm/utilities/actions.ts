@@ -17,6 +17,7 @@ export enum HotKeyType {
   NightElfBuild = 'NightElfBuild ',
   UndeadBuild = 'UndeadBuild ',
   OrcBuild = 'OrcBuild ',
+  HumanBuild = 'HumanBuild ',
 }
 
 export const Basic: any = {
@@ -24,6 +25,7 @@ export const Basic: any = {
   NightElfBuild: { code: 'cmdbuildnightelf', types: [HotKeyType.BasicBuild] },
   UndeadBuild: { code: 'cmdbuildundead', types: [HotKeyType.BasicBuild] },
   OrcBuild: { code: 'cmdbuildorc', types: [HotKeyType.BasicBuild] },
+  HumanBuild: { code: 'cmdbuildhuman', types: [HotKeyType.BasicBuild] },
   TargetDummy: 'TARGETDUMMY',
   MissileDodge: 'MISSILEDODGE',
   Miss: 'MISS',
@@ -237,9 +239,35 @@ export const NightElf: any = {
   },
   'Hunter’s Hall': {
     'Strength of the Moon': { code: 'resm', types: [HotKeyType.BasicUpgrade] },
+    'Improved Strength of the Moon': {
+      code: 'resm',
+      types: [HotKeyType.BasicUpgrade],
+    },
+    'Advanced Strength of the Moon': {
+      code: 'resm',
+      types: [HotKeyType.BasicUpgrade],
+    },
     'Strength of the Wild': { code: 'resw', types: [HotKeyType.BasicUpgrade] },
+    'Improved Strength of the Wild': {
+      code: 'resw',
+      types: [HotKeyType.BasicUpgrade],
+    },
+    'Advanced Strength of the Wild': {
+      code: 'resw',
+      types: [HotKeyType.BasicUpgrade],
+    },
     'Moon Armor': { code: 'rema', types: [HotKeyType.BasicUpgrade] },
+    'Improved Moon Armor': { code: 'rema', types: [HotKeyType.BasicUpgrade] },
+    'Advanced Moon Armor': { code: 'rema', types: [HotKeyType.BasicUpgrade] },
     'Reinforced Hides': { code: 'rerh', types: [HotKeyType.BasicUpgrade] },
+    'Improved Reinforced Hides': {
+      code: 'rerh',
+      types: [HotKeyType.BasicUpgrade],
+    },
+    'Advanced Reinforced Hides': {
+      code: 'rerh',
+      types: [HotKeyType.BasicUpgrade],
+    },
     Ultravision: { code: 'reuv', types: [HotKeyType.BasicUpgrade] },
     'Well Spring': { code: 'rews', types: [HotKeyType.BasicUpgrade] },
   },
@@ -485,9 +513,35 @@ export const Undead: any = {
   },
   Graveyard: {
     'Unholy Strength': { code: 'rume', types: [HotKeyType.BasicUpgrade] },
+    'Improved Unholy Strength': {
+      code: 'rume',
+      types: [HotKeyType.BasicUpgrade],
+    },
+    'Advanced Unholy Strength': {
+      code: 'rume',
+      types: [HotKeyType.BasicUpgrade],
+    },
     'Unholy Armor': { code: 'ruar', types: [HotKeyType.BasicUpgrade] },
+    'Improved Unholy Armor': { code: 'ruar', types: [HotKeyType.BasicUpgrade] },
+    'Advanced Unholy Armor': { code: 'ruar', types: [HotKeyType.BasicUpgrade] },
     'Creature Attack': { code: 'rura', types: [HotKeyType.BasicUpgrade] },
+    'Improved Creature Attack': {
+      code: 'rura',
+      types: [HotKeyType.BasicUpgrade],
+    },
+    'Advanced Creature Attack': {
+      code: 'rura',
+      types: [HotKeyType.BasicUpgrade],
+    },
     'Creature Carapace': { code: 'rucr', types: [HotKeyType.BasicUpgrade] },
+    'Improved Creature Carapace': {
+      code: 'rucr',
+      types: [HotKeyType.BasicUpgrade],
+    },
+    'Advanced Creature Carapace': {
+      code: 'rucr',
+      types: [HotKeyType.BasicUpgrade],
+    },
   },
   Ziggurat: {
     'Spirit Tower': { code: 'uzg1', types: [HotKeyType.BasicUpgrade] },
@@ -713,7 +767,7 @@ export const Orc: any = {
     Stronghold: { code: 'ostr', types: [HotKeyType.BasicUpgrade] },
   },
   Stronghold: {
-    Fortress: { code: 'ostr', types: [HotKeyType.BasicUpgrade] },
+    Fortress: { code: 'ofrt', types: [HotKeyType.BasicUpgrade] },
   },
   Barracks: {
     Grunt: { code: 'ogru', types: [HotKeyType.BasicBuild] },
@@ -726,13 +780,19 @@ export const Orc: any = {
     'Burning Oil': { code: 'robf', types: [HotKeyType.BasicUpgrade] },
   },
   'War Mill': {
+    'Steel Melee Weapons': { code: 'rome', types: [HotKeyType.BasicUpgrade] },
     'Thorium Melee Weapons': { code: 'rome', types: [HotKeyType.BasicUpgrade] },
     'Arcanite Melee Weapons': {
       code: 'rome',
       types: [HotKeyType.BasicUpgrade],
     },
+    'Steel Armor': { code: 'roar', types: [HotKeyType.BasicUpgrade] },
     'Thorium Armor': { code: 'roar', types: [HotKeyType.BasicUpgrade] },
     'Arcanite Armor': { code: 'roar', types: [HotKeyType.BasicUpgrade] },
+    'Steel Ranged Weapons': {
+      code: 'rora',
+      types: [HotKeyType.BasicUpgrade],
+    },
     'Thorium Ranged Weapons': {
       code: 'rora',
       types: [HotKeyType.BasicUpgrade],
@@ -741,7 +801,11 @@ export const Orc: any = {
       code: 'rora',
       types: [HotKeyType.BasicUpgrade],
     },
-    Barricades: { code: 'rosp', types: [HotKeyType.BasicUpgrade] },
+    'Spiked Barricades': { code: 'rosp', types: [HotKeyType.BasicUpgrade] },
+    'Improved Spiked Barricades': {
+      code: 'rosp',
+      types: [HotKeyType.BasicUpgrade],
+    },
     'Reinforced Defenses': { code: 'rorb', types: [HotKeyType.BasicUpgrade] },
   },
   'Orc Burrow': {
@@ -806,17 +870,277 @@ export const Orc: any = {
   },
 };
 
+export const HumanInventory: any = {
+  Item2: {
+    'Staff Of Sanctuary': {
+      code: 'itm2',
+      types: [HotKeyType.Target],
+    },
+    'Scroll Of Regeneration': {
+      code: 'itm2',
+      types: [HotKeyType.BasicAbility],
+    },
+    'Ivory Tower': {
+      code: 'itm2',
+      types: [HotKeyType.Target],
+    },
+  },
+};
+
+export const Human: any = {
+  Paladin: {
+    'Holy Light': {
+      code: 'ahhb',
+      types: [HotKeyType.BasicAbility, HotKeyType.Train],
+    },
+    'Devotion Aura': {
+      code: 'ahad',
+      types: [HotKeyType.Train],
+    },
+    'Divine Shield': {
+      code: 'ahds',
+      types: [HotKeyType.BasicAbility, HotKeyType.Dodge, HotKeyType.Train],
+    },
+    Resurrection: {
+      code: 'ahre',
+      types: [HotKeyType.BasicAbility, HotKeyType.Train],
+    },
+  },
+  Archmage: {
+    Blizzard: {
+      code: 'ahbz',
+      types: [HotKeyType.Target, HotKeyType.Train],
+    },
+    'Brilliance Aura': {
+      code: 'ahab',
+      types: [HotKeyType.Train],
+    },
+    'Summon Water Elemental': {
+      code: 'ahwe',
+      types: [HotKeyType.BasicAbility, HotKeyType.Train],
+    },
+    'Mass Teleport': {
+      code: 'ahmt',
+      types: [HotKeyType.Target, HotKeyType.Train],
+    },
+  },
+  'Mountain King': {
+    'Storm Bolt': {
+      code: 'ahtb',
+      types: [HotKeyType.Target, HotKeyType.Train],
+    },
+    Bash: {
+      code: 'ahbh',
+      types: [HotKeyType.Train],
+    },
+    'Thunder Clap': {
+      code: 'ahtc',
+      types: [HotKeyType.BasicAbility, HotKeyType.Train],
+    },
+    Avatar: {
+      code: 'ahav',
+      types: [HotKeyType.BasicAbility, HotKeyType.Train],
+    },
+  },
+  'Blood Mage': {
+    'Flame Strike': {
+      code: 'ahfs',
+      types: [HotKeyType.Target, HotKeyType.Train],
+    },
+    Banish: {
+      code: 'ahbn',
+      types: [HotKeyType.Target, HotKeyType.Train],
+    },
+    'Siphon Mana': {
+      code: 'ahdr',
+      types: [HotKeyType.Target, HotKeyType.Train],
+    },
+    Phoenix: {
+      code: 'ahpx',
+      types: [HotKeyType.BasicAbility, HotKeyType.Train],
+    },
+  },
+  Peasant: {
+    Repair: { code: 'ahrp', types: [HotKeyType.Target] },
+    'Call to Arms': { code: 'amil', types: [HotKeyType.BasicAbility] },
+    'Town Hall': { code: 'htow', types: [HotKeyType.HumanBuild] },
+    'Human Barracks': { code: 'hbar', types: [HotKeyType.HumanBuild] },
+    'Lumber Mill': { code: 'hlum', types: [HotKeyType.HumanBuild] },
+    Blacksmith: { code: 'hbla', types: [HotKeyType.HumanBuild] },
+    Farm: { code: 'hhou', types: [HotKeyType.HumanBuild] },
+    'Altar of Kings': { code: 'halt', types: [HotKeyType.HumanBuild] },
+    'Arcane Sanctum': { code: 'hars', types: [HotKeyType.HumanBuild] },
+    Workshop: { code: 'harm', types: [HotKeyType.HumanBuild] },
+    'Scout Tower': { code: 'hwtw', types: [HotKeyType.HumanBuild] },
+    'Gryphon Aviary': { code: 'hgra', types: [HotKeyType.HumanBuild] },
+    'Arcane Vault': { code: 'hvlt', types: [HotKeyType.HumanBuild] },
+  },
+  Militia: {
+    'Back To Work': { code: 'amil', types: [HotKeyType.BasicAbility] },
+  },
+  Footman: {
+    Defend: { code: 'adef', types: [HotKeyType.BasicAbility] },
+  },
+  Priest: {
+    Heal: { code: 'ahea', types: [HotKeyType.Target] },
+    'Dispel Magic': {
+      code: 'adis',
+      types: [HotKeyType.MultiTarget, HotKeyType.Target],
+    },
+    'Inner Fire': {
+      code: 'ainf',
+      types: [HotKeyType.MultiTarget, HotKeyType.Target],
+    },
+  },
+  Sorceress: {
+    Slow: { code: 'aslo', types: [HotKeyType.MultiTarget, HotKeyType.Target] },
+    Invisibility: { code: 'aivs', types: [HotKeyType.Target] },
+    Polymorph: {
+      code: 'aply',
+      types: [HotKeyType.MultiTarget, HotKeyType.Target],
+    },
+  },
+  'Mortar Team': {
+    'Attack Ground': { code: 'cmdattackground', types: [HotKeyType.Target] },
+    Flare: { code: 'afla', types: [HotKeyType.Target] },
+  },
+  'Dragonhawk Rider': {
+    'Aerial Shackles': {
+      code: 'amls',
+      types: [HotKeyType.MultiTarget, HotKeyType.Target],
+    },
+  },
+  'Town Hall': {
+    Peasant: { code: 'hpea', types: [HotKeyType.BasicBuild] },
+    Backpack: { code: 'rhpm', types: [HotKeyType.BasicUpgrade] },
+    'Call to Arms': { code: 'amic', types: [HotKeyType.BasicAbility] },
+    Keep: { code: 'hkee', types: [HotKeyType.BasicUpgrade] },
+  },
+  Keep: {
+    Castle: { code: 'hcas', types: [HotKeyType.BasicUpgrade] },
+  },
+  'Human Barracks': {
+    Footman: { code: 'hfoo', types: [HotKeyType.BasicBuild] },
+    Rifleman: { code: 'hrif', types: [HotKeyType.BasicBuild] },
+    Knight: { code: 'hkni', types: [HotKeyType.BasicBuild] },
+    Defend: { code: 'rhde', types: [HotKeyType.BasicUpgrade] },
+    'Long Rifles': { code: 'rhri', types: [HotKeyType.BasicUpgrade] },
+    'Animal War Training': { code: 'rhan', types: [HotKeyType.BasicUpgrade] },
+  },
+  'Lumber Mill': {
+    'Improved Masonry': { code: 'rhac', types: [HotKeyType.BasicUpgrade] },
+    'Advanced Masonry': { code: 'rhac', types: [HotKeyType.BasicUpgrade] },
+    'Imbued Masonry': { code: 'rhac', types: [HotKeyType.BasicUpgrade] },
+    'Improved Lumber Harvesting': {
+      code: 'rhlh',
+      types: [HotKeyType.BasicUpgrade],
+    },
+    'Advanced Lumber Harvesting': {
+      code: 'rhlh',
+      types: [HotKeyType.BasicUpgrade],
+    },
+  },
+  Blacksmith: {
+    'Iron Forged Swords': { code: 'rhme', types: [HotKeyType.BasicUpgrade] },
+    'Steel Forged Swords': { code: 'rhme', types: [HotKeyType.BasicUpgrade] },
+    'Mithril Forged Swords': { code: 'rhme', types: [HotKeyType.BasicUpgrade] },
+    'Iron Plating': { code: 'rhar', types: [HotKeyType.BasicUpgrade] },
+    'Steel Plating': { code: 'rhar', types: [HotKeyType.BasicUpgrade] },
+    'Mithril Plating': { code: 'rhar', types: [HotKeyType.BasicUpgrade] },
+    'Black Gunpowder': { code: 'rhra', types: [HotKeyType.BasicUpgrade] },
+    'Refined Gunpowder': { code: 'rhra', types: [HotKeyType.BasicUpgrade] },
+    'Imbued Gunpowder': { code: 'rhra', types: [HotKeyType.BasicUpgrade] },
+    'Studded Leather Armor': { code: 'rhla', types: [HotKeyType.BasicUpgrade] },
+    'Reinforced Leather Armor': {
+      code: 'rhla',
+      types: [HotKeyType.BasicUpgrade],
+    },
+    'Dragonhide Armor': {
+      code: 'rhla',
+      types: [HotKeyType.BasicUpgrade],
+    },
+  },
+  'Altar of Kings': {
+    Archmage: { code: 'hamg', types: [HotKeyType.BasicBuild] },
+    'Mountain King': { code: 'hmkg', types: [HotKeyType.BasicBuild] },
+    Paladin: { code: 'hpal', types: [HotKeyType.BasicBuild] },
+    'Blood Mage': { code: 'hblm', types: [HotKeyType.BasicBuild] },
+  },
+  'Arcane Sanctum': {
+    Priest: { code: 'hmpr', types: [HotKeyType.BasicBuild] },
+    Sorceress: { code: 'hsor', types: [HotKeyType.BasicBuild] },
+    'Spell Breaker': { code: 'hspt', types: [HotKeyType.BasicBuild] },
+    'Priest Adept Training': { code: 'rhpt', types: [HotKeyType.BasicUpgrade] },
+    'Priest Master Training': {
+      code: 'rhpt',
+      types: [HotKeyType.BasicUpgrade],
+    },
+    'Sorceress Adept Training': {
+      code: 'rhst',
+      types: [HotKeyType.BasicUpgrade],
+    },
+    'Sorceress Master Training': {
+      code: 'rhst',
+      types: [HotKeyType.BasicUpgrade],
+    },
+    'Magic Sentry': { code: 'rhse', types: [HotKeyType.BasicUpgrade] },
+    'Control Magic': { code: 'rhss', types: [HotKeyType.BasicUpgrade] },
+  },
+  Workshop: {
+    'Flying Machine': { code: 'hgyr', types: [HotKeyType.BasicBuild] },
+    'Mortar Team': { code: 'hmtm', types: [HotKeyType.BasicBuild] },
+    'Siege Engine': { code: 'hmtt', types: [HotKeyType.BasicBuild] },
+    'Flying Machine Bombs': { code: 'rhgb', types: [HotKeyType.BasicUpgrade] },
+    Flare: { code: 'rhfl', types: [HotKeyType.BasicUpgrade] },
+    Barrage: { code: 'rhrt', types: [HotKeyType.BasicUpgrade] },
+    'Flak Cannons': { code: 'rhfc', types: [HotKeyType.BasicUpgrade] },
+    'Fragmentation Shards': { code: 'rhfs', types: [HotKeyType.BasicUpgrade] },
+  },
+  'Scout Tower': {
+    'Guard Tower': { code: 'hgtw', types: [HotKeyType.BasicUpgrade] },
+    'Cannon Tower': { code: 'hctw', types: [HotKeyType.BasicUpgrade] },
+    'Arcane Tower': { code: 'hatw', types: [HotKeyType.BasicUpgrade] },
+  },
+  'Cannon Tower': {
+    'Attack Ground': { code: 'cmdattackground', types: [HotKeyType.Target] },
+  },
+  'Arcane Tower': {
+    Reveal: { code: 'ahta', types: [HotKeyType.Target] },
+  },
+  'Gryphon Aviary': {
+    'Gryphon Rider': { code: 'hgry', types: [HotKeyType.BasicBuild] },
+    'Dragonhawk Rider': { code: 'hdhw', types: [HotKeyType.BasicBuild] },
+    'Storm Hammers': { code: 'rhhb', types: [HotKeyType.BasicUpgrade] },
+    Cloud: { code: 'rhcd', types: [HotKeyType.BasicUpgrade] },
+  },
+  'Arcane Vault': {
+    'Scroll of Regeneration': { code: 'sreg', types: [HotKeyType.BasicBuy] },
+    'Mechanical Critter': { code: 'mcri', types: [HotKeyType.BasicBuy] },
+    'Lesser Clarity Potion': { code: 'plcl', types: [HotKeyType.BasicBuy] },
+    'Potion of Healing': { code: 'phea', types: [HotKeyType.BasicBuy] },
+    'Potion of Mana': { code: 'pman', types: [HotKeyType.BasicBuy] },
+    'Scroll of Town Portal': { code: 'stwp', types: [HotKeyType.BasicBuy] },
+    'Ivory Tower': { code: 'tsct', types: [HotKeyType.BasicBuy] },
+    'Orb of Slow': { code: 'oslo', types: [HotKeyType.BasicBuy] },
+    'Staff of Sanctuary': { code: 'ssan', types: [HotKeyType.BasicBuy] },
+  },
+};
+
 export const actions = {
   ...Basic,
   ...NightElf,
   ...Undead,
   ...Orc,
+  ...Human,
   ..._merge(
     _merge(
-      _merge(_merge({}, BasicInventory), NightElfInventory),
-      UndeadInventory,
+      _merge(
+        _merge(_merge({}, BasicInventory), NightElfInventory),
+        UndeadInventory,
+      ),
+      OrcInventory,
     ),
-    OrcInventory,
+    HumanInventory,
   ),
 };
 
@@ -833,6 +1157,11 @@ export const undead_actions = {
 export const orc_actions = {
   ..._merge(_merge({}, BasicInventory), OrcInventory),
   ...Orc,
+};
+
+export const human_actions = {
+  ..._merge(_merge({}, BasicInventory), HumanInventory),
+  ...Human,
 };
 
 export const getCodeFromAction = (name: string, action: string) => {
@@ -873,6 +1202,8 @@ export const createActions = (action: string, type: HotKeyType) => {
       return ['UndeadBuild', action];
     case HotKeyType.OrcBuild:
       return ['OrcBuild', action];
+    case HotKeyType.HumanBuild:
+      return ['HumanBuild', action];
     default:
       throw Error(` [${action}]: Unable to create actions for type [${type}]`);
   }
@@ -892,6 +1223,7 @@ export const createPuzzles = (source: any, name: string) => {
 
 export const actionToName = (action: string) => {
   switch (action) {
+    case 'HumanBuild':
     case 'OrcBuild':
       return 'Build Structure';
     case 'NightElfBuild':
