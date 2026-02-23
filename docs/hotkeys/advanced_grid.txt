@@ -15,6 +15,14 @@
 //    Move is now Z   Attack and Stop are still A and S
 //  Works great combined with Warkey for Inventory items!
 ///////////////////////////////////////////////////////////
+[her1]
+Hotkey=112
+
+[her2]
+Hotkey=113
+
+[her3]
+Hotkey=114
 
 [cmdcancel]
 Tip=(|cffffcc00ESC|r) Cancel
