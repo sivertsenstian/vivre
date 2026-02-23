@@ -11,6 +11,7 @@ import {
   HotKeyType,
   night_elf_actions,
   undead_actions,
+  orc_actions,
 } from './utilities/actions';
 import { layouts } from './utilities/data';
 import { useHotKeyStormStore } from '@/games/hotkeystorm/store.ts';
@@ -41,6 +42,8 @@ const toInstruction = (puzzle: any) => {
     case HotKeyType.BasicAbility:
     case HotKeyType.Target:
       return `Cast ${a}`;
+    case HotKeyType.MultiTarget:
+      return `Cast ${actionToName(puzzle?.actions?.[0])} on multiple targets`;
     case HotKeyType.BasicUpgrade:
       return `Research ${a}`;
     case HotKeyType.BasicBuy:
@@ -49,6 +52,8 @@ const toInstruction = (puzzle: any) => {
       return `Use ${a}`;
     case HotKeyType.BasicBuild:
       return `Build ${a}`;
+    case HotKeyType.Use:
+      return `Quickcast ${actionToName(puzzle?.actions?.[0])}`;
     default:
       return a;
   }
@@ -618,10 +623,19 @@ const dodge = () => {
                         </td>
                         <td style="width: 64px; height: 64px">
                           <v-btn
+                            @click="
+                              () => {
+                                puzzles = _keys(orc_actions)
+                                  .map((name) =>
+                                    createPuzzles(orc_actions, name),
+                                  )
+                                  .flat();
+                                start();
+                              }
+                            "
                             rounded="0"
                             variant="tonal"
-                            style="width: 100%; height: 100%"
-                            disabled>
+                            style="width: 100%; height: 100%">
                             <race-icon :race="Race.Orc" :size="84" />
                           </v-btn>
                         </td>
@@ -632,7 +646,9 @@ const dodge = () => {
                             @click="
                               () => {
                                 puzzles = _keys(night_elf_actions)
-                                  .map(createPuzzles)
+                                  .map((name) =>
+                                    createPuzzles(night_elf_actions, name),
+                                  )
                                   .flat();
                                 start();
                               }
@@ -648,7 +664,9 @@ const dodge = () => {
                             @click="
                               () => {
                                 puzzles = _keys(undead_actions)
-                                  .map(createPuzzles)
+                                  .map((name) =>
+                                    createPuzzles(undead_actions, name),
+                                  )
                                   .flat();
                                 start();
                               }

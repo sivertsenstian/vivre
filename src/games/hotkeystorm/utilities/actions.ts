@@ -10,17 +10,20 @@ export enum HotKeyType {
   BasicItem = 'BasicItem',
 
   Target = 'Target',
+  MultiTarget = 'MultiTarget',
   Use = 'Use',
   Dodge = 'Dodge',
   Train = 'Train',
   NightElfBuild = 'NightElfBuild ',
   UndeadBuild = 'UndeadBuild ',
+  OrcBuild = 'OrcBuild ',
 }
 
 export const Basic: any = {
   HeroAbilities: { code: 'cmdselectskill', types: [HotKeyType.BasicAbility] },
   NightElfBuild: { code: 'cmdbuildnightelf', types: [HotKeyType.BasicBuild] },
   UndeadBuild: { code: 'cmdbuildundead', types: [HotKeyType.BasicBuild] },
+  OrcBuild: { code: 'cmdbuildorc', types: [HotKeyType.BasicBuild] },
   TargetDummy: 'TARGETDUMMY',
   MissileDodge: 'MISSILEDODGE',
   Miss: 'MISS',
@@ -136,7 +139,10 @@ export const NightElf: any = {
 
   Wisp: {
     Renew: { code: 'aren', types: [HotKeyType.Target] },
-    Detonate: { code: 'adtn', types: [HotKeyType.Target] },
+    Detonate: {
+      code: 'adtn',
+      types: [HotKeyType.Target, HotKeyType.MultiTarget],
+    },
     'Tree Of Life': { code: 'etol', types: [HotKeyType.NightElfBuild] },
     'Ancient Of War': { code: 'eaom', types: [HotKeyType.NightElfBuild] },
     'Hunter’s Hall': { code: 'edob', types: [HotKeyType.NightElfBuild] },
@@ -159,10 +165,18 @@ export const NightElf: any = {
   'Glaive Thrower': {
     'Attack Ground': { code: 'cmdattackground', types: [HotKeyType.Target] },
   },
-  Dryad: { 'Abolish Magic': { code: 'aadm', types: [HotKeyType.Target] } },
+  Dryad: {
+    'Abolish Magic': {
+      code: 'aadm',
+      types: [HotKeyType.Target, HotKeyType.MultiTarget],
+    },
+  },
   'Druid Of The Claw': {
     Roar: { code: 'aroa', types: [HotKeyType.BasicAbility] },
-    Rejuvenation: { code: 'arej', types: [HotKeyType.Target] },
+    Rejuvenation: {
+      code: 'arej',
+      types: [HotKeyType.Target, HotKeyType.MultiTarget],
+    },
     'Bear Form': { code: 'abrf', types: [HotKeyType.BasicAbility] },
   },
   'Mountain Giant': {
@@ -176,8 +190,14 @@ export const NightElf: any = {
     'Dismount Archer': { code: 'adec', types: [HotKeyType.BasicAbility] },
   },
   'Druid Of The Talon': {
-    Cyclone: { code: 'acyc', types: [HotKeyType.Target] },
-    'Faerie Fire': { code: 'afae', types: [HotKeyType.Target] },
+    Cyclone: {
+      code: 'acyc',
+      types: [HotKeyType.Target, HotKeyType.MultiTarget],
+    },
+    'Faerie Fire': {
+      code: 'afae',
+      types: [HotKeyType.Target, HotKeyType.MultiTarget],
+    },
     'Storm Crow Form': { code: 'arav', types: [HotKeyType.BasicAbility] },
   },
   'Faerie Dragon': {
@@ -346,7 +366,7 @@ export const Undead: any = {
     },
     'Frost Armor': {
       code: 'aufu',
-      types: [HotKeyType.Target, HotKeyType.Train],
+      types: [HotKeyType.Target, HotKeyType.MultiTarget, HotKeyType.Train],
     },
     'Dark Ritual': {
       code: 'audr',
@@ -396,8 +416,9 @@ export const Undead: any = {
     Gather: { code: 'ahrl', types: [HotKeyType.Target] },
   },
   'Crypt Fiend': {
+    Unburrow: { code: 'abur', types: [HotKeyType.BasicAbility] },
     Burrow: { code: 'abur', types: [HotKeyType.BasicAbility] },
-    Web: { code: 'aweb', types: [HotKeyType.Target] },
+    Web: { code: 'aweb', types: [HotKeyType.Target, HotKeyType.MultiTarget] },
   },
   Gargoyle: {
     'Stone Form': { code: 'astn', types: [HotKeyType.BasicAbility] },
@@ -412,13 +433,25 @@ export const Undead: any = {
   },
   Necromancer: {
     'Raise Dead': { code: 'arai', types: [HotKeyType.BasicAbility] },
-    'Unholy Frenzy': { code: 'auhf', types: [HotKeyType.Target] },
-    Cripple: { code: 'acri', types: [HotKeyType.Target] },
+    'Unholy Frenzy': {
+      code: 'auhf',
+      types: [HotKeyType.Target, HotKeyType.MultiTarget],
+    },
+    Cripple: {
+      code: 'acri',
+      types: [HotKeyType.Target, HotKeyType.MultiTarget],
+    },
   },
   Banshee: {
-    'Anti magic Shell': { code: 'aam2', types: [HotKeyType.Target] },
-    Curse: { code: 'acrs', types: [HotKeyType.Target] },
-    Possession: { code: 'aps2', types: [HotKeyType.Target] },
+    'Anti magic Shell': {
+      code: 'aam2',
+      types: [HotKeyType.Target, HotKeyType.MultiTarget],
+    },
+    Curse: { code: 'acrs', types: [HotKeyType.Target, HotKeyType.MultiTarget] },
+    Possession: {
+      code: 'aps2',
+      types: [HotKeyType.Target, HotKeyType.MultiTarget],
+    },
   },
   'Obsidian Statue': {
     'Essence Of Blight': { code: 'arpl', types: [HotKeyType.BasicAbility] },
@@ -426,7 +459,10 @@ export const Undead: any = {
     Destroyer: { code: 'ubsp', types: [HotKeyType.BasicAbility] },
   },
   Destroyer: {
-    'Devour Magic': { code: 'advm', types: [HotKeyType.Target] },
+    'Devour Magic': {
+      code: 'advm',
+      types: [HotKeyType.Target, HotKeyType.MultiTarget],
+    },
     'Absorb Mana': { code: 'aabs', types: [HotKeyType.Target] },
   },
   Necropolis: {
@@ -512,13 +548,275 @@ export const Undead: any = {
   },
 };
 
+export const OrcInventory: any = {
+  Item2: {
+    'Healing Salve': {
+      code: 'itm2',
+      types: [HotKeyType.Target, HotKeyType.MultiTarget],
+    },
+  },
+  Item4: {
+    'Scroll Of Speed': { code: 'itm4', types: [HotKeyType.BasicAbility] },
+  },
+};
+
+export const Orc: any = {
+  Blademaster: {
+    'Wind Walk': {
+      code: 'aowk',
+      types: [HotKeyType.BasicAbility, HotKeyType.Dodge, HotKeyType.Train],
+    },
+    'Critical Strike': {
+      code: 'aocr',
+      types: [HotKeyType.Train],
+    },
+    'Mirror Image': {
+      code: 'aomi',
+      types: [HotKeyType.BasicAbility, HotKeyType.Dodge, HotKeyType.Train],
+    },
+    Bladestorm: {
+      code: 'aoww',
+      types: [HotKeyType.BasicAbility, HotKeyType.Train],
+    },
+  },
+  'Far Seer': {
+    'Far Sight': {
+      code: 'aofs',
+      types: [HotKeyType.Target, HotKeyType.Train],
+    },
+    'Feral Spirit': {
+      code: 'aosf',
+      types: [HotKeyType.BasicAbility, HotKeyType.Train],
+    },
+    'Chain Lightning': {
+      code: 'aocl',
+      types: [HotKeyType.Target, HotKeyType.Train],
+    },
+    Earthquake: {
+      code: 'aoeq',
+      types: [HotKeyType.Target, HotKeyType.Train],
+    },
+  },
+  'Tauren Chieftain': {
+    Shockwave: {
+      code: 'aosh',
+      types: [HotKeyType.Target, HotKeyType.Train],
+    },
+    'Endurance Aura': {
+      code: 'aoae',
+      types: [HotKeyType.Train],
+    },
+    'War Stomp': {
+      code: 'aows',
+      types: [HotKeyType.BasicAbility, HotKeyType.Train],
+    },
+    Reincarnation: {
+      code: 'aore',
+      types: [HotKeyType.Train],
+    },
+  },
+  'Shadow Hunter': {
+    Hex: {
+      code: 'aohx',
+      types: [HotKeyType.Target, HotKeyType.Train],
+    },
+    'Healing Wave': {
+      code: 'aohw',
+      types: [HotKeyType.Target, HotKeyType.Train],
+    },
+    'Serpent Ward': {
+      code: 'aosw',
+      types: [HotKeyType.Target, HotKeyType.MultiTarget, HotKeyType.Train],
+    },
+    'Big Bad Voodoo': {
+      code: 'aovd',
+      types: [HotKeyType.BasicAbility, HotKeyType.Train],
+    },
+  },
+
+  Peon: {
+    Repair: { code: 'arep', types: [HotKeyType.Target] },
+    'Great Hall': { code: 'ogre', types: [HotKeyType.OrcBuild] },
+    Barracks: { code: 'obar', types: [HotKeyType.OrcBuild] },
+    'War Mill': { code: 'ofor', types: [HotKeyType.OrcBuild] },
+    'Watch Tower': { code: 'owtw', types: [HotKeyType.OrcBuild] },
+    'Orc Burrow': { code: 'otrb', types: [HotKeyType.OrcBuild] },
+    'Altar of Storms': { code: 'oalt', types: [HotKeyType.OrcBuild] },
+    'Spirit Lodge': { code: 'osld', types: [HotKeyType.OrcBuild] },
+    Beastiary: { code: 'obea', types: [HotKeyType.OrcBuild] },
+    'Tauren Totem': { code: 'otto', types: [HotKeyType.OrcBuild] },
+    'Voodoo Lounge': { code: 'ovln', types: [HotKeyType.OrcBuild] },
+  },
+  'Troll Berserker': {
+    Berserk: { code: 'absk', types: [HotKeyType.BasicAbility] },
+  },
+  Demolisher: {
+    'Attack Ground': { code: 'cmdattackground', types: [HotKeyType.Target] },
+  },
+  Shaman: {
+    Purge: { code: 'apg2', types: [HotKeyType.Target, HotKeyType.MultiTarget] },
+    'Lightning Shield': {
+      code: 'alsh',
+      types: [HotKeyType.Target, HotKeyType.MultiTarget],
+    },
+    Bloodlust: {
+      code: 'ablo',
+      types: [HotKeyType.Target, HotKeyType.MultiTarget],
+    },
+  },
+  'Witch Doctor': {
+    'Sentry Ward': { code: 'aeye', types: [HotKeyType.Target] },
+    'Stasis Trap': {
+      code: 'asta',
+      types: [HotKeyType.Target, HotKeyType.MultiTarget],
+    },
+    'Healing Ward': {
+      code: 'ahwd',
+      types: [HotKeyType.Target, HotKeyType.MultiTarget],
+    },
+  },
+  'Spirit Walker': {
+    'Corporeal Form': { code: 'acpf', types: [HotKeyType.BasicAbility] },
+    'Ethereal Form': { code: 'acpf', types: [HotKeyType.BasicAbility] },
+    'Spirit Link': {
+      code: 'aspl',
+      types: [HotKeyType.Target, HotKeyType.MultiTarget],
+    },
+    Disenchant: {
+      code: 'adcn',
+      types: [HotKeyType.Target, HotKeyType.MultiTarget],
+    },
+    'Ancestral Spirit': { code: 'aast', types: [HotKeyType.BasicAbility] },
+  },
+  Raider: {
+    Ensnare: {
+      code: 'aens',
+      types: [HotKeyType.Target, HotKeyType.MultiTarget],
+    },
+  },
+  'Kodo Beast': {
+    Devour: {
+      code: 'adev',
+      types: [HotKeyType.Target, HotKeyType.MultiTarget],
+    },
+  },
+  'Troll Batrider': {
+    'Unstable Concoction': {
+      code: 'auco',
+      types: [HotKeyType.Target, HotKeyType.MultiTarget],
+    },
+  },
+  'Great Hall': {
+    Peon: { code: 'opeo', types: [HotKeyType.BasicBuild] },
+    Pillage: { code: 'ropg', types: [HotKeyType.BasicUpgrade] },
+    Backpack: { code: 'ropm', types: [HotKeyType.BasicUpgrade] },
+    Stronghold: { code: 'ostr', types: [HotKeyType.BasicUpgrade] },
+  },
+  Stronghold: {
+    Fortress: { code: 'ostr', types: [HotKeyType.BasicUpgrade] },
+  },
+  Barracks: {
+    Grunt: { code: 'ogru', types: [HotKeyType.BasicBuild] },
+    'Troll Headhunter': { code: 'ohun', types: [HotKeyType.BasicBuild] },
+    'Troll Berserker': { code: 'otbk', types: [HotKeyType.BasicBuild] },
+    Demolisher: { code: 'ocat', types: [HotKeyType.BasicBuild] },
+    'Berserker Strength': { code: 'robs', types: [HotKeyType.BasicUpgrade] },
+    'Troll Regeneration': { code: 'rotr', types: [HotKeyType.BasicUpgrade] },
+    'Berserker Upgrade': { code: 'robk', types: [HotKeyType.BasicUpgrade] },
+    'Burning Oil': { code: 'robf', types: [HotKeyType.BasicUpgrade] },
+  },
+  'War Mill': {
+    'Thorium Melee Weapons': { code: 'rome', types: [HotKeyType.BasicUpgrade] },
+    'Arcanite Melee Weapons': {
+      code: 'rome',
+      types: [HotKeyType.BasicUpgrade],
+    },
+    'Thorium Armor': { code: 'roar', types: [HotKeyType.BasicUpgrade] },
+    'Arcanite Armor': { code: 'roar', types: [HotKeyType.BasicUpgrade] },
+    'Thorium Ranged Weapons': {
+      code: 'rora',
+      types: [HotKeyType.BasicUpgrade],
+    },
+    'Arcanite Ranged Weapons': {
+      code: 'rora',
+      types: [HotKeyType.BasicUpgrade],
+    },
+    Barricades: { code: 'rosp', types: [HotKeyType.BasicUpgrade] },
+    'Reinforced Defenses': { code: 'rorb', types: [HotKeyType.BasicUpgrade] },
+  },
+  'Orc Burrow': {
+    'Battle Stations': { code: 'abtl', types: [HotKeyType.BasicAbility] },
+    'Stand Down': { code: 'astd', types: [HotKeyType.BasicAbility] },
+  },
+  'Altar of Storms': {
+    Blademaster: { code: 'obla', types: [HotKeyType.BasicBuild] },
+    'Far Seer': { code: 'ofar', types: [HotKeyType.BasicBuild] },
+    'Tauren Chieftain': { code: 'otch', types: [HotKeyType.BasicBuild] },
+    'Shadow Hunter': { code: 'oshd', types: [HotKeyType.BasicBuild] },
+  },
+  'Spirit Lodge': {
+    Shaman: { code: 'oshm', types: [HotKeyType.BasicBuild] },
+    'Witch Doctor': { code: 'odoc', types: [HotKeyType.BasicBuild] },
+    'Shaman Adept Training': { code: 'rost', types: [HotKeyType.BasicUpgrade] },
+    'Shaman Master Training': {
+      code: 'rost',
+      types: [HotKeyType.BasicUpgrade],
+    },
+    'Witch Doctor Adept Training': {
+      code: 'rowd',
+      types: [HotKeyType.BasicUpgrade],
+    },
+    'Witch Doctor Master Training': {
+      code: 'rowd',
+      types: [HotKeyType.BasicUpgrade],
+    },
+  },
+  Beastiary: {
+    Raider: { code: 'orai', types: [HotKeyType.BasicBuild] },
+    'Kodo Beast': { code: 'okod', types: [HotKeyType.BasicBuild] },
+    'Wind Rider': { code: 'owyv', types: [HotKeyType.BasicBuild] },
+    'Troll Batrider': { code: 'otbr', types: [HotKeyType.BasicBuild] },
+    Ensnare: { code: 'roen', types: [HotKeyType.BasicUpgrade] },
+    'Envenomed Spear': { code: 'rovs', types: [HotKeyType.BasicUpgrade] },
+    'War Drums': { code: 'rwdm', types: [HotKeyType.BasicUpgrade] },
+    'Liquid Fire': { code: 'rolf', types: [HotKeyType.BasicUpgrade] },
+  },
+  'Tauren Totem': {
+    Tauren: { code: 'otau', types: [HotKeyType.BasicBuild] },
+    'Spirit Walker': { code: 'ospm', types: [HotKeyType.BasicBuild] },
+    Pulverize: { code: 'rows', types: [HotKeyType.BasicUpgrade] },
+    'Spirit Walker Adept Training': {
+      code: 'rowt',
+      types: [HotKeyType.BasicUpgrade],
+    },
+    'Spirit Walker Master Training': {
+      code: 'rowt',
+      types: [HotKeyType.BasicUpgrade],
+    },
+  },
+  'Voodoo Lounge': {
+    'Scroll of Speed': { code: 'shas', types: [HotKeyType.BasicBuy] },
+    'Healing Salve': { code: 'hslv', types: [HotKeyType.BasicBuy] },
+    'Lesser Clarity Potion': { code: 'plcl', types: [HotKeyType.BasicBuy] },
+    'Potion of Healing': { code: 'phea', types: [HotKeyType.BasicBuy] },
+    'Potion of Mana': { code: 'pman', types: [HotKeyType.BasicBuy] },
+    'Scroll of Town Portal': { code: 'stwp', types: [HotKeyType.BasicBuy] },
+    'Tiny Great Hall': { code: 'tgrh', types: [HotKeyType.BasicBuy] },
+    'Orb of Lightning': { code: 'oli2', types: [HotKeyType.BasicBuy] },
+  },
+};
+
 export const actions = {
   ...Basic,
   ...NightElf,
   ...Undead,
+  ...Orc,
   ..._merge(
-    _merge(_merge({}, BasicInventory), NightElfInventory),
-    UndeadInventory,
+    _merge(
+      _merge(_merge({}, BasicInventory), NightElfInventory),
+      UndeadInventory,
+    ),
+    OrcInventory,
   ),
 };
 
@@ -532,6 +830,11 @@ export const undead_actions = {
   ...Undead,
 };
 
+export const orc_actions = {
+  ..._merge(_merge({}, BasicInventory), OrcInventory),
+  ...Orc,
+};
+
 export const getCodeFromAction = (name: string, action: string) => {
   const a = action.replace('HeroAbilitiesTrain', '');
   const result =
@@ -541,6 +844,7 @@ export const getCodeFromAction = (name: string, action: string) => {
 
 export const createActions = (action: string, type: HotKeyType) => {
   switch (type) {
+    case HotKeyType.BasicItem:
     case HotKeyType.BasicAbility:
     case HotKeyType.BasicBuild:
     case HotKeyType.BasicBuy:
@@ -548,6 +852,15 @@ export const createActions = (action: string, type: HotKeyType) => {
       return [action];
     case HotKeyType.Use:
       return [action, action];
+    case HotKeyType.MultiTarget:
+      return [
+        action,
+        Basic.TargetDummy,
+        action,
+        Basic.TargetDummy,
+        action,
+        Basic.TargetDummy,
+      ];
     case HotKeyType.Target:
       return [action, Basic.TargetDummy];
     case HotKeyType.Dodge:
@@ -558,12 +871,16 @@ export const createActions = (action: string, type: HotKeyType) => {
       return ['NightElfBuild', action];
     case HotKeyType.UndeadBuild:
       return ['UndeadBuild', action];
+    case HotKeyType.OrcBuild:
+      return ['OrcBuild', action];
+    default:
+      throw Error(` [${action}]: Unable to create actions for type [${type}]`);
   }
 };
 
-export const createPuzzles = (name: string) => {
+export const createPuzzles = (source: any, name: string) => {
   return _flatten(
-    _map(actions?.[name], (data, action) => {
+    _map(source?.[name], (data, action) => {
       return data.types.map((t: HotKeyType) => ({
         name,
         type: t,
@@ -575,10 +892,12 @@ export const createPuzzles = (name: string) => {
 
 export const actionToName = (action: string) => {
   switch (action) {
+    case 'OrcBuild':
+      return 'Build Structure';
     case 'NightElfBuild':
-      return 'Create';
+      return 'Create Building';
     case 'UndeadBuild':
-      return 'Summon';
+      return 'Summon Building';
     case Basic.TargetDummy:
       return 'on Target';
     case Basic.MissileDodge:

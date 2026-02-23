@@ -20,7 +20,7 @@ const active = computed(
 </script>
 
 <template>
-  <v-table class="pa-0">
+  <v-table class="pa-0 mx-3">
     <tbody>
       <tr>
         <td
