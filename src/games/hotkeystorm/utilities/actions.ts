@@ -8,6 +8,7 @@ export enum HotKeyType {
   BasicBuy = 'BasicBuy',
   BasicUpgrade = 'BasicUpgrade',
   BasicItem = 'BasicItem',
+  BasicSelect = 'BasicSelect',
 
   Target = 'Target',
   MultiTarget = 'MultiTarget',
@@ -89,6 +90,7 @@ export const NightElfInventory: any = {
 };
 export const NightElf: any = {
   'Demon Hunter': {
+    SelectFirstHero: { code: 'her1', types: [HotKeyType.BasicSelect] },
     'Mana Burn': { code: 'aemb', types: [HotKeyType.Target, HotKeyType.Train] },
     Immolation: {
       code: 'aeim',
@@ -101,6 +103,8 @@ export const NightElf: any = {
     },
   },
   'Keeper Of The Grove': {
+    SelectFirstHero: { code: 'her1', types: [HotKeyType.BasicSelect] },
+    SelectSecondHero: { code: 'her2', types: [HotKeyType.BasicSelect] },
     'Entangling Roots': {
       code: 'aeer',
       types: [HotKeyType.Target, HotKeyType.Train],
@@ -116,6 +120,8 @@ export const NightElf: any = {
     },
   },
   'Priestess of the Moon': {
+    SelectFirstHero: { code: 'her1', types: [HotKeyType.BasicSelect] },
+    SelectThirdHero: { code: 'her3', types: [HotKeyType.BasicSelect] },
     Scout: { code: 'aest', types: [HotKeyType.BasicAbility, HotKeyType.Train] },
     'Searing Arrows': { code: 'ahfa', types: [HotKeyType.Train] },
     'Trueshot Aura': { code: 'aear', types: [HotKeyType.Train] },
@@ -123,6 +129,7 @@ export const NightElf: any = {
     Shadowmeld: { code: 'ashm', types: [HotKeyType.BasicAbility] },
   },
   Warden: {
+    SelectFirstHero: { code: 'her1', types: [HotKeyType.BasicSelect] },
     'Fan of Knives': {
       code: 'aefk',
       types: [HotKeyType.BasicAbility, HotKeyType.Train],
@@ -355,6 +362,8 @@ export const UndeadInventory: any = {
 
 export const Undead: any = {
   'Death Knight': {
+    SelectFirstHero: { code: 'her1', types: [HotKeyType.BasicSelect] },
+    SelectSecondHero: { code: 'her2', types: [HotKeyType.BasicSelect] },
     'Death Coil': {
       code: 'audc',
       types: [HotKeyType.Target, HotKeyType.Train],
@@ -370,6 +379,8 @@ export const Undead: any = {
     },
   },
   Dreadlord: {
+    SelectFirstHero: { code: 'her1', types: [HotKeyType.BasicSelect] },
+    SelectThirdHero: { code: 'her3', types: [HotKeyType.BasicSelect] },
     'Vampiric Aura': {
       code: 'auav',
       types: [HotKeyType.Train],
@@ -388,6 +399,8 @@ export const Undead: any = {
     },
   },
   Lich: {
+    SelectFirstHero: { code: 'her1', types: [HotKeyType.BasicSelect] },
+    SelectThirdHero: { code: 'her3', types: [HotKeyType.BasicSelect] },
     'Frost Nova': {
       code: 'aufn',
       types: [HotKeyType.Target, HotKeyType.Train],
@@ -406,6 +419,8 @@ export const Undead: any = {
     },
   },
   'Crypt Lord': {
+    SelectFirstHero: { code: 'her1', types: [HotKeyType.BasicSelect] },
+    SelectThirdHero: { code: 'her3', types: [HotKeyType.BasicSelect] },
     Impale: {
       code: 'auim',
       types: [HotKeyType.Target, HotKeyType.Train],
@@ -616,6 +631,8 @@ export const OrcInventory: any = {
 
 export const Orc: any = {
   Blademaster: {
+    SelectFirstHero: { code: 'her1', types: [HotKeyType.BasicSelect] },
+    SelectThirdHero: { code: 'her3', types: [HotKeyType.BasicSelect] },
     'Wind Walk': {
       code: 'aowk',
       types: [HotKeyType.BasicAbility, HotKeyType.Dodge, HotKeyType.Train],
@@ -634,6 +651,7 @@ export const Orc: any = {
     },
   },
   'Far Seer': {
+    SelectFirstHero: { code: 'her1', types: [HotKeyType.BasicSelect] },
     'Far Sight': {
       code: 'aofs',
       types: [HotKeyType.Target, HotKeyType.Train],
@@ -652,6 +670,8 @@ export const Orc: any = {
     },
   },
   'Tauren Chieftain': {
+    SelectSecondHero: { code: 'her2', types: [HotKeyType.BasicSelect] },
+    SelectThirdHero: { code: 'her3', types: [HotKeyType.BasicSelect] },
     Shockwave: {
       code: 'aosh',
       types: [HotKeyType.Target, HotKeyType.Train],
@@ -670,6 +690,8 @@ export const Orc: any = {
     },
   },
   'Shadow Hunter': {
+    SelectSecondHero: { code: 'her2', types: [HotKeyType.BasicSelect] },
+    SelectThirdHero: { code: 'her3', types: [HotKeyType.BasicSelect] },
     Hex: {
       code: 'aohx',
       types: [HotKeyType.Target, HotKeyType.Train],
@@ -889,6 +911,8 @@ export const HumanInventory: any = {
 
 export const Human: any = {
   Paladin: {
+    SelectFirstHero: { code: 'her1', types: [HotKeyType.BasicSelect] },
+    SelectThirdHero: { code: 'her3', types: [HotKeyType.BasicSelect] },
     'Holy Light': {
       code: 'ahhb',
       types: [HotKeyType.BasicAbility, HotKeyType.Train],
@@ -907,6 +931,8 @@ export const Human: any = {
     },
   },
   Archmage: {
+    SelectFirstHero: { code: 'her1', types: [HotKeyType.BasicSelect] },
+    SelectSecondHero: { code: 'her2', types: [HotKeyType.BasicSelect] },
     Blizzard: {
       code: 'ahbz',
       types: [HotKeyType.Target, HotKeyType.Train],
@@ -925,6 +951,8 @@ export const Human: any = {
     },
   },
   'Mountain King': {
+    SelectFirstHero: { code: 'her1', types: [HotKeyType.BasicSelect] },
+    SelectSecondHero: { code: 'her2', types: [HotKeyType.BasicSelect] },
     'Storm Bolt': {
       code: 'ahtb',
       types: [HotKeyType.Target, HotKeyType.Train],
@@ -943,6 +971,8 @@ export const Human: any = {
     },
   },
   'Blood Mage': {
+    SelectFirstHero: { code: 'her1', types: [HotKeyType.BasicSelect] },
+    SelectSecondHero: { code: 'her2', types: [HotKeyType.BasicSelect] },
     'Flame Strike': {
       code: 'ahfs',
       types: [HotKeyType.Target, HotKeyType.Train],
@@ -1178,6 +1208,7 @@ export const createActions = (action: string, type: HotKeyType) => {
     case HotKeyType.BasicBuild:
     case HotKeyType.BasicBuy:
     case HotKeyType.BasicUpgrade:
+    case HotKeyType.BasicSelect:
       return [action];
     case HotKeyType.Use:
       return [action, action];
@@ -1236,6 +1267,12 @@ export const actionToName = (action: string) => {
       return 'Dodge incoming projectile with ';
     case 'HeroAbilities':
       return 'Train';
+    case 'SelectFirstHero':
+      return 'First Hero';
+    case 'SelectSecondHero':
+      return 'Second Hero';
+    case 'SelectThirdHero':
+      return 'Third Hero';
     default:
       return `${action.replace('HeroAbilitiesTrain', '')}`;
   }

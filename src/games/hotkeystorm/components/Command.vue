@@ -54,15 +54,24 @@ const active = computed(
     store.getHotkeyFromAction(props.name, props.action)?.toLowerCase() !==
     props.current?.toLowerCase(),
 );
+
+const getIcon = (name: string, action: string) => {
+  if (action === Basic.MissileDodge && !active.value) {
+    return getIconUrl(missile.value);
+  } else if (
+    ['SelectFirstHero', 'SelectSecondHero', 'SelectThirdHero'].some(
+      (v) => v === action,
+    )
+  ) {
+    return getIconUrl(name);
+  }
+  return getIconUrl(action);
+};
 </script>
 
 <template>
   <v-img
-    :src="
-      action === Basic.MissileDodge && !active
-        ? getIconUrl(missile)
-        : getIconUrl(action)
-    "
+    :src="getIcon(name, action)"
     width="42"
     :class="{
       'mx-3 my-auto': true,

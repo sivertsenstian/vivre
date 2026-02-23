@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 import _sample from 'lodash/sample';
+import _isEqual from 'lodash/isEqual';
+import _isEmpty from 'lodash/isEmpty';
 import ConfettiExplosion from 'vue-confetti-explosion';
 import moment from 'moment';
 import Command from './components/Command.vue';
@@ -53,6 +55,8 @@ const toInstruction = (puzzle: any) => {
       return `Use ${a}`;
     case HotKeyType.BasicBuild:
       return `Build ${a}`;
+    case HotKeyType.BasicSelect:
+      return `Select ${a}`;
     case HotKeyType.Use:
       return `Quickcast ${actionToName(puzzle?.actions?.[0])}`;
     default:
@@ -68,6 +72,7 @@ const audio = {
   start: new Audio(startAudio),
 };
 
+const selectedPuzzles = ref<any[]>([]);
 const puzzles = ref<any[]>([]);
 const timer = ref(moment.duration(2, 'minutes'));
 
@@ -104,13 +109,14 @@ const captured = ref<string>();
 
 const next = () => {
   hint.value = false;
-  puzzle.value = _sample(
-    puzzles.value.filter((t) =>
-      t.actions?.some(
-        (p: string, i: number) => p !== puzzle.value?.actions?.[i],
-      ),
-    ),
-  );
+  if (_isEmpty(puzzles.value)) {
+    puzzles.value = [...selectedPuzzles.value];
+  }
+
+  const selected = _sample(puzzles.value);
+  // Drop puzzle after it has been selected to prevent it from being selected again
+  puzzles.value = puzzles.value.filter((p: any) => !_isEqual(p, selected));
+  puzzle.value = selected;
 };
 
 const answer = computed(() => {
@@ -317,8 +323,8 @@ const stop = () => {
   clearInterval(interval.value);
   history.value = [];
   puzzle.value = {};
+  puzzles.value = [];
   timer.value = moment.duration(2, 'minutes');
-  next();
 };
 
 const start = () => {
@@ -561,7 +567,7 @@ const dodge = () => {
                     challenge: mode === Mode.Challenge,
                     learning: mode === Mode.Learning,
                   }"
-                  ><h1 style="font-weight: bold">
+                  ><h1 class="font-weight-bold">
                     <v-icon
                       icon="mdi-weather-lightning"
                       size="128"
@@ -617,7 +623,7 @@ const dodge = () => {
                           <v-btn
                             @click="
                               () => {
-                                puzzles = _keys(human_actions)
+                                selectedPuzzles = _keys(human_actions)
                                   .map((name) =>
                                     createPuzzles(human_actions, name),
                                   )
@@ -635,7 +641,7 @@ const dodge = () => {
                           <v-btn
                             @click="
                               () => {
-                                puzzles = _keys(orc_actions)
+                                selectedPuzzles = _keys(orc_actions)
                                   .map((name) =>
                                     createPuzzles(orc_actions, name),
                                   )
@@ -655,7 +661,7 @@ const dodge = () => {
                           <v-btn
                             @click="
                               () => {
-                                puzzles = _keys(night_elf_actions)
+                                selectedPuzzles = _keys(night_elf_actions)
                                   .map((name) =>
                                     createPuzzles(night_elf_actions, name),
                                   )
@@ -673,7 +679,7 @@ const dodge = () => {
                           <v-btn
                             @click="
                               () => {
-                                puzzles = _keys(undead_actions)
+                                selectedPuzzles = _keys(undead_actions)
                                   .map((name) =>
                                     createPuzzles(undead_actions, name),
                                   )
@@ -830,12 +836,27 @@ const dodge = () => {
                 </v-col>
               </v-row>
             </template>
-            <v-row
-              :class="{
-                challenge: mode === Mode.Challenge,
-                learning: mode === Mode.Learning,
-              }">
-              <v-col cols="12" class="text-center">
+            <v-row>
+              <v-col
+                cols="12"
+                class="text-center"
+                v-if="mode === Mode.Learning && status === Status.Play">
+                <h1 style="font-family: fantasy; font-size: 64px">
+                  <span class="text-grey">{{
+                    selectedPuzzles.length - puzzles.length
+                  }}</span>
+                  /
+                  <span class="text-primary">{{ selectedPuzzles.length }}</span>
+                </h1>
+              </v-col>
+              <v-col
+                cols="12"
+                :class="{
+                  'text-center': true,
+                  challenge: mode === Mode.Challenge,
+                  learning: mode === Mode.Learning,
+                }"
+                v-else>
                 <span style="font-family: fantasy; font-size: 64px">
                   {{ (timer as any).format('mm : ss', { trim: false }) }}
                 </span>
