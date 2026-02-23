@@ -23,6 +23,9 @@ const keyCodeToKey: any = {
   '103': 'Numpad7',
   '104': 'Numpad8',
   '105': 'Numpad9',
+  '112': 'F1',
+  '113': 'F2',
+  '114': 'F3',
 };
 
 export const useHotKeyStormStore = defineStore('hotkeystorm', () => {
