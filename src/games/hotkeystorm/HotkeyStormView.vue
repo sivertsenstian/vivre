@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue';
+import { computed, ref } from 'vue';
 import _sample from 'lodash/sample';
 import ConfettiExplosion from 'vue-confetti-explosion';
 import moment from 'moment';
@@ -12,6 +12,7 @@ import {
   night_elf_actions,
   undead_actions,
   orc_actions,
+  human_actions,
 } from './utilities/actions';
 import { layouts } from './utilities/data';
 import { useHotKeyStormStore } from '@/games/hotkeystorm/store.ts';
@@ -614,10 +615,19 @@ const dodge = () => {
                       <tr>
                         <td style="width: 64px; height: 64px">
                           <v-btn
+                            @click="
+                              () => {
+                                puzzles = _keys(human_actions)
+                                  .map((name) =>
+                                    createPuzzles(human_actions, name),
+                                  )
+                                  .flat();
+                                start();
+                              }
+                            "
                             rounded="0"
                             variant="tonal"
-                            style="width: 100%; height: 100%"
-                            disabled>
+                            style="width: 100%; height: 100%">
                             <race-icon :race="Race.Human" :size="84" />
                           </v-btn>
                         </td>
@@ -826,8 +836,7 @@ const dodge = () => {
                 learning: mode === Mode.Learning,
               }">
               <v-col cols="12" class="text-center">
-                <span
-                  style="font-family: fantasy; font-size: 64px; color: gold">
+                <span style="font-family: fantasy; font-size: 64px">
                   {{ (timer as any).format('mm : ss', { trim: false }) }}
                 </span>
                 <span
