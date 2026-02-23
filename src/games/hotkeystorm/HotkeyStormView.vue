@@ -75,6 +75,7 @@ const audio = {
 const selectedPuzzles = ref<any[]>([]);
 const puzzles = ref<any[]>([]);
 const timer = ref(moment.duration(2, 'minutes'));
+const shift = ref(false);
 
 enum Status {
   Play = 'Play',
@@ -287,12 +288,21 @@ const captureInput = (event: KeyboardEvent) => {
   queue.value.push(capture);
 
   step();
+
+  shift.value = false;
 };
 
 window.addEventListener('keydown', (event) => {
   event.preventDefault();
   event.stopPropagation();
   event.stopImmediatePropagation();
+
+  if (status.value !== Status.Play) {
+    return;
+  }
+  if (event.shiftKey) {
+    shift.value = true;
+  }
 });
 
 window.addEventListener('keyup', captureInput);
@@ -361,6 +371,15 @@ const hit = (event: PointerEvent) => {
 
   if (x >= 40 && x <= 60 && y >= 30 && y <= 50) {
     queue.value.push(Basic.TargetDummy);
+
+    // If user is holding shift with multiple targets count a hit as auto-execute of the next
+    if (
+      shift.value &&
+      queue.value.length < answer.value.length - 1 &&
+      puzzle.value.type === HotKeyType.MultiTarget
+    ) {
+      queue.value.push(answer.value[0]);
+    }
   } else {
     queue.value.push(Basic.Miss);
   }
@@ -529,7 +548,7 @@ const dodge = () => {
             <template v-else>
               <v-alert
                 color="primary"
-                class="text-center"
+                class="text-center overflow-visible"
                 variant="tonal"
                 height="375">
                 <v-icon icon="mdi-weather-lightning" style="font-size: 128px" />
@@ -912,6 +931,13 @@ const dodge = () => {
                     >Restart</v-btn
                   >
                   <v-btn color="error" size="large" @click="stop">End</v-btn>
+                  <v-btn
+                    v-if="mode === Mode.Learning"
+                    color="success"
+                    size="large"
+                    @click="next"
+                    >Skip</v-btn
+                  >
                 </v-btn-group>
               </v-col>
             </v-row>
@@ -982,10 +1008,6 @@ const dodge = () => {
   }
 }
 
-.v-alert__content {
-  overflow: visible;
-}
-
 .solved {
   animation: solved 2s infinite;
 }
@@ -1007,5 +1029,9 @@ const dodge = () => {
 .learning {
   opacity: 0.2;
   filter: grayscale(1);
+}
+
+.v-alert :deep(.v-alert__content) {
+  overflow: visible;
 }
 </style>
