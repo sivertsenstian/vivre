@@ -421,8 +421,8 @@ Tip=(|cffffcc00F|r) Purchase Ivory Tower
 Hotkey=F
 Buttonpos=3,1
 
-[ofir]
-Tip=(|cffffcc00Z|r) Purchase Orb of Fire
+[oslo]
+Tip=(|cffffcc00Z|r) Purchase Orb of Slow
 Hotkey=Z
 Buttonpos=0,2
 
