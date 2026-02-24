@@ -71,11 +71,22 @@ export const useHotKeyStormStore = defineStore('hotkeystorm', () => {
       itm5: '',
       itm6: '',
     } as any,
-    custom: null,
+    custom: '',
   });
 
   watchEffect(async () => {
-    translation.value = await getTranslation(data.value.selected);
+    if (data.value.selected === 'custom' && data.value.custom.length) {
+      try {
+        const v = parser.parse(atob(data.value.custom));
+        console.log(['CUSTOM', v]);
+        translation.value = v;
+      } catch (error) {
+        console.error(error);
+      }
+    } else {
+      const v = await getTranslation(data.value.selected);
+      translation.value = v;
+    }
   });
 
   const getHotkeyFromCode = computed(() => {
