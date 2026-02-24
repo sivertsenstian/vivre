@@ -60,6 +60,7 @@ const BasicInventory: any = {
       code: 'itm2',
       types: [HotKeyType.BasicItem],
     },
+    'Staff of Teleportation': { code: 'itm2', types: [HotKeyType.Target] },
   },
   Item3: {
     'Potion of Mana': {
@@ -67,6 +68,10 @@ const BasicInventory: any = {
       types: [HotKeyType.BasicItem],
     },
     'Potion of Greater Mana': {
+      code: 'itm3',
+      types: [HotKeyType.BasicItem],
+    },
+    'Dust Of Appearance': {
       code: 'itm3',
       types: [HotKeyType.BasicItem],
     },
@@ -1156,12 +1161,255 @@ export const Human: any = {
   },
 };
 
+export const Neutral: any = {
+  'Naga Sea Witch': {
+    SelectFirstHero: { code: 'her1', types: [HotKeyType.BasicSelect] },
+    SelectSecondHero: { code: 'her2', types: [HotKeyType.BasicSelect] },
+    'Forked Lightning': {
+      code: 'anfl',
+      types: [HotKeyType.Target, HotKeyType.Train],
+    },
+    'Frost Arrows': {
+      code: 'anfa',
+      types: [HotKeyType.Train],
+    },
+    'Mana Shield': {
+      code: 'anms',
+      types: [HotKeyType.BasicAbility, HotKeyType.Train],
+    },
+    Tornado: {
+      code: 'anto',
+      types: [HotKeyType.BasicAbility, HotKeyType.Train],
+    },
+  },
+  'Dark Ranger': {
+    SelectFirstHero: { code: 'her1', types: [HotKeyType.BasicSelect] },
+    SelectThirdHero: { code: 'her3', types: [HotKeyType.BasicSelect] },
+    Silence: {
+      code: 'ansi',
+      types: [HotKeyType.Target, HotKeyType.Train],
+    },
+    'Black Arrow': {
+      code: 'anba',
+      types: [HotKeyType.Train],
+    },
+    'Life Drain': {
+      code: 'andr',
+      types: [HotKeyType.Target, HotKeyType.Train],
+    },
+    Charm: {
+      code: 'anch',
+      types: [HotKeyType.Target, HotKeyType.Train],
+    },
+  },
+  'Pandaren Brewmaster': {
+    SelectFirstHero: { code: 'her1', types: [HotKeyType.BasicSelect] },
+    SelectSecondHero: { code: 'her2', types: [HotKeyType.BasicSelect] },
+    'Breath of Fire': {
+      code: 'anbf',
+      types: [HotKeyType.Target, HotKeyType.Train],
+    },
+    'Drunken Haze': {
+      code: 'andh',
+      types: [HotKeyType.Target, HotKeyType.Train],
+    },
+    'Drunken Brawler': {
+      code: 'andb',
+      types: [HotKeyType.Train],
+    },
+    'Storm, Earth, and Fire': {
+      code: 'anef',
+      types: [HotKeyType.BasicAbility, HotKeyType.Train],
+    },
+  },
+  Beastmaster: {
+    SelectFirstHero: { code: 'her1', types: [HotKeyType.BasicSelect] },
+    SelectSecondHero: { code: 'her2', types: [HotKeyType.BasicSelect] },
+    'Summon Bear': {
+      code: 'ansg',
+      types: [HotKeyType.BasicAbility, HotKeyType.Train],
+    },
+    'Summon Quilbeast': {
+      code: 'ansq',
+      types: [HotKeyType.BasicAbility, HotKeyType.Train],
+    },
+    'Summon Hawk': {
+      code: 'answ',
+      types: [HotKeyType.BasicAbility, HotKeyType.Train],
+    },
+    Stampede: {
+      code: 'anst',
+      types: [HotKeyType.BasicAbility, HotKeyType.Train],
+    },
+  },
+  'Pit Lord': {
+    SelectFirstHero: { code: 'her1', types: [HotKeyType.BasicSelect] },
+    SelectSecondHero: { code: 'her2', types: [HotKeyType.BasicSelect] },
+    SelectThirdHero: { code: 'her3', types: [HotKeyType.BasicSelect] },
+    'Rain of Fire': {
+      code: 'anrf',
+      types: [HotKeyType.Target, HotKeyType.Train],
+    },
+    'Howl of Terror': {
+      code: 'anht',
+      types: [HotKeyType.BasicAbility, HotKeyType.Train],
+    },
+    'Cleaving Attack': {
+      code: 'anca',
+      types: [HotKeyType.Train],
+    },
+    Doom: {
+      code: 'ando',
+      types: [HotKeyType.Target, HotKeyType.Train],
+    },
+  },
+  Tinker: {
+    SelectFirstHero: { code: 'her1', types: [HotKeyType.BasicSelect] },
+    SelectThirdHero: { code: 'her3', types: [HotKeyType.BasicSelect] },
+    'Pocket Factory': {
+      code: 'ansy',
+      types: [HotKeyType.Target, HotKeyType.Train],
+    },
+    'Cluster Rockets': {
+      code: 'ancs',
+      types: [HotKeyType.Target, HotKeyType.Train],
+    },
+    'Engineering Upgrade': {
+      code: 'aneg',
+      types: [HotKeyType.Train],
+    },
+    'Robo-Goblin': {
+      code: 'anrg',
+      types: [HotKeyType.BasicAbility, HotKeyType.Train],
+    },
+  },
+  Alchemist: {
+    SelectFirstHero: { code: 'her1', types: [HotKeyType.BasicSelect] },
+    SelectSecondHero: { code: 'her2', types: [HotKeyType.BasicSelect] },
+    SelectThirdHero: { code: 'her3', types: [HotKeyType.BasicSelect] },
+    'Healing Spray': {
+      code: 'anhs',
+      types: [HotKeyType.Target, HotKeyType.Train],
+    },
+    'Acid Bomb': {
+      code: 'ancr',
+      types: [HotKeyType.Target, HotKeyType.Train],
+    },
+    'Chemical Rage': {
+      code: 'anab',
+      types: [HotKeyType.BasicAbility, HotKeyType.Train],
+    },
+    Transmute: {
+      code: 'antm',
+      types: [HotKeyType.Target, HotKeyType.Train],
+    },
+  },
+  Firelord: {
+    SelectFirstHero: { code: 'her1', types: [HotKeyType.BasicSelect] },
+    SelectSecondHero: { code: 'her2', types: [HotKeyType.BasicSelect] },
+    SelectThirdHero: { code: 'her3', types: [HotKeyType.BasicSelect] },
+    'Soul Burn': {
+      code: 'anso',
+      types: [HotKeyType.Target, HotKeyType.Train],
+    },
+    Incinerate: {
+      code: 'ania',
+      types: [HotKeyType.Train],
+    },
+    'Summon Lava Spawn': {
+      code: 'anlm',
+      types: [HotKeyType.BasicAbility, HotKeyType.Train],
+    },
+    Volcano: {
+      code: 'anvc',
+      types: [HotKeyType.Target, HotKeyType.Train],
+    },
+  },
+  'Storm Brewmaster': {
+    'Wind Walk': {
+      code: 'anwk',
+      types: [HotKeyType.BasicSelect, HotKeyType.Dodge],
+    },
+    Cyclone: { code: 'accy', types: [HotKeyType.Target] },
+    'Dispel Magic': { code: 'adsm', types: [HotKeyType.Target] },
+  },
+  'Earth Brewmaster': {
+    Taunt: { code: 'anta', types: [HotKeyType.BasicSelect] },
+  },
+  'Summon Bear': {
+    Blink: { code: 'anbl', types: [HotKeyType.Target] },
+  },
+  'Summon Quilbeast': {
+    Frenzy: { code: 'afzy', types: [HotKeyType.BasicAbility] },
+  },
+  'Doom Guard': {
+    'Rain of Fire': { code: 'acrf', types: [HotKeyType.Target] },
+    'War Stomp': { code: 'awrs', types: [HotKeyType.BasicAbility] },
+    'Dispel Magic': { code: 'adsm', types: [HotKeyType.Target] },
+    Cripple: { code: 'accr', types: [HotKeyType.Target] },
+  },
+  'Cloak of Shadows': {
+    Shadowmeld: { code: 'aihm', types: [HotKeyType.BasicAbility] },
+  },
+  'Goblin Sapper': {
+    Kaboom: { code: 'asds', types: [HotKeyType.Target] },
+  },
+  'Goblin Zeppelin': {
+    Load: { code: 'aloa', types: [HotKeyType.Target] },
+    'Unload All': { code: 'adro', types: [HotKeyType.Target] },
+  },
+  'Goblin Merchant': {
+    'Boots Of Speed': { code: 'bspd', types: [HotKeyType.BasicBuy] },
+    'Periapt of Vitality': { code: 'prvt', types: [HotKeyType.BasicBuy] },
+    'Circlet of Nobility': { code: 'cnob', types: [HotKeyType.BasicBuy] },
+    'Dust of Appearance': { code: 'dust', types: [HotKeyType.BasicBuy] },
+    'Scroll of Protection': { code: 'spro', types: [HotKeyType.BasicBuy] },
+    'Potion of Invisibility': { code: 'pinv', types: [HotKeyType.BasicBuy] },
+    'Scroll of Town Portal': { code: 'stwp', types: [HotKeyType.BasicBuy] },
+    'Staff of Teleportation': { code: 'stel', types: [HotKeyType.BasicBuy] },
+    'Tome of Retraining': { code: 'tret', types: [HotKeyType.BasicBuy] },
+    'Scroll of Healing': { code: 'shea', types: [HotKeyType.BasicBuy] },
+    'Potion of Lesser Invulnerability': {
+      code: 'pnvl',
+      types: [HotKeyType.BasicBuy],
+    },
+  },
+  'Goblin Laboratory': {
+    'Goblin Sapper': { code: 'ngsp', types: [HotKeyType.BasicBuild] },
+    'Goblin Zeppelin': { code: 'nzep', types: [HotKeyType.BasicBuild] },
+    'Goblin Shredder': { code: 'ngir', types: [HotKeyType.BasicBuild] },
+    Reveal: { code: 'andt', types: [HotKeyType.Target] },
+  },
+  Tavern: {
+    'Naga Sea Witch': { code: 'nngs', types: [HotKeyType.BasicBuild] },
+    'Dark Ranger': { code: 'nbrn', types: [HotKeyType.BasicBuild] },
+    'Pandaren Brewmaster': { code: 'npbm', types: [HotKeyType.BasicBuild] },
+    Firelord: { code: 'nfir', types: [HotKeyType.BasicBuild] },
+    'Pit Lord': { code: 'nplh', types: [HotKeyType.BasicBuild] },
+    Beastmaster: { code: 'nbst', types: [HotKeyType.BasicBuild] },
+    Tinker: { code: 'ntin', types: [HotKeyType.BasicBuild] },
+    Alchemist: { code: 'nalc', types: [HotKeyType.BasicBuild] },
+  },
+  'Mercenary Camp': {
+    'Forest Troll Shadow Priest': {
+      code: 'nfsp',
+      types: [HotKeyType.BasicBuild],
+    },
+    'Forest Troll Berserker': { code: 'nftb', types: [HotKeyType.BasicBuild] },
+    'Mud Golem': { code: 'ngrk', types: [HotKeyType.BasicBuild] },
+    'Ogre Mauler': { code: 'nogm', types: [HotKeyType.BasicBuild] },
+    'Ice Troll Priest': { code: 'nitp', types: [HotKeyType.BasicBuild] },
+    'Ice Troll Berserker': { code: 'nits', types: [HotKeyType.BasicBuild] },
+  },
+};
+
 export const actions = {
   ...Basic,
   ...NightElf,
   ...Undead,
   ...Orc,
   ...Human,
+  ...Neutral,
   ..._merge(
     _merge(
       _merge(
@@ -1194,6 +1442,28 @@ export const human_actions = {
   ...Human,
 };
 
+export const neutral_actions = {
+  ...Neutral,
+};
+
+export const all_actions = {
+  ...NightElf,
+  ...Undead,
+  ...Orc,
+  ...Human,
+  ...Neutral,
+  ..._merge(
+    _merge(
+      _merge(
+        _merge(_merge({}, BasicInventory), NightElfInventory),
+        UndeadInventory,
+      ),
+      OrcInventory,
+    ),
+    HumanInventory,
+  ),
+};
+
 export const getCodeFromAction = (name: string, action: string) => {
   const a = action.replace('HeroAbilitiesTrain', '');
   const result =
@@ -1213,14 +1483,16 @@ export const createActions = (action: string, type: HotKeyType) => {
     case HotKeyType.Use:
       return [action, action];
     case HotKeyType.MultiTarget:
-      return [
-        action,
-        Basic.TargetDummy,
-        action,
-        Basic.TargetDummy,
-        action,
-        Basic.TargetDummy,
-      ];
+      return action === 'Healing Salve'
+        ? [
+            action,
+            Basic.TargetDummy,
+            action,
+            Basic.TargetDummy,
+            action,
+            Basic.TargetDummy,
+          ]
+        : [action, Basic.TargetDummy, action, Basic.TargetDummy];
     case HotKeyType.Target:
       return [action, Basic.TargetDummy];
     case HotKeyType.Dodge:
