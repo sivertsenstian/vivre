@@ -38,6 +38,8 @@ import EditInventoryInput from '@/games/hotkeystorm/components/EditInventoryInpu
 import custom_challenge from '@/assets/challenges.png';
 import race_neutral from '@/assets/race/neutral.png';
 import _round from 'lodash/round';
+import _first from 'lodash/first';
+import * as challenges from './utilities/challenges.ts';
 
 const store = useHotKeyStormStore();
 
@@ -106,6 +108,7 @@ const challenger = ref<string>('');
 const challenge = ref<string>('');
 const selectedPuzzles = ref<any[]>([]);
 const puzzles = ref<any[]>([]);
+const sample = ref(false);
 const timer = ref(moment.duration(2, 'minutes'));
 const historytimer = ref(moment.duration(0, 'seconds'));
 const shift = ref(false);
@@ -125,6 +128,7 @@ const status = ref(Status.Waiting);
 const mode = ref(Mode.Challenge);
 const hint = ref(false);
 const showHighscore = ref(false);
+const showCustomChallenges = ref(false);
 const madeTopTen = ref(false);
 
 const editInventory = ref(false);
@@ -151,7 +155,9 @@ const next = () => {
     puzzles.value = [...selectedPuzzles.value];
   }
 
-  const selected = _sample(puzzles.value);
+  const selected = sample.value
+    ? _sample(puzzles.value)
+    : _first(puzzles.value);
   // Drop puzzle after it has been selected to prevent it from being selected again
   puzzles.value = puzzles.value.filter((p: any) => !_isEqual(p, selected));
   puzzle.value = selected;
@@ -737,6 +743,14 @@ const onUploadHotkeys = async (event: any) => {
                       'gold',
                     ]" />
                 </v-col>
+                <v-col
+                  col="12"
+                  class="text-center"
+                  v-if="puzzle.type === HotKeyType.MultiTarget">
+                  <div class="text-grey" style="font-size: 11px">
+                    Tip: Hold shift to more easily hit multiple targets!
+                  </div>
+                </v-col>
                 <v-col cols="12" class="text-center" v-if="hint">
                   <span
                     class="text-orange font-weight-bold"
@@ -868,7 +882,7 @@ const onUploadHotkeys = async (event: any) => {
               </template>
             </v-row>
             <template v-if="!editInventory && status !== Status.Play">
-              <v-row style="margin-bottom: 10vh">
+              <v-row style="margin-bottom: 10vh" v-if="!showCustomChallenges">
                 <v-col cols="7" class="text-center">
                   <table>
                     <tbody>
@@ -878,6 +892,7 @@ const onUploadHotkeys = async (event: any) => {
                             @click="
                               () => {
                                 challenge = 'Human';
+                                sample = true;
                                 selectedPuzzles = _keys(human_actions)
                                   .map((name) =>
                                     createPuzzles(human_actions, name),
@@ -897,6 +912,7 @@ const onUploadHotkeys = async (event: any) => {
                             @click="
                               () => {
                                 challenge = 'Orc';
+                                sample = true;
                                 selectedPuzzles = _keys(orc_actions)
                                   .map((name) =>
                                     createPuzzles(orc_actions, name),
@@ -916,6 +932,7 @@ const onUploadHotkeys = async (event: any) => {
                             @click="
                               () => {
                                 challenge = 'Neutral';
+                                sample = true;
                                 selectedPuzzles = _keys(neutral_actions)
                                   .map((name) =>
                                     createPuzzles(neutral_actions, name),
@@ -941,6 +958,7 @@ const onUploadHotkeys = async (event: any) => {
                             @click="
                               () => {
                                 challenge = 'Night Elf';
+                                sample = true;
                                 selectedPuzzles = _keys(night_elf_actions)
                                   .map((name) =>
                                     createPuzzles(night_elf_actions, name),
@@ -960,6 +978,7 @@ const onUploadHotkeys = async (event: any) => {
                             @click="
                               () => {
                                 challenge = 'Undead';
+                                sample = true;
                                 selectedPuzzles = _keys(undead_actions)
                                   .map((name) =>
                                     createPuzzles(undead_actions, name),
@@ -979,6 +998,7 @@ const onUploadHotkeys = async (event: any) => {
                             @click="
                               () => {
                                 challenge = 'Random';
+                                sample = true;
                                 selectedPuzzles = _keys(all_actions)
                                   .map((name) =>
                                     createPuzzles(all_actions, name),
@@ -998,7 +1018,7 @@ const onUploadHotkeys = async (event: any) => {
                   </table>
                   <h3 style="font-weight: bold">
                     Race
-                    {{ mode === Mode.Challenge ? 'Challenge' : 'Practice' }}
+                    {{ mode === Mode.Challenge ? 'Challenges' : 'Practice' }}
                   </h3>
                 </v-col>
                 <v-col cols="5" class="text-center">
@@ -1006,16 +1026,16 @@ const onUploadHotkeys = async (event: any) => {
                     rounded="0"
                     variant="tonal"
                     style="width: 100%; height: 132px"
-                    disabled>
+                    @click="showCustomChallenges = true">
                     <img
-                      :width="84"
+                      :width="112"
                       :src="custom_challenge"
                       title="Custom Challenge"
                       style="vertical-align: middle" />
                   </v-btn>
                   <h3 class="font-weight-bold">
                     Custom
-                    {{ mode === Mode.Challenge ? 'Challenge' : 'Practice' }}
+                    {{ mode === Mode.Challenge ? 'Challenges' : 'Practice' }}
                   </h3>
                 </v-col>
                 <v-col cols="12" class="text-center mt-5">
@@ -1046,6 +1066,55 @@ const onUploadHotkeys = async (event: any) => {
                         : 'Activate Practice Mode'
                     }}</v-btn
                   >
+                </v-col>
+              </v-row>
+              <v-row v-else style="height: 469px">
+                <v-col cols="12">
+                  <v-list height="100%">
+                    <v-list-item
+                      v-for="c in [
+                        challenges.ArchmageFirstCamp(),
+                        challenges.HumanStart(),
+                      ]">
+                      <v-btn
+                        class="d-inline-flex justify-start"
+                        block
+                        rounded="0"
+                        color="primary"
+                        variant="tonal"
+                        @click="
+                          () => {
+                            challenge = c.name;
+                            sample = c.random;
+                            mode = Mode.Learning;
+                            selectedPuzzles = c.puzzles;
+                            start();
+                          }
+                        ">
+                        <img
+                          class="mr-3"
+                          :width="32"
+                          :src="custom_challenge"
+                          :title="c.name" />
+                        {{ c.name }}
+                      </v-btn>
+                    </v-list-item>
+
+                    <v-list-item class="mt-auto">
+                      <v-btn
+                        class="d-inline-flex justify-center"
+                        block
+                        rounded="0"
+                        variant="tonal"
+                        @click="
+                          () => {
+                            showCustomChallenges = false;
+                          }
+                        ">
+                        Exit Custom Challenges
+                      </v-btn>
+                    </v-list-item>
+                  </v-list>
                 </v-col>
               </v-row>
             </template>
