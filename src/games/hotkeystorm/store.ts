@@ -72,13 +72,13 @@ export const useHotKeyStormStore = defineStore('hotkeystorm', () => {
       itm6: '',
     } as any,
     custom: '',
+    muted: false,
   });
 
   watchEffect(async () => {
     if (data.value.selected === 'custom' && data.value.custom.length) {
       try {
         const v = parser.parse(atob(data.value.custom));
-        console.log(['CUSTOM', v]);
         translation.value = v;
       } catch (error) {
         console.error(error);

@@ -34,6 +34,7 @@ import doneAudio from './sounds/done.mp3';
 import startAudio from './sounds/start.mp3';
 import music from './sounds/music.mp3';
 import highscoreAudio from './sounds/highscore.mp3';
+import successAudio from './sounds/success.mp3';
 import EditInventoryInput from '@/games/hotkeystorm/components/EditInventoryInput.vue';
 import custom_challenge from '@/assets/challenges.png';
 import race_neutral from '@/assets/race/neutral.png';
@@ -94,7 +95,7 @@ const toInstruction = (puzzle: any) => {
   }
 };
 
-const audio = {
+const sounds: any = {
   correct: new Audio(correctAudio),
   incorrect: new Audio(incorrectAudio),
   solved: new Audio(solvedAudio),
@@ -102,7 +103,12 @@ const audio = {
   start: new Audio(startAudio),
   highscore: new Audio(highscoreAudio),
   music: new Audio(music),
+  success: new Audio(successAudio),
 };
+
+const audio = computed(() => {
+  return store.data.muted ? null : sounds;
+});
 
 const challenger = ref<string>('');
 const challenge = ref<string>('');
@@ -158,6 +164,7 @@ const next = () => {
   const selected = sample.value
     ? _sample(puzzles.value)
     : _first(puzzles.value);
+
   // Drop puzzle after it has been selected to prevent it from being selected again
   puzzles.value = puzzles.value.filter((p: any) => !_isEqual(p, selected));
   puzzle.value = selected;
@@ -189,7 +196,7 @@ const step = () => {
     answer.value.length === queue.value.length &&
     queue.value.every((v, i) => v === answer.value[i])
   ) {
-    audio.solved.play();
+    audio.value?.solved.play();
     solved.value = true;
 
     if (mode.value === Mode.Challenge) {
@@ -202,6 +209,11 @@ const step = () => {
         answer: answer.value,
         combo: combo.value,
       });
+    }
+
+    // Minor celebration if practice round finished!
+    if (mode.value === Mode.Learning && puzzles.value.length === 0) {
+      audio.value?.success.play();
     }
 
     setTimeout(() => {
@@ -223,7 +235,7 @@ const step = () => {
 
   // INCORRECT
   if (queue.value.some((v, i) => v !== answer.value[i])) {
-    audio.incorrect.play();
+    audio.value?.incorrect.play();
 
     if (mode.value === Mode.Challenge) {
       history.value.push({
@@ -259,7 +271,7 @@ const step = () => {
       }, 500);
     }
   } else {
-    audio.correct.play();
+    audio.value?.correct.play();
     // CORRECT
     if (mode.value === Mode.Challenge) {
       combo.value++;
@@ -379,6 +391,7 @@ const stop = (cancel: boolean = false) => {
   comboGoal.value = 5;
   comboStreak.value = 0;
 
+  clearTimeout(dodgetimeout.value);
   clearInterval(interval.value);
   puzzle.value = {};
   puzzles.value = [];
@@ -387,7 +400,7 @@ const stop = (cancel: boolean = false) => {
 
   if (!cancel) {
     if (mode.value === Mode.Challenge) {
-      audio.done.play();
+      audio.value?.done.play();
       status.value = Status.Finished;
       if (
         points.value > 0 &&
@@ -395,7 +408,7 @@ const stop = (cancel: boolean = false) => {
           store.highscores.some((h) => h.score < points.value))
       ) {
         setTimeout(() => {
-          audio.highscore.play();
+          audio.value?.highscore.play();
           madeTopTen.value = true;
         }, 500);
       }
@@ -406,7 +419,7 @@ const stop = (cancel: boolean = false) => {
 };
 
 const start = () => {
-  audio.start.play();
+  audio.value?.start.play();
   status.value = Status.Play;
   clearInterval(interval.value);
   history.value = [];
@@ -489,11 +502,15 @@ onMounted(() => {
 
 watch(showHighscore, (v, _) => {
   if (v) {
-    audio.music.loop = true;
-    audio.music.play();
+    if (audio.value) {
+      audio.value.music.loop = true;
+    }
+    audio.value?.music.play();
   } else {
-    audio.music.pause();
-    audio.music.currentTime = 0;
+    audio.value?.music.pause();
+    if (audio.value) {
+      audio.value.music.currentTime = 0;
+    }
   }
 });
 
@@ -837,6 +854,17 @@ const onUploadHotkeys = async (event: any) => {
                       font-family: 'Press Start 2P', system-ui;
                     ">
                     Storm key
+                    <v-icon
+                      title="Click to toggle all sounds on/off"
+                      :icon="
+                        store.data.muted ? 'mdi-volume-off' : 'mdi-volume-high'
+                      "
+                      @click="store.data.muted = !store.data.muted"
+                      style="
+                        color: white;
+                        font-size: 24px;
+                        margin-bottom: 5px;
+                      " />
                   </h1>
                 </v-col>
                 <v-col cols="7">
@@ -1024,18 +1052,23 @@ const onUploadHotkeys = async (event: any) => {
                 <v-col cols="5" class="text-center">
                   <v-btn
                     rounded="0"
+                    :disabled="mode === Mode.Challenge"
                     variant="tonal"
                     style="width: 100%; height: 132px"
                     @click="showCustomChallenges = true">
                     <img
                       :width="112"
                       :src="custom_challenge"
-                      title="Custom Challenge"
+                      title="Custom Practice"
                       style="vertical-align: middle" />
                   </v-btn>
-                  <h3 class="font-weight-bold">
-                    Custom
-                    {{ mode === Mode.Challenge ? 'Challenges' : 'Practice' }}
+                  <h3
+                    :class="{
+                      'font-weight-bold': true,
+                      'text-white': mode === Mode.Learning,
+                      'text-grey': mode === Mode.Challenge,
+                    }">
+                    Custom Practice
                   </h3>
                 </v-col>
                 <v-col cols="12" class="text-center mt-5">
@@ -1050,22 +1083,62 @@ const onUploadHotkeys = async (event: any) => {
                     begin
                   </h3>
                 </v-col>
-                <v-col cols="12" class="text-center">
+                <v-col cols="6" class="text-center">
                   <v-btn
-                    @click="
-                      mode =
-                        mode === Mode.Learning ? Mode.Challenge : Mode.Learning
-                    "
+                    @click="mode = Mode.Challenge"
                     size="60"
-                    variant="tonal"
+                    :variant="mode === Mode.Challenge ? 'elevated' : 'tonal'"
                     block
-                    :color="mode === Mode.Learning ? 'warning' : 'success'"
-                    >{{
-                      mode === Mode.Learning
-                        ? 'Activate Challenge Mode'
-                        : 'Activate Practice Mode'
-                    }}</v-btn
+                    color="warning"
+                    >Challenge Mode</v-btn
                   >
+                </v-col>
+                <v-col cols="6" class="text-center">
+                  <v-btn
+                    @click="mode = Mode.Learning"
+                    size="60"
+                    :variant="mode === Mode.Learning ? 'elevated' : 'tonal'"
+                    block
+                    color="success"
+                    >Practice Mode</v-btn
+                  >
+                </v-col>
+                <v-col
+                  cols="12"
+                  v-if="mode === Mode.Challenge"
+                  style="font-size: 13px"
+                  class="text-center">
+                  <p class="font-weight-bold">
+                    Prove your worth in challenge mode! Solve puzzles in the
+                    different
+                    <span class="text-orange font-weight-bold"
+                      >Race Challenges</span
+                    >
+                    on a timer to compete for a place on the high score list!
+                  </p>
+                  <p class="font-weight-bold mt-3">
+                    Puzzle streak combos reward you with more time - but every
+                    error reduces your available time by 10 seconds!
+                  </p>
+                </v-col>
+                <v-col
+                  cols="12"
+                  v-if="mode === Mode.Learning"
+                  style="font-size: 13px"
+                  class="text-center">
+                  <p class="font-weight-bold">
+                    Improve your hotkey use in practice mode! Solve puzzles in
+                    the different
+                    <span class="text-success font-weight-bold"
+                      >Race Practices</span
+                    >
+                    with unlimited time!
+                  </p>
+                  <p class="font-weight-bold mt-3">
+                    There is a helpful hint system to help you fine tune
+                    existing hotkeys - or learn new ones! And even some custom
+                    practice runs for more specialized cases
+                  </p>
                 </v-col>
               </v-row>
               <v-row v-else style="height: 469px">
@@ -1075,6 +1148,9 @@ const onUploadHotkeys = async (event: any) => {
                       v-for="c in [
                         challenges.ArchmageFirstCamp(),
                         challenges.HumanStart(),
+                        challenges.GoblinShop(),
+                        challenges.Inventory(),
+                        challenges.DodgeMissile(),
                       ]">
                       <v-btn
                         class="d-inline-flex justify-start"
@@ -1111,7 +1187,7 @@ const onUploadHotkeys = async (event: any) => {
                             showCustomChallenges = false;
                           }
                         ">
-                        Exit Custom Challenges
+                        Exit Custom Practices
                       </v-btn>
                     </v-list-item>
                   </v-list>

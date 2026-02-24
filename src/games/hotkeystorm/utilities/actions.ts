@@ -64,7 +64,7 @@ export const Common: any = {
   },
 };
 
-const BasicInventory: any = {
+export const BasicInventory: any = {
   Item1: {
     'Scroll Of Town Portal': {
       code: 'itm1',
