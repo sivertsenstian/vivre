@@ -194,6 +194,9 @@ export const NightElf: any = {
     },
     Shadowmeld: { code: 'ashm', types: [HotKeyType.BasicAbility] },
   },
+  'Avatar of Vengeance': {
+    'Spirit of Vengeance': { code: 'avng', types: [HotKeyType.BasicAbility] },
+  },
 
   Wisp: {
     Renew: { code: 'aren', types: [HotKeyType.Target] },
@@ -1440,6 +1443,9 @@ export const Neutral: any = {
     Load: { code: 'aloa', types: [HotKeyType.Target] },
     'Unload All': { code: 'adro', types: [HotKeyType.Target] },
   },
+  'Clockwerk Goblin': {
+    Kaboom: { code: 'asdg', types: [HotKeyType.BasicAbility] },
+  },
   'Goblin Merchant': {
     'Boots Of Speed': { code: 'bspd', types: [HotKeyType.BasicBuy] },
     'Periapt of Vitality': { code: 'prvt', types: [HotKeyType.BasicBuy] },
@@ -1482,6 +1488,16 @@ export const Neutral: any = {
     'Ogre Mauler': { code: 'nogm', types: [HotKeyType.BasicBuild] },
     'Ice Troll Priest': { code: 'nitp', types: [HotKeyType.BasicBuild] },
     'Ice Troll Berserker': { code: 'nits', types: [HotKeyType.BasicBuild] },
+  },
+  'Ice Troll Priest': {
+    Heal: { code: 'anh1', types: [HotKeyType.Target] },
+  },
+  'Mud Golem': {
+    Slow: { code: 'acsw', types: [HotKeyType.Target] },
+  },
+  'Forest Troll Shadow Priest': {
+    Heal: { code: 'anh1', types: [HotKeyType.Target] },
+    'Abolish Magic': { code: 'acdm', types: [HotKeyType.Target] },
   },
 };
 
