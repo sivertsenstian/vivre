@@ -11,17 +11,23 @@ export enum HotKeyType {
   BasicSelect = 'BasicSelect',
 
   Target = 'Target',
+  ReverseTarget = 'ReverseTarget',
   MultiTarget = 'MultiTarget',
   Use = 'Use',
   Dodge = 'Dodge',
   Train = 'Train',
-  NightElfBuild = 'NightElfBuild ',
-  UndeadBuild = 'UndeadBuild ',
-  OrcBuild = 'OrcBuild ',
-  HumanBuild = 'HumanBuild ',
+  NightElfBuild = 'NightElfBuild',
+  UndeadBuild = 'UndeadBuild',
+  OrcBuild = 'OrcBuild',
+  HumanBuild = 'HumanBuild',
+  NightElfBuildAtLocation = 'NightElfBuildAtLocation',
+  UndeadBuildAtLocation = 'UndeadBuildAtLocation',
+  OrcBuildAtLocation = 'OrcBuildAtLocation',
+  HumanBuildAtLocation = 'HumanBuildAtLocation',
 }
 
 export const Basic: any = {
+  Cancel: { code: 'cmdcancel', types: [HotKeyType.BasicAbility] },
   HeroAbilities: { code: 'cmdselectskill', types: [HotKeyType.BasicAbility] },
   NightElfBuild: { code: 'cmdbuildnightelf', types: [HotKeyType.BasicBuild] },
   UndeadBuild: { code: 'cmdbuildundead', types: [HotKeyType.BasicBuild] },
@@ -30,6 +36,32 @@ export const Basic: any = {
   TargetDummy: 'TARGETDUMMY',
   MissileDodge: 'MISSILEDODGE',
   Miss: 'MISS',
+};
+
+export const Common: any = {
+  Command: {
+    Move: {
+      code: 'cmdmove',
+      types: [HotKeyType.Target],
+    },
+    Stop: {
+      code: 'cmdstop',
+      types: [HotKeyType.BasicAbility, HotKeyType.ReverseTarget],
+    },
+    'Hold Position': {
+      code: 'cmdholdpos',
+      types: [HotKeyType.BasicAbility, HotKeyType.ReverseTarget],
+    },
+    Attack: {
+      code: 'cmdattack',
+      types: [HotKeyType.Target, HotKeyType.MultiTarget],
+    },
+    Patrol: { code: 'cmdpatrol', types: [HotKeyType.Target] },
+    Cancel: {
+      code: 'cmdcancel',
+      types: [HotKeyType.BasicAbility, HotKeyType.ReverseTarget],
+    },
+  },
 };
 
 const BasicInventory: any = {
@@ -85,6 +117,14 @@ const BasicInventory: any = {
       code: 'itm4',
       types: [HotKeyType.BasicItem],
     },
+    'Crystal Ball': {
+      code: 'itm4',
+      types: [HotKeyType.Target, HotKeyType.MultiTarget],
+    },
+    'Wand Of Illusion': {
+      code: 'itm4',
+      types: [HotKeyType.Target, HotKeyType.MultiTarget],
+    },
   },
 };
 
@@ -100,6 +140,10 @@ export const NightElf: any = {
     Immolation: {
       code: 'aeim',
       types: [HotKeyType.BasicAbility, HotKeyType.Train],
+    },
+    'Deactivate Immolation': {
+      code: 'aeim',
+      types: [HotKeyType.BasicAbility],
     },
     Evasion: { code: 'aeev', types: [HotKeyType.Train] },
     Metamorphosis: {
@@ -157,16 +201,46 @@ export const NightElf: any = {
       code: 'adtn',
       types: [HotKeyType.Target, HotKeyType.MultiTarget],
     },
-    'Tree Of Life': { code: 'etol', types: [HotKeyType.NightElfBuild] },
-    'Ancient Of War': { code: 'eaom', types: [HotKeyType.NightElfBuild] },
-    'Hunter’s Hall': { code: 'edob', types: [HotKeyType.NightElfBuild] },
-    'Ancient Protector': { code: 'etrp', types: [HotKeyType.NightElfBuild] },
-    'Moon Well': { code: 'emow', types: [HotKeyType.NightElfBuild] },
-    'Altar Of Elders': { code: 'eate', types: [HotKeyType.NightElfBuild] },
-    'Ancient Of Lore': { code: 'eaoe', types: [HotKeyType.NightElfBuild] },
-    'Ancient Of Wind': { code: 'eaow', types: [HotKeyType.NightElfBuild] },
-    'Chimaera Roost': { code: 'edos', types: [HotKeyType.NightElfBuild] },
-    'Ancient Of Wonders': { code: 'eden', types: [HotKeyType.NightElfBuild] },
+    'Tree Of Life': {
+      code: 'etol',
+      types: [HotKeyType.NightElfBuild, HotKeyType.NightElfBuildAtLocation],
+    },
+    'Ancient Of War': {
+      code: 'eaom',
+      types: [HotKeyType.NightElfBuild, HotKeyType.NightElfBuildAtLocation],
+    },
+    'Hunter’s Hall': {
+      code: 'edob',
+      types: [HotKeyType.NightElfBuild, HotKeyType.NightElfBuildAtLocation],
+    },
+    'Ancient Protector': {
+      code: 'etrp',
+      types: [HotKeyType.NightElfBuild, HotKeyType.NightElfBuildAtLocation],
+    },
+    'Moon Well': {
+      code: 'emow',
+      types: [HotKeyType.NightElfBuild, HotKeyType.NightElfBuildAtLocation],
+    },
+    'Altar Of Elders': {
+      code: 'eate',
+      types: [HotKeyType.NightElfBuild, HotKeyType.NightElfBuildAtLocation],
+    },
+    'Ancient Of Lore': {
+      code: 'eaoe',
+      types: [HotKeyType.NightElfBuild, HotKeyType.NightElfBuildAtLocation],
+    },
+    'Ancient Of Wind': {
+      code: 'eaow',
+      types: [HotKeyType.NightElfBuild, HotKeyType.NightElfBuildAtLocation],
+    },
+    'Chimaera Roost': {
+      code: 'edos',
+      types: [HotKeyType.NightElfBuild, HotKeyType.NightElfBuildAtLocation],
+    },
+    'Ancient Of Wonders': {
+      code: 'eden',
+      types: [HotKeyType.NightElfBuild, HotKeyType.NightElfBuildAtLocation],
+    },
   },
   Archer: {
     'Mount Hippogryph': { code: 'aco2', types: [HotKeyType.BasicAbility] },
@@ -1177,6 +1251,10 @@ export const Neutral: any = {
       code: 'anms',
       types: [HotKeyType.BasicAbility, HotKeyType.Train],
     },
+    'Deactivate Mana Shield': {
+      code: 'anms',
+      types: [HotKeyType.BasicAbility],
+    },
     Tornado: {
       code: 'anto',
       types: [HotKeyType.BasicAbility, HotKeyType.Train],
@@ -1282,6 +1360,10 @@ export const Neutral: any = {
       code: 'anrg',
       types: [HotKeyType.BasicAbility, HotKeyType.Train],
     },
+    'Revert to Tinker Form': {
+      code: 'anrg',
+      types: [HotKeyType.BasicAbility],
+    },
   },
   Alchemist: {
     SelectFirstHero: { code: 'her1', types: [HotKeyType.BasicSelect] },
@@ -1337,7 +1419,7 @@ export const Neutral: any = {
     Taunt: { code: 'anta', types: [HotKeyType.BasicSelect] },
   },
   'Summon Bear': {
-    Blink: { code: 'anbl', types: [HotKeyType.Target] },
+    BearBlink: { code: 'anbl', types: [HotKeyType.Target] },
   },
   'Summon Quilbeast': {
     Frenzy: { code: 'afzy', types: [HotKeyType.BasicAbility] },
@@ -1404,6 +1486,7 @@ export const Neutral: any = {
 };
 
 export const actions = {
+  ...Common,
   ...Basic,
   ...NightElf,
   ...Undead,
@@ -1425,28 +1508,34 @@ export const actions = {
 export const night_elf_actions = {
   ..._merge(_merge({}, BasicInventory), NightElfInventory),
   ...NightElf,
+  ...Common,
 };
 
 export const undead_actions = {
   ..._merge(_merge({}, BasicInventory), UndeadInventory),
   ...Undead,
+  ...Common,
 };
 
 export const orc_actions = {
   ..._merge(_merge({}, BasicInventory), OrcInventory),
   ...Orc,
+  ...Common,
 };
 
 export const human_actions = {
   ..._merge(_merge({}, BasicInventory), HumanInventory),
   ...Human,
+  ...Common,
 };
 
 export const neutral_actions = {
   ...Neutral,
+  ...Common,
 };
 
 export const all_actions = {
+  ...Common,
   ...NightElf,
   ...Undead,
   ...Orc,
@@ -1495,18 +1584,22 @@ export const createActions = (action: string, type: HotKeyType) => {
         : [action, Basic.TargetDummy, action, Basic.TargetDummy];
     case HotKeyType.Target:
       return [action, Basic.TargetDummy];
+    case HotKeyType.ReverseTarget:
+      return [Basic.TargetDummy, action];
     case HotKeyType.Dodge:
       return [Basic.MissileDodge, action];
     case HotKeyType.Train:
       return ['HeroAbilities', `HeroAbilitiesTrain${action}`];
     case HotKeyType.NightElfBuild:
-      return ['NightElfBuild', action];
-    case HotKeyType.UndeadBuild:
-      return ['UndeadBuild', action];
     case HotKeyType.OrcBuild:
-      return ['OrcBuild', action];
+    case HotKeyType.UndeadBuild:
     case HotKeyType.HumanBuild:
-      return ['HumanBuild', action];
+      return [type, action];
+    case HotKeyType.NightElfBuildAtLocation:
+    case HotKeyType.OrcBuildAtLocation:
+    case HotKeyType.UndeadBuildAtLocation:
+    case HotKeyType.HumanBuildAtLocation:
+      return [type.replace('AtLocation', ''), action, Basic.TargetDummy];
     default:
       throw Error(` [${action}]: Unable to create actions for type [${type}]`);
   }
@@ -1524,17 +1617,28 @@ export const createPuzzles = (source: any, name: string) => {
   );
 };
 
-export const actionToName = (action: string) => {
+export const actionToName = (puzzle: any, action: string) => {
   switch (action) {
-    case 'HumanBuild':
-    case 'OrcBuild':
+    case HotKeyType.HumanBuild:
+    case HotKeyType.HumanBuildAtLocation:
+    case HotKeyType.OrcBuild:
+    case HotKeyType.OrcBuildAtLocation:
       return 'Build Structure';
-    case 'NightElfBuild':
+    case HotKeyType.NightElfBuild:
+    case HotKeyType.NightElfBuildAtLocation:
       return 'Create Building';
-    case 'UndeadBuild':
+    case HotKeyType.UndeadBuild:
+    case HotKeyType.UndeadBuildAtLocation:
       return 'Summon Building';
     case Basic.TargetDummy:
-      return 'on Target';
+      return [
+        HotKeyType.NightElfBuildAtLocation,
+        HotKeyType.UndeadBuildAtLocation,
+        HotKeyType.OrcBuildAtLocation,
+        HotKeyType.HumanBuildAtLocation,
+      ].some((v) => v === puzzle.type)
+        ? 'at Location'
+        : 'on Target';
     case Basic.MissileDodge:
       return 'Dodge incoming projectile with ';
     case 'HeroAbilities':
