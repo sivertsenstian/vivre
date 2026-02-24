@@ -6592,22 +6592,22 @@ export const actions = {
 export const layouts = [
   {
     title: 'Basic',
-    Description: 'Default hotkeys',
+    subtitle: 'Default hotkeys',
     value: 'basic',
   },
   {
     title: 'Grid',
-    Description: 'Default grid',
+    subtitle: 'Default grid',
     value: 'basic_grid',
   },
   {
-    title: 'Advanced Grid',
-    Description: 'Improved Custom Hotkeys Setup by WTVR',
+    title: 'Improved Grid',
+    subtitle: 'Improved Custom Grid Setup by WTVR',
     value: 'advanced_grid',
   },
   {
-    title: 'SaulApeMan',
-    Description: 'SaulApemans hotkey layout',
-    value: 'saul',
+    title: 'Custom',
+    subtitle: 'Your custom layout (requires upload)',
+    value: 'custom',
   },
 ];

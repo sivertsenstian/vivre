@@ -37,6 +37,8 @@ import EditInventoryInput from '@/games/hotkeystorm/components/EditInventoryInpu
 import custom_challenge from '@/assets/challenges.png';
 import race_neutral from '@/assets/race/neutral.png';
 import _round from 'lodash/round';
+import axios from 'axios';
+import type { IReplay } from '@/utilities/buildorderparser.ts';
 
 const store = useHotKeyStormStore();
 
@@ -478,6 +480,35 @@ onMounted(() => {
     store.data.notShowHighScoreOnLoad = true;
   }
 });
+
+const activeHotkeyFile = ref<File>();
+const isUploading = ref(false);
+
+const toBase64 = (file: File) =>
+  new Promise<any>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () =>
+      resolve((reader.result as any)?.split(',')?.[1] ?? '');
+    reader.onerror = reject;
+  });
+
+const onUploadHotkeys = async (event: any) => {
+  isUploading.value = true;
+  if (event?.target?.files?.[0]) {
+    try {
+      const file = event?.target?.files?.[0];
+      const data = await toBase64(file);
+      store.data.custom = data;
+    } catch (error) {
+      console.error('Failed to parse replay...', error);
+    } finally {
+      isUploading.value = false;
+    }
+  } else {
+    console.log('No file selected or file input cleared.');
+  }
+};
 </script>
 
 <template>
@@ -786,11 +817,17 @@ onMounted(() => {
                 </v-col>
                 <v-col cols="7">
                   <v-select
-                    hide-details
                     :items="layouts"
                     density="compact"
+                    item-props
                     label="Hotkey layout"
-                    v-model="store.data.selected"></v-select>
+                    v-model="store.data.selected"
+                    :persistent-hint="store.data.selected === 'custom'"
+                    :hint="
+                      store.data.custom?.length
+                        ? 'Custom layout uploaded and in use!'
+                        : 'Please upload a custom layout first'
+                    " />
                 </v-col>
                 <v-col cols="5">
                   <v-btn
@@ -804,6 +841,19 @@ onMounted(() => {
                       editInventory ? 'Save Changes' : 'Inventory Hotkeys'
                     }}</v-btn
                   >
+                </v-col>
+                <v-col cols="12">
+                  <v-file-input
+                    density="compact"
+                    :loading="isUploading"
+                    clearable
+                    prepend-icon="mdi-file-upload"
+                    variant="solo-filled"
+                    color="primary"
+                    accept=".txt"
+                    label="Select a hotkey file to use for custom layout..."
+                    @change="onUploadHotkeys"
+                    v-model="activeHotkeyFile" />
                 </v-col>
               </template>
             </v-row>
