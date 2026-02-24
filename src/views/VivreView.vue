@@ -1,40 +1,40 @@
 <script setup lang="ts">
-import live_explain_dark from "@/assets/live_help_dark.png";
-import live_explain from "@/assets/live_help.png";
-import { computed, onMounted, onUnmounted, ref } from "vue";
-import NumberAnimation from "vue-number-animation";
-import moment from "moment";
-import _round from "lodash/round";
-import _capitalize from "lodash/capitalize";
-import _fromPairs from "lodash/fromPairs";
-import ConfettiExplosion from "vue-confetti-explosion";
-import ResultChart from "@/components/ResultChart.vue";
-import WeeklyGoalChart from "@/components/WeeklyGoalChart.vue";
-import WeeklyResultChart from "@/components/WeeklyResultChart.vue";
-import Performance from "@/components/Performance.vue";
-import VersusBanner from "@/components/versus/VersusBanner.vue";
-import PlayerSearch from "@/components/PlayerSearch.vue";
-import PlayerRace from "@/components/PlayerRace.vue";
-import { useSettingsStore } from "@/stores/settings";
-import { useLiveStore } from "@/stores/live";
-import { useSeasonStore } from "@/stores/season";
-import { Race, raceIcon } from "@/stores/races";
+import live_explain_dark from '@/assets/live_help_dark.png';
+import live_explain from '@/assets/live_help.png';
+import { computed, onMounted, onUnmounted, ref } from 'vue';
+import NumberAnimation from 'vue-number-animation';
+import moment from 'moment';
+import _round from 'lodash/round';
+import _capitalize from 'lodash/capitalize';
+import _fromPairs from 'lodash/fromPairs';
+import ConfettiExplosion from 'vue-confetti-explosion';
+import ResultChart from '@/components/ResultChart.vue';
+import WeeklyGoalChart from '@/components/WeeklyGoalChart.vue';
+import WeeklyResultChart from '@/components/WeeklyResultChart.vue';
+import Performance from '@/components/Performance.vue';
+import VersusBanner from '@/components/versus/VersusBanner.vue';
+import PlayerSearch from '@/components/PlayerSearch.vue';
+import PlayerRace from '@/components/PlayerRace.vue';
+import { useSettingsStore } from '@/stores/settings';
+import { useLiveStore } from '@/stores/live';
+import { useSeasonStore } from '@/stores/season';
+import { Race, raceIcon } from '@/stores/races';
 
 const settings = useSettingsStore();
 const live = useLiveStore();
 const season = useSeasonStore();
 
-import hu_banner from "@/assets/take_a_look_at_banner_michael.png";
-import r_banner from "@/assets/take_a_look_at_banner_random.png";
-import ud_banner from "@/assets/take_a_look_at_banner_undead.png";
-import ne_banner from "@/assets/take_a_look_at_banner_nightelf.png";
-import oc_banner from "@/assets/take_a_look_at_banner_orc.png";
-import VersusChallenger from "@/components/versus/VersusChallenger.vue";
-import { useTheme } from "vuetify";
-import _isNil from "lodash/isNil";
-import type { IRaceStatistics, IStatistics } from "@/utilities/types.ts";
-import _sortBy from "lodash/sortBy";
-import MapLink from "@/components/MapLink.vue";
+import hu_banner from '@/assets/take_a_look_at_banner_michael.png';
+import r_banner from '@/assets/take_a_look_at_banner_random.png';
+import ud_banner from '@/assets/take_a_look_at_banner_undead.png';
+import ne_banner from '@/assets/take_a_look_at_banner_nightelf.png';
+import oc_banner from '@/assets/take_a_look_at_banner_orc.png';
+import VersusChallenger from '@/components/versus/VersusChallenger.vue';
+import { useTheme } from 'vuetify';
+import _isNil from 'lodash/isNil';
+import type { IRaceStatistics, IStatistics } from '@/utilities/types.ts';
+import _sortBy from 'lodash/sortBy';
+import MapLink from '@/components/MapLink.vue';
 import {
   current_season,
   duration,
@@ -42,9 +42,9 @@ import {
   start,
   start_color,
   end_color,
-} from "@/utilities/constants";
-import w3ciconDark from "@/assets/w3c_dark.png";
-import OngoingMatch from "@/components/live/OngoingMatch.vue";
+} from '@/utilities/constants';
+import w3ciconDark from '@/assets/w3c_dark.png';
+import OngoingMatch from '@/components/live/OngoingMatch.vue';
 
 const raceBanner: any = {
   [Race.Human]: hu_banner,
@@ -55,21 +55,21 @@ const raceBanner: any = {
 };
 
 const ranks = [
-  { name: "Grandmaster", icon: "mdi-trophy-award", color: "#FFD700" },
-  { name: "Master", icon: "mdi-trophy", color: "#CB3A1F" },
-  { name: "Adept", icon: "mdi-trophy-outline", color: "#EB42EF" },
-  { name: "Diamond", icon: "mdi-diamond", color: "#b9f2ff" },
-  { name: "Platinum", icon: "mdi-gold", color: "#e5e4e2" },
-  { name: "Gold", icon: "mdi-gold", color: "#FFD700" },
-  { name: "Silver", icon: "mdi-gold", color: "#C0C0C0" },
-  { name: "Bronze", icon: "mdi-gold", color: "#CD7F32" },
-  { name: "Grass", icon: "mdi-grass", color: "#136d15" },
+  { name: 'Grandmaster', icon: 'mdi-trophy-award', color: '#FFD700' },
+  { name: 'Master', icon: 'mdi-trophy', color: '#CB3A1F' },
+  { name: 'Adept', icon: 'mdi-trophy-outline', color: '#EB42EF' },
+  { name: 'Diamond', icon: 'mdi-diamond', color: '#b9f2ff' },
+  { name: 'Platinum', icon: 'mdi-gold', color: '#e5e4e2' },
+  { name: 'Gold', icon: 'mdi-gold', color: '#FFD700' },
+  { name: 'Silver', icon: 'mdi-gold', color: '#C0C0C0' },
+  { name: 'Bronze', icon: 'mdi-gold', color: '#CD7F32' },
+  { name: 'Grass', icon: 'mdi-grass', color: '#136d15' },
 ];
 
 const openw3cprofile = (battleTag: string) =>
   window.open(
     `https://www.w3champions.com/player/${encodeURIComponent(battleTag)}`,
-    "_blank",
+    '_blank',
   );
 
 const numberOfGames = (target: number, avg: number) =>
@@ -78,11 +78,11 @@ const numberOfGames = (target: number, avg: number) =>
 const data = computed<Partial<IRaceStatistics>>(() => {
   let d: Partial<IRaceStatistics> = { wins: 0, loss: 0, total: 0 };
   if (!_isNil(season.player)) {
-    if (settings.data.mode === "week") {
+    if (settings.data.mode === 'week') {
       d = season.player.week;
-    } else if (settings.data.mode === "month") {
+    } else if (settings.data.mode === 'month') {
       d = season.player.month;
-    } else if (settings.data.mode === "season") {
+    } else if (settings.data.mode === 'season') {
       d = season.player.season[season.player.race];
     }
 
@@ -119,7 +119,7 @@ const rank = computed(() => {
       });
     }
     return _fromPairs(
-      _sortBy(points, "points")
+      _sortBy(points, 'points')
         .reverse()
         .map((p, i) => [p.id, i]),
     );
@@ -134,11 +134,11 @@ const goal = computed(() => {
   const setGoalPerDay = settings.data.goal;
 
   if (!_isNil(season.player)) {
-    if (settings.data.mode === "week") {
+    if (settings.data.mode === 'week') {
       total = settings.data.goal * 7;
-    } else if (settings.data.mode === "month") {
+    } else if (settings.data.mode === 'month') {
       total = setGoalPerDay * moment().daysInMonth();
-    } else if (settings.data.mode === "season") {
+    } else if (settings.data.mode === 'season') {
       total = duration * setGoalPerDay;
     }
   }
@@ -151,7 +151,7 @@ const goal = computed(() => {
 
 const challengers = computed(() => {
   return [season.player?.battleTag, ...settings.data.challengers].sort(
-    (a, b) => (rank.value?.[a ?? ""] ?? 0) - (rank.value[b ?? ""] ?? 0),
+    (a, b) => (rank.value?.[a ?? ''] ?? 0) - (rank.value[b ?? ''] ?? 0),
   );
 });
 
@@ -293,8 +293,8 @@ onUnmounted(() => {
                         This means that you are currently
                         {{
                           Math.sign(data.mmr.averages.gain) > 0
-                            ? "gaining"
-                            : "losing"
+                            ? 'gaining'
+                            : 'losing'
                         }}
                         <strong
                           >{{ Math.abs(data.mmr.averages.gain) }}MMR</strong
@@ -876,7 +876,7 @@ onUnmounted(() => {
         var(--level-start-color),
         var(--level-end-color)
       ),
-      url("@/assets/player-level-background.jpg");
+      url('@/assets/player-level-background.jpg');
     background-size: cover;
     background-position: center;
   }

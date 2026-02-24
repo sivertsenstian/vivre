@@ -63,6 +63,8 @@ export const getIconUrl = (instruction: string) => {
     .replace(/\//g, '')
     .replace(/’/g, '')
     .replace(/'/g, '')
+    .replace(/,/g, '')
+    .replace(/-/g, '')
     .replace(/HeroAbilitiesTrain/, '')
     .toLowerCase()}.jpg`;
 };

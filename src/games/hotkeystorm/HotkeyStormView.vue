@@ -8,6 +8,7 @@ import moment from 'moment';
 import Command from './components/Command.vue';
 import HeroSelectCommand from './components/HeroSelectCommand.vue';
 import InventoryCommand from '@/games/hotkeystorm/components/InventoryCommand.vue';
+import NumberAnimation from 'vue-number-animation';
 import {
   actionToName,
   Basic,
@@ -17,6 +18,8 @@ import {
   undead_actions,
   orc_actions,
   human_actions,
+  neutral_actions,
+  all_actions,
 } from './utilities/actions';
 import { layouts } from './utilities/data';
 import { useHotKeyStormStore } from '@/games/hotkeystorm/store.ts';
@@ -31,6 +34,9 @@ import doneAudio from './sounds/done.mp3';
 import startAudio from './sounds/start.mp3';
 import highscoreAudio from './sounds/highscore.mp3';
 import EditInventoryInput from '@/games/hotkeystorm/components/EditInventoryInput.vue';
+import custom_challenge from '@/assets/challenges.png';
+import race_neutral from '@/assets/race/neutral.png';
+import _round from 'lodash/round';
 
 const store = useHotKeyStormStore();
 
@@ -133,6 +139,8 @@ const captured = ref<string>();
 
 const next = () => {
   hint.value = false;
+  clearTimeout(dodgetimeout.value);
+
   if (_isEmpty(puzzles.value)) {
     puzzles.value = [...selectedPuzzles.value];
   }
@@ -261,7 +269,7 @@ const step = () => {
             comboGoal.value = 30;
             break;
           case 4:
-            seconds = 7;
+            seconds = 10;
             comboGoal.value = 10;
             break;
           default:
@@ -369,8 +377,9 @@ const stop = () => {
     audio.done.play();
     status.value = Status.Finished;
     if (
-      store.highscores.length < 10 ||
-      store.highscores.some((h) => h.score < points.value)
+      points.value > 0 &&
+      (store.highscores.length < 10 ||
+        store.highscores.some((h) => h.score < points.value))
     ) {
       setTimeout(() => {
         audio.highscore.play();
@@ -475,7 +484,7 @@ onMounted(() => {
               <v-col cols="12" class="text-center">
                 <v-dialog
                   v-model="showHighscore"
-                  max-width="auto"
+                  max-width="750"
                   transition="dialog-bottom-transition">
                   <template v-slot:activator="{ props: activatorProps }">
                     <v-btn
@@ -790,11 +799,11 @@ onMounted(() => {
             </v-row>
             <template v-if="!editInventory && status !== Status.Play">
               <v-row style="margin-bottom: 10vh">
-                <v-col cols="6" class="text-center">
+                <v-col cols="7" class="text-center">
                   <table>
                     <tbody>
                       <tr>
-                        <td style="width: 64px; height: 64px">
+                        <td style="width: 42px; height: 42px">
                           <v-btn
                             @click="
                               () => {
@@ -810,10 +819,10 @@ onMounted(() => {
                             rounded="0"
                             variant="tonal"
                             style="width: 100%; height: 100%">
-                            <race-icon :race="Race.Human" :size="84" />
+                            <race-icon :race="Race.Human" :size="64" />
                           </v-btn>
                         </td>
-                        <td style="width: 64px; height: 64px">
+                        <td style="width: 42px; height: 42px">
                           <v-btn
                             @click="
                               () => {
@@ -829,12 +838,35 @@ onMounted(() => {
                             rounded="0"
                             variant="tonal"
                             style="width: 100%; height: 100%">
-                            <race-icon :race="Race.Orc" :size="84" />
+                            <race-icon :race="Race.Orc" :size="64" />
+                          </v-btn>
+                        </td>
+                        <td style="width: 42px; height: 42px">
+                          <v-btn
+                            @click="
+                              () => {
+                                challenge = 'Neutral';
+                                selectedPuzzles = _keys(neutral_actions)
+                                  .map((name) =>
+                                    createPuzzles(neutral_actions, name),
+                                  )
+                                  .flat();
+                                start();
+                              }
+                            "
+                            rounded="0"
+                            variant="tonal"
+                            style="width: 100%; height: 100%">
+                            <img
+                              :width="64"
+                              :src="race_neutral"
+                              title="Neutral"
+                              style="vertical-align: middle" />
                           </v-btn>
                         </td>
                       </tr>
                       <tr>
-                        <td style="width: 64px; height: 64px">
+                        <td style="width: 42px; height: 42px">
                           <v-btn
                             @click="
                               () => {
@@ -850,10 +882,10 @@ onMounted(() => {
                             rounded="0"
                             variant="tonal"
                             style="width: 100%; height: 100%">
-                            <race-icon :race="Race.NightElf" :size="84" />
+                            <race-icon :race="Race.NightElf" :size="64" />
                           </v-btn>
                         </td>
-                        <td style="width: 64px; height: 64px">
+                        <td style="width: 42px; height: 42px">
                           <v-btn
                             @click="
                               () => {
@@ -869,7 +901,26 @@ onMounted(() => {
                             rounded="0"
                             variant="tonal"
                             style="width: 100%; height: 100%">
-                            <race-icon :race="Race.Undead" :size="84" />
+                            <race-icon :race="Race.Undead" :size="64" />
+                          </v-btn>
+                        </td>
+                        <td style="width: 42px; height: 42px">
+                          <v-btn
+                            @click="
+                              () => {
+                                challenge = 'Random';
+                                selectedPuzzles = _keys(all_actions)
+                                  .map((name) =>
+                                    createPuzzles(all_actions, name),
+                                  )
+                                  .flat();
+                                start();
+                              }
+                            "
+                            rounded="0"
+                            variant="tonal"
+                            style="width: 100%; height: 100%">
+                            <race-icon :race="Race.Random" :size="64" />
                           </v-btn>
                         </td>
                       </tr>
@@ -880,13 +931,17 @@ onMounted(() => {
                     {{ mode === Mode.Challenge ? 'Challenge' : 'Practice' }}
                   </h3>
                 </v-col>
-                <v-col cols="6" class="text-center">
+                <v-col cols="5" class="text-center">
                   <v-btn
                     rounded="0"
                     variant="tonal"
-                    style="width: 100%; height: 172px"
+                    style="width: 100%; height: 132px"
                     disabled>
-                    <race-icon :race="Race.Random" :size="84" />
+                    <img
+                      :width="84"
+                      :src="custom_challenge"
+                      title="Custom Challenge"
+                      style="vertical-align: middle" />
                   </v-btn>
                   <h3 class="font-weight-bold">
                     Custom
@@ -911,7 +966,9 @@ onMounted(() => {
                       mode =
                         mode === Mode.Learning ? Mode.Challenge : Mode.Learning
                     "
-                    size="large"
+                    size="60"
+                    variant="tonal"
+                    block
                     :color="mode === Mode.Learning ? 'warning' : 'success'"
                     >{{
                       mode === Mode.Learning
@@ -1184,7 +1241,13 @@ onMounted(() => {
                         font-family: fantasy;
                         font-weight: bold;
                       ">
-                      {{ points }}
+                      <number-animation
+                        :from="0"
+                        :to="points"
+                        :format="_round"
+                        :duration="3"
+                        autoplay
+                        easing="easeInOutQuad" />
                     </div>
                   </v-col>
                 </v-row>
@@ -1494,9 +1557,6 @@ onMounted(() => {
   opacity: 0.2;
   filter: grayscale(1);
 }
-
-/* 1. Use a retro/pixelated font */
-@import url('https://fonts.googleapis.com');
 
 .arcade-container {
   background-color: black;

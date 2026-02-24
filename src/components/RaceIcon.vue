@@ -1,5 +1,5 @@
 ﻿<script setup lang="ts">
-import { type Race, raceIcon, raceName } from "@/stores/races.ts";
+import { raceIcon, raceName } from '@/stores/races.ts';
 
 interface Props {
   race: any;
