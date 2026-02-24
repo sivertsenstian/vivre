@@ -219,7 +219,7 @@ export const NightElf: any = {
     'Nature’s Blessing': { code: 'renb', types: [HotKeyType.BasicUpgrade] },
     Backpack: { code: 'repm', types: [HotKeyType.BasicUpgrade] },
     'Tree of Ages': { code: 'etoa', types: [HotKeyType.BasicUpgrade] },
-    'Entangle Gold Mine': { code: 'aent', types: [HotKeyType.Target] },
+    'Entangled Gold Mine': { code: 'aent', types: [HotKeyType.Target] },
     Uproot: { code: 'aro1', types: [HotKeyType.BasicAbility] },
     Root: { code: 'aro1', types: [HotKeyType.BasicAbility] },
     'Eat Tree': { code: 'aeat', types: [HotKeyType.Target] },
