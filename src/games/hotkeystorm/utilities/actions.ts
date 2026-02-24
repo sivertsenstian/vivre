@@ -230,7 +230,7 @@ export const NightElf: any = {
     'Eat Tree': { code: 'aeat', types: [HotKeyType.Target] },
   },
   'Tree of Ages': {
-    'Tree of Life': { code: 'etoa', types: [HotKeyType.BasicUpgrade] },
+    'Tree of Eternity': { code: 'etoe', types: [HotKeyType.BasicUpgrade] },
   },
   'Entangled Gold Mine': {
     'Load Wisp': { code: 'slo2', types: [HotKeyType.BasicAbility] },

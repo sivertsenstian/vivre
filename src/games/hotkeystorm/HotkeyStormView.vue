@@ -360,7 +360,7 @@ window.addEventListener('click', (event) => {
 
 const interval = ref();
 
-const stop = () => {
+const stop = (cancel: boolean = false) => {
   captured.value = undefined;
   queue.value = [];
   combo.value = 0;
@@ -373,21 +373,23 @@ const stop = () => {
   timer.value = moment.duration(2, 'minutes');
   historytimer.value = moment.duration(0, 'seconds');
 
-  if (mode.value === Mode.Challenge) {
-    audio.done.play();
-    status.value = Status.Finished;
-    if (
-      points.value > 0 &&
-      (store.highscores.length < 10 ||
-        store.highscores.some((h) => h.score < points.value))
-    ) {
-      setTimeout(() => {
-        audio.highscore.play();
-        madeTopTen.value = true;
-      }, 500);
+  if (!cancel) {
+    if (mode.value === Mode.Challenge) {
+      audio.done.play();
+      status.value = Status.Finished;
+      if (
+        points.value > 0 &&
+        (store.highscores.length < 10 ||
+          store.highscores.some((h) => h.score < points.value))
+      ) {
+        setTimeout(() => {
+          audio.highscore.play();
+          madeTopTen.value = true;
+        }, 500);
+      }
+    } else {
+      status.value = Status.Waiting;
     }
-  } else {
-    status.value = Status.Waiting;
   }
 };
 
@@ -416,7 +418,7 @@ const start = () => {
 };
 
 const restart = () => {
-  stop();
+  stop(true);
   start();
 };
 
@@ -1182,12 +1184,19 @@ onMounted(() => {
               </v-card-text>
               <v-card-text>
                 <v-row>
-                  <v-col cols="4" offset="4">
+                  <v-col cols="6" offset="3">
                     <v-text-field
                       v-model="challenger"
+                      class="text-capitalize"
                       maxlength="3"
-                      label="Name"
-                      hint="Max 3 characters" />
+                      :rules="[
+                        (value) =>
+                          value.length !== 3 ? 'Must enter 3 characters' : true,
+                      ]"
+                      hide-details="auto"
+                      @input="challenger = challenger.toUpperCase()"
+                      placeholder="AAA"
+                      label="Name" />
                   </v-col>
                 </v-row>
               </v-card-text>
@@ -1210,9 +1219,9 @@ onMounted(() => {
                   :loading="store.busy"
                   @click="
                     async () => {
-                      if (challenger.length) {
+                      if (challenger.length && challenger.length === 3) {
                         await store.save({
-                          name: challenger,
+                          name: challenger.toUpperCase(),
                           score: points,
                           challenge: challenge,
                         });
