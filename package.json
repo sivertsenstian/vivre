@@ -10,7 +10,14 @@
     "build-only": "vite build",
     "type-check": "vue-tsc --build --force",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
-    "format": "prettier --write src/"
+    "format": "prettier --write src/",
+    "release-cname": "mv ./docs/CNAME ./dist/",
+    "release-delete": "rm ./docs/ -f -force",
+    "release-replace": "mv ./dist/ ./docs",
+    "release-add": "git add .",
+    "release-commit": "git commit -m 'release'",
+    "release-push": "git push origin release",
+    "release": "yarn build && yarn release-cname && yarn release-delete && yarn release-replace && yarn release-add && yarn release-commit && yarn release-push"
   },
   "dependencies": {
     "@amcharts/amcharts5": "^5.10.7",
