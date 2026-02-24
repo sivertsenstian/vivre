@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import _sample from 'lodash/sample';
 import _isEqual from 'lodash/isEqual';
 import _isEmpty from 'lodash/isEmpty';
@@ -32,13 +32,12 @@ import solvedAudio from './sounds/solved.mp3';
 import incorrectAudio from './sounds/incorrect.mp3';
 import doneAudio from './sounds/done.mp3';
 import startAudio from './sounds/start.mp3';
+import music from './sounds/music.mp3';
 import highscoreAudio from './sounds/highscore.mp3';
 import EditInventoryInput from '@/games/hotkeystorm/components/EditInventoryInput.vue';
 import custom_challenge from '@/assets/challenges.png';
 import race_neutral from '@/assets/race/neutral.png';
 import _round from 'lodash/round';
-import axios from 'axios';
-import type { IReplay } from '@/utilities/buildorderparser.ts';
 
 const store = useHotKeyStormStore();
 
@@ -100,6 +99,7 @@ const audio = {
   done: new Audio(doneAudio),
   start: new Audio(startAudio),
   highscore: new Audio(highscoreAudio),
+  music: new Audio(music),
 };
 
 const challenger = ref<string>('');
@@ -478,6 +478,16 @@ onMounted(() => {
   if (!store.data.notShowHighScoreOnLoad) {
     showHighscore.value = true;
     store.data.notShowHighScoreOnLoad = true;
+  }
+});
+
+watch(showHighscore, (v, _) => {
+  if (v) {
+    audio.music.loop = true;
+    audio.music.play();
+  } else {
+    audio.music.pause();
+    audio.music.currentTime = 0;
   }
 });
 
