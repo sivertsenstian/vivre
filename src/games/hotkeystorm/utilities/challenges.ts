@@ -1,7 +1,9 @@
 import {
+  BasicInventory,
   createPuzzles,
   HotKeyType,
   human_actions,
+  Neutral,
 } from '@/games/hotkeystorm/utilities/actions.ts';
 import _keys from 'lodash/keys';
 
@@ -59,6 +61,79 @@ export const HumanStart = () => {
   return {
     name: 'Basic Training: Human Opening',
     random: false,
+    puzzles: _keys(actions)
+      .map((name) => createPuzzles(actions, name))
+      .flat(),
+  };
+};
+
+export const GoblinShop = () => {
+  const actions = {
+    'Goblin Merchant': Neutral['Goblin Merchant'],
+  };
+
+  return {
+    name: 'Goblin Merchant',
+    random: true,
+    puzzles: _keys(actions)
+      .map((name) => createPuzzles(actions, name))
+      .flat(),
+  };
+};
+
+export const Inventory = () => {
+  const actions = {
+    ...BasicInventory,
+  };
+
+  return {
+    name: 'Basic Inventory Management',
+    random: true,
+    puzzles: _keys(actions)
+      .map((name) => createPuzzles(actions, name))
+      .flat(),
+  };
+};
+
+export const DodgeMissile = () => {
+  const actions = {
+    Item2: {
+      'Potion of Lesser Invulnerability': {
+        code: 'itm2',
+        types: [HotKeyType.Dodge],
+      },
+      'Potion of Greater Invulnerability': {
+        code: 'itm2',
+        types: [HotKeyType.Dodge],
+      },
+    },
+    Item4: {
+      'Potion of Lesser Invulnerability': {
+        code: 'itm4',
+        types: [HotKeyType.Dodge],
+      },
+    },
+    Blademaster: {
+      'Wind Walk': {
+        code: 'aowk',
+        types: [HotKeyType.Dodge],
+      },
+      'Mirror Image': {
+        code: 'aomi',
+        types: [HotKeyType.Dodge],
+      },
+    },
+    Paladin: {
+      'Divine Shield': {
+        code: 'ahds',
+        types: [HotKeyType.Dodge],
+      },
+    },
+  };
+
+  return {
+    name: 'Dodgeball!',
+    random: true,
     puzzles: _keys(actions)
       .map((name) => createPuzzles(actions, name))
       .flat(),
