@@ -1,11 +1,13 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import _sample from 'lodash/sample';
 import _isEqual from 'lodash/isEqual';
 import _isEmpty from 'lodash/isEmpty';
 import ConfettiExplosion from 'vue-confetti-explosion';
 import moment from 'moment';
 import Command from './components/Command.vue';
+import HeroSelectCommand from './components/HeroSelectCommand.vue';
+import InventoryCommand from '@/games/hotkeystorm/components/InventoryCommand.vue';
 import {
   actionToName,
   Basic,
@@ -18,7 +20,6 @@ import {
 } from './utilities/actions';
 import { layouts } from './utilities/data';
 import { useHotKeyStormStore } from '@/games/hotkeystorm/store.ts';
-import InventoryCommand from '@/games/hotkeystorm/components/InventoryCommand.vue';
 import { getIconUrl } from '@/utilities/api.ts';
 import _keys from 'lodash/keys';
 import RaceIcon from '@/components/RaceIcon.vue';
@@ -28,15 +29,31 @@ import solvedAudio from './sounds/solved.mp3';
 import incorrectAudio from './sounds/incorrect.mp3';
 import doneAudio from './sounds/done.mp3';
 import startAudio from './sounds/start.mp3';
+import highscoreAudio from './sounds/highscore.mp3';
 import EditInventoryInput from '@/games/hotkeystorm/components/EditInventoryInput.vue';
 
 const store = useHotKeyStormStore();
 
 const toName = (puzzle: any) => {
-  if (puzzle.name.toLowerCase().startsWith('item')) {
+  if (puzzle.name?.toLowerCase()?.startsWith('item')) {
     return 'Inventory';
   }
   return puzzle.name;
+};
+
+const toOrdinalSuffix = (i: number) => {
+  let j = i % 10,
+    k = i % 100;
+  if (j === 1 && k !== 11) {
+    return i + 'st';
+  }
+  if (j === 2 && k !== 12) {
+    return i + 'nd';
+  }
+  if (j === 3 && k !== 13) {
+    return i + 'rd';
+  }
+  return i + 'th';
 };
 
 const toInstruction = (puzzle: any) => {
@@ -70,11 +87,15 @@ const audio = {
   solved: new Audio(solvedAudio),
   done: new Audio(doneAudio),
   start: new Audio(startAudio),
+  highscore: new Audio(highscoreAudio),
 };
 
+const challenger = ref<string>('');
+const challenge = ref<string>('');
 const selectedPuzzles = ref<any[]>([]);
 const puzzles = ref<any[]>([]);
 const timer = ref(moment.duration(2, 'minutes'));
+const historytimer = ref(moment.duration(0, 'seconds'));
 const shift = ref(false);
 
 enum Status {
@@ -91,6 +112,8 @@ enum Mode {
 const status = ref(Status.Waiting);
 const mode = ref(Mode.Challenge);
 const hint = ref(false);
+const showHighscore = ref(false);
+const madeTopTen = ref(false);
 
 const editInventory = ref(false);
 
@@ -147,21 +170,25 @@ const step = () => {
     queue.value.every((v, i) => v === answer.value[i])
   ) {
     audio.solved.play();
-
     solved.value = true;
 
-    // Record for summary
-    history.value.push({
-      success: true,
-      puzzle: puzzle.value,
-      actual: queue.value,
-      answer: answer.value,
-    });
+    if (mode.value === Mode.Challenge) {
+      // Record for summary
+      history.value.push({
+        success: true,
+        time: historytimer.value.asSeconds(),
+        puzzle: puzzle.value,
+        attempt: queue.value,
+        answer: answer.value,
+        combo: combo.value,
+      });
+    }
 
     setTimeout(() => {
       captured.value = undefined;
       queue.value = [];
       solved.value = false;
+      historytimer.value = moment.duration(0, 'seconds');
 
       next();
 
@@ -178,20 +205,24 @@ const step = () => {
   if (queue.value.some((v, i) => v !== answer.value[i])) {
     audio.incorrect.play();
 
-    history.value.push({
-      success: false,
-      puzzle: puzzle.value,
-      actual: answer.value,
-      answer: queue.value,
-    });
-
     if (mode.value === Mode.Challenge) {
+      history.value.push({
+        success: false,
+        time: historytimer.value.asSeconds(),
+        puzzle: puzzle.value,
+        attempt: queue.value,
+        answer: answer.value,
+        combo: combo.value,
+      });
+
       setTimeout(() => {
         captured.value = undefined;
         queue.value = [];
         combo.value = 0;
         comboGoal.value = 5;
         comboStreak.value = 0;
+        historytimer.value = moment.duration(0, 'seconds');
+
         next();
       }, 500);
 
@@ -250,13 +281,13 @@ const step = () => {
 };
 
 const captureInput = (event: KeyboardEvent) => {
-  event.preventDefault();
-  event.stopPropagation();
-  event.stopImmediatePropagation();
-
   if (status.value !== Status.Play) {
     return;
   }
+
+  event.preventDefault();
+  event.stopPropagation();
+  event.stopImmediatePropagation();
 
   if (['Control', 'Alt', 'Shift'].some((v) => v === event.key)) {
     return;
@@ -293,13 +324,14 @@ const captureInput = (event: KeyboardEvent) => {
 };
 
 window.addEventListener('keydown', (event) => {
+  if (status.value !== Status.Play) {
+    return;
+  }
+
   event.preventDefault();
   event.stopPropagation();
   event.stopImmediatePropagation();
 
-  if (status.value !== Status.Play) {
-    return;
-  }
   if (event.shiftKey) {
     shift.value = true;
   }
@@ -307,11 +339,12 @@ window.addEventListener('keydown', (event) => {
 
 window.addEventListener('keyup', captureInput);
 window.addEventListener('click', (event) => {
-  event.preventDefault();
-  event.stopImmediatePropagation();
   if (status.value !== Status.Play) {
     return;
   }
+
+  event.preventDefault();
+  event.stopImmediatePropagation();
 
   queue.value.push(Basic.Miss);
   step();
@@ -320,33 +353,52 @@ window.addEventListener('click', (event) => {
 const interval = ref();
 
 const stop = () => {
-  // reset ?
-  points.value = 0;
   captured.value = undefined;
   queue.value = [];
   combo.value = 0;
   comboGoal.value = 5;
   comboStreak.value = 0;
 
-  audio.done.play();
-  status.value = Status.Finished;
   clearInterval(interval.value);
-  history.value = [];
   puzzle.value = {};
   puzzles.value = [];
   timer.value = moment.duration(2, 'minutes');
+  historytimer.value = moment.duration(0, 'seconds');
+
+  if (mode.value === Mode.Challenge) {
+    audio.done.play();
+    status.value = Status.Finished;
+    if (
+      store.highscores.length < 10 ||
+      store.highscores.some((h) => h.score < points.value)
+    ) {
+      setTimeout(() => {
+        audio.highscore.play();
+        madeTopTen.value = true;
+      }, 500);
+    }
+  } else {
+    status.value = Status.Waiting;
+  }
 };
 
 const start = () => {
   audio.start.play();
   status.value = Status.Play;
   clearInterval(interval.value);
-  timer.value = moment.duration(2, 'minutes');
-  next();
+  history.value = [];
+  points.value = 0;
+
+  setTimeout(() => {
+    timer.value = moment.duration(2, 'minutes');
+    historytimer.value = moment.duration(0, 'seconds');
+    next();
+  }, 500);
 
   if (mode.value === Mode.Challenge) {
     interval.value = setInterval(() => {
       timer.value.subtract(1, 'second');
+      historytimer.value.add(1, 'second');
       if (timer.value.asSeconds() <= 0) {
         stop();
       }
@@ -404,19 +456,104 @@ const dodge = () => {
     Math.floor(Math.random() * (2000 - 500 + 1)) + 500,
   );
 };
+
+onMounted(() => {
+  if (!store.data.notShowHighScoreOnLoad) {
+    showHighscore.value = true;
+    store.data.notShowHighScoreOnLoad = true;
+  }
+});
 </script>
 
 <template>
   <main style="height: 100vh; overflow-y: auto">
-    <v-container fluid style="opacity: 0.9">
-      <v-sheet
-        class="pa-6"
-        elevation="10"
-        style="min-height: 85vh; overflow: hidden">
-        <v-row>
+    <v-container fluid>
+      <v-sheet class="pa-6" style="min-height: 85vh; overflow: hidden">
+        <v-row v-if="status !== Status.Finished">
           <v-col class="game-container" cols="8">
+            <v-row v-if="status !== Status.Play">
+              <v-col cols="12" class="text-center">
+                <v-dialog
+                  v-model="showHighscore"
+                  max-width="auto"
+                  transition="dialog-bottom-transition">
+                  <template v-slot:activator="{ props: activatorProps }">
+                    <v-btn
+                      class="highscore-button"
+                      v-bind="activatorProps"
+                      text="VIEW HIGH SCORES"
+                      variant="plain"></v-btn>
+                  </template>
+
+                  <template v-slot:default="{ isActive }">
+                    <v-container class="arcade-container">
+                      <h1 class="text-center mb-5 arcade-title">HIGH SCORES</h1>
+                      <v-table
+                        theme="dark"
+                        class="arcade-table"
+                        style="min-height: 500px">
+                        <thead>
+                          <tr>
+                            <th class="text-center">RANK</th>
+                            <th class="text-center">NAME</th>
+                            <th class="text-center">SCORE</th>
+                            <th class="text-center">CHALLENGE</th>
+                          </tr>
+                        </thead>
+                        <tbody v-if="store.pending">
+                          <tr>
+                            <td colspan="4" class="text-center please-wait">
+                              <span style="font-size: 22px">
+                                Please wait...
+                              </span>
+                              <v-progress-linear
+                                class="mt-8"
+                                indeterminate
+                                :color="`rgb(73,255,255)`" />
+                            </td>
+                          </tr>
+                        </tbody>
+                        <tbody v-else-if="store.highscores.length === 0">
+                          <tr>
+                            <td colspan="4" class="text-center please-wait">
+                              <span style="font-size: 22px"> Empty... </span>
+                            </td>
+                          </tr>
+                        </tbody>
+                        <tbody v-else>
+                          <tr v-for="(item, index) in store.highscores">
+                            <td class="text-center rank-col">
+                              {{ toOrdinalSuffix(index + 1) }}
+                            </td>
+                            <td class="text-center name-col">
+                              {{ item.name }}
+                            </td>
+                            <td class="text-center score-col">
+                              {{ item.score }}
+                            </td>
+                            <td class="text-center name-col">
+                              {{ item.challenge }}
+                            </td>
+                          </tr>
+                        </tbody>
+                      </v-table>
+                    </v-container>
+                  </template>
+                </v-dialog>
+              </v-col>
+            </v-row>
             <template v-if="status === Status.Play">
-              <v-row>
+              <v-row v-if="!puzzle.name">
+                <v-col cols="4" offset="4" class="text-center">
+                  <h3 style="font-family: fantasy">Get Ready!</h3>
+                  <v-progress-linear indeterminate />
+                </v-col>
+              </v-row>
+              <v-row
+                :style="{
+                  transition: 'opacity 500ms',
+                  opacity: puzzle.name ? 1 : 0,
+                }">
                 <v-col cols="12" class="text-center">
                   <h2 class="text-no-wrap">
                     <v-img
@@ -434,7 +571,11 @@ const dodge = () => {
                   </h2>
                 </v-col>
               </v-row>
-              <v-row>
+              <v-row
+                :style="{
+                  transition: 'opacity 500ms',
+                  opacity: puzzle.name ? 1 : 0,
+                }">
                 <v-col
                   cols="12"
                   class="text-center d-inline-flex justify-center align-center">
@@ -450,6 +591,17 @@ const dodge = () => {
                       :name="puzzle.name"
                       :action="action"
                       :current="queue?.[i]" />
+                    <hero-select-command
+                      v-else-if="
+                        [
+                          'SelectFirstHero',
+                          'SelectSecondHero',
+                          'SelectThirdHero',
+                        ].some((v) => v === action)
+                      "
+                      :name="puzzle.name"
+                      :action="action">
+                    </hero-select-command>
                     <command
                       v-else
                       :name="puzzle.name"
@@ -480,7 +632,11 @@ const dodge = () => {
                   </div>
                 </v-col>
               </v-row>
-              <v-row>
+              <v-row
+                :style="{
+                  transition: 'opacity 500ms',
+                  opacity: puzzle.name ? 1 : 0,
+                }">
                 <v-col cols="12" class="text-center">
                   <div v-if="!queue.length">
                     <h2 class="text-grey elementToFadeInAndOut">
@@ -548,20 +704,20 @@ const dodge = () => {
             <template v-else>
               <v-alert
                 color="primary"
-                class="text-center overflow-visible"
+                class="text-center"
                 variant="tonal"
-                height="375">
+                height="400">
                 <v-icon icon="mdi-weather-lightning" style="font-size: 128px" />
-                <h2 class="mt-2">
+                <h2>
                   Welcome to
                   <span class="font-weight-bold text-orange">Hotkey Storm</span>
                   - The Hotkey training game!
                 </h2>
-                <h2 class="mt-2">
+                <h2>
                   Can you reach the leaderboard and become APM king? Let's find
                   out!
                 </h2>
-                <h2 class="mt-2">
+                <h2>
                   Configure your hotkeys and select a challenge on the right to
                   start practicing!
                 </h2>
@@ -642,6 +798,7 @@ const dodge = () => {
                           <v-btn
                             @click="
                               () => {
+                                challenge = 'Human';
                                 selectedPuzzles = _keys(human_actions)
                                   .map((name) =>
                                     createPuzzles(human_actions, name),
@@ -660,6 +817,7 @@ const dodge = () => {
                           <v-btn
                             @click="
                               () => {
+                                challenge = 'Orc';
                                 selectedPuzzles = _keys(orc_actions)
                                   .map((name) =>
                                     createPuzzles(orc_actions, name),
@@ -680,6 +838,7 @@ const dodge = () => {
                           <v-btn
                             @click="
                               () => {
+                                challenge = 'Night Elf';
                                 selectedPuzzles = _keys(night_elf_actions)
                                   .map((name) =>
                                     createPuzzles(night_elf_actions, name),
@@ -698,6 +857,7 @@ const dodge = () => {
                           <v-btn
                             @click="
                               () => {
+                                challenge = 'Undead';
                                 selectedPuzzles = _keys(undead_actions)
                                   .map((name) =>
                                     createPuzzles(undead_actions, name),
@@ -943,6 +1103,310 @@ const dodge = () => {
             </v-row>
           </v-col>
         </v-row>
+
+        <v-row v-if="status === Status.Finished">
+          <v-dialog
+            transition="dialog-bottom-transition"
+            width="600"
+            height="300"
+            v-model="madeTopTen"
+            :persistent="true">
+            <ConfettiExplosion
+              :force="1.5"
+              style="position: relative; left: 300px"
+              :colors="['goldenrod', 'darkgoldenrod', 'silver', 'gold']" />
+            <v-card
+              prepend-icon="mdi-trophy-award"
+              title="You made the top ten!">
+              <v-card-text class="text-center">
+                <h3 class="text-orange">
+                  Please enter your name to be entered into the high score list
+                </h3>
+              </v-card-text>
+              <v-card-text>
+                <v-row>
+                  <v-col cols="4" offset="4">
+                    <v-text-field
+                      v-model="challenger"
+                      maxlength="3"
+                      label="Name"
+                      hint="Max 3 characters" />
+                  </v-col>
+                </v-row>
+              </v-card-text>
+              <v-divider></v-divider>
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn
+                  text="Don't save"
+                  variant="plain"
+                  color="error"
+                  @click="
+                    () => {
+                      madeTopTen = false;
+                    }
+                  "></v-btn>
+                <v-btn
+                  color="success"
+                  text="Save my high score"
+                  variant="tonal"
+                  :loading="store.busy"
+                  @click="
+                    async () => {
+                      if (challenger.length) {
+                        await store.save({
+                          name: challenger,
+                          score: points,
+                          challenge: challenge,
+                        });
+                        madeTopTen = false;
+                        showHighscore = true;
+                      }
+                    }
+                  "></v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
+
+          <v-col cols="6" class="text-center">
+            <v-card
+              width="100%"
+              height="500"
+              variant="tonal"
+              color="success"
+              class="d-inline-flex">
+              <v-card-text class="my-auto">
+                <v-row>
+                  <v-col cols="12" class="text-center">
+                    <div
+                      style="
+                        font-size: 240px;
+                        font-family: fantasy;
+                        font-weight: bold;
+                      ">
+                      {{ points }}
+                    </div>
+                  </v-col>
+                </v-row>
+                <v-row>
+                  <v-col cols="12">
+                    <h2 style="font-size: 32px">Puzzles Solved</h2>
+                  </v-col>
+                </v-row>
+              </v-card-text>
+            </v-card>
+          </v-col>
+          <v-col cols="6">
+            <v-card width="100%" height="500" variant="flat" border>
+              <v-table class="pa-10" style="font-size: 22px">
+                <tbody>
+                  <tr>
+                    <td class="text-left font-weight-bold">Moves</td>
+                    <td class="text-right">
+                      {{ history.reduce((s, v) => s + v.attempt.length, 0) }}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="text-left font-weight-bold">Accuracy</td>
+                    <td class="text-right">
+                      {{
+                        Math.round(
+                          (history.reduce(
+                            (s, v) => (v.success ? s + 1 : s),
+                            0,
+                          ) /
+                            Math.max(history.length, 1)) *
+                            100,
+                        )
+                      }}%
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="text-left font-weight-bold">Combo</td>
+                    <td class="text-right">
+                      {{
+                        history.reduce((s, v) => (v.combo > s ? v.combo : s), 0)
+                      }}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="text-left font-weight-bold">Time</td>
+                    <td class="text-right">
+                      {{ history.reduce((s, v) => s + v.time, 0) }} seconds
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="text-left font-weight-bold">Time per move</td>
+                    <td class="text-right">
+                      {{
+                        Number(
+                          history.reduce((s, v) => s + v.time, 0) /
+                            Math.max(
+                              history.reduce((s, v) => s + v.attempt.length, 0),
+                              1,
+                            ),
+                        ).toFixed(2)
+                      }}
+                      seconds
+                    </td>
+                  </tr>
+                </tbody>
+              </v-table>
+            </v-card>
+          </v-col>
+          <v-col cols="8">
+            <v-btn
+              rounded="0"
+              variant="tonal"
+              size="128"
+              block
+              color="primary"
+              @click="
+                (event: any) => {
+                  event.preventDefault();
+                  event.stopImmediatePropagation();
+                  start();
+                }
+              ">
+              <v-icon icon="mdi-weather-lightning" style="font-size: 64px" />
+              <span style="font-size: 54px; font-weight: bold" class="mx-5"
+                >Play Again</span
+              >
+              <v-icon icon="mdi-weather-lightning" style="font-size: 64px" />
+            </v-btn>
+          </v-col>
+          <v-col cols="4">
+            <v-btn
+              rounded="0"
+              variant="tonal"
+              size="128"
+              block
+              color="warning"
+              @click="
+                (event: any) => {
+                  event.preventDefault();
+                  event.stopImmediatePropagation();
+                  status = Status.Waiting;
+                }
+              ">
+              <span style="font-size: 54px; font-weight: bold" class="mx-5"
+                >Exit</span
+              >
+              <v-icon icon="mdi-exit-run" style="font-size: 64px" />
+            </v-btn>
+          </v-col>
+          <v-col cols="12" class="text-left text-grey">
+            <h2>Puzzles played</h2>
+          </v-col>
+          <v-col v-for="(item, i) in history" cols="3">
+            <v-card
+              variant="tonal"
+              :color="item.success ? 'primary' : 'error'"
+              height="100%"
+              border>
+              <v-card-item>
+                <v-card-title
+                  >{{ toOrdinalSuffix(i + 1) }} -
+                  {{ toName(item.puzzle) }}</v-card-title
+                >
+                <v-card-subtitle>{{
+                  toInstruction(item.puzzle)
+                }}</v-card-subtitle>
+              </v-card-item>
+              <v-card-text>
+                <v-row>
+                  <v-col cols="12" class="text-center">
+                    <h2 class="text-no-wrap"></h2>
+                  </v-col>
+                  <v-col
+                    cols="12"
+                    class="text-center d-inline-flex justify-center align-center">
+                    <div
+                      v-for="(action, i) in item.puzzle.actions"
+                      class="d-inline-flex">
+                      <inventory-command
+                        v-if="
+                          item.puzzle.name?.toLowerCase().startsWith('item') &&
+                          action !== Basic.TargetDummy &&
+                          action !== Basic.MissileDodge
+                        "
+                        :size="28"
+                        :name="item.puzzle.name"
+                        :action="action"
+                        :current="queue?.[i]" />
+                      <hero-select-command
+                        v-else-if="
+                          [
+                            'SelectFirstHero',
+                            'SelectSecondHero',
+                            'SelectThirdHero',
+                          ].some((v) => v === action)
+                        "
+                        :size="28"
+                        :name="item.puzzle.name"
+                        :action="action">
+                      </hero-select-command>
+                      <command
+                        v-else
+                        :size="28"
+                        :name="item.puzzle.name"
+                        :action="action"
+                        :current="item.attempt?.[i]"
+                        :queue="item.attempt" />
+                    </div>
+                  </v-col>
+                </v-row>
+                <v-row
+                  :style="{ visibility: item.success ? 'hidden' : 'visible' }">
+                  <v-col cols="12" class="text-center">
+                    <span
+                      class="text-success font-weight-bold"
+                      style="vertical-align: text-bottom"
+                      >SOLUTION:
+                    </span>
+                    <div
+                      v-for="key in item.answer.filter((a: any) =>
+                        [
+                          Basic.TargetDummy,
+                          Basic.Miss,
+                          Basic.MissileDodge,
+                        ].every((v) => a !== v),
+                      )"
+                      class="d-inline-flex">
+                      <h2 class="font-weight-bold ml-2 text-primary">
+                        {{ key }}
+                      </h2>
+                    </div>
+                  </v-col>
+                </v-row>
+              </v-card-text>
+              <v-divider />
+              <v-card-actions>
+                <v-btn
+                  variant="tonal"
+                  prepend-icon="mdi-check"
+                  color="success"
+                  v-if="item.success"
+                  >{{ item.time }}s</v-btn
+                >
+                <v-btn
+                  variant="tonal"
+                  prepend-icon="mdi-close"
+                  color="error"
+                  v-else
+                  >{{ item.time }}s</v-btn
+                >
+                <v-btn
+                  v-if="item.time > 2"
+                  variant="tonal"
+                  prepend-icon="mdi-clock"
+                  color="warning"
+                  >slow</v-btn
+                >
+              </v-card-actions>
+            </v-card>
+          </v-col>
+        </v-row>
       </v-sheet>
     </v-container>
   </main>
@@ -1031,7 +1495,68 @@ const dodge = () => {
   filter: grayscale(1);
 }
 
-.v-alert :deep(.v-alert__content) {
-  overflow: visible;
+/* 1. Use a retro/pixelated font */
+@import url('https://fonts.googleapis.com');
+
+.arcade-container {
+  background-color: black;
+  color: #ff0; /* Classic Arcade Yellow */
+  font-family: 'Press Start 2P', system-ui;
+  font-weight: 400;
+  font-style: normal;
+  padding: 20px;
+  border: 4px solid #00f; /* Blue border */
+}
+
+.arcade-title {
+  color: #0f0; /* Green title */
+  text-shadow: 2px 2px #f00; /* Red shadow */
+  font-size: 2rem;
+}
+
+/* 2. Override Vuetify Table Styling */
+.arcade-table {
+  background: black !important;
+  color: #ff0 !important;
+  font-family: 'Press Start 2P', cursive;
+}
+
+.arcade-table th,
+.arcade-table td {
+  border-bottom: none !important; /* Remove borders */
+  font-size: 0.8rem;
+  padding: 15px !important;
+}
+
+.arcade-table thead th {
+  color: #0ff !important; /* Cyan headers */
+}
+
+/* Optional: Add flashing effect for top score */
+.rank-col:first-child,
+.score-col:first-child,
+.name-col:first-child {
+  color: #fff;
+  animation: flash 1s infinite;
+}
+
+.highscore-button {
+  font-family: 'Press Start 2P', system-ui;
+  font-weight: 400;
+  font-style: normal;
+  font-size: 20px;
+  color: #fff;
+  animation: flash 1s infinite;
+}
+
+.please-wait {
+  color: #fff;
+  animation: flash 1s infinite;
+}
+
+@keyframes flash {
+  50% {
+    color: #ff0;
+  }
 }
 </style>

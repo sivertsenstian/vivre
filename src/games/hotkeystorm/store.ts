@@ -4,6 +4,10 @@ import axios from 'axios';
 import * as parser from '@/utilities/hotkeyparser.ts';
 import { getCodeFromAction } from '@/games/hotkeystorm/utilities/actions.ts';
 import { useStorage } from '@vueuse/core';
+import { useCollection, useFirestore } from 'vuefire';
+import { collection, addDoc, Timestamp } from 'firebase/firestore';
+import _take from 'lodash/take';
+import _orderBy from 'lodash/orderBy';
 
 const getTranslation = async (selected: string) => {
   const response = await axios.get(`/hotkeys/${selected}.txt`, {
@@ -28,9 +32,34 @@ const keyCodeToKey: any = {
   '114': 'F3',
 };
 
+interface IHighscore {
+  name: string;
+  challenge: string;
+  score: number;
+  timestamp?: Timestamp;
+}
+
 export const useHotKeyStormStore = defineStore('hotkeystorm', () => {
+  const db = useFirestore();
+  const busy = ref(false);
+  const hotkeystormCollection = collection(db, 'hotkeystorm');
+  const { data: highscores, pending } = useCollection(hotkeystormCollection);
+
+  const save = async (highscore: IHighscore) => {
+    try {
+      busy.value = true;
+      highscore.timestamp = Timestamp.now();
+      await addDoc(hotkeystormCollection, highscore);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      busy.value = false;
+    }
+  };
+
   const translation = ref<any>({});
   const data = useStorage('vivre/game/storm', {
+    notShowHighScoreOnLoad: false,
     selected: 'basic',
     inventory: {
       itm1: '',
@@ -74,5 +103,21 @@ export const useHotKeyStormStore = defineStore('hotkeystorm', () => {
     };
   });
 
-  return { data, translation, getHotkeyFromAction, getHotkeyFromCode };
+  const topten = computed(() => {
+    return _take(
+      _orderBy(highscores.value, ['score', 'name', 'challenge'], 'desc'),
+      10,
+    );
+  });
+
+  return {
+    data,
+    translation,
+    getHotkeyFromAction,
+    getHotkeyFromCode,
+    highscores: topten,
+    busy,
+    pending,
+    save,
+  };
 });

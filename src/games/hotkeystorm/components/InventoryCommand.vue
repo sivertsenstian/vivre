@@ -9,8 +9,9 @@ interface Props {
   name: string;
   action: string;
   current?: string;
+  size?: number;
 }
-const props = defineProps<Props>();
+const props = withDefaults(defineProps<Props>(), { size: 42 });
 
 const active = computed(
   () =>
@@ -24,66 +25,82 @@ const active = computed(
     <tbody>
       <tr>
         <td
-          style="border: 1px solid black; height: 42px; width: 42px"
+          :style="`border: 1px solid black; height: ${size}px; width: ${size}px`"
           class="pa-0 ma-0">
           <v-img
             v-if="name === 'Item1'"
             :src="getIconUrl(action)"
-            width="42"
+            :width="size"
             :style="{
               filter: active ? 'brightness(1.0)' : 'brightness(1.5)',
             }" />
-          <v-img v-else src="/empty_inventory.jpg" width="42" height="42" />
+          <v-img
+            v-else
+            src="/empty_inventory.jpg"
+            :width="size"
+            :height="size" />
         </td>
         <td
-          style="border: 1px solid black; height: 42px; width: 42px"
+          :style="`border: 1px solid black; height: ${size}px; width: ${size}px`"
           class="pa-0 ma-0">
           <v-img
             v-if="name === 'Item2'"
             :src="getIconUrl(action)"
-            width="42"
+            :width="size"
             :style="{
               filter: active ? 'brightness(1.0)' : 'brightness(1.5)',
             }" />
-          <v-img v-else src="/empty_inventory.jpg" width="42" height="42" />
+          <v-img
+            v-else
+            src="/empty_inventory.jpg"
+            :width="size"
+            :height="size" />
         </td>
       </tr>
       <tr>
         <td
-          style="border: 1px solid black; height: 42px; width: 42px"
+          :style="`border: 1px solid black; height: ${size}px; width: ${size}px`"
           class="pa-0 ma-0">
           <v-img
             v-if="name === 'Item3'"
             :src="getIconUrl(action)"
-            width="42"
+            :width="size"
             :style="{
               filter: active ? 'brightness(1.0)' : 'brightness(1.5)',
             }" />
-          <v-img v-else src="/empty_inventory.jpg" width="42" height="42" />
+          <v-img
+            v-else
+            src="/empty_inventory.jpg"
+            :width="size"
+            :height="size" />
         </td>
         <td
-          style="border: 1px solid black; height: 42px; width: 42px"
+          :style="`border: 1px solid black; height: ${size}px; width: ${size}px`"
           class="pa-0 ma-0">
           <v-img
             v-if="name === 'Item4'"
             :src="getIconUrl(action)"
-            width="42"
+            :width="size"
             :style="{
               filter: active ? 'brightness(1.0)' : 'brightness(1.5)',
             }" />
-          <v-img v-else src="/empty_inventory.jpg" width="42" height="42" />
+          <v-img
+            v-else
+            src="/empty_inventory.jpg"
+            :width="size"
+            :height="size" />
         </td>
       </tr>
       <tr>
         <td
-          style="border: 1px solid black; height: 42px; width: 42px"
+          :style="`border: 1px solid black; height: ${size}px; width: ${size}px`"
           class="pa-0 ma-0">
-          <v-img src="/empty_inventory.jpg" width="42" height="42" />
+          <v-img src="/empty_inventory.jpg" :width="size" :height="size" />
         </td>
         <td
-          style="border: 1px solid black; height: 42px; width: 42px"
+          :style="`border: 1px solid black; height: ${size}px; width: ${size}px`"
           class="pa-0 ma-0">
-          <v-img src="/empty_inventory.jpg" width="42" height="42" />
+          <v-img src="/empty_inventory.jpg" :width="size" :height="size" />
         </td>
       </tr>
     </tbody>

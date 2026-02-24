@@ -21,9 +21,12 @@ interface Props {
   action: string;
   current?: string;
   queue: string[];
-  callback: any;
+  callback?: any;
+  size?: number;
 }
-const props = defineProps<Props>();
+const props = withDefaults(defineProps<Props>(), {
+  size: 42,
+});
 
 const missile = computed(
   () => _sample(missiles) ?? _first(missiles) ?? 'Death Coil',
@@ -31,7 +34,7 @@ const missile = computed(
 
 onMounted(() => {
   if (props.action === Basic.MissileDodge) {
-    props.callback();
+    props.callback?.();
   }
 });
 
@@ -44,7 +47,7 @@ onUpdated(() => {
         q.some((v: any) => v === Basic.MissileDodge)))
   ) {
     setTimeout(() => {
-      props.callback();
+      props.callback?.();
     }, 500);
   }
 });
@@ -72,7 +75,7 @@ const getIcon = (name: string, action: string) => {
 <template>
   <v-img
     :src="getIcon(name, action)"
-    width="42"
+    :width="size"
     :class="{
       'mx-3 my-auto': true,
       incoming: action === Basic.MissileDodge && active,
