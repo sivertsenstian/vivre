@@ -737,6 +737,14 @@ const onUploadHotkeys = async (event: any) => {
                       'gold',
                     ]" />
                 </v-col>
+                <v-col
+                  col="12"
+                  class="text-center"
+                  v-if="puzzle.type === HotKeyType.MultiTarget">
+                  <div class="text-grey" style="font-size: 11px">
+                    Tip: Hold shift to more easily hit multiple targets!
+                  </div>
+                </v-col>
                 <v-col cols="12" class="text-center" v-if="hint">
                   <span
                     class="text-orange font-weight-bold"
