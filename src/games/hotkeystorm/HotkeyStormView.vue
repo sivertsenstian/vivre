@@ -721,7 +721,7 @@ onMounted(() => {
                 <v-icon icon="mdi-weather-lightning" style="font-size: 128px" />
                 <h2>
                   Welcome to
-                  <span class="font-weight-bold text-orange">Hotkey Storm</span>
+                  <span class="font-weight-bold text-orange">Storm key</span>
                   - The Hotkey training game!
                 </h2>
                 <h2>
@@ -772,8 +772,12 @@ onMounted(() => {
               </template>
               <template v-else>
                 <v-col cols="12" class="text-center"
-                  ><h1 style="font-weight: bold; color: orange">
-                    Hotkey Storm
+                  ><h1
+                    style="
+                      color: orange;
+                      font-family: 'Press Start 2P', system-ui;
+                    ">
+                    Storm key
                   </h1>
                 </v-col>
                 <v-col cols="7">

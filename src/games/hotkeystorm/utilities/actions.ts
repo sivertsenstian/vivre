@@ -1292,11 +1292,11 @@ export const Neutral: any = {
       types: [HotKeyType.Target, HotKeyType.Train],
     },
     'Acid Bomb': {
-      code: 'ancr',
+      code: 'anab',
       types: [HotKeyType.Target, HotKeyType.Train],
     },
     'Chemical Rage': {
-      code: 'anab',
+      code: 'ancr',
       types: [HotKeyType.BasicAbility, HotKeyType.Train],
     },
     Transmute: {
