@@ -63,13 +63,17 @@ const toOrdinalSuffix = (i: number) => {
 };
 
 const toInstruction = (puzzle: any) => {
-  const a = puzzle?.actions?.map(actionToName).join(' ') ?? '';
+  const a =
+    puzzle?.actions?.map((v: any) => actionToName(puzzle, v)).join(' ') ?? '';
+
   switch (puzzle.type) {
     case HotKeyType.BasicAbility:
     case HotKeyType.Target:
       return `Cast ${a}`;
+    case HotKeyType.ReverseTarget:
+      return `Click ${puzzle?.actions?.map((v: any) => actionToName(puzzle, v)).join(' and ') ?? ''}`;
     case HotKeyType.MultiTarget:
-      return `Cast ${actionToName(puzzle?.actions?.[0])} on multiple targets`;
+      return `Cast ${actionToName(puzzle, puzzle?.actions?.[0])} on multiple targets`;
     case HotKeyType.BasicUpgrade:
       return `Research ${a}`;
     case HotKeyType.BasicBuy:
@@ -81,7 +85,7 @@ const toInstruction = (puzzle: any) => {
     case HotKeyType.BasicSelect:
       return `Select ${a}`;
     case HotKeyType.Use:
-      return `Quickcast ${actionToName(puzzle?.actions?.[0])}`;
+      return `Quickcast ${actionToName(puzzle, puzzle?.actions?.[0])}`;
     default:
       return a;
   }
@@ -698,6 +702,8 @@ onMounted(() => {
                     style="vertical-align: text-bottom"
                     >HINT:
                   </span>
+                  <pre>{{ puzzle }}</pre>
+                  <pre>{{ answer }}</pre>
                   <div
                     v-for="key in answer.filter((a: any) =>
                       [Basic.TargetDummy, Basic.Miss, Basic.MissileDodge].every(

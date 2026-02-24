@@ -30,6 +30,7 @@ const keyCodeToKey: any = {
   '112': 'F1',
   '113': 'F2',
   '114': 'F3',
+  '512': 'Escape',
 };
 
 interface IHighscore {
