@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { useDisplay, useTheme } from "vuetify";
-import { RouterView, useRoute } from "vue-router";
-import bgLightUrl from "@/assets/bg_light.jpg";
-import bgDarkUrl from "@/assets/bg_dark.jpg";
-import logo from "@/assets/logo.png";
-import { computed, ref } from "vue";
+import { useDisplay, useTheme } from 'vuetify';
+import { RouterView, useRoute } from 'vue-router';
+import bgLightUrl from '@/assets/bg_light.jpg';
+import bgDarkUrl from '@/assets/bg_dark.jpg';
+import logo from '@/assets/logo.png';
+import { computed, ref } from 'vue';
 const { mobile } = useDisplay();
 
 const inProduction = import.meta.env.PROD;
@@ -13,7 +13,7 @@ const theme = useTheme();
 const isDark = computed(() => theme.global.current.value.dark);
 
 function toggleTheme() {
-  theme.global.name.value = theme.global.current.value.dark ? "light" : "dark";
+  theme.global.name.value = theme.global.current.value.dark ? 'light' : 'dark';
 }
 
 const route = useRoute();
@@ -182,6 +182,24 @@ const drawer = ref(!mobile.value);
           title="About"
           router
           to="/about"></v-list-item>
+        <v-list-group>
+          <template v-slot:activator="{ props }">
+            <v-list-item
+              active
+              color="purple-lighten-2"
+              v-bind="props"
+              prepend-icon="mdi-nintendo-game-boy"
+              title="Games - new!"
+              router
+              to="/games/storm"></v-list-item>
+          </template>
+          <v-list-item
+            prepend-icon="mdi-weather-lightning"
+            title="Storm key"
+            color="orange"
+            router
+            to="/games/storm"></v-list-item>
+        </v-list-group>
         <v-list-item
           color="yellow"
           prepend-icon="mdi-lightbulb"

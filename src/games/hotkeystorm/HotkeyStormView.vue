@@ -1441,7 +1441,6 @@ const onUploadHotkeys = async (event: any) => {
                           challenge: challenge,
                         });
                         madeTopTen = false;
-                        showHighscore = true;
                       }
                     }
                   "></v-btn>
