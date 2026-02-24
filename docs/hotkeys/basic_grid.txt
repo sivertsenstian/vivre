@@ -3,6 +3,32 @@
 // Q W E R
 // A     F
 // Z X C V
+[her1]
+Hotkey=112
+
+[her2]
+Hotkey=113
+
+[her3]
+Hotkey=114
+
+[itm1]
+Hotkey=103
+
+[itm2]
+Hotkey=104
+
+[itm3]
+Hotkey=100
+
+[itm4]
+Hotkey=101
+
+[itm5]
+Hotkey=97
+
+[itm6]
+Hotkey=98
 
 [cmdmove]
 Hotkey=Q
