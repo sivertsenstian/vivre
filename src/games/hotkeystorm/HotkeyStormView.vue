@@ -1146,15 +1146,17 @@ onMounted(() => {
             <v-row v-if="status === Status.Play">
               <v-col cols="12" class="text-center">
                 <v-btn-group class="mt-4" variant="outlined">
-                  <v-btn color="warning" size="large" @click="restart"
+                  <v-btn color="warning" size="large" @click="() => restart()"
                     >Restart</v-btn
                   >
-                  <v-btn color="error" size="large" @click="stop">End</v-btn>
+                  <v-btn color="error" size="large" @click="() => stop()"
+                    >End</v-btn
+                  >
                   <v-btn
                     v-if="mode === Mode.Learning"
                     color="success"
                     size="large"
-                    @click="next"
+                    @click="() => next()"
                     >Skip</v-btn
                   >
                 </v-btn-group>
