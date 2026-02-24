@@ -702,8 +702,6 @@ onMounted(() => {
                     style="vertical-align: text-bottom"
                     >HINT:
                   </span>
-                  <pre>{{ puzzle }}</pre>
-                  <pre>{{ answer }}</pre>
                   <div
                     v-for="key in answer.filter((a: any) =>
                       [Basic.TargetDummy, Basic.Miss, Basic.MissileDodge].every(
