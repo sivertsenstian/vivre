@@ -405,6 +405,7 @@ const stop = (cancel: boolean = false) => {
       if (store.inTopTen(points.value, challenge.value)) {
         setTimeout(() => {
           audio.value?.highscore.play();
+          store.highscoreFilter = challenge.value;
           madeTopTen.value = true;
         }, 500);
       }
