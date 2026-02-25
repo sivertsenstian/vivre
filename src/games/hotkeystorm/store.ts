@@ -142,6 +142,21 @@ export const useHotKeyStormStore = defineStore('hotkeystorm', () => {
     );
   });
 
+  const inTopTen = computed(() => {
+    return (score: number, filter: string) => {
+      const top = _take(
+        _orderBy(
+          highscores.value.filter((h) => h.challenge === filter),
+          ['score', 'name', 'challenge'],
+          'desc',
+        ),
+        10,
+      );
+
+      return score > 0 && (top.length < 10 || top.some((h) => h.score < score));
+    };
+  });
+
   return {
     data,
     translation,
@@ -153,5 +168,6 @@ export const useHotKeyStormStore = defineStore('hotkeystorm', () => {
     save,
     highscoreTabs,
     highscoreFilter,
+    inTopTen,
   };
 });

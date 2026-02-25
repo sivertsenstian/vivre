@@ -402,11 +402,7 @@ const stop = (cancel: boolean = false) => {
     if (mode.value === Mode.Challenge) {
       audio.value?.done.play();
       status.value = Status.Finished;
-      if (
-        points.value > 0 &&
-        (store.highscores.length < 10 ||
-          store.highscores.some((h) => h.score < points.value))
-      ) {
+      if (store.inTopTen(points.value, challenge.value)) {
         setTimeout(() => {
           audio.value?.highscore.play();
           madeTopTen.value = true;
