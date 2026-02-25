@@ -402,13 +402,10 @@ const stop = (cancel: boolean = false) => {
     if (mode.value === Mode.Challenge) {
       audio.value?.done.play();
       status.value = Status.Finished;
-      if (
-        points.value > 0 &&
-        (store.highscores.length < 10 ||
-          store.highscores.some((h) => h.score < points.value))
-      ) {
+      if (store.inTopTen(points.value, challenge.value)) {
         setTimeout(() => {
           audio.value?.highscore.play();
+          store.highscoreFilter = challenge.value;
           madeTopTen.value = true;
         }, 500);
       }
@@ -554,7 +551,8 @@ const onUploadHotkeys = async (event: any) => {
               <v-col cols="12" class="text-center">
                 <v-dialog
                   v-model="showHighscore"
-                  max-width="750"
+                  max-width="800"
+                  height="800"
                   transition="dialog-bottom-transition">
                   <template v-slot:activator="{ props: activatorProps }">
                     <v-btn
@@ -567,6 +565,24 @@ const onUploadHotkeys = async (event: any) => {
                   <template v-slot:default="{ isActive }">
                     <v-container class="arcade-container">
                       <h1 class="text-center mb-5 arcade-title">HIGH SCORES</h1>
+                      <v-table
+                        density="compact"
+                        theme="dark"
+                        class="arcade-table">
+                        <thead>
+                          <tr>
+                            <td
+                              :class="{
+                                'text-no-wrap filter': true,
+                                active: tab === store.highscoreFilter,
+                              }"
+                              v-for="tab in store.highscoreTabs"
+                              @click="store.highscoreFilter = tab">
+                              {{ tab }}
+                            </td>
+                          </tr>
+                        </thead>
+                      </v-table>
                       <v-table
                         theme="dark"
                         class="arcade-table"
@@ -1809,6 +1825,16 @@ const onUploadHotkeys = async (event: any) => {
   border-bottom: none !important; /* Remove borders */
   font-size: 0.8rem;
   padding: 15px !important;
+
+  &.filter {
+    cursor: pointer;
+    &:hover {
+      color: #0ff !important;
+    }
+  }
+  &.active {
+    color: #0ff !important;
+  }
 }
 
 .arcade-table thead th {
