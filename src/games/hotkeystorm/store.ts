@@ -47,6 +47,17 @@ export const useHotKeyStormStore = defineStore('hotkeystorm', () => {
   const hotkeystormCollection = collection(db, 'hotkeystorm');
   const { data: highscores, pending } = useCollection(hotkeystormCollection);
 
+  const highscoreTabs = [
+    'All',
+    'Human',
+    'Orc',
+    'Undead',
+    'Night Elf',
+    'Random',
+    'Neutral',
+  ];
+  const highscoreFilter = ref('All');
+
   const save = async (highscore: IHighscore) => {
     try {
       busy.value = true;
@@ -118,7 +129,15 @@ export const useHotKeyStormStore = defineStore('hotkeystorm', () => {
 
   const topten = computed(() => {
     return _take(
-      _orderBy(highscores.value, ['score', 'name', 'challenge'], 'desc'),
+      _orderBy(
+        highscores.value.filter(
+          (h) =>
+            highscoreFilter.value === 'All' ||
+            h.challenge === highscoreFilter.value,
+        ),
+        ['score', 'name', 'challenge'],
+        'desc',
+      ),
       10,
     );
   });
@@ -132,5 +151,7 @@ export const useHotKeyStormStore = defineStore('hotkeystorm', () => {
     busy,
     pending,
     save,
+    highscoreTabs,
+    highscoreFilter,
   };
 });
