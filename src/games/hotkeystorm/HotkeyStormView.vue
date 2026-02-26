@@ -1709,6 +1709,13 @@ const onUploadHotkeys = async (event: any) => {
             </v-card>
           </v-col>
         </v-row>
+        <v-snackbar
+          v-model="store.showMessage"
+          prepend-icon="$success"
+          variant="elevated"
+          :color="store.message.startsWith('Success:') ? 'success' : 'error'">
+          {{ store.message }}
+        </v-snackbar>
       </v-sheet>
     </v-container>
   </main>
