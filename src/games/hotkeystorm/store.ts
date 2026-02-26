@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { computed, ref, watchEffect } from 'vue';
+import { computed, ref, shallowRef, watchEffect } from 'vue';
 import axios from 'axios';
 import * as parser from '@/utilities/hotkeyparser.ts';
 import { getCodeFromAction } from '@/games/hotkeystorm/utilities/actions.ts';
@@ -8,6 +8,8 @@ import { useCollection, useFirestore } from 'vuefire';
 import { collection, addDoc, Timestamp } from 'firebase/firestore';
 import _take from 'lodash/take';
 import _orderBy from 'lodash/orderBy';
+import _groupBy from 'lodash/groupBy';
+import _keys from 'lodash/keys';
 
 const getTranslation = async (selected: string) => {
   const response = await axios.get(`/hotkeys/${selected}.txt`, {
@@ -95,13 +97,32 @@ export const useHotKeyStormStore = defineStore('hotkeystorm', () => {
     muted: false,
   });
 
+  const showMessage = shallowRef(false);
+  const message = ref('');
   watchEffect(async () => {
+    showMessage.value = false;
+    message.value = '';
     if (data.value.selected === 'custom' && data.value.custom.length) {
       try {
         const v = parser.parse(atob(data.value.custom).replace(/\r\n/g, '\n'));
-        translation.value = v;
+        const uniqueKeys = _keys(_groupBy(v, 'Hotkey')).length;
+
+        if (uniqueKeys >= 20) {
+          translation.value = v;
+          message.value = 'Success: Custom Hotkey Layout Loaded!';
+        } else {
+          message.value =
+            'Error: Something went wrong when loading the custom layout - verify that the file is correct!';
+        }
       } catch (error) {
+        message.value =
+          'Error: Unable to load the custom hotkey layout, verify that the file is correct!';
         console.error(error);
+      } finally {
+        showMessage.value = true;
+        setTimeout(() => {
+          showMessage.value = false;
+        }, 3000);
       }
     } else {
       const v = await getTranslation(data.value.selected);
@@ -178,5 +199,7 @@ export const useHotKeyStormStore = defineStore('hotkeystorm', () => {
     highscoreTabs,
     highscoreFilter,
     inTopTen,
+    message,
+    showMessage,
   };
 });
