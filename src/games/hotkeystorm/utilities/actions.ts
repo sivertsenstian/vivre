@@ -146,7 +146,7 @@ export const NightElfInventory: any = {
     'Staff Of Preservation': { code: 'itm5', types: [HotKeyType.Target] },
   },
   Item6: {
-    'Staff Of Preservation': { code: 'itm5', types: [HotKeyType.Target] },
+    'Staff Of Preservation': { code: 'itm6', types: [HotKeyType.Target] },
   },
 };
 export const NightElf: any = {
@@ -460,7 +460,7 @@ export const UndeadInventory: any = {
     'Rod Of Necromancy': { code: 'itm5', types: [HotKeyType.BasicItem] },
   },
   Item6: {
-    'Ritual Dagger': { code: 'itm3', types: [HotKeyType.Target] },
+    'Ritual Dagger': { code: 'itm6', types: [HotKeyType.Target] },
   },
 };
 
