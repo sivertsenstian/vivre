@@ -125,12 +125,28 @@ export const BasicInventory: any = {
       code: 'itm4',
       types: [HotKeyType.Target, HotKeyType.MultiTarget],
     },
+    'Staff of Teleportation': { code: 'itm4', types: [HotKeyType.Target] },
+  },
+  Item5: {
+    'Dust Of Appearance': {
+      code: 'itm5',
+      types: [HotKeyType.BasicItem],
+    },
+  },
+  Item6: {
+    'Staff of Teleportation': { code: 'itm6', types: [HotKeyType.Target] },
   },
 };
 
 export const NightElfInventory: any = {
   Item2: {
     'Staff Of Preservation': { code: 'itm2', types: [HotKeyType.Target] },
+  },
+  Item5: {
+    'Staff Of Preservation': { code: 'itm5', types: [HotKeyType.Target] },
+  },
+  Item6: {
+    'Staff Of Preservation': { code: 'itm5', types: [HotKeyType.Target] },
   },
 };
 export const NightElf: any = {
@@ -440,6 +456,12 @@ export const UndeadInventory: any = {
     'Sacrificial Skull': { code: 'itm4', types: [HotKeyType.Target] },
     'Wand of Negation': { code: 'itm4', types: [HotKeyType.Target] },
   },
+  Item5: {
+    'Rod Of Necromancy': { code: 'itm5', types: [HotKeyType.BasicItem] },
+  },
+  Item6: {
+    'Ritual Dagger': { code: 'itm3', types: [HotKeyType.Target] },
+  },
 };
 
 export const Undead: any = {
@@ -708,6 +730,15 @@ export const OrcInventory: any = {
   },
   Item4: {
     'Scroll Of Speed': { code: 'itm4', types: [HotKeyType.BasicAbility] },
+  },
+  Item5: {
+    'Healing Salve': {
+      code: 'itm5',
+      types: [HotKeyType.Target, HotKeyType.MultiTarget],
+    },
+  },
+  Item6: {
+    'Scroll Of Speed': { code: 'itm6', types: [HotKeyType.BasicAbility] },
   },
 };
 
@@ -986,6 +1017,24 @@ export const HumanInventory: any = {
     },
     'Ivory Tower': {
       code: 'itm2',
+      types: [HotKeyType.Target],
+    },
+  },
+  Item3: {
+    'Ivory Tower': {
+      code: 'itm3',
+      types: [HotKeyType.Target],
+    },
+  },
+  Item5: {
+    'Staff Of Sanctuary': {
+      code: 'itm5',
+      types: [HotKeyType.Target],
+    },
+  },
+  Item6: {
+    'Staff Of Sanctuary': {
+      code: 'itm6',
       types: [HotKeyType.Target],
     },
   },
