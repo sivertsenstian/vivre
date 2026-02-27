@@ -19,39 +19,6 @@ const active = computed(
     store.getHotkeyFromAction(props.name, props.action)?.toLowerCase() !==
     props.current?.toLowerCase(),
 );
-
-const items = [
-  'claws of attack',
-  'ring of protection',
-  'ring of regeneration',
-  'mantle of intelligence',
-  'boots of speed',
-  'gloves of haste',
-  'circlet of nobility',
-  'helm of valor',
-  'hood of cunning',
-  'medalion of courage',
-  'pendant of energy',
-  'pendant of mana',
-  'periapt of vitality',
-];
-const randomIcon = () => {
-  return Math.random() < 0.25
-    ? getIconUrl(_sample(items) ?? 'claws of attack')
-    : '/empty_inventory.jpg';
-};
-
-const filler = ref<any>({});
-onMounted(() => {
-  filler.value = {
-    Item1: randomIcon(),
-    Item2: randomIcon(),
-    Item3: randomIcon(),
-    Item4: randomIcon(),
-    Item5: randomIcon(),
-    Item6: randomIcon(),
-  };
-});
 </script>
 
 <template>
@@ -71,7 +38,7 @@ onMounted(() => {
             }" />
           <v-img
             v-else
-            :src="filler['Item1']"
+            :src="store.filler['Item1']"
             style="filter: brightness(0.75)"
             :width="size"
             :height="size" />
@@ -89,7 +56,7 @@ onMounted(() => {
             }" />
           <v-img
             v-else
-            :src="filler['Item2']"
+            :src="store.filler['Item2']"
             style="filter: brightness(0.75)"
             :width="size"
             :height="size" />
@@ -109,7 +76,7 @@ onMounted(() => {
             }" />
           <v-img
             v-else
-            :src="filler['Item3']"
+            :src="store.filler['Item3']"
             style="filter: brightness(0.75)"
             :width="size"
             :height="size" />
@@ -127,7 +94,7 @@ onMounted(() => {
             }" />
           <v-img
             v-else
-            :src="filler['Item4']"
+            :src="store.filler['Item4']"
             style="filter: brightness(0.75)"
             :width="size"
             :height="size" />
@@ -146,7 +113,7 @@ onMounted(() => {
               filter: active ? 'brightness(1.0)' : 'brightness(1.5)',
             }" />
           <v-img
-            :src="filler['Item5']"
+            :src="store.filler['Item5']"
             style="filter: brightness(0.75)"
             :width="size"
             :height="size"
@@ -164,7 +131,7 @@ onMounted(() => {
               filter: active ? 'brightness(1.0)' : 'brightness(1.5)',
             }" />
           <v-img
-            :src="filler['Item6']"
+            :src="store.filler['Item6']"
             style="filter: brightness(0.75)"
             :width="size"
             :height="size"

@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { computed, ref, shallowRef, watchEffect } from 'vue';
+import { computed, onMounted, ref, shallowRef, watchEffect } from 'vue';
 import axios from 'axios';
 import * as parser from '@/utilities/hotkeyparser.ts';
 import { getCodeFromAction } from '@/games/hotkeystorm/utilities/actions.ts';
@@ -10,6 +10,8 @@ import _take from 'lodash/take';
 import _orderBy from 'lodash/orderBy';
 import _groupBy from 'lodash/groupBy';
 import _keys from 'lodash/keys';
+import { getIconUrl } from '@/utilities/api.ts';
+import _sample from 'lodash/sample';
 
 const getTranslation = async (selected: string) => {
   const response = await axios.get(`/hotkeys/${selected}.txt`, {
@@ -51,6 +53,27 @@ interface IHighscore {
   score: number;
   timestamp?: Timestamp;
 }
+
+const items = [
+  'claws of attack',
+  'ring of protection',
+  'ring of regeneration',
+  'mantle of intelligence',
+  'boots of speed',
+  'gloves of haste',
+  'circlet of nobility',
+  'helm of valor',
+  'hood of cunning',
+  'medalion of courage',
+  'pendant of energy',
+  'pendant of mana',
+  'periapt of vitality',
+];
+const randomIcon = () => {
+  return Math.random() < 0.4
+    ? getIconUrl(_sample(items) ?? 'claws of attack')
+    : '/empty_inventory.jpg';
+};
 
 export const useHotKeyStormStore = defineStore('hotkeystorm', () => {
   const db = useFirestore();
@@ -97,6 +120,15 @@ export const useHotKeyStormStore = defineStore('hotkeystorm', () => {
     muted: false,
   });
 
+  const filler = ref<any>({
+    Item1: randomIcon(),
+    Item2: randomIcon(),
+    Item3: randomIcon(),
+    Item4: randomIcon(),
+    Item5: randomIcon(),
+    Item6: randomIcon(),
+  });
+
   const showMessage = shallowRef(false);
   const message = ref('');
   watchEffect(async () => {
@@ -135,10 +167,10 @@ export const useHotKeyStormStore = defineStore('hotkeystorm', () => {
       try {
         const result = translation.value?.[code];
         const v =
-          (keyCodeToKey?.[result?.[key]] ??
-          data.value?.inventory?.[code]?.length)
+          keyCodeToKey?.[result?.[key]] ??
+          (data.value?.inventory?.[code]?.length
             ? data.value.inventory[code]
-            : (result?.[key] ?? code);
+            : (result?.[key] ?? code));
 
         return v?.split(',')?.[0]?.toUpperCase();
       } catch (error) {
@@ -201,5 +233,6 @@ export const useHotKeyStormStore = defineStore('hotkeystorm', () => {
     inTopTen,
     message,
     showMessage,
+    filler,
   };
 });
