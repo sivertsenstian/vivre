@@ -1595,6 +1595,7 @@ export const human_actions = {
 };
 
 export const neutral_actions = {
+  ...BasicInventory,
   ...Neutral,
   ...Common,
 };
