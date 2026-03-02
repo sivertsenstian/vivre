@@ -487,7 +487,7 @@ const dodge = () => {
         setTimeout(step, 750);
       }, 750);
     },
-    Math.floor(Math.random() * (2000 - 500 + 1)) + 500,
+    Math.floor(Math.random() * (1500 - 500 + 1)) + 500,
   );
 };
 
