@@ -41,6 +41,7 @@ import race_neutral from '@/assets/race/neutral.png';
 import _round from 'lodash/round';
 import _first from 'lodash/first';
 import * as challenges from './utilities/challenges.ts';
+import _forEach from 'lodash/forEach';
 
 const store = useHotKeyStormStore();
 
@@ -490,11 +491,18 @@ const dodge = () => {
   );
 };
 
+const volumeChanged = (volume: number) => {
+  _forEach(audio.value, (sound) => {
+    sound.volume = volume / 100;
+  });
+};
+
 onMounted(() => {
   if (!store.data.notShowHighScoreOnLoad) {
     showHighscore.value = true;
     store.data.notShowHighScoreOnLoad = true;
   }
+  volumeChanged(store.data.volume ?? 50);
 });
 
 watch(showHighscore, (v, _) => {
@@ -870,18 +878,32 @@ const onUploadHotkeys = async (event: any) => {
                       font-family: 'Press Start 2P', system-ui;
                     ">
                     Storm key
-                    <v-icon
-                      title="Click to toggle all sounds on/off"
-                      :icon="
-                        store.data.muted ? 'mdi-volume-off' : 'mdi-volume-high'
-                      "
-                      @click="store.data.muted = !store.data.muted"
-                      style="
-                        color: white;
-                        font-size: 24px;
-                        margin-bottom: 5px;
-                      " />
                   </h1>
+                  <span
+                    style="position: relative; color: grey; font-weight: bold"
+                    >by Longjacket</span
+                  >
+                </v-col>
+                <v-col
+                  cols="12"
+                  md="6"
+                  offset-md="3"
+                  class="d-inline-flex align-items-center">
+                  <v-slider
+                    :width="100"
+                    density="compact"
+                    hide-details
+                    :min="0"
+                    :max="100"
+                    :color="
+                      store.data.muted ? 'rgba(100,100,100,0.8)' : 'white'
+                    "
+                    :prepend-icon="
+                      store.data.muted ? 'mdi-volume-off' : 'mdi-volume-high'
+                    "
+                    @click:prepend="store.data.muted = !store.data.muted"
+                    @update:model-value="volumeChanged"
+                    v-model="store.data.volume" />
                 </v-col>
                 <v-col cols="7">
                   <v-select

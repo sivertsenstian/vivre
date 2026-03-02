@@ -118,6 +118,7 @@ export const useHotKeyStormStore = defineStore('hotkeystorm', () => {
     } as any,
     custom: '',
     muted: false,
+    volume: 50,
   });
 
   const filler = ref<any>({
