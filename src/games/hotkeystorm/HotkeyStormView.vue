@@ -3,6 +3,7 @@ import { computed, onMounted, ref, watch } from 'vue';
 import _sample from 'lodash/sample';
 import _isEqual from 'lodash/isEqual';
 import _isEmpty from 'lodash/isEmpty';
+import _isNil from 'lodash/isNil';
 import ConfettiExplosion from 'vue-confetti-explosion';
 import moment from 'moment';
 import Command from './components/Command.vue';
@@ -502,7 +503,12 @@ onMounted(() => {
     showHighscore.value = true;
     store.data.notShowHighScoreOnLoad = true;
   }
-  volumeChanged(store.data.volume ?? 50);
+
+  if (_isNil(store.data.volume)) {
+    store.data.volume = 50;
+  }
+
+  volumeChanged(store.data.volume);
 });
 
 watch(showHighscore, (v, _) => {
@@ -1386,10 +1392,10 @@ const onUploadHotkeys = async (event: any) => {
                   :max="comboGoal" />
                 <v-progress-linear
                   chunk-gap="10"
-                  chunk-width="120"
+                  chunk-count="4"
                   style="margin-top: 5px"
                   :height="10"
-                  color="green"
+                  :color="comboStreak === 4 ? '#FFD700' : 'green'"
                   :model-value="comboStreak"
                   :max="4" />
               </v-col>
