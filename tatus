@@ -1,0 +1,39 @@
+[1mdiff --git a/src/games/hotkeystorm/HotkeyStormView.vue b/src/games/hotkeystorm/HotkeyStormView.vue[m
+[1mindex 1eb9703..a4556d3 100644[m
+[1m--- a/src/games/hotkeystorm/HotkeyStormView.vue[m
+[1m+++ b/src/games/hotkeystorm/HotkeyStormView.vue[m
+[36m@@ -3,6 +3,7 @@[m [mimport { computed, onMounted, ref, watch } from 'vue';[m
+ import _sample from 'lodash/sample';[m
+ import _isEqual from 'lodash/isEqual';[m
+ import _isEmpty from 'lodash/isEmpty';[m
+[32m+[m[32mimport _isNil from 'lodash/isNil';[m
+ import ConfettiExplosion from 'vue-confetti-explosion';[m
+ import moment from 'moment';[m
+ import Command from './components/Command.vue';[m
+[36m@@ -502,7 +503,12 @@[m [monMounted(() => {[m
+     showHighscore.value = true;[m
+     store.data.notShowHighScoreOnLoad = true;[m
+   }[m
+[31m-  volumeChanged(store.data.volume ?? 50);[m
+[32m+[m
+[32m+[m[32m  if (_isNil(store.data.volume)) {[m
+[32m+[m[32m    store.data.volume = 50;[m
+[32m+[m[32m  }[m
+[32m+[m
+[32m+[m[32m  volumeChanged(store.data.volume);[m
+ });[m
+ [m
+ watch(showHighscore, (v, _) => {[m
+[36m@@ -1386,10 +1392,10 @@[m [mconst onUploadHotkeys = async (event: any) => {[m
+                   :max="comboGoal" />[m
+                 <v-progress-linear[m
+                   chunk-gap="10"[m
+[31m-                  chunk-width="120"[m
+[32m+[m[32m                  chunk-count="4"[m
+                   style="margin-top: 5px"[m
+                   :height="10"[m
+[31m-                  color="green"[m
+[32m+[m[32m                  :color="comboStreak === 1 ? '#FFD700' : 'green'"[m
+                   :model-value="comboStreak"[m
+                   :max="4" />[m
+               </v-col>[m
