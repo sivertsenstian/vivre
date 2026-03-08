@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import season_explain_dark from "@/assets/season_help_dark.png";
-import season_explain from "@/assets/season_help.png";
+import season_explain_dark from '@/assets/season_help_dark.png';
+import season_explain from '@/assets/season_help.png';
 
-import moment from "moment";
-import PlayerSearch from "@/components/PlayerSearch.vue";
-import { useSettingsStore } from "@/stores/settings";
-import { useLiveStore } from "@/stores/live.ts";
+import moment from 'moment';
+import PlayerSearch from '@/components/PlayerSearch.vue';
+import { useSettingsStore } from '@/stores/settings';
+import { useLiveStore } from '@/stores/live.ts';
 import {
   current_season,
   days_since_start,
@@ -13,21 +13,21 @@ import {
   races,
   ranks,
   start_color,
-} from "@/utilities/constants.ts";
-import { useSeasonStore } from "@/stores/season";
-import { computed, onMounted, onUnmounted, ref } from "vue";
-import { useRouter } from "vue-router";
-import _take from "lodash/take";
+} from '@/utilities/constants.ts';
+import { useSeasonStore } from '@/stores/season';
+import { computed, onMounted, onUnmounted, ref } from 'vue';
+import { useRouter } from 'vue-router';
+import _take from 'lodash/take';
 import {
   getloss,
   getopponent,
   getplayer,
   getwins,
-} from "@/utilities/matchcalculator.ts";
-import RaceIcon from "@/components/RaceIcon.vue";
-import MapLink from "@/components/MapLink.vue";
-import MapPreview from "@/components/MapPreview.vue";
-import { Line } from "vue-chartjs";
+} from '@/utilities/matchcalculator.ts';
+import RaceIcon from '@/components/RaceIcon.vue';
+import MapLink from '@/components/MapLink.vue';
+import MapPreview from '@/components/MapPreview.vue';
+import { Line } from 'vue-chartjs';
 import {
   Chart as ChartJS,
   Legend,
@@ -37,15 +37,15 @@ import {
   TimeScale,
   Title,
   Tooltip,
-} from "chart.js";
-import { Race, raceNameWithRandom as raceName } from "@/stores/races.ts";
-import _reduce from "lodash/reduce";
-import _isEmpty from "lodash/isEmpty";
-import _groupBy from "lodash/groupBy";
-import PlayerW3cLink from "@/components/PlayerW3cLink.vue";
-import _sortBy from "lodash/sortBy";
-import { useTheme } from "vuetify";
-import OngoingMatch from "@/components/live/OngoingMatch.vue";
+} from 'chart.js';
+import { Race, raceNameWithRandom as raceName } from '@/stores/races.ts';
+import _reduce from 'lodash/reduce';
+import _isEmpty from 'lodash/isEmpty';
+import _groupBy from 'lodash/groupBy';
+import PlayerW3cLink from '@/components/PlayerW3cLink.vue';
+import _sortBy from 'lodash/sortBy';
+import { useTheme } from 'vuetify';
+import OngoingMatch from '@/components/live/OngoingMatch.vue';
 
 const settings = useSettingsStore();
 const season = useSeasonStore();
@@ -86,7 +86,7 @@ const mainlyPlays = computed(() => {
       100,
   }));
 
-  const sorted = _sortBy(ranks, "pickrate").reverse();
+  const sorted = _sortBy(ranks, 'pickrate').reverse();
   const filtered = sorted.filter((r: any) => r.pickrate >= 15);
 
   if (filtered.length === 0) {
@@ -125,41 +125,41 @@ const opponents = computed(() => {
         },
         [],
       ),
-      "total",
+      'total',
     ).reverse(),
     6,
   );
 });
 
 const getMedianTime = (matches: any[]) => {
-  const d = _sortBy(matches, "durationInSeconds").map(
+  const d = _sortBy(matches, 'durationInSeconds').map(
     (v) => v.durationInSeconds,
   );
 
   // even
   if (matches.length <= 2) {
     return moment
-      .duration(d.reduce((r, v) => r + v, 0) / d.length, "seconds")
+      .duration(d.reduce((r, v) => r + v, 0) / d.length, 'seconds')
       .minutes();
   } else if (matches.length % 2 == 0) {
     const a = Math.round(d[matches.length / 2]);
     const b = Math.round(d[matches.length / 2 + 1]);
 
-    return moment.duration(a + b / 2, "seconds").minutes();
+    return moment.duration(a + b / 2, 'seconds').minutes();
   } // odd
   else {
     return moment
-      .duration(d[Math.round(matches.length / 2)], "seconds")
+      .duration(d[Math.round(matches.length / 2)], 'seconds')
       .minutes();
   }
 };
 
 const raceColor: any = {
-  [Race.Human]: "#e8b453",
-  [Race.NightElf]: "#6a5693",
-  [Race.Undead]: "#5198ba",
-  [Race.Orc]: "#7b1414",
-  [Race.Random]: "#59524A",
+  [Race.Human]: '#e8b453',
+  [Race.NightElf]: '#6a5693',
+  [Race.Undead]: '#5198ba',
+  [Race.Orc]: '#7b1414',
+  [Race.Random]: '#59524A',
 };
 
 const data = computed(() => {
@@ -167,7 +167,7 @@ const data = computed(() => {
     datasets: _reduce(
       season.player?.season,
       (s: any[], v, k: string) => {
-        if (v.matches.length && k !== "summary") {
+        if (v.matches.length && k !== 'summary') {
           return [
             ...s,
             {
@@ -194,7 +194,7 @@ const options: any = {
   responsive: true,
   maintainAspectRatio: false,
   plugins: {
-    legend: { position: "bottom" },
+    legend: { position: 'bottom' },
     datalabels: {
       display: false,
     },
@@ -206,23 +206,23 @@ const options: any = {
   },
   scales: {
     x: {
-      type: "time",
+      type: 'time',
       time: {
-        unit: "day",
+        unit: 'day',
       },
       grid: {
-        color: "rgba(255, 255, 255, 0.05)",
+        color: 'rgba(255, 255, 255, 0.05)',
       },
     },
     y: {
       grid: {
-        color: "rgba(255, 255, 255, 0.05)",
+        color: 'rgba(255, 255, 255, 0.05)',
       },
     },
   },
 };
 
-const tab = ref("overview");
+const tab = ref('overview');
 const router = useRouter();
 </script>
 
@@ -427,12 +427,12 @@ const router = useRouter();
                             season.player?.season?.[
                               season.actual_season_ranking?.highest
                                 ?.race as Race
-                            ]?.mmr?.max ?? "-"
+                            ]?.mmr?.max ?? '-'
                           }}</v-col
                         >
                         <v-col cols="12" class="py-0 text-yellow-lighten-1">
                           {{
-                            `${ranks?.[season.actual_season_ranking?.highest?.league]?.name} ${season.actual_season_ranking?.highest?.division > 0 ? season.actual_season_ranking?.highest?.division : ""}`
+                            `${ranks?.[season.actual_season_ranking?.highest?.league]?.name} ${season.actual_season_ranking?.highest?.division > 0 ? season.actual_season_ranking?.highest?.division : ''}`
                           }}
                         </v-col>
                         <v-col cols="12" class="py-0 text-grey">
@@ -750,7 +750,7 @@ const router = useRouter();
                                     moment
                                       .duration(
                                         match.durationInSeconds,
-                                        "seconds",
+                                        'seconds',
                                       )
                                       .minutes()
                                   }}m
@@ -813,7 +813,7 @@ const router = useRouter();
                               class="text-grey"
                               :title="`${player(match)?.players?.[0]?.mmrGain > 0 ? '+' : ''}${player(match)?.players?.[0]?.mmrGain} mmr`"
                               >{{
-                                player(match)?.players?.[0]?.currentMmr ?? "-"
+                                player(match)?.players?.[0]?.oldMmr ?? '-'
                               }}</span
                             >
                           </td>
@@ -823,7 +823,7 @@ const router = useRouter();
                               class="text-grey"
                               :title="`${opponent(match)?.players?.[0]?.mmrGain > 0 ? '+' : ''}${opponent(match)?.players?.[0]?.mmrGain} mmr`"
                               >{{
-                                opponent(match)?.players?.[0]?.currentMmr ?? "-"
+                                opponent(match)?.players?.[0]?.oldMmr ?? '-'
                               }}</span
                             >
                           </td>

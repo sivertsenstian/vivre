@@ -1,35 +1,35 @@
 <script setup lang="ts">
-import season_explain_dark from "@/assets/season_help_dark.png";
-import season_explain from "@/assets/season_help.png";
+import season_explain_dark from '@/assets/season_help_dark.png';
+import season_explain from '@/assets/season_help.png';
 
-import moment from "moment";
-import PlayerSearch from "@/components/PlayerSearch.vue";
-import { useSettingsStore } from "@/stores/settings";
-import { useLiveStore } from "@/stores/live.ts";
+import moment from 'moment';
+import PlayerSearch from '@/components/PlayerSearch.vue';
+import { useSettingsStore } from '@/stores/settings';
+import { useLiveStore } from '@/stores/live.ts';
 import {
   current_season,
   days_since_start,
   duration,
   races,
   start_color,
-} from "@/utilities/constants.ts";
-import { useSeasonStore } from "@/stores/season";
-import { computed, onMounted, onUnmounted, ref } from "vue";
-import _take from "lodash/take";
-import { getopponent, getplayer } from "@/utilities/matchcalculator.ts";
-import RaceIcon from "@/components/RaceIcon.vue";
-import MapLink from "@/components/MapLink.vue";
-import MapPreview from "@/components/MapPreview.vue";
-import { raceNameWithRandom as raceName } from "@/stores/races.ts";
-import PlayerW3cLink from "@/components/PlayerW3cLink.vue";
-import _sortBy from "lodash/sortBy";
-import { useTheme } from "vuetify";
-import OngoingMatch from "@/components/live/OngoingMatch.vue";
-import { useRoute, useRouter } from "vue-router";
-import _skip from "lodash/drop";
+} from '@/utilities/constants.ts';
+import { useSeasonStore } from '@/stores/season';
+import { computed, onMounted, onUnmounted, ref } from 'vue';
+import _take from 'lodash/take';
+import { getopponent, getplayer } from '@/utilities/matchcalculator.ts';
+import RaceIcon from '@/components/RaceIcon.vue';
+import MapLink from '@/components/MapLink.vue';
+import MapPreview from '@/components/MapPreview.vue';
+import { raceNameWithRandom as raceName } from '@/stores/races.ts';
+import PlayerW3cLink from '@/components/PlayerW3cLink.vue';
+import _sortBy from 'lodash/sortBy';
+import { useTheme } from 'vuetify';
+import OngoingMatch from '@/components/live/OngoingMatch.vue';
+import { useRoute, useRouter } from 'vue-router';
+import _skip from 'lodash/drop';
 
 const page = ref(1);
-const tab = ref("games");
+const tab = ref('games');
 const route = useRoute();
 const router = useRouter();
 
@@ -64,7 +64,7 @@ const mainlyPlays = computed(() => {
       100,
   }));
 
-  const sorted = _sortBy(ranks, "pickrate").reverse();
+  const sorted = _sortBy(ranks, 'pickrate').reverse();
   const filtered = sorted.filter((r: any) => r.pickrate >= 15);
 
   if (filtered.length === 0) {
@@ -246,7 +246,7 @@ const mainlyPlays = computed(() => {
                                     moment
                                       .duration(
                                         match.durationInSeconds,
-                                        "seconds",
+                                        'seconds',
                                       )
                                       .minutes()
                                   }}m
@@ -309,7 +309,7 @@ const mainlyPlays = computed(() => {
                               class="text-grey"
                               :title="`${player(match)?.players?.[0]?.mmrGain > 0 ? '+' : ''}${player(match)?.players?.[0]?.mmrGain} mmr`"
                               >{{
-                                player(match)?.players?.[0]?.currentMmr ?? "-"
+                                player(match)?.players?.[0]?.oldMmr ?? '-'
                               }}</span
                             >
                           </td>
@@ -319,7 +319,7 @@ const mainlyPlays = computed(() => {
                               class="text-grey"
                               :title="`${opponent(match)?.players?.[0]?.mmrGain > 0 ? '+' : ''}${opponent(match)?.players?.[0]?.mmrGain} mmr`"
                               >{{
-                                opponent(match)?.players?.[0]?.currentMmr ?? "-"
+                                opponent(match)?.players?.[0]?.oldMmr ?? '-'
                               }}</span
                             >
                           </td>

@@ -1,27 +1,27 @@
 <script setup lang="ts">
-import * as parser from "@/utilities/buildorderparser";
-import _has from "lodash/has";
-import _take from "lodash/take";
-import _keys from "lodash/keys";
-import _uniqBy from "lodash/uniqBy";
-import _flatten from "lodash/flatten";
+import * as parser from '@/utilities/buildorderparser';
+import _has from 'lodash/has';
+import _take from 'lodash/take';
+import _keys from 'lodash/keys';
+import _uniqBy from 'lodash/uniqBy';
+import _flatten from 'lodash/flatten';
 
-import moment from "moment";
-import { useSettingsStore } from "@/stores/settings";
-import { races } from "@/utilities/constants.ts";
-import { useSeasonStore } from "@/stores/season.ts";
-import { computed, onMounted, ref, useTemplateRef } from "vue";
+import moment from 'moment';
+import { useSettingsStore } from '@/stores/settings';
+import { races } from '@/utilities/constants.ts';
+import { useSeasonStore } from '@/stores/season.ts';
+import { computed, onMounted, ref, useTemplateRef } from 'vue';
 import {
   gethero,
   getopponent,
   getplayer,
-} from "@/utilities/matchcalculator.ts";
-import RaceIcon from "@/components/RaceIcon.vue";
-import MapLink from "@/components/MapLink.vue";
-import MapPreview from "@/components/MapPreview.vue";
-import ChartAnnotation from "chartjs-plugin-annotation";
-import Zoom from "chartjs-plugin-zoom";
-import { Line } from "vue-chartjs";
+} from '@/utilities/matchcalculator.ts';
+import RaceIcon from '@/components/RaceIcon.vue';
+import MapLink from '@/components/MapLink.vue';
+import MapPreview from '@/components/MapPreview.vue';
+import ChartAnnotation from 'chartjs-plugin-annotation';
+import Zoom from 'chartjs-plugin-zoom';
+import { Line } from 'vue-chartjs';
 
 import {
   Chart as ChartJS,
@@ -32,17 +32,17 @@ import {
   TimeScale,
   Title,
   Tooltip,
-} from "chart.js";
-import { Race, raceNameWithRandom as raceName } from "@/stores/races.ts";
-import _reduce from "lodash/reduce";
-import PlayerW3cLink from "@/components/PlayerW3cLink.vue";
-import _sortBy from "lodash/sortBy";
-import axios from "axios";
-import { useRoute } from "vue-router";
-import { getMatch } from "@/utilities/api.ts";
-import _sample from "lodash/sample";
-import { BuildOrderType } from "@/utilities/buildorderparser";
-import _fromPairs from "lodash/fromPairs";
+} from 'chart.js';
+import { Race, raceNameWithRandom as raceName } from '@/stores/races.ts';
+import _reduce from 'lodash/reduce';
+import PlayerW3cLink from '@/components/PlayerW3cLink.vue';
+import _sortBy from 'lodash/sortBy';
+import axios from 'axios';
+import { useRoute } from 'vue-router';
+import { getMatch } from '@/utilities/api.ts';
+import _sample from 'lodash/sample';
+import { BuildOrderType } from '@/utilities/buildorderparser';
+import _fromPairs from 'lodash/fromPairs';
 
 const settings = useSettingsStore();
 const season = useSeasonStore();
@@ -73,10 +73,10 @@ const fetchData = async (id: string) => {
   const match = await getMatch(id);
   const replay = await axios.get(
     `https://website-backend.w3champions.com/api/replays/${id}`,
-    { responseType: "blob" },
+    { responseType: 'blob' },
   );
   const response = await axios.postForm(
-    "https://w3tools.hexcoding.de/api/replay/parse",
+    'https://w3tools.hexcoding.de/api/replay/parse',
     { file: replay.data },
   );
 
@@ -134,7 +134,7 @@ const mainlyPlays = computed(() => {
       100,
   }));
 
-  const sorted = _sortBy(ranks, "pickrate").reverse();
+  const sorted = _sortBy(ranks, 'pickrate').reverse();
   const filtered = sorted.filter((r: any) => r.pickrate >= 15);
 
   if (filtered.length === 0) {
@@ -149,8 +149,8 @@ const mainlyPlays = computed(() => {
   }
 });
 
-const p1 = "#2196F3";
-const p2 = "#F44336";
+const p1 = '#2196F3';
+const p2 = '#F44336';
 
 const s1 = 20000;
 const s2 = 60000;
@@ -161,7 +161,7 @@ const data = computed(() => {
       return {
         label: b.player,
         borderColor: i === 1 ? p2 : p1,
-        backgroundColor: i === 1 ? "red" : "cornflowerblue",
+        backgroundColor: i === 1 ? 'red' : 'cornflowerblue',
         data: b.items.map((v: any, j: number, z: any, x: any) => {
           return {
             x: moment(match.value.startTime).add(moment.duration(v.timespan)), //moment.duration(v.timespan).asSeconds(),
@@ -190,7 +190,7 @@ const createAnnotation = async (player: number, v: any, adjust = 0) => {
     const valid = await isValidImage(v.icon);
 
     const i = new Image();
-    i.src = valid ? v.icon : "/icons/btnlobstrokkred.jpg";
+    i.src = valid ? v.icon : '/icons/btnlobstrokkred.jpg';
     i.alt = v.id;
     return i;
   };
@@ -199,8 +199,8 @@ const createAnnotation = async (player: number, v: any, adjust = 0) => {
 
   const a: any = {
     id: `${player}_${v.id}_${v.count}`,
-    drawTime: "beforeDatasetsDraw",
-    type: "line",
+    drawTime: 'beforeDatasetsDraw',
+    type: 'line',
     display: (ctx: any) => ctx.chart.isDatasetVisible(player),
     borderColor: player === 1 ? p2 : p1,
     borderWidth: 2,
@@ -209,17 +209,17 @@ const createAnnotation = async (player: number, v: any, adjust = 0) => {
     xMin: moment(match.value.startTime).add(moment.duration(v.timespan)),
     xMax: moment(match.value.startTime).add(moment.duration(v.timespan)),
     label: {
-      drawTime: "afterDatasetsDraw",
+      drawTime: 'afterDatasetsDraw',
       width: 28,
       height: 28,
-      position: "end",
+      position: 'end',
       backgroundColor: player === 1 ? p2 : p1,
       padding: 1,
       content,
       display: true,
     },
-    yScaleID: "y",
-    xScaleID: "x",
+    yScaleID: 'y',
+    xScaleID: 'x',
     value: moment(match.value.startTime).add(moment.duration(v.timespan)),
   };
 
@@ -227,50 +227,50 @@ const createAnnotation = async (player: number, v: any, adjust = 0) => {
 };
 
 enum AnnotationOption {
-  Hero = "HERO",
-  Tech = "TECH",
-  Research = "RESEARCH",
-  Expansion = "EXPANSION",
-  Worker = "WORKER",
-  HeroSkill = "HEROSKILL",
-  Buy = "BUY",
+  Hero = 'HERO',
+  Tech = 'TECH',
+  Research = 'RESEARCH',
+  Expansion = 'EXPANSION',
+  Worker = 'WORKER',
+  HeroSkill = 'HEROSKILL',
+  Buy = 'BUY',
 }
 
 const annotationoptions: any = {
   [AnnotationOption.Hero]: {
-    name: "Heroes",
+    name: 'Heroes',
     predicate: (v: any) => v.type === BuildOrderType.BuildHero,
   },
   [AnnotationOption.Tech]: {
-    name: "Tech Timings",
+    name: 'Tech Timings',
     predicate: (v: any) => v.type === BuildOrderType.Tech,
   },
   [AnnotationOption.Expansion]: {
-    name: "Expansion Timings",
+    name: 'Expansion Timings',
     predicate: (v: any) =>
       v.type === BuildOrderType.BuildBuilding &&
-      ["town hall", "great hall", "necropolis", "tree of eternity"].some(
+      ['town hall', 'great hall', 'necropolis', 'tree of eternity'].some(
         (x) => x === v.id.toLowerCase(),
       ),
   },
   [AnnotationOption.Worker]: {
-    name: "Workers",
+    name: 'Workers',
     predicate: (v: any) =>
       v.type === BuildOrderType.BuildUnit &&
-      ["peasant", "peon", "acolyte", "wisp"].some(
+      ['peasant', 'peon', 'acolyte', 'wisp'].some(
         (x) => x === v.id.toLowerCase(),
       ),
   },
   [AnnotationOption.Research]: {
-    name: "Research",
+    name: 'Research',
     predicate: (v: any) => v.type === BuildOrderType.Research,
   },
   [AnnotationOption.HeroSkill]: {
-    name: "Hero Skills",
+    name: 'Hero Skills',
     predicate: (v: any) => v.type === BuildOrderType.Learn,
   },
   [AnnotationOption.Buy]: {
-    name: "Items Bought",
+    name: 'Items Bought',
     predicate: (v: any) => v.type === BuildOrderType.Buy,
   },
 };
@@ -316,50 +316,50 @@ const annotations = computed(async () => {
   return _fromPairs(all.reverse().map((v: any) => [v.id, v]));
 });
 
-const input = useTemplateRef("myChart");
+const input = useTemplateRef('myChart');
 
 const options: any = computed(() => {
   const result = {
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
-      legend: { position: "bottom" },
+      legend: { position: 'bottom' },
       datalabels: {
         display: false,
       },
       zoom: {
         pan: {
-          modifierKey: "ctrl",
+          modifierKey: 'ctrl',
           enabled: true,
-          mode: "xy",
+          mode: 'xy',
         },
         zoom: {
           wheel: {
-            modifierKey: "ctrl",
+            modifierKey: 'ctrl',
             enabled: true,
           },
           pinch: {
             enabled: true,
           },
-          mode: "xy",
+          mode: 'xy',
         },
       },
       annotation: { annotations: {} },
       tooltip: {
         callbacks: {
           title: function (context: any) {
-            let label = "";
+            let label = '';
             if (context?.[0].label?.length) {
               label += moment
                 .utc(moment(context?.[0].label).diff(match.value.startTime))
-                .format("mm:ss");
+                .format('mm:ss');
             }
             return label;
           },
           label: function (context: any) {
-            let label = context.dataset.label || "";
+            let label = context.dataset.label || '';
             if (label) {
-              label += ": ";
+              label += ': ';
             }
             if (context.parsed.y !== null) {
               label += context.raw.item?.instructions;
@@ -376,21 +376,21 @@ const options: any = computed(() => {
     },
     scales: {
       x: {
-        type: "time",
+        type: 'time',
         time: {
-          unit: "minute",
+          unit: 'minute',
         },
         grid: {
-          color: "rgba(255, 255, 255, 0.05)",
+          color: 'rgba(255, 255, 255, 0.05)',
         },
         ticks: {
           callback: (value: any, index: any, ticks: any) => {
             if (match.value) {
               return moment
                 .utc(moment(value).diff(match.value.startTime))
-                .format("mm:ss");
+                .format('mm:ss');
             }
-            return moment(value).format("HH:mm:ss");
+            return moment(value).format('HH:mm:ss');
           },
         },
       },
@@ -399,7 +399,7 @@ const options: any = computed(() => {
         min: 0,
         max: 80000,
         grid: {
-          color: "rgba(255, 255, 255, 0.05)",
+          color: 'rgba(255, 255, 255, 0.05)',
         },
       },
     },
@@ -526,7 +526,7 @@ const options: any = computed(() => {
                                     moment
                                       .duration(
                                         match.durationInSeconds,
-                                        "seconds",
+                                        'seconds',
                                       )
                                       .minutes()
                                   }}m
@@ -571,7 +571,7 @@ const options: any = computed(() => {
                             <span
                               class="text-grey"
                               :title="`(${player?.mmrGain > 0 ? '+' : ''}${player?.mmrGain}) mmr`"
-                              >{{ player?.currentMmr ?? "-" }}</span
+                              >{{ player?.oldMmr ?? '-' }}</span
                             >
                           </td>
                           <td class="text-center">vs</td>
@@ -579,7 +579,7 @@ const options: any = computed(() => {
                             <span
                               class="text-grey"
                               :title="`(${player?.mmrGain > 0 ? '+' : ''}${opponent?.mmrGain}) mmr`"
-                              >{{ opponent?.currentMmr ?? "-" }}</span
+                              >{{ opponent?.oldMmr ?? '-' }}</span
                             >
                           </td>
                           <td class="text-right text-no-wrap">
